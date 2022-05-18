@@ -1,20 +1,22 @@
 package com.bh.planners.core.pojo
 
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.Configuration
 
 class Router(val config: ConfigurationSection) {
 
     val key = config.name
     val name = config.getString("name", key)!!
-    val routes = config.getConfigurationSection("router")?.getKeys(false)?.map {
-        Router(config.getConfigurationSection(it)!!)
+    val routes = config.getMapList("routes").map {
+        Router(Configuration.fromMap(it))
     }
-
 
     class Route(root: ConfigurationSection) {
 
+        val jobKey = root.getString("key")
         val promoteCondition = root.getStringList("promote")
-
+        val extendSkill = root.getBoolean("extend-skill")
+        val target = root.getString("target")!!
 
     }
 

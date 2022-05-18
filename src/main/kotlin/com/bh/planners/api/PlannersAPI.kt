@@ -5,7 +5,11 @@ import com.bh.planners.core.storage.Storage
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Router
 import com.bh.planners.core.pojo.Skill
+import com.bh.planners.core.pojo.player.PlayerJob
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerJoinEvent
+import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.submit
 import java.util.*
 
 object PlannersAPI {
@@ -20,8 +24,13 @@ object PlannersAPI {
 
     fun Player.profile(): PlayerProfile {
         return profiles.computeIfAbsent(uniqueId) {
-            PlayerProfile(this).also { Storage.INSTANCE.loadInto(it) }
+            Storage.INSTANCE.loadProfile(this).get()
         }
+    }
+
+    @SubscribeEvent
+    fun e(e: PlayerJoinEvent) {
+        submit(async = true) { e.player.profile() }
     }
 
 }

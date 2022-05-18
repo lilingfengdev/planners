@@ -8,6 +8,7 @@ class Job(val config: ConfigurationSection) {
 
     val key = config.name
     val option = Option(config.getConfigurationSection("__option__")!!)
+    val skills = config.getStringList("skills")
 
 
     class Option(root: ConfigurationSection) {

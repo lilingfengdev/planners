@@ -1,7 +1,8 @@
 group_def0:
   name: '战士组'
-  route:
+  routes:
     - key: gob_def0
+      extend-skill: true
       target: gob_def1
       promote:
         - check class level >= 10

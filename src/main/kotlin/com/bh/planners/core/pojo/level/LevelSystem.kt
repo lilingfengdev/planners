@@ -1,8 +1,10 @@
 package com.bh.planners.core.pojo.level
 
 import com.bh.planners.Planners
+import com.bh.planners.api.event.PluginReloadEvent
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.common.platform.event.SubscribeEvent
 
 /**
  * Chemdah
@@ -30,8 +32,8 @@ object LevelSystem {
         }
     }
 
-//    @SubscribeEvent
-//    fun e(e: ArgusReloadEvent) {
-//        this.load()
-//    }
+    @SubscribeEvent
+    fun e(e: PluginReloadEvent) {
+        this.load()
+    }
 }

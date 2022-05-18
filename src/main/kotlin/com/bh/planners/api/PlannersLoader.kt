@@ -1,19 +1,19 @@
 package com.bh.planners.api
 
+import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Router
 import com.bh.planners.core.pojo.Skill
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.module.configuration.Config
-import taboolib.module.configuration.ConfigFile
 import taboolib.module.configuration.Configuration
 import java.io.File
 
 object PlannersLoader {
-
 
     @Config("group.yml")
     lateinit var routerConfig: Configuration
@@ -66,5 +66,12 @@ object PlannersLoader {
         return listOf
     }
 
+    @SubscribeEvent
+    fun e(e: PluginReloadEvent) {
+        routerConfig.reload()
+        this.loadGroups()
+        this.loadJobs()
+        this.loadSkills()
+    }
 
 }

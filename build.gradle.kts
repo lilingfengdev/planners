@@ -16,7 +16,9 @@ taboolib {
     install("module-kether")
     install("module-lang")
     install("module-navigation")
+    install("module-navigation")
     install("module-ui")
+    install("expansion-command-helper")
     install("platform-bukkit")
     classifier = null
     version = "6.0.8-3"

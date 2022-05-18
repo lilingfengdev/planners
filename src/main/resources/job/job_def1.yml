@@ -2,3 +2,6 @@ __option__:
   name: '狂战士'
   counter: def0
 
+
+skills:
+  - 疾风斩击
