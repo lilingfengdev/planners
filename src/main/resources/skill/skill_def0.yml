@@ -1,0 +1,16 @@
+__option__:
+  name: '疾风斩击'
+  mp-cost: math add [ skill level , 1.2 ]
+  triggers: [ player attack ]
+  variables:
+    damage: papi "%rpg_Damage:pvpDamage:min%"
+    defence-min: papi "%rpg_Defence:pvpDefence:min%"
+    base: 1.2
+
+action: |-
+  tell inline "魔法扣除 {{ math add [ skill level , var base ] }}"
+  tell "连击一"
+  skill attack var damage
+  tell "连击二"
+  skill explode level 2
+

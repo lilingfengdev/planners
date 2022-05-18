@@ -1,0 +1,8 @@
+group_def0:
+  name: '战士组'
+  route:
+    - key: gob_def0
+      target: gob_def1
+      promote:
+        - check class level >= 10
+
