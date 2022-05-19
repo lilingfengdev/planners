@@ -1,0 +1,10 @@
+__option__:
+  trigger: runnable
+  period: 100
+
+action: |-
+  if check data isShield == true {
+    tell "举盾中"
+  } else {
+    tell "test ====="
+  }

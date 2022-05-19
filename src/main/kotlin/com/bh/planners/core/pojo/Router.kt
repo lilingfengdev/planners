@@ -8,7 +8,7 @@ class Router(val config: ConfigurationSection) {
     val key = config.name
     val name = config.getString("name", key)!!
     val routes = config.getMapList("routes").map {
-        Router(Configuration.fromMap(it))
+        Route(Configuration.fromMap(it))
     }
 
     class Route(root: ConfigurationSection) {

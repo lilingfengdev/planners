@@ -1,6 +1,7 @@
 package com.bh.planners.core.storage
 
 import com.bh.planners.Planners
+import com.bh.planners.core.pojo.data.DataContainer
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage.Companion.toUserId
@@ -24,6 +25,7 @@ class StorageSQL : Storage {
         const val CURRENT_JOB = "current_job"
         const val JOB = "job"
         const val USER = "user"
+        const val DATA = "data"
 
         const val MANA = "mana"
         const val SKILL = "skill"
@@ -45,6 +47,9 @@ class StorageSQL : Storage {
             type(ColumnTypeSQL.VARCHAR, 30) {
                 def(null)
             }
+        }
+        add(DATA) {
+            type(ColumnTypeSQL.LONGTEXT)
         }
     }
 
@@ -87,8 +92,18 @@ class StorageSQL : Storage {
                 profile.job = getJob(player, jobKey)
             }
 
+            // 初始化metadata
+            profile.dataContainer.merge(getDataContainer(player))
+
             profile
         }
+    }
+
+    private fun getDataContainer(player: Player): DataContainer {
+        return userTable.select(dataSource) {
+            where { ID eq player.toUserId() }
+            rows(DATA)
+        }.first { DataContainer() }
     }
 
     fun getCurrentJob(player: Player): String? {

@@ -1,6 +1,7 @@
 __option__:
   name: '战士'
   counter: def0
+  mana-calculate: 'player level * 2'
 
 
 skills:

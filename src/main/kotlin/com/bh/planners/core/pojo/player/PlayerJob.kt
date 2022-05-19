@@ -9,7 +9,7 @@ class PlayerJob(val jobKey: String, level: Int, experience: Int) {
     val skills = mutableListOf<Skill>()
     val counter: Level = instance.option.counter.toLevel(level, experience)
 
-    private val instance: Job
+    val instance: Job
         get() = PlannersAPI.jobs.first { it.key == jobKey }
 
     fun getSkill(key: String): Skill {
