@@ -17,6 +17,8 @@ taboolib {
     install("module-lang")
     install("module-navigation")
     install("module-navigation")
+    install("module-nms")
+    install("module-nms-util")
     install("module-ui")
     install("expansion-command-helper")
     install("platform-bukkit")
@@ -32,6 +34,7 @@ dependencies {
     compileOnly("ink.ptms:nms-all:1.0.0")
     compileOnly("ink.ptms.core:v11800:11800-minimize:api")
     compileOnly("ink.ptms.core:v11800:11800-minimize:mapped")
+    compileOnly("com.google.code.gson:gson:2.8.5")
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
 }

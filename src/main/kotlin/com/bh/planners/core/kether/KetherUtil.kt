@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.core.pojo.Session
+import com.bh.planners.util.StringNumber
 import taboolib.module.kether.ScriptFrame
 
 const val NAMESPACE = "Planners"
@@ -13,6 +14,7 @@ fun ScriptFrame.getSession(): Session {
 }
 
 
-
-
-
+fun Any?.increaseAny(any: Any): Any {
+    this ?: return any
+    return StringNumber(toString()).add(any.toString()).get()
+}

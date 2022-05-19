@@ -3,6 +3,7 @@ __option__:
   mp-cost: math add [ skill level , 1.2 ]
   triggers: [ player attack ]
   variables:
+    cooling: skill level * 5
     damage: papi "%rpg_Damage:pvpDamage:min%"
     defence-min: papi "%rpg_Defence:pvpDefence:min%"
     base: 1.2

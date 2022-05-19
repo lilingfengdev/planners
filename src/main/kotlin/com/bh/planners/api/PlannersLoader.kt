@@ -4,6 +4,7 @@ import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Router
 import com.bh.planners.core.pojo.Skill
+import com.bh.planners.util.files
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
@@ -44,27 +45,6 @@ object PlannersLoader {
     }
 
 
-    fun files(path: String, defs: List<String>, callback: (File) -> Unit) {
-        defs.forEach {
-            releaseResourceFile("$path/$it")
-        }
-        getFiles(File(getDataFolder(), path)).forEach {
-            callback(it)
-        }
-    }
-
-    fun getFiles(file: File): List<File> {
-        val listOf = mutableListOf<File>()
-        when (file.isDirectory) {
-            true -> listOf += file.listFiles().flatMap { getFiles(it) }
-            false -> {
-                if (file.name.endsWith(".yml")) {
-                    listOf += file
-                }
-            }
-        }
-        return listOf
-    }
 
     @SubscribeEvent
     fun e(e: PluginReloadEvent) {

@@ -1,9 +1,9 @@
 package com.bh.planners.core.pojo
 
+import com.bh.planners.api.PlannersOption
 import com.bh.planners.core.pojo.level.LevelOption
 import com.bh.planners.core.pojo.level.LevelSystem
 import taboolib.library.configuration.ConfigurationSection
-import taboolib.library.xseries.getItemStack
 
 class Job(val config: ConfigurationSection) {
 
@@ -18,6 +18,9 @@ class Job(val config: ConfigurationSection) {
 
         val counter: LevelOption
             get() = LevelSystem.getLevelOption(counterKey) ?: error("Level counter $counterKey not found")
+
+        val manaCalculate: String
+            get() = PlannersOption.root.getString("mana-calculate") ?: error("Option 'mana-calculate' not found.")
 
 
     }
