@@ -9,7 +9,6 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.kether.ScriptContext
 import taboolib.platform.type.BukkitProxyEvent
 
-@Registered("runnable")
 object TimerRunnable : AbstractTimer<TimerRunnable.TimerRunnableEvent>() {
 
     override val eventClazz: Class<out Event>

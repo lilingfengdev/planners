@@ -7,6 +7,8 @@ import javax.script.ScriptContext
 
 interface Timer<E : Event> {
 
+    val name : String
+
     val eventClazz: Class<out Event>
 
     fun onStart(context: ScriptContext, template: Template)

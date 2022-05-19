@@ -3,23 +3,28 @@ package com.bh.planners.core.timer
 import com.bh.planners.core.timer.impl.TimerRunnable
 import org.bukkit.event.Event
 import taboolib.common.LifeCycle
+import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.Awake
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.function.registerBukkitListener
 
 object TimerRegistry {
 
     private val map = mutableMapOf<String, Class<out Event>>()
-    val classes = mutableMapOf<String, CTimer>()
+    val triggers = mutableMapOf<String, Timer<*>>()
 
 
     @Suppress("UNCHECKED_CAST")
     @Awake(LifeCycle.LOAD)
     fun loadImplClass() {
         runningClasses.forEach {
-            if (Timer::class.java.isAssignableFrom(it) && it.isAnnotationPresent(Registered::class.java)) {
-                val registered = it.getAnnotation(Registered::class.java)
-                val clazz = it as Class<Timer<*>>
-                classes[registered.name] = clazz
+            if (Timer::class.java.isAssignableFrom(it)) {
+                val timer = it.getInstance()?.get() as? Timer<*> ?: return@forEach
+                triggers[timer.name] = timer
+                registerBukkitListener(timer.eventClazz,EventPriority.MONITOR,ignoreCancelled = false) {
+
+                }
             }
         }
     }
