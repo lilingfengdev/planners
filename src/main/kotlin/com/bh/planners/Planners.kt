@@ -11,6 +11,6 @@ object Planners : Plugin() {
     lateinit var config : Configuration
 
     override fun onEnable() {
-        info("Successfully running ExamplePlugin!")
+
     }
 }

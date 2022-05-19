@@ -1,5 +1,13 @@
-group_def0:
-  name: '战士组'
+warrior:
+  name: '战士'
+  icon:
+    material: STONE_SWORD
+    name: '&f主职业: &a{name}'
+    lore:
+      - '&f基础信息'
+      - ' &7攻击力: 3'
+      - ' &7防御力: 2'
+      - ' &7移动速度: 2'
   routes:
     - key: gob_def0
       extend-skill: true

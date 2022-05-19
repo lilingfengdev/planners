@@ -78,6 +78,13 @@ class StorageSQL : Storage {
 
     val dataSource by lazy { host.createDataSource() }
 
+    init {
+        userTable.createTable(dataSource)
+        jobTable.createTable(dataSource)
+        skillTable.createTable(dataSource)
+    }
+
+
     override fun loadProfile(player: Player): CompletableFuture<PlayerProfile> {
         return getUserId(player).thenApply {
             val profile = PlayerProfile(player, it)
@@ -139,10 +146,28 @@ class StorageSQL : Storage {
         userTable.insert(dataSource, UUID) {
             value(player.uniqueId.toString())
             onFinally {
-                generatedKeys.next()
-                future.complete(Coerce.toLong(generatedKeys.getObject(1)))
+                future.complete(generatedKeys.run {
+                    next()
+                    Coerce.toLong(getObject(1))
+                })
             }
         }
         return future
     }
+
+    override fun updateCurrentJob(profile: PlayerProfile) {
+        userTable.update(dataSource) {
+            where { ID eq profile.id }
+            set(CURRENT_JOB, profile.job?.jobKey)
+        }
+    }
+
+    override fun updateJob(profile: PlayerProfile) {
+
+
+
+    }
+
+
+
 }

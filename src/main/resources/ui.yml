@@ -1,0 +1,8 @@
+job:
+  title: '请选择职业'
+  rows: 1
+  job-slots: [ 1,2,3,4,5,6,7 ]
+  icon-#:
+    slots: [ 0,8 ]
+    material: BLACK_STAINED_GLASS
+    name: ''
