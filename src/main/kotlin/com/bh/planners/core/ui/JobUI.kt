@@ -1,8 +1,11 @@
 package com.bh.planners.core.ui
 
 import com.bh.planners.api.PlannersAPI
+import com.bh.planners.api.PlannersAPI.profile
 import com.bh.planners.api.particle.ParticleImpl
 import com.bh.planners.core.pojo.Router
+import com.bh.planners.core.pojo.player.PlayerJob
+import com.bh.planners.core.storage.Storage
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemFlag
@@ -38,7 +41,7 @@ class JobUI(val player: Player) {
     fun open() {
         player.openMenu<Linked<Router>>(title) {
             rows(rows)
-            elements { PlannersAPI.routers }
+            elements { PlannersAPI.routers.filter { it.routes.isNotEmpty() } }
             slots(slots)
             onGenerate { _, element, _, _ ->
                 buildItem(element.icon) {
@@ -60,6 +63,12 @@ class JobUI(val player: Player) {
 
                 if (event.clickEvent().click == ClickType.SHIFT_LEFT) {
                     player.closeInventory()
+
+                    Storage.INSTANCE.createPlayerJob(player, element.routes[0].job).thenAccept {
+                        player.profile().job = it
+                        player.sendLang("job-selected", it.instance.option.name)
+                    }
+
 
                     submit(async = true) {
                         (0 until 5).forEach { index ->
@@ -87,10 +96,9 @@ class JobUI(val player: Player) {
                             },
                         ).show()
                     }
-                    player.sendLang("job-selected",element.name)
 
                 } else {
-                    player.sendLang("shift-left-info",element.name)
+                    player.sendLang("shift-left-info", element.name)
                 }
             }
 

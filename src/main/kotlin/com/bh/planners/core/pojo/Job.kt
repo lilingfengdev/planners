@@ -13,7 +13,8 @@ class Job(val config: ConfigurationSection) {
 
 
     class Option(root: ConfigurationSection) {
-        val name = root.getString("name")
+
+        val name = root.getString("name")!!
         val counterKey = root.getString("counter")!!
 
         val counter: LevelOption

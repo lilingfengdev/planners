@@ -4,7 +4,7 @@ __option__:
   async: true
 
 action: |-
-  if check data isShield == true {
+  if check data isShield == "true" then {
     tell "举盾中"
   } else {
     tell "test ====="

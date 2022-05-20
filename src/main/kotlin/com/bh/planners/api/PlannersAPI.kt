@@ -7,6 +7,8 @@ import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Router
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
+import com.bh.planners.core.pojo.key.IKeySlot
+import com.bh.planners.core.pojo.key.KeySlot
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import taboolib.common.platform.event.SubscribeEvent
@@ -23,9 +25,11 @@ object PlannersAPI {
 
     val profiles = mutableMapOf<UUID, PlayerProfile>()
 
+    val keySlots = mutableListOf<IKeySlot>()
+
     fun Player.profile(): PlayerProfile {
         return profiles.computeIfAbsent(uniqueId) {
-            Storage.INSTANCE.loadProfile(this).get()
+            Storage.INSTANCE.loadProfile(this)
         }
     }
 
@@ -40,11 +44,4 @@ object PlannersAPI {
         val session = Session(player, skill)
         session.cast()
     }
-
-
-    @SubscribeEvent
-    fun e(e: PlayerJoinEvent) {
-        submit(async = true) { e.player.profile() }
-    }
-
 }

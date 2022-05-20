@@ -16,7 +16,7 @@ class Session(val executor: Player, val skill: Skill) {
         get() = executor.profile()
 
     val playerSkill: PlayerJob.Skill
-        get() = profile.job!!.getSkill(skill.key)
+        get() = profile.getSkill(skill.key)!!
 
     val cache = mutableMapOf<String, Any>()
 

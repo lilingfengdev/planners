@@ -1,10 +1,13 @@
 package com.bh.planners.core.storage
 
 import com.bh.planners.Planners
+import com.bh.planners.core.pojo.Job
+import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.data.DataContainer
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage.Companion.toUserId
+import jdk.nashorn.internal.scripts.JO
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
@@ -18,12 +21,10 @@ import javax.sql.DataSource
 class StorageSQL : Storage {
 
     val host = Planners.config.getHost("database.sql")
-    val userIdCache = mutableMapOf<UUID, Long>()
 
     companion object {
         const val ID = "id"
         const val UUID = "uuid"
-        const val CURRENT_JOB = "current_job"
         const val JOB = "job"
         const val USER = "user"
         const val DATA = "data"
@@ -33,10 +34,12 @@ class StorageSQL : Storage {
         const val LEVEL = "level"
         const val EXPERIENCE = "experience"
 
+        const val SLOT_KEY = "slot"
+
     }
 
 
-    val userTable = Table("planners_user_info", host) {
+    val userTable = Table("planners_user", host) {
         add("id") { id() }
         add(UUID) { type(ColumnTypeSQL.VARCHAR, 36) }
         add(MANA) {
@@ -44,11 +47,7 @@ class StorageSQL : Storage {
                 def(0.0)
             }
         }
-        add(CURRENT_JOB) {
-            type(ColumnTypeSQL.VARCHAR, 30) {
-                def(null)
-            }
-        }
+        add(JOB) { type(ColumnTypeSQL.INT) }
         add(DATA) {
             type(ColumnTypeSQL.LONGTEXT)
         }
@@ -82,30 +81,40 @@ class StorageSQL : Storage {
         }
     }
 
+    val keySlot = Table("planners_key_slot", host) {
+        add("id") { id() }
+        add(USER) { type(ColumnTypeSQL.INT, 10) }
+        add(SLOT_KEY) { type(ColumnTypeSQL.VARCHAR, 10) }
+        add(SKILL) { type(ColumnTypeSQL.INT) }
+    }
+
     val dataSource by lazy { host.createDataSource() }
 
     init {
         userTable.createTable(dataSource)
         jobTable.createTable(dataSource)
         skillTable.createTable(dataSource)
+        keySlot.createTable(dataSource)
     }
 
 
-    override fun loadProfile(player: Player): CompletableFuture<PlayerProfile> {
-        return getUserId(player).thenApply {
-            val profile = PlayerProfile(player, it)
+    override fun loadProfile(player: Player): PlayerProfile {
+        val userId = player.toUserId()
+        val profile = PlayerProfile(player, userId)
 
-            // 获取职业对应技能
-            getCurrentJob(player)?.let { jobKey ->
-                profile.job = getJob(player, jobKey)
+        // 获取职业对应技能
+        getCurrentJobId(player)?.let { jobId ->
+            if (jobId != 0L) {
+                profile.job = getJob(player, jobId)
             }
-
-            // 初始化metadata
-            profile.dataContainer.merge(getDataContainer(player))
-
-            profile
         }
+
+        // 初始化metadata
+        profile.dataContainer.merge(getDataContainer(player))
+
+        return profile
     }
+
 
     private fun getDataContainer(player: Player): DataContainer {
         return userTable.select(dataSource) {
@@ -114,25 +123,47 @@ class StorageSQL : Storage {
         }.first { DataContainer() }
     }
 
-    fun getCurrentJob(player: Player): String? {
+    fun getCurrentJobId(player: Player): Long? {
         return userTable.select(dataSource) {
-            where { UUID eq player.uniqueId.toString() }
-            rows(CURRENT_JOB)
-        }.firstOrNull { getString(CURRENT_JOB) }
+            where { ID eq player.toUserId() }
+            rows(JOB)
+        }.firstOrNull { getLong(JOB) }
     }
 
-    fun getJob(player: Player, jobKey: String): PlayerJob {
-        val userId = player.toUserId()
+    fun getJob(player: Player, jobId: Long): PlayerJob {
         return jobTable.select(dataSource) {
             where {
-                USER eq userId
-                JOB eq jobKey
+                ID eq jobId
             }
-            rows(LEVEL, EXPERIENCE)
+            rows(JOB, LEVEL, EXPERIENCE)
         }.first {
-            PlayerJob(jobKey, getInt(LEVEL), getInt(EXPERIENCE)).also {
-                it.skills += getSkills(player, jobKey)
+            PlayerJob(jobId, getString(JOB), getInt(LEVEL), getInt(EXPERIENCE)).also {
+                it.skills += getSkills(player, it.jobKey)
             }
+        }
+    }
+
+    override fun createPlayerSkill(player: Player, job: PlayerJob, skill: Skill): CompletableFuture<PlayerJob.Skill> {
+        val future = CompletableFuture<PlayerJob.Skill>()
+        skillTable.insert(dataSource, USER, JOB, SKILL, LEVEL) {
+            value(player.toUserId(), job.jobKey, skill.key, 0)
+            onFinally {
+                val id = generatedKeys.run {
+                    next()
+                    Coerce.toLong(getObject(1))
+                }
+                future.complete(PlayerJob.Skill(id, skill.key, 0))
+            }
+        }
+        return future
+    }
+
+    override fun updateSkill(skill: PlayerJob.Skill) {
+        skillTable.update(dataSource) {
+            where {
+                ID eq skill.id
+            }
+            set(LEVEL, skill.level)
         }
     }
 
@@ -141,54 +172,55 @@ class StorageSQL : Storage {
         return skillTable.select(dataSource) {
             USER eq userId
             JOB eq jobKey
-            rows(SKILL, LEVEL)
+            rows(ID, SKILL, LEVEL)
         }.map {
-            PlayerJob.Skill(getString(SKILL), getInt(LEVEL))
+            PlayerJob.Skill(getLong(ID), getString(SKILL), getInt(LEVEL))
         }
     }
 
-    override fun getUserId(player: Player): CompletableFuture<Long> {
-        val future = CompletableFuture<Long>()
-        when {
-            userIdCache.containsKey(player.uniqueId) -> {
-                future.complete(userIdCache[player.uniqueId]!!)
-            }
-            userTable.find(dataSource) { where { UUID eq player.uniqueId.toString() } } -> {
-                userTable.select(dataSource) {
-                    where { UUID eq player.uniqueId.toString() }
-                    rows(ID)
-                }.first {
-                    future.complete(getLong(ID).also { userIdCache[player.uniqueId] = it })
-                }
-            }
-            else -> {
-                info("插入")
-                userTable.insert(dataSource, UUID) {
-                    value(player.uniqueId.toString())
-                    onFinally {
-                        future.complete(generatedKeys.run {
-                            next()
-                            Coerce.toLong(getObject(1)).also { userIdCache[player.uniqueId] = it }
-                        })
-                    }
-                }
+    override fun getUserId(player: Player): Long {
+
+        if (!userTable.find(dataSource) { where { UUID eq player.uniqueId.toString() } }) {
+            userTable.insert(dataSource, UUID) {
+                value(player.uniqueId.toString())
             }
         }
 
-        return future
+        return userTable.select(dataSource) {
+            where { UUID eq player.uniqueId.toString() }
+            rows(ID)
+        }.first { getLong(ID) }
     }
 
     override fun updateCurrentJob(profile: PlayerProfile) {
         userTable.update(dataSource) {
             where { ID eq profile.id }
-            set(CURRENT_JOB, profile.job?.jobKey)
+            set(JOB, profile.job?.id)
         }
     }
 
-    override fun updateJob(profile: PlayerProfile) {
-
-
+    override fun createPlayerJob(player: Player, job: Job): CompletableFuture<PlayerJob> {
+        val minLevel = job.option.counter.min
+        val future = CompletableFuture<PlayerJob>()
+        jobTable.insert(dataSource, USER, JOB, LEVEL, EXPERIENCE) {
+            value(player.toUserId(), job.key, minLevel, 0.0)
+            onFinally {
+                val id = generatedKeys.run {
+                    next()
+                    Coerce.toLong(getObject(1))
+                }
+                future.complete(PlayerJob(id, job.key, minLevel, 0))
+            }
+        }
+        return future
     }
 
+    override fun updateJob(player: Player, job: PlayerJob) {
+        jobTable.update(dataSource) {
+            where { ID eq job.id }
+            set(LEVEL, job.counter.level)
+            set(EXPERIENCE, job.counter.experience)
+        }
+    }
 
 }

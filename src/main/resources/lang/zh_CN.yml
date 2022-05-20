@@ -1,2 +1,3 @@
 shift-left-info: 'Shift + 左键 选择职业'
 job-selected: '选择 {0} 职业成功!'
+job-exists: '您已选择 {0} 职业,无法重复选择'
