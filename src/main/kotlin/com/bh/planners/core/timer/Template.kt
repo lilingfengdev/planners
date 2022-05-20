@@ -7,7 +7,9 @@ class Template(val id: String, var root: ConfigurationSection) {
 
     val triggers = root.getStringList("__option__.triggers")
 
-    val script = root.getString("script")
+    val async = root.getBoolean("__option__.async")
+
+    val action = root.getString("action")
 
 
 }

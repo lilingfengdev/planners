@@ -1,17 +1,16 @@
 package com.bh.planners.core.timer
 
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
-import javax.script.ScriptContext
+import taboolib.module.kether.ScriptContext
 
 interface Timer<E : Event> {
 
-    val name : String
+    val name: String
 
-    val eventClazz: Class<out Event>
+    val eventClazz: Class<E>
 
-    fun onStart(context: ScriptContext, template: Template)
+    fun onStart(context: ScriptContext, template: Template, e: E)
 
     fun check(e: E): Player?
 

@@ -1,13 +1,19 @@
 package com.bh.planners.core.timer
 
-import com.bh.planners.core.timer.impl.TimerRunnable
+import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.namespaces
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import taboolib.common.LifeCycle
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.registerBukkitListener
+import taboolib.common.platform.function.submit
+import taboolib.module.kether.KetherShell
+import taboolib.module.kether.printKetherErrorMessage
 
 object TimerRegistry {
 
@@ -16,32 +22,53 @@ object TimerRegistry {
 
 
     @Suppress("UNCHECKED_CAST")
-    @Awake(LifeCycle.LOAD)
+    @Awake(LifeCycle.ENABLE)
     fun loadImplClass() {
         runningClasses.forEach {
             if (Timer::class.java.isAssignableFrom(it)) {
-                val timer = it.getInstance()?.get() as? Timer<*> ?: return@forEach
-                triggers[timer.name] = timer
-                registerBukkitListener(timer.eventClazz,EventPriority.MONITOR,ignoreCancelled = false) {
+                (it.getInstance()?.get() as? Timer<*>)?.register()
 
-                }
             }
         }
     }
 
-    fun getTriggerByClass(clazz: Class<*>): String? {
-        val entry = classes.entries.firstOrNull { it.value == clazz } ?: return null
-        return entry.key
+    fun <E : Event> Timer<E>.register() {
+        triggers[name] = this
+        registerBukkitListener(eventClazz, EventPriority.MONITOR, ignoreCancelled = false) { e ->
+            val checkPlayer = this@register.check(e) ?: return@registerBukkitListener
+            callTimer(this@register, checkPlayer, e)
+        }
     }
 
-    fun getClass(trigger: String): Class<Timer<*>>? {
-        return classes[trigger]
+    fun <E : Event> callTimer(timer: Timer<E>, player: Player, event: E) {
+        val list = TimerDrive.templates.filter { timer.name in it.triggers }
+        list.forEach { callTimer(timer, it, player, event) }
     }
 
-    @Awake(LifeCycle.LOAD)
-    fun loadAll() {
-        map["runnable"] = TimerRunnable.TimerRunnableEvent::class.java
+    fun <E : Event> callTimer(timer: Timer<E>, template: Template, player: Player, event: E) {
+        if (template.action != null && template.action.isNotEmpty()) {
+            when (template.async) {
+                true -> submit(async = true) {
+                    callTimerAction(timer, template, player, event)
+                }
+                false -> callTimerAction(timer, template, player, event)
+            }
+        }
+    }
 
+    fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, player: Player, event: E) {
+        try {
+            KetherShell.eval(
+                template.action!!,
+                cacheScript = true,
+                sender = adaptPlayer(player),
+                namespace = namespaces
+            ) {
+                timer.onStart(this, template, event)
+            }
+        } catch (e: Throwable) {
+            e.printKetherErrorMessage()
+        }
     }
 
 }

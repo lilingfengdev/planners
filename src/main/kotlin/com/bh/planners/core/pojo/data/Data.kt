@@ -22,7 +22,7 @@ open class Data(
         get() = System.currentTimeMillis() > createStamp + survivalStamp
 
     val isOpened: Boolean
-        get() = !isClosed
+        get() = survivalStamp == -1L || !isClosed
 
     fun toInt(): Int {
         return Coerce.toInteger(data)

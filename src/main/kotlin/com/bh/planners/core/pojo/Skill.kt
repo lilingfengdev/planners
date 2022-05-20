@@ -6,10 +6,13 @@ class Skill(val config: ConfigurationSection) {
 
     val key = config.name
     val option = Option(config.getConfigurationSection("__option__")!!)
+    val action = config.getString("action", "")!!
 
 
     class Option(root: ConfigurationSection) {
         val name = root.getString("name")
+        val mpCost = root.getString("mp-cost", "1")!!
+
         val variables = root.getConfigurationSection("variables")?.getKeys(false)?.map {
             Variable(it, root.getString("variables.$it")!!)
         } ?: emptyList()

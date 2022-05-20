@@ -10,24 +10,9 @@ import taboolib.module.kether.printKetherErrorMessage
 
 abstract class AbstractTimer<E : Event>() : Timer<E> {
 
-    protected abstract fun onStart(context: ScriptContext, e: E)
 
-//    fun run(template: Template, e: E) {
-//        if (template.script != null && template.script.isNotEmpty()) {
-//            try {
-//                submit(async = true) {
-//                    onlinePlayers().forEach {
-//                        KetherShell.eval(template.script, cacheScript = true, sender = it) {
-//                            onStart(this, e)
-//                        }
-//                    }
-//                }
-//            } catch (e: Throwable) {
-//                e.printKetherErrorMessage()
-//                return
-//            }
-//        }
-//    }
-
+    override fun onStart(context: ScriptContext, template: Template, e: E) {
+        context["id"] = template.id
+    }
 
 }

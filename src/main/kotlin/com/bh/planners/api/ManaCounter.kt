@@ -1,8 +1,12 @@
 package com.bh.planners.api
 
+import com.bh.planners.api.ManaCounter.addMana
 import com.bh.planners.api.PlannersAPI.profile
 import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.evalKether
 import com.bh.planners.core.kether.namespaces
+import com.bh.planners.core.pojo.Skill
+import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.platform.Schedule
@@ -11,6 +15,8 @@ import taboolib.common5.Coerce
 import taboolib.module.kether.KetherShell
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlin.math.max
+import kotlin.math.min
 
 object ManaCounter {
 
@@ -41,6 +47,24 @@ object ManaCounter {
 
     fun get(uuid: UUID): Double {
         return cache[uuid]!!
+    }
+
+    fun PlayerProfile.takeMana(skill: Skill) {
+        val double = Coerce.toDouble(evalKether(player, skill.option.mpCost))
+        takeMana(double)
+    }
+
+    fun PlayerProfile.takeMana(value: Double) {
+        this.addMana(-value)
+    }
+
+    fun PlayerProfile.addMana(value: Double) {
+        val result = max(min(player.toCurrentMana() + value, 0.0), player.toMaxMana())
+        this.setMana(result)
+    }
+
+    fun PlayerProfile.setMana(value: Double) {
+        this.mana = value
     }
 
     fun Player.toCurrentMana(): Double {

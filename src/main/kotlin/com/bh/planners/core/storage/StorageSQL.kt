@@ -6,6 +6,7 @@ import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage.Companion.toUserId
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.module.database.ColumnTypeSQL
 import taboolib.module.database.Table
@@ -148,25 +149,32 @@ class StorageSQL : Storage {
 
     override fun getUserId(player: Player): CompletableFuture<Long> {
         val future = CompletableFuture<Long>()
-        if (userIdCache.containsKey(player.uniqueId)) {
-            future.complete(userIdCache[player.uniqueId]!!)
-        } else if (userTable.find(dataSource) { where { UUID eq player.uniqueId.toString() } }) {
-            userTable.select(dataSource) {
-                where { UUID eq player.uniqueId.toString() }
-                rows(ID)
-            }.first {
-                future.complete(getLong(ID).also { userIdCache[player.uniqueId] = it })
+        when {
+            userIdCache.containsKey(player.uniqueId) -> {
+                future.complete(userIdCache[player.uniqueId]!!)
+            }
+            userTable.find(dataSource) { where { UUID eq player.uniqueId.toString() } } -> {
+                userTable.select(dataSource) {
+                    where { UUID eq player.uniqueId.toString() }
+                    rows(ID)
+                }.first {
+                    future.complete(getLong(ID).also { userIdCache[player.uniqueId] = it })
+                }
+            }
+            else -> {
+                info("插入")
+                userTable.insert(dataSource, UUID) {
+                    value(player.uniqueId.toString())
+                    onFinally {
+                        future.complete(generatedKeys.run {
+                            next()
+                            Coerce.toLong(getObject(1)).also { userIdCache[player.uniqueId] = it }
+                        })
+                    }
+                }
             }
         }
-        userTable.insert(dataSource, UUID) {
-            value(player.uniqueId.toString())
-            onFinally {
-                future.complete(generatedKeys.run {
-                    next()
-                    Coerce.toLong(getObject(1))
-                })
-            }
-        }
+
         return future
     }
 
@@ -180,9 +188,7 @@ class StorageSQL : Storage {
     override fun updateJob(profile: PlayerProfile) {
 
 
-
     }
-
 
 
 }

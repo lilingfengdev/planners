@@ -15,7 +15,7 @@ object PlaceholderKether : PlaceholderExpansion {
 
     override fun onPlaceholderRequest(player: Player?, args: String): String {
         return try {
-            KetherFunction.parse(args, sender = adaptPlayer(player!!), namespace = namespaces)
+            KetherShell.eval(args, sender = adaptPlayer(player!!), namespace = namespaces).get().toString()
         } catch (e: Throwable) {
             e.printKetherErrorMessage()
             "none-error"

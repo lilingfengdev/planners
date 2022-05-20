@@ -4,6 +4,7 @@ import com.bh.planners.api.PlannersAPI.profile
 import com.bh.planners.core.pojo.data.Data
 import com.bh.planners.util.StringNumber
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.actions.LiteralAction
@@ -15,7 +16,7 @@ class ActionData {
     class DataGet(val action: ParsedAction<*>) : ScriptAction<Any>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Any> {
             return frame.newFrame(action).run<String>().thenApply {
-                frame.script().sender!!.cast<Player>().profile().dataContainer.get(it)
+                frame.script().sender!!.cast<Player>().profile().dataContainer[it]!!.data
             }
         }
 
@@ -26,13 +27,14 @@ class ActionData {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<String>().thenAccept { key ->
                 frame.newFrame(value).run<Any>().thenAccept { value ->
+                    val profile = frame.script().sender!!.cast<Player>().profile()
                     frame.newFrame(time).run<Long>().thenAccept { time ->
-                        frame.script().sender!!.cast<Player>().profile().dataContainer[key] =
-                            Data(value, survivalStamp = time)
+                        profile.dataContainer[key] = Data(value, survivalStamp = time)
                     }
                 }
             }
         }
+
     }
 
     class DataAdd(val action: ParsedAction<*>, val value: ParsedAction<*>) :
@@ -60,19 +62,19 @@ class ActionData {
         fun parser() = scriptParser {
             val keyAction = it.next(ArgTypes.ACTION)
             it.switch {
-                case("to", "=") {
+                case("to", "set") {
                     val valueAction = it.next(ArgTypes.ACTION)
-                    it.mark()
                     val timeAction = try {
+                        it.mark()
                         it.expects("time")
                         it.next(ArgTypes.ACTION)
                     } catch (_: Exception) {
                         it.reset()
-                        ParsedAction(LiteralAction<Long>(0L))
+                        ParsedAction(LiteralAction<Long>(-1L))
                     }
                     DataSet(keyAction, valueAction, timeAction)
                 }
-                case("add", "+=") {
+                case("add") {
                     DataAdd(keyAction, it.next(ArgTypes.ACTION))
                 }
                 other {

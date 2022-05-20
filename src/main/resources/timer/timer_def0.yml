@@ -1,6 +1,7 @@
 __option__:
-  trigger: runnable
+  triggers: [ runnable ]
   period: 100
+  async: true
 
 action: |-
   if check data isShield == true {

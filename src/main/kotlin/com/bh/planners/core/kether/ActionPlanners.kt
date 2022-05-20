@@ -10,7 +10,7 @@ class ActionPlanners {
 
     companion object {
 
-        @KetherParser(["planners"], namespace = NAMESPACE)
+        @KetherParser(["profile"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             it.switch {
                 case("mana") {
