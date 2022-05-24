@@ -1,8 +1,7 @@
 package com.bh.planners.api
 
-import com.bh.planners.api.ManaCounter.addMana
-import com.bh.planners.api.PlannersAPI.profile
-import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.core.kether.evalKether
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.Skill
@@ -24,7 +23,7 @@ object ManaCounter {
 
     @Schedule(period = 20, async = true)
     fun timer() {
-        Bukkit.getOnlinePlayers().forEach { player ->
+        Bukkit.getOnlinePlayers().filter { it.plannersProfileIsLoaded }.forEach { player ->
             calculate(player).thenAccept {
                 cache[player.uniqueId] = Coerce.toDouble(it)
             }
@@ -32,7 +31,8 @@ object ManaCounter {
     }
 
     private fun calculate(player: Player): CompletableFuture<Double> {
-        val playerJob = player.profile().job ?: return CompletableFuture.completedFuture(0.0)
+
+        val playerJob = player.plannersProfile.job ?: return CompletableFuture.completedFuture(0.0)
         val manaCalculate = playerJob.instance.option.manaCalculate
         return KetherShell.eval(manaCalculate, sender = adaptPlayer(player), namespace = namespaces)
             .thenApply { Coerce.toDouble(it) }
@@ -68,7 +68,7 @@ object ManaCounter {
     }
 
     fun Player.toCurrentMana(): Double {
-        return profile().mana
+        return plannersProfile.mana
     }
 
     fun Player.toMaxMana(): Double {

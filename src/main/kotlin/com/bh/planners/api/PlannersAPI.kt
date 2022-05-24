@@ -1,6 +1,7 @@
 package com.bh.planners.api
 
 import com.bh.planners.api.ManaCounter.takeMana
+import com.bh.planners.api.event.PlayerProfileLoadEvent
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
 import com.bh.planners.core.pojo.Job
@@ -11,6 +12,7 @@ import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.key.KeySlot
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import java.util.*
@@ -27,11 +29,11 @@ object PlannersAPI {
 
     val keySlots = mutableListOf<IKeySlot>()
 
-    fun Player.profile(): PlayerProfile {
-        return profiles.computeIfAbsent(uniqueId) {
-            Storage.INSTANCE.loadProfile(this)
-        }
-    }
+    val Player.plannersProfile: PlayerProfile
+        get() = profiles[uniqueId]!!
+
+    val Player.plannersProfileIsLoaded: Boolean
+        get() = profiles.containsKey(uniqueId)
 
     fun PlayerProfile.castSkill(skillName: String) {
         castSkill(skills.firstOrNull { it.key == skillName } ?: return)
@@ -44,4 +46,10 @@ object PlannersAPI {
         val session = Session(player, skill)
         session.cast()
     }
+
+    @SubscribeEvent
+    fun e(e: PlayerQuitEvent) {
+        profiles.remove(e.player.uniqueId)
+    }
+
 }

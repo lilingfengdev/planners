@@ -1,7 +1,7 @@
 package com.bh.planners.core.ui
 
 import com.bh.planners.api.PlannersAPI
-import com.bh.planners.api.PlannersAPI.profile
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.particle.ParticleImpl
 import com.bh.planners.core.pojo.Router
 import com.bh.planners.core.pojo.player.PlayerJob
@@ -65,7 +65,7 @@ class JobUI(val player: Player) {
                     player.closeInventory()
 
                     Storage.INSTANCE.createPlayerJob(player, element.routes[0].job).thenAccept {
-                        player.profile().job = it
+                        player.plannersProfile.job = it
                         player.sendLang("job-selected", it.instance.option.name)
                     }
 

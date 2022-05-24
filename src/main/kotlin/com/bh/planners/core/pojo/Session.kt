@@ -1,6 +1,6 @@
 package com.bh.planners.core.pojo
 
-import com.bh.planners.api.PlannersAPI.profile
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
@@ -13,7 +13,7 @@ import taboolib.module.kether.printKetherErrorMessage
 class Session(val executor: Player, val skill: Skill) {
 
     val profile: PlayerProfile
-        get() = executor.profile()
+        get() = executor.plannersProfile
 
     val playerSkill: PlayerJob.Skill
         get() = profile.getSkill(skill.key)!!

@@ -43,7 +43,7 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 tasks.withType<Jar> {
-//    destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
+    destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
 }
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8

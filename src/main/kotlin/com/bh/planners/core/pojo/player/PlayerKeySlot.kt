@@ -1,6 +1,6 @@
 package com.bh.planners.core.pojo.player
 
-import com.bh.planners.api.PlannersAPI.profile
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import org.bukkit.entity.Player
 
 class PlayerKeySlot(val key: String, val skillId: Long?) {
@@ -10,7 +10,7 @@ class PlayerKeySlot(val key: String, val skillId: Long?) {
 
     fun getSkill(player: Player): PlayerJob.Skill? {
         return if (isBind) {
-            player.profile().getSkill(skillId!!)
+            player.plannersProfile.getSkill(skillId!!)
         } else null
     }
 

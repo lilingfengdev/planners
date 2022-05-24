@@ -13,6 +13,7 @@ class PlayerProfile(val player: Player, val id: Long) {
 
     val keySlotTable = mutableListOf<PlayerKeySlot>()
 
+
     var mana = 0.0
 
     fun getSkills(): List<PlayerJob.Skill> {

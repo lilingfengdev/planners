@@ -1,7 +1,7 @@
 package com.bh.planners.command
 
 import com.bh.planners.api.PlannersAPI
-import com.bh.planners.api.PlannersAPI.profile
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.event.PlayerKeydownEvent
 import com.bh.planners.core.ui.JobUI
 import org.bukkit.Bukkit
@@ -28,8 +28,8 @@ object PlannersJobCommand {
             execute<ProxyCommandSender> { sender, context, argument ->
                 val player = Bukkit.getPlayerExact(argument)!!
 
-                if (player.profile().job != null) {
-                    player.sendLang("job-exists", player.profile().job!!.instance.option.name)
+                if (player.plannersProfile.job != null) {
+                    player.sendLang("job-exists", player.plannersProfile.job!!.instance.option.name)
                     return@execute
                 }
 

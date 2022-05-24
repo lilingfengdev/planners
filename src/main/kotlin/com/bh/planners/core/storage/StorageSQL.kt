@@ -7,22 +7,22 @@ import com.bh.planners.core.pojo.data.DataContainer
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage.Companion.toUserId
-import jdk.nashorn.internal.scripts.JO
 import org.bukkit.entity.Player
-import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.module.database.ColumnTypeSQL
 import taboolib.module.database.Table
 import taboolib.module.database.getHost
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import javax.sql.DataSource
 
 class StorageSQL : Storage {
 
     val host = Planners.config.getHost("database.sql")
 
     companion object {
+
+        val userIdCache = mutableMapOf<UUID, Long>()
+
         const val ID = "id"
         const val UUID = "uuid"
         const val JOB = "job"
@@ -116,7 +116,7 @@ class StorageSQL : Storage {
     }
 
 
-    private fun getDataContainer(player: Player): DataContainer {
+    override fun getDataContainer(player: Player): DataContainer {
         return userTable.select(dataSource) {
             where { ID eq player.toUserId() }
             rows(DATA)
@@ -179,17 +179,27 @@ class StorageSQL : Storage {
     }
 
     override fun getUserId(player: Player): Long {
-
-        if (!userTable.find(dataSource) { where { UUID eq player.uniqueId.toString() } }) {
-            userTable.insert(dataSource, UUID) {
-                value(player.uniqueId.toString())
-            }
+        if (userIdCache.containsKey(player.uniqueId)) {
+            return userIdCache[player.uniqueId]!!
         }
-
-        return userTable.select(dataSource) {
+        val userId = userTable.select(dataSource) {
             where { UUID eq player.uniqueId.toString() }
             rows(ID)
-        }.first { getLong(ID) }
+        }.firstOrNull { getLong(ID) } ?: -1L
+
+        if (userId == -1L) {
+            createUser(player)
+            return getUserId(player)
+        }
+
+        userIdCache[player.uniqueId] = userId
+        return userId
+    }
+
+    fun createUser(player: Player) {
+        userTable.insert(dataSource, UUID) {
+            value(player.uniqueId.toString())
+        }
     }
 
     override fun updateCurrentJob(profile: PlayerProfile) {
