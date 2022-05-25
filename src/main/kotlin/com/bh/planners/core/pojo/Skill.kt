@@ -2,9 +2,8 @@ package com.bh.planners.core.pojo
 
 import taboolib.library.configuration.ConfigurationSection
 
-class Skill(val config: ConfigurationSection) {
+class Skill(val key : String,val config: ConfigurationSection) {
 
-    val key = config.name
     val option = Option(config.getConfigurationSection("__option__")!!)
     val action = config.getString("action", "")!!
 

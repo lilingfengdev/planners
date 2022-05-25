@@ -23,15 +23,19 @@ object PlannersLoader {
     fun loadJobs() {
         PlannersAPI.jobs.clear()
         files("job", listOf("job_def0.yml", "job_def1.yml")) {
-            PlannersAPI.jobs += Job(Configuration.loadFromFile(it))
+            PlannersAPI.jobs += Job(it.toYamlName(), Configuration.loadFromFile(it))
         }
+    }
+
+    fun File.toYamlName(): String {
+        return name.replace(".yml", "")
     }
 
     @Awake(LifeCycle.ENABLE)
     fun loadSkills() {
         PlannersAPI.skills.clear()
         files("skill", listOf("skill_def0.yml")) {
-            PlannersAPI.skills += Skill(Configuration.loadFromFile(it))
+            PlannersAPI.skills += Skill(it.toYamlName(), Configuration.loadFromFile(it))
         }
     }
 
@@ -43,7 +47,6 @@ object PlannersLoader {
             PlannersAPI.routers += Router(routerConfig.getConfigurationSection(it)!!)
         }
     }
-
 
 
     @SubscribeEvent

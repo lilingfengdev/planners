@@ -5,9 +5,8 @@ import com.bh.planners.core.pojo.level.LevelOption
 import com.bh.planners.core.pojo.level.LevelSystem
 import taboolib.library.configuration.ConfigurationSection
 
-class Job(val config: ConfigurationSection) {
+class Job(val key: String, val config: ConfigurationSection) {
 
-    val key = config.name
     val option = Option(config.getConfigurationSection("__option__")!!)
     val skills = config.getStringList("skills")
 
@@ -20,8 +19,7 @@ class Job(val config: ConfigurationSection) {
         val counter: LevelOption
             get() = LevelSystem.getLevelOption(counterKey) ?: error("Level counter $counterKey not found")
 
-        val manaCalculate: String
-            get() = PlannersOption.root.getString("mana-calculate") ?: error("Option 'mana-calculate' not found.")
+        val manaCalculate = root.getString("mana-calculate") ?: error("Option 'mana-calculate' not found.")
 
 
     }

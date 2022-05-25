@@ -35,6 +35,7 @@ dependencies {
     compileOnly("ink.ptms.core:v11800:11800-minimize:api")
     compileOnly("ink.ptms.core:v11800:11800-minimize:mapped")
     compileOnly("com.google.code.gson:gson:2.8.5")
+    compileOnly("com.google.guava:guava:21.0")
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
 }
@@ -43,7 +44,7 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 tasks.withType<Jar> {
-    destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
+//    destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
 }
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8

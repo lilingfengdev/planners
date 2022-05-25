@@ -5,7 +5,5 @@ __option__:
 
 action: |-
   if check data isShield == "true" then {
-    tell "举盾中"
-  } else {
-    tell "test ====="
+    actionbar "正在举盾 [反弹伤害]"
   }

@@ -9,9 +9,9 @@ warrior:
       - ' &7防御力: 2'
       - ' &7移动速度: 2'
   routes:
-    - key: gob_def0
+    - key: job_def0
       extend-skill: true
-      target: gob_def1
+      target: job_def1
       promote:
         - check class level >= 10
 

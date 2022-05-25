@@ -182,24 +182,21 @@ class StorageSQL : Storage {
         if (userIdCache.containsKey(player.uniqueId)) {
             return userIdCache[player.uniqueId]!!
         }
+
         val userId = userTable.select(dataSource) {
             where { UUID eq player.uniqueId.toString() }
             rows(ID)
         }.firstOrNull { getLong(ID) } ?: -1L
 
         if (userId == -1L) {
-            createUser(player)
+            userTable.insert(dataSource, UUID) {
+                value(player.uniqueId.toString())
+            }
             return getUserId(player)
         }
 
         userIdCache[player.uniqueId] = userId
         return userId
-    }
-
-    fun createUser(player: Player) {
-        userTable.insert(dataSource, UUID) {
-            value(player.uniqueId.toString())
-        }
     }
 
     override fun updateCurrentJob(profile: PlayerProfile) {

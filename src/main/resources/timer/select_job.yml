@@ -1,0 +1,16 @@
+__option__:
+  triggers: [ player select job ]
+  async: true
+
+action: |-
+  async {
+    for index in range 0 to 50 then {
+      sleep 0.05s
+      set &step = math mul [ 1.0 math add [ &index , 1 ] ]
+      effect circle inline "CLOUD 0 0 0 -step {{ &step }} -radius 360 -speed 0.5 -count 10"
+    }
+  }
+  async {
+    sleep 0.1s
+    effect circle "CLOUD 0 0 0 -step 1.5 -radius 360 -speed 0.0 -count 10"
+  }

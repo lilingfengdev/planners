@@ -2,9 +2,9 @@ package com.bh.planners.core.ui
 
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
-import com.bh.planners.api.particle.ParticleImpl
+import com.bh.planners.api.event.PlayerSelectedJobEvent
 import com.bh.planners.core.pojo.Router
-import com.bh.planners.core.pojo.player.PlayerJob
+import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -37,6 +37,9 @@ class JobUI(val player: Player) {
 
     }
 
+    val profile: PlayerProfile
+        get() = player.plannersProfile
+
 
     fun open() {
         player.openMenu<Linked<Router>>(title) {
@@ -59,43 +62,43 @@ class JobUI(val player: Player) {
             }
 
             onClick { event, element ->
-
-
+                event.isCancelled = true
                 if (event.clickEvent().click == ClickType.SHIFT_LEFT) {
                     player.closeInventory()
 
                     Storage.INSTANCE.createPlayerJob(player, element.routes[0].job).thenAccept {
-                        player.plannersProfile.job = it
+                        profile.job = it
+                        Storage.INSTANCE.updateCurrentJob(profile)
+                        PlayerSelectedJobEvent(profile).call()
                         player.sendLang("job-selected", it.instance.option.name)
                     }
 
-
-                    submit(async = true) {
-                        (0 until 5).forEach { index ->
-                            Thread.sleep(50)
-                            Circle(
-                                player.location.toProxyLocation(), 1.0 * (index + 1),
-                                ParticleImpl().apply {
-                                    add(ParticleImpl.Key.PLAYER, player)
-                                    add(ParticleImpl.Key.PARTICLE, ProxyParticle.CLOUD)
-                                },
-                            ).show()
-                        }
-                    }
-
-                    submit(async = true, delay = 5) {
-                        Circle(
-                            player.location.toProxyLocation(),
-                            1.5,
-                            ParticleImpl().apply {
-                                add(ParticleImpl.Key.PLAYER, player)
-                                add(ParticleImpl.Key.PARTICLE, ProxyParticle.CLOUD)
-                                add(ParticleImpl.Key.COUNT, 1)
-                                add(ParticleImpl.Key.SPEED, 0.0)
-                                add(ParticleImpl.Key.OFFSET, arrayOf(0.0, 2.0, 0.0))
-                            },
-                        ).show()
-                    }
+//                    submit(async = true) {
+//                        (0 until 5).forEach { index ->
+//                            Thread.sleep(50)
+//                            Circle(
+//                                player.location.toProxyLocation(), 1.0 * (index + 1),
+//                                ParticleImpl().apply {
+//                                    add(ParticleImpl.Key.PLAYER, player)
+//                                    add(ParticleImpl.Key.PARTICLE, ProxyParticle.CLOUD)
+//                                },
+//                            ).show()
+//                        }
+//                    }
+//
+//                    submit(async = true, delay = 5) {
+//                        Circle(
+//                            player.location.toProxyLocation(),
+//                            1.5,
+//                            ParticleImpl().apply {
+//                                add(ParticleImpl.Key.PLAYER, player)
+//                                add(ParticleImpl.Key.PARTICLE, ProxyParticle.CLOUD)
+//                                add(ParticleImpl.Key.COUNT, 1)
+//                                add(ParticleImpl.Key.SPEED, 0.0)
+//                                add(ParticleImpl.Key.OFFSET, arrayOf(0.0, 2.0, 0.0))
+//                            },
+//                        ).show()
+//                    }
 
                 } else {
                     player.sendLang("shift-left-info", element.name)
