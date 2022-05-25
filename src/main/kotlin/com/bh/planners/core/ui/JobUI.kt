@@ -72,34 +72,6 @@ class JobUI(val player: Player) {
                         PlayerSelectedJobEvent(profile).call()
                         player.sendLang("job-selected", it.instance.option.name)
                     }
-
-//                    submit(async = true) {
-//                        (0 until 5).forEach { index ->
-//                            Thread.sleep(50)
-//                            Circle(
-//                                player.location.toProxyLocation(), 1.0 * (index + 1),
-//                                ParticleImpl().apply {
-//                                    add(ParticleImpl.Key.PLAYER, player)
-//                                    add(ParticleImpl.Key.PARTICLE, ProxyParticle.CLOUD)
-//                                },
-//                            ).show()
-//                        }
-//                    }
-//
-//                    submit(async = true, delay = 5) {
-//                        Circle(
-//                            player.location.toProxyLocation(),
-//                            1.5,
-//                            ParticleImpl().apply {
-//                                add(ParticleImpl.Key.PLAYER, player)
-//                                add(ParticleImpl.Key.PARTICLE, ProxyParticle.CLOUD)
-//                                add(ParticleImpl.Key.COUNT, 1)
-//                                add(ParticleImpl.Key.SPEED, 0.0)
-//                                add(ParticleImpl.Key.OFFSET, arrayOf(0.0, 2.0, 0.0))
-//                            },
-//                        ).show()
-//                    }
-
                 } else {
                     player.sendLang("shift-left-info", element.name)
                 }

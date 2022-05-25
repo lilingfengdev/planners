@@ -22,8 +22,8 @@ object EffectCircle : EffectLoader<EffectCircle.Impl>() {
     class Impl(action: ParsedAction<*>) : Effect(action) {
 
         override fun sendTo(sender: Player, option: EffectOption): ParticleObj {
-            val step = Coerce.toDouble(option.demand.get(step, "10"))
-            val radius = Coerce.toDouble(option.demand.get(radius, "360"))
+            val step = Coerce.toDouble(option.demand.get(Effects.STEP, "10"))
+            val radius = Coerce.toDouble(option.demand.get(Effects.RADIUS, "360"))
             return Circle(sender.location.toProxyLocation(), radius, step, EffectSpawner(option))
         }
     }

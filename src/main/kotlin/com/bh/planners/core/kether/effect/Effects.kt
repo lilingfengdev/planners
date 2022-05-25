@@ -9,6 +9,12 @@ object Effects {
 
     val loaders = mutableMapOf<String, EffectLoader<*>>()
 
+
+    val STEP = listOf("step", "s")
+    val RADIUS = listOf("radius", "r")
+    val ANGLE = listOf("angle", "a")
+
+
     fun get(key: String): EffectLoader<*> {
         return loaders[key]!!
     }
