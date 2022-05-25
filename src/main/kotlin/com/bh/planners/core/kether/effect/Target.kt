@@ -75,21 +75,24 @@ interface Target {
         }
 
         fun forEachLocation(func: org.bukkit.Location.(Int) -> Unit) {
-            forEach<Location> { index -> func(loc, index) }
+            forEach<Location> { index -> func(value, index) }
         }
 
         fun firstTarget() = targets.firstOrNull()
 
         fun firstEntityTarget() = targets.filterIsInstance<Entity>().firstOrNull()?.livingEntity
 
-        fun firstLocationTarget() = targets.filterIsInstance<Location>().firstOrNull()?.loc
+        fun firstLocationTarget() = targets.filterIsInstance<Location>().firstOrNull()?.value
 
     }
 
-    open class Location(val loc: org.bukkit.Location) : Target {
+    open class Location(private val loc: org.bukkit.Location?) : Target {
+
+        open val value: org.bukkit.Location
+            get() = loc!!
 
         override fun hashCode(): Int {
-            return loc.hashCode()
+            return value.hashCode()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -98,13 +101,19 @@ interface Target {
 
             other as Location
 
-            if (loc != other.loc) return false
+            if (loc != other.value) return false
 
             return true
         }
 
     }
 
-    class Entity(val livingEntity: LivingEntity) : Location(livingEntity.location)
+    class Entity(val livingEntity: LivingEntity) : Location(null) {
+
+        override val value: org.bukkit.Location
+            get() = livingEntity.eyeLocation
+
+
+    }
 
 }

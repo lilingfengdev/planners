@@ -1,17 +1,7 @@
 __option__:
-  triggers: [ player select job ]
+  triggers: [ runnable ]
+  period: 3000
   async: true
 
 action: |-
-  async {
-    for index in range 0 to 50 then {
-      sleep 0.05s
-      set &step = math mul [ 1.0 math add [ &index , 1 ] ]
-      effect circle inline "CLOUD 0 0 0 -step {{ &step }} -radius 360 -speed 0.5 -count 10"
-    }
-  }
-  async {
-    sleep 0.1s
-    effect circle "CLOUD 0 0 0 -step 1.5 -radius 360 -speed 0.0 -count 10"
-  }
-  effect line "CLOUND 0 0 0 -step 1 -@range 10,10,10 @type ZOMBIE,WOLF"
+  effect line "FLAME 0 0 0 -speed 0.0 -posY 0.2 -count 100 -step 0.5 -@blockAt 100"

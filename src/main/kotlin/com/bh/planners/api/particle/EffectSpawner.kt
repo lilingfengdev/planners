@@ -14,7 +14,7 @@ class EffectSpawner(val option: EffectOption) : ParticleSpawner {
         val entities = bukkitLocation.world!!.getNearbyEntities(bukkitLocation, 100.0, 100.0, 100.0)
         entities.filterIsInstance<Player>().forEach { _ ->
             option.particle.sendTo(
-                location = location,
+                location = location.add(option.posX, option.posY, option.posZ),
                 offset = option.offsetVector,
                 count = option.count,
                 speed = option.speed,

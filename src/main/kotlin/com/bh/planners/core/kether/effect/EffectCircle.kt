@@ -16,7 +16,7 @@ object EffectCircle : EffectLoader<EffectCircle.Impl>() {
         get() = Impl::class.java
 
     override val name: String
-        get() = "arc"
+        get() = "circle"
 
 
     class Impl(action: ParsedAction<*>) : Effect(action) {

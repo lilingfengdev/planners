@@ -18,7 +18,7 @@ object TimerDrive {
     @Awake(LifeCycle.ENABLE)
     fun loadTemplate() {
         templates.clear()
-        files("timer", listOf("timer_def0.yml")) {
+        files("timer", listOf("timer_def0.yml","select_job.yml")) {
             val configFile = Configuration.loadFromFile(it)
             templates += Template(it.name.replace(".yml", ""), configFile)
         }
