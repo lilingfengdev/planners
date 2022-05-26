@@ -7,19 +7,6 @@ database:
     password: 123456
     database: bukkit_plugin
 
-options:
-  key-slot:
-    1:
-      name: '快捷键 1'
-    2:
-      name: '快捷键 1'
-    3:
-      name: '快捷键 1'
-    4:
-      name: '快捷键 1'
-    5:
-      name: '快捷键 1'
-
 # by chemdah
 level:
   def0:

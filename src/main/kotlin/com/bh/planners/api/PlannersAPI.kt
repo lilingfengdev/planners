@@ -35,6 +35,14 @@ object PlannersAPI {
     val Player.plannersProfileIsLoaded: Boolean
         get() = profiles.containsKey(uniqueId)
 
+    fun castSkill(player: Player, skillName: String) {
+        player.plannersProfile.castSkill(skillName)
+    }
+
+    fun castSkill(player: Player, skill: Skill) {
+        player.plannersProfile.castSkill(skill)
+    }
+
     fun PlayerProfile.castSkill(skillName: String) {
         castSkill(skills.firstOrNull { it.key == skillName } ?: return)
     }

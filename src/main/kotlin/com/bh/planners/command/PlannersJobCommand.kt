@@ -57,5 +57,25 @@ object PlannersJobCommand {
         }
     }
 
+    @CommandBody
+    val cast = subCommand {
+        dynamic("player") {
+            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
+
+            dynamic("skill") {
+                suggestion<ProxyCommandSender> { _, context ->
+                    Bukkit.getPlayerExact(context.argument(-1))!!.plannersProfile.getSkills().map { it.key }
+                }
+
+                execute<ProxyCommandSender> { _, context, argument ->
+                    val playerExact = Bukkit.getPlayerExact(context.argument(-1))!!
+                    PlannersAPI.castSkill(playerExact, argument)
+                }
+
+            }
+
+        }
+    }
+
 
 }
