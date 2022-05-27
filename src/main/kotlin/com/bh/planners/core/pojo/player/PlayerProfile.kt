@@ -28,11 +28,13 @@ class PlayerProfile(val player: Player, val id: Long) {
 
     fun getSkill(key: String): PlayerJob.Skill? {
         if (job == null) return null
-        val skill = job!!.skills.firstOrNull { it.key == key }
-        if (skill != null) {
-            return skill
+        val playerSkill = job!!.getSkill(key)
+        if (playerSkill != null) {
+            return playerSkill
         }
-        val orNull = PlannersAPI.skills.firstOrNull { it.key == key } ?: error("Skill '$key' not found.")
-        return Storage.INSTANCE.createPlayerSkill(player, job!!, orNull).get()
+        val skill = PlannersAPI.skills.firstOrNull { it.key == key } ?: error("Skill '$key' not found.")
+        return Storage.INSTANCE.createPlayerSkill(player, job!!, skill).get().also {
+            job!!.skills += it
+        }
     }
 }

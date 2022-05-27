@@ -1,6 +1,7 @@
 package com.bh.planners.core.pojo
 
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.core.kether.LazyGetter
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
@@ -18,26 +19,31 @@ class Session(val executor: Player, val skill: Skill) {
     val playerSkill: PlayerJob.Skill
         get() = profile.getSkill(skill.key)!!
 
-    val cache = mutableMapOf<String, Any>()
+    val variables = skill.option.variables.map {
+        it.key to toLazyVariable(it.expression)
+    }.toMap()
 
-    fun getLazyVariable(key: String): Any {
-        if (cache.containsKey(key)) {
-            return cache[key].toString()
+    val cooldown = variables["cooldown"] ?: LazyGetter { 0 }
+
+    val mpCost = variables["mp-cost"] ?: LazyGetter { 0 }
+
+    private fun toLazyVariable(expression: String): LazyGetter<*> {
+        return LazyGetter {
+            KetherShell.eval(expression, namespace = namespaces, sender = adaptPlayer(executor)) {
+                rootFrame().variables()["@Session"] = this@Session
+                rootFrame().variables()["@Skill"] = playerSkill
+            }.get()
         }
-        val variable =
-            playerSkill.instance.option.variables.firstOrNull { it.key == key } ?: error("$key skill not found.")
-        cache[key] = KetherFunction.parse(variable.expression, namespace = namespaces, sender = adaptPlayer(executor)) {
-            this["@Session"] = this@Session
-            this["@Skill"] = skill
-        }
-        return getLazyVariable(key)
     }
 
     fun cast() {
         try {
             KetherShell.eval(skill.action, sender = adaptPlayer(executor), namespace = namespaces) {
-                this["@Session"] = this@Session
-                this["@Skill"] = skill
+                rootFrame().variables()["@Session"] = this@Session
+                rootFrame().variables()["@Skill"] = playerSkill
+                variables.forEach {
+                    rootFrame().variables()[it.key] = it.value
+                }
             }
         } catch (e: Throwable) {
             e.printKetherErrorMessage()

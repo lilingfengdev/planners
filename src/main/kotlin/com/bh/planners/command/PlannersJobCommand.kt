@@ -69,7 +69,7 @@ object PlannersJobCommand {
 
                 execute<ProxyCommandSender> { _, context, argument ->
                     val playerExact = Bukkit.getPlayerExact(context.argument(-1))!!
-                    PlannersAPI.castSkill(playerExact, argument)
+                    PlannersAPI.cast(playerExact, argument)
                 }
 
             }

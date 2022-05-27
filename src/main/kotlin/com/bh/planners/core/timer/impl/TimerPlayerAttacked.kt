@@ -19,10 +19,10 @@ object TimerPlayerAttacked : AbstractTimer<EntityDamageByEntityEvent>() {
 
     override fun onStart(context: ScriptContext, template: Template, e: EntityDamageByEntityEvent) {
         super.onStart(context, template, e)
-        context["damager"] = e.damager.name
-        context["entity"] = e.entity.name
-        context["cause"] = e.cause
-        context["damage"] = e.damage
+        context.rootFrame().variables()["damager"] = e.damager.name
+        context.rootFrame().variables()["entity"] = e.entity.name
+        context.rootFrame().variables()["cause"] = e.cause
+        context.rootFrame().variables()["damage"] = e.damage
     }
 
 }

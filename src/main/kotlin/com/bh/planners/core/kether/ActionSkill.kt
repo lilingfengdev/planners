@@ -1,11 +1,26 @@
 package com.bh.planners.core.kether
 
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.actionNow
-import taboolib.module.kether.scriptParser
-import taboolib.module.kether.switch
+import com.bh.planners.api.PlannersAPI
+import org.bukkit.entity.Player
+import taboolib.library.kether.ArgTypes
+import taboolib.library.kether.ParsedAction
+import taboolib.module.kether.*
+import java.util.concurrent.CompletableFuture
 
 class ActionSkill {
+
+    class ActionSkillCast(val action: ParsedAction<*>, val markAction: ParsedAction<*>) : ScriptAction<Void>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.newFrame(action).run<String>().thenAccept { skill ->
+                frame.newFrame(markAction).run<Boolean>().thenAccept { mark ->
+                    val player = frame.script().sender!!.castSafely<Player>()!!
+                    PlannersAPI.cast(player, skill, mark)
+                }
+            }
+            return CompletableFuture.completedFuture(null)
+        }
+    }
+
 
     companion object {
 
@@ -14,12 +29,17 @@ class ActionSkill {
             it.switch {
                 case("level") {
                     actionNow {
-                        getSession().playerSkill.level
+                        getSkill().level
                     }
                 }
                 case("name") {
                     actionNow {
-                        getSession().playerSkill.instance.option.name
+                        getSkill().instance.option.name
+                    }
+                }
+                case("cast") {
+                    actionNow {
+                        ActionSkillCast(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
                     }
                 }
 

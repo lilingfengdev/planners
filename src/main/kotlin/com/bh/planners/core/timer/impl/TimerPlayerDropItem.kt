@@ -19,10 +19,10 @@ object TimerPlayerDropItem : AbstractTimer<PlayerDropItemEvent>() {
     override fun onStart(context: ScriptContext, template: Template, e: PlayerDropItemEvent) {
         super.onStart(context, template, e)
         val itemStack = e.itemDrop.itemStack
-        context["displayName"] = itemStack.itemMeta?.displayName
-        context["lore"] = itemStack.itemMeta?.lore
-        context["material"] = itemStack.type
-        context["item"] = itemStack
+        context.rootFrame().variables()["displayName"] = itemStack.itemMeta?.displayName
+        context.rootFrame().variables()["lore"] = itemStack.itemMeta?.lore
+        context.rootFrame().variables()["material"] = itemStack.type
+        context.rootFrame().variables()["item"] = itemStack
     }
 
 }

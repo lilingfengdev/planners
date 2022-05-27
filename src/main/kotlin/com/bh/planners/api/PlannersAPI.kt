@@ -1,7 +1,11 @@
 package com.bh.planners.api
 
 import com.bh.planners.api.ManaCounter.takeMana
+import com.bh.planners.api.counter.Counting
+import com.bh.planners.api.enums.ExecuteResult
+import com.bh.planners.api.event.PlayerCastSkillEvent
 import com.bh.planners.api.event.PlayerProfileLoadEvent
+import com.bh.planners.core.kether.evalKether
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
 import com.bh.planners.core.pojo.Job
@@ -15,6 +19,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
+import taboolib.common5.Coerce
 import java.util.*
 
 object PlannersAPI {
@@ -35,24 +40,36 @@ object PlannersAPI {
     val Player.plannersProfileIsLoaded: Boolean
         get() = profiles.containsKey(uniqueId)
 
-    fun castSkill(player: Player, skillName: String) {
-        player.plannersProfile.castSkill(skillName)
+    fun cast(player: Player, skillName: String, mark: Boolean = true): ExecuteResult {
+        return player.plannersProfile.cast(skillName, mark)
     }
 
-    fun castSkill(player: Player, skill: Skill) {
-        player.plannersProfile.castSkill(skill)
+    fun cast(player: Player, skill: Skill, mark: Boolean = true): ExecuteResult {
+        return player.plannersProfile.cast(skill, mark)
     }
 
-    fun PlayerProfile.castSkill(skillName: String) {
-        castSkill(skills.firstOrNull { it.key == skillName } ?: return)
+    fun PlayerProfile.cast(skillName: String, mark: Boolean = true): ExecuteResult {
+        return cast(skills.firstOrNull { it.key == skillName } ?: error("Skill '${skillName}' not found."), mark)
     }
 
-    fun PlayerProfile.castSkill(skill: Skill) {
-        // 扣除法力值
-        takeMana(skill)
-        // 缓存释放技能
-        val session = Session(player, skill)
-        session.cast()
+    fun PlayerProfile.cast(skill: Skill, mark: Boolean = true): ExecuteResult {
+
+        val result = if (!mark) {
+            val session = Session(player, skill)
+            session.cast()
+            ExecuteResult.SUCCESS
+        } else if (Counting.hasNext(player, skill)) {
+            val session = Session(player, skill)
+            Counting.reset(player, session)
+            takeMana(Coerce.toDouble(session.mpCost.get()))
+            session.cast()
+            ExecuteResult.SUCCESS
+        } else {
+            ExecuteResult.COOLING
+        }
+
+        PlayerCastSkillEvent(player, skill, result).call()
+        return result
     }
 
     @SubscribeEvent

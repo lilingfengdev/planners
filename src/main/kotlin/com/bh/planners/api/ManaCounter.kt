@@ -50,7 +50,7 @@ object ManaCounter {
     }
 
     fun PlayerProfile.takeMana(skill: Skill) {
-        val double = Coerce.toDouble(evalKether(player, skill.option.mpCost))
+        val double = Coerce.toDouble(evalKether(player, skill.option.mpCost, getSkill(skill.key)!!))
         takeMana(double)
     }
 

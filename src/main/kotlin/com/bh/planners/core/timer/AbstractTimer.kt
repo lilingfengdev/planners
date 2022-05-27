@@ -12,7 +12,7 @@ abstract class AbstractTimer<E : Event>() : Timer<E> {
 
 
     override fun onStart(context: ScriptContext, template: Template, e: E) {
-        context["id"] = template.id
+        context.rootFrame().variables()["id"] = template.id
     }
 
 }

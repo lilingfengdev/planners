@@ -13,6 +13,10 @@ class PlayerJob(val id: Long, val jobKey: String, level: Int, experience: Int) {
     val instance: Job
         get() = PlannersAPI.jobs.first { it.key == jobKey }
 
+    fun getSkill(skillName: String): Skill? {
+        return skills.firstOrNull { it.key == skillName }
+    }
+
     class Skill(val id: Long, val key: String, var level: Int) {
 
         val instance: com.bh.planners.core.pojo.Skill
