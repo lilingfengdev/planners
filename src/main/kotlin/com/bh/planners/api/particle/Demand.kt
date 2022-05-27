@@ -17,15 +17,18 @@ class Demand(val source: String) {
         args.forEachIndexed { index, s ->
             if (index in skipIndex) return@forEachIndexed
             if (s[0] == '-') {
+                when {
+                    index + 1 >= args.size -> {
+                        dataMap[s.substring(1)] = ""
 
-                if (index + 1 >= args.size) {
-                    dataMap[s.substring(1)] = ""
-
-                } else if (args[index + 1][0] != '-') {
-                    dataMap[s.substring(1)] = args[index + 1]
-                    skipIndex += index + 1
-                } else {
-                    dataMap[s.substring(1)] = ""
+                    }
+                    args[index + 1][0] != '-' -> {
+                        dataMap[s.substring(1)] = args[index + 1]
+                        skipIndex += index + 1
+                    }
+                    else -> {
+                        dataMap[s.substring(1)] = ""
+                    }
                 }
             } else {
                 this.args += s
