@@ -11,6 +11,7 @@ class Skill(val key: String, val config: ConfigurationSection) {
 
     class Option(val root: ConfigurationSection) {
         val name = root.getString("name")
+        val levelCap = root.getInt("level-cap", 5)
 
         val variables = root.getConfigurationSection("variables")?.getKeys(false)?.map {
             Variable(it, root.getString("variables.$it")!!)

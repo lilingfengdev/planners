@@ -34,7 +34,14 @@ class ActionSkill {
                 }
                 case("level") {
                     actionNow {
-                        getSkill().level
+                        mark()
+                        try {
+                            expect("cap")
+                            getSkill().instance.option.levelCap
+                        } catch (_: Exception) {
+                            reset()
+                            getSkill().level
+                        }
                     }
                 }
                 case("key") {

@@ -1,6 +1,7 @@
 __option__:
   name: '疾风斩击'
   triggers: [ player attack ]
+  level-cap: 10
   icon:
     material: SWORD_STONE
     name: "&e{{ skill name }}"
