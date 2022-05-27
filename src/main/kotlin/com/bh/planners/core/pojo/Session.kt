@@ -7,6 +7,7 @@ import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.info
 import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
@@ -19,19 +20,20 @@ class Session(val executor: Player, val skill: Skill) {
     val playerSkill: PlayerJob.Skill
         get() = profile.getSkill(skill.key)!!
 
-    val variables = skill.option.variables.map {
-        it.key to toLazyVariable(it.expression)
-    }.toMap()
+    val variables = skill.option.variables.associate { it.key to toLazyVariable(it) }
 
     val cooldown = variables["cooldown"] ?: LazyGetter { 0 }
 
-    val mpCost = variables["mp-cost"] ?: LazyGetter { 0 }
+    val mpCost = variables["mp"] ?: LazyGetter { 0 }
 
-    private fun toLazyVariable(expression: String): LazyGetter<*> {
+    private fun toLazyVariable(variable: Skill.Variable): LazyGetter<*> {
         return LazyGetter {
-            KetherShell.eval(expression, namespace = namespaces, sender = adaptPlayer(executor)) {
+            KetherShell.eval(variable.expression, namespace = namespaces, sender = adaptPlayer(executor)) {
                 rootFrame().variables()["@Session"] = this@Session
                 rootFrame().variables()["@Skill"] = playerSkill
+                variables.filter { it.key != variable.key }.forEach {
+                    rootFrame().variables()[it.key] = it.value
+                }
             }.get()
         }
     }

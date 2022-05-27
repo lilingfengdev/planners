@@ -49,11 +49,6 @@ object ManaCounter {
         return cache[uuid]!!
     }
 
-    fun PlayerProfile.takeMana(skill: Skill) {
-        val double = Coerce.toDouble(evalKether(player, skill.option.mpCost, getSkill(skill.key)!!))
-        takeMana(double)
-    }
-
     fun PlayerProfile.takeMana(value: Double) {
         this.addMana(-value)
     }

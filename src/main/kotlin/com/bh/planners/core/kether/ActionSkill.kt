@@ -27,9 +27,20 @@ class ActionSkill {
         @KetherParser(["skill"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             it.switch {
+                case("name") {
+                    actionNow {
+                        getSkill().instance.option.name
+                    }
+                }
                 case("level") {
                     actionNow {
                         getSkill().level
+                    }
+                }
+                case("key") {
+                    actionNow {
+                        // TODO mark wait
+                        "Ctrl + sb"
                     }
                 }
                 case("name") {

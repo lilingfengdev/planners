@@ -4,6 +4,8 @@ import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.event.PlayerKeydownEvent
 import com.bh.planners.core.ui.JobUI
+import com.bh.planners.core.ui.SkillIcon
+import com.bh.planners.core.ui.SkillUI
 import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
@@ -70,6 +72,27 @@ object PlannersJobCommand {
                 execute<ProxyCommandSender> { _, context, argument ->
                     val playerExact = Bukkit.getPlayerExact(context.argument(-1))!!
                     PlannersAPI.cast(playerExact, argument)
+                }
+
+            }
+
+        }
+    }
+
+    @CommandBody
+    val icon = subCommand {
+        dynamic("player") {
+            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
+
+            dynamic("skill") {
+                suggestion<ProxyCommandSender> { _, context ->
+                    Bukkit.getPlayerExact(context.argument(-1))!!.plannersProfile.getSkills().map { it.key }
+                }
+
+                execute<ProxyCommandSender> { _, context, argument ->
+                    val playerExact = Bukkit.getPlayerExact(context.argument(-1))!!
+//                    SkillIcon(playerExact, argument, 1).test()
+                    playerExact.inventory.addItem(SkillIcon(playerExact, argument, 1).build())
                 }
 
             }

@@ -159,6 +159,7 @@ class StorageSQL : Storage {
     }
 
     override fun updateSkill(skill: PlayerJob.Skill) {
+        if (skill.id == -1L) return
         skillTable.update(dataSource) {
             where {
                 ID eq skill.id

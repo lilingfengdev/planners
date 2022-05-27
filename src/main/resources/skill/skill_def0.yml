@@ -1,13 +1,25 @@
 __option__:
   name: '疾风斩击'
-  mp-cost: math add [ skill level , 1.2 ]
   triggers: [ player attack ]
-  variables:
-    cooldown: skill level * 5
-    damage: papi "%rpg_Damage:pvpDamage:min%"
-    defence-min: papi "%rpg_Defence:pvpDefence:min%"
-    base: 1.2
+  icon:
+    material: SWORD_STONE
+    name: "&e{{ skill name }}"
+    lore:
+      - '&f技能等级 &a{{ skill level }}'
+      - ''
+      - '&f冷却时间 &a{{ lazy get cooldown }}'
+      - '&f蓝量消耗 &a{{ lazy get mp }}'
+      - ''
+      - '&f对前方敌人造成&a{{ lazy get attackCount }}&f段伤害,每段造成&a{{ lazy get damage }}'
+      - ''
+      - '&fkey -> &a{{ skill key }}'
 
+  variables:
+    cooldown: math skill level * 1.5
+    mp: skill level
+    damage: math lazy get base + papi "%rpg_Damage:physical:min%"
+    attackCount: math skill level * 2
+    base: 10
 action: |-
-  tell inline "连击一 {{ damage }}"
+  print lazy get mp
 
