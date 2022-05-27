@@ -12,7 +12,7 @@ import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
 
-class Session(val executor: Player, val skill: Skill) {
+open class Session(val executor: Player, val skill: Skill) {
 
     var closed = false
 

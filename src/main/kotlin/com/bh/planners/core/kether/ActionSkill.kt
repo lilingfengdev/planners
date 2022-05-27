@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.api.PlannersAPI
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import org.bukkit.entity.Player
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -16,6 +17,16 @@ class ActionSkill {
                     val player = frame.script().sender!!.castSafely<Player>()!!
                     PlannersAPI.cast(player, skill, mark)
                 }
+            }
+            return CompletableFuture.completedFuture(null)
+        }
+    }
+
+    class ActionSkillSwitch(val action: ParsedAction<*>) : ScriptAction<Void>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.newFrame(action).run<String>().thenAccept { skill ->
+                val player = frame.script().sender!!.castSafely<Player>()!!
+                frame.rootVariables()["@Skill"] = player.plannersProfile.getSkill(skill) ?: return@thenAccept
             }
             return CompletableFuture.completedFuture(null)
         }
@@ -54,6 +65,9 @@ class ActionSkill {
                     actionNow {
                         getSkill().instance.option.name
                     }
+                }
+                case("switch") {
+                    ActionSkillSwitch(it.next(ArgTypes.ACTION))
                 }
                 case("cast") {
                     actionNow {

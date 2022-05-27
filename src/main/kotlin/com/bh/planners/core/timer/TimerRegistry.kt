@@ -57,6 +57,7 @@ object TimerRegistry {
     }
 
     fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, player: Player, event: E) {
+        val timerSession = TimerSession(player)
         try {
             KetherShell.eval(
                 template.action!!,
@@ -64,6 +65,7 @@ object TimerRegistry {
                 sender = adaptPlayer(player),
                 namespace = namespaces
             ) {
+                rootFrame().variables()["@Session"] = timerSession
                 timer.onStart(this, template, event)
             }
         } catch (e: Throwable) {

@@ -2,18 +2,19 @@ package com.bh.planners.core.pojo
 
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.xseries.getItemStack
+import taboolib.module.configuration.Configuration
 
-class Skill(val key: String, val config: ConfigurationSection) {
+open class Skill(val key: String, val config: ConfigurationSection) {
 
-    val option = Option(config.getConfigurationSection("__option__")!!)
-    val action = config.getString("action", "")!!
+    open val option = Option(config.getConfigurationSection("__option__") ?: config.createSection("__option__"))
+    open val action = config.getString("action", "")!!
 
 
-    class Option(val root: ConfigurationSection) {
-        val name = root.getString("name")
-        val levelCap = root.getInt("level-cap", 5)
+    open class Option(val root: ConfigurationSection) {
+        open val name = root.getString("name")
+        open val levelCap = root.getInt("level-cap", 5)
 
-        val variables = root.getConfigurationSection("variables")?.getKeys(false)?.map {
+        open val variables = root.getConfigurationSection("variables")?.getKeys(false)?.map {
             Variable(it, root.getString("variables.$it")!!)
         } ?: emptyList()
 
@@ -21,5 +22,19 @@ class Skill(val key: String, val config: ConfigurationSection) {
 
     class Variable(val key: String, val expression: String)
 
+    class Empty : Skill("", Configuration.empty()) {
+
+        override val action: String = ""
+
+        override val option: Option = EmptyOption()
+
+
+    }
+
+    class EmptyOption : Option(Configuration.empty()) {
+        override val name: String = ""
+        override val levelCap: Int = -1
+        override val variables: List<Variable> = emptyList()
+    }
 
 }
