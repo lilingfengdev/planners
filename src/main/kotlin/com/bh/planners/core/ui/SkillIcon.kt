@@ -19,6 +19,15 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int) {
 
     companion object {
         val ZERO = LazyGetter { "?" }
+
+        fun PlayerJob.Skill.toIcon(player: Player): SkillIcon {
+            return SkillIcon(player, key, level)
+        }
+
+        fun PlayerJob.Skill.buildIconItem(player: Player): ItemStack {
+            return toIcon(player).build()
+        }
+
     }
 
     private val skill = PlayerJob.Skill(-1, skillKey, level)
