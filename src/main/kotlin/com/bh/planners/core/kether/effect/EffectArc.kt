@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.effect
 
 import com.bh.planners.api.particle.EffectOption
 import com.bh.planners.api.particle.EffectSpawner
+import com.bh.planners.core.kether.effect.Target.Companion.createContainer
 import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.Player
 import taboolib.common5.Coerce
@@ -22,10 +23,21 @@ object EffectArc : EffectLoader<EffectArc.Impl>() {
     class Impl(action: ParsedAction<*>) : Effect(action) {
 
         override fun sendTo(sender: Player, option: EffectOption, session: Session): ParticleObj {
-            val step = Coerce.toDouble(option.demand.get(Effects.STEP, "10"))
-            val radius = Coerce.toDouble(option.demand.get(Effects.RADIUS, "360"))
-            val angle = Coerce.toDouble(option.demand.get(Effects.ANGLE, "0"))
-            return Arc(sender.location.toProxyLocation(), angle, radius, step, EffectSpawner(option))
+
+            return Arcs(option.createContainer(sender, session), option)
         }
     }
+
+    class Arcs(val container: Target.Container, option: EffectOption) : ParticleObj(EffectSpawner(option)) {
+        val step = Coerce.toDouble(option.demand.get(Effects.STEP, "10"))
+        val radius = Coerce.toDouble(option.demand.get(Effects.RADIUS, "360"))
+        val angle = Coerce.toDouble(option.demand.get(Effects.ANGLE, "0"))
+        override fun show() {
+            container.forEachLocation {
+                Arc(toProxyLocation(), angle, radius, step, spawner).show()
+            }
+        }
+
+    }
+
 }

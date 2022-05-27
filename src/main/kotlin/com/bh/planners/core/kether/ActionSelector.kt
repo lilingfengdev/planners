@@ -16,7 +16,7 @@ class ActionSelector {
 
     companion object {
 
-        val sessions = Collections.synchronizedMap(mutableMapOf<Session, List<SignTargetContainer>>())
+        private val sessions = Collections.synchronizedMap(mutableMapOf<Session, List<SignTargetContainer>>())
 
         fun getContainer(session: Session, key: String): SignTargetContainer? {
             val list = sessions[session] ?: emptyList()
