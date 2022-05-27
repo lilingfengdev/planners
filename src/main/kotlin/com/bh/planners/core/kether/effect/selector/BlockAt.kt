@@ -6,7 +6,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import taboolib.common.platform.function.info
+import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import kotlin.math.floor
 
@@ -20,12 +20,23 @@ object BlockAt : Selector {
     override fun check(args: String, sender: Player, container: Target.Container) {
         val distance = if (args.isEmpty()) 10.0 else Coerce.toDouble(args)
         val block = getTargetLocation(sender, distance).block
-        if (block.type !in AIR_BLOCKS) {
-            container.add(block.location.toTarget())
+        when (block.chunk.isLoaded){
+            true -> {
+                if (block.type !in AIR_BLOCKS) {
+                    container.add(block.location.toTarget())
+                }
+            }
+            false -> {
+                submit(now = true , async = true) {
+                    block.chunk.load(true)
+                }
+                if (block.type !in AIR_BLOCKS) {
+                    container.add(block.location.toTarget())
+                }
+            }
         }
 
     }
-
     /**
      * by SkillAPI
      */
