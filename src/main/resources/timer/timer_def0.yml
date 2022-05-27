@@ -4,8 +4,5 @@ __option__:
   async: true
 
 action: |-
-  effect circle "CLOUD 0 10 0 -step 10 -radius 2 -speed 0.0 -count 50"
-  for i in range 1 to 10 then {
-  set radius to math mul [ &i 0.8 ]
-  effect circle inline "CLOUD 0 0 0 -step 10 -radius {{ &radius }} -speed 0.0 -count 10"
-  }
+  selector g0 to "-@blockAt 100"
+  effect line "FLAME 0 0 0 -speed 0.0 -posY 0.2 -count 100 -step 0.5 -@fetch g0"

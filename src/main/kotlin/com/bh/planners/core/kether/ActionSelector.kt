@@ -16,11 +16,15 @@ class ActionSelector {
 
     companion object {
 
-        private val sessions = Collections.synchronizedMap(mutableMapOf<Session, List<SignTargetContainer>>())
+        private val sessions = Collections.synchronizedMap(mutableMapOf<Session, MutableList<SignTargetContainer>>())
 
         fun getContainer(session: Session, key: String): SignTargetContainer? {
             val list = sessions[session] ?: emptyList()
             return list.firstOrNull { it.name == key }
+        }
+
+        fun add(session: Session, container: SignTargetContainer) {
+            sessions.computeIfAbsent(session) { mutableListOf() } += container
         }
 
         private val lock = Any()
@@ -59,6 +63,7 @@ class ActionSelector {
                     val container = SignTargetContainer(key)
                     val demand = Demand(value)
                     Selector.check(player, frame.getSession(), demand, container)
+                    add(frame.getSession(), container)
                 }
             }
 

@@ -28,7 +28,6 @@ open class Skill(val key: String, val config: ConfigurationSection) {
 
         override val option: Option = EmptyOption()
 
-
     }
 
     class EmptyOption : Option(Configuration.empty()) {
