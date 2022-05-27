@@ -1,4 +1,4 @@
-package com.bh.planners.core.kether.effect.selector
+package com.bh.planners.core.kether.selector
 
 import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.kether.effect.Target.Companion.toTarget
@@ -6,7 +6,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import taboolib.common5.Coerce
-import taboolib.module.kether.inferType
 
 object Location : Selector {
     override val names: Array<String>

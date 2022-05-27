@@ -1,4 +1,4 @@
-package com.bh.planners.core.kether.effect.selector
+package com.bh.planners.core.kether.selector
 
 import com.bh.planners.api.particle.EffectOption
 import com.bh.planners.core.kether.effect.Target

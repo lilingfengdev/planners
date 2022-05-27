@@ -1,12 +1,9 @@
 package com.bh.planners.core.kether.effect
 
 import com.bh.planners.api.particle.EffectOption
-import com.bh.planners.core.kether.effect.selector.Selector
-import org.bukkit.Location
+import com.bh.planners.core.kether.selector.Selector
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import taboolib.common.util.random
-import kotlin.math.min
 
 
 interface Target {
