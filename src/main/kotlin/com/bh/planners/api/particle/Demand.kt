@@ -8,55 +8,30 @@ class Demand(val source: String) {
 
     val namespace: String
     val dataMap = LinkedHashMap<String, String>()
-    val args = ArrayList<String>()
-    val tags = ArrayList<String>()
+    val args = mutableListOf<String>()
 
     init {
         val args = source.split(" ")
         namespace = args[0]
-        var key: String? = null
-        val boxes = ArrayList<String>()
-        var isText = false
-        args.forEachIndexed { index, box ->
-            if (index > 0) {
-                if (isText) {
-                    if (box.endsWith("\"") && !box.endsWith("\\\"")) {
-                        isText = false
-                        boxes.add(box.substring(0, box.length - 1))
-                        if (key != null) {
-                            dataMap[key!!] = boxes.joinToString(" ").replace("\\\"", "\"")
-                            key = null
-                        } else {
-                            this.args.add(boxes.joinToString(" "))
-                        }
-                        boxes.clear()
-                    } else {
-                        boxes.add(box)
-                    }
+        val skipIndex = arrayListOf<Int>()
+        args.forEachIndexed { index, s ->
+            if (index in skipIndex) return@forEachIndexed
+            if (s[0] == '-') {
+
+                if (index + 1 >= args.size) {
+                    dataMap[s.substring(1)] = ""
+
+                } else if (args[index + 1][0] != '-') {
+                    dataMap[s.substring(1)] = args[index + 1]
+                    skipIndex += index + 1
                 } else {
-                    if (box.startsWith("\"")) {
-                        if (box.endsWith("\"") && !box.endsWith("\\\"")) {
-                            dataMap[key!!] = box.substring(1, box.length - 1).replace("\\\"", "\"")
-                            key = null
-                        } else {
-                            isText = true
-                            boxes.add(box.substring(1))
-                        }
-                    } else {
-                        if (box.startsWith("--")) {
-                            tags.add(box.substring(2))
-                        } else if (box.startsWith("-") && key == null) {
-                            key = box.substring(1)
-                        } else if (key != null) {
-                            dataMap[key!!] = box
-                            key = null
-                        } else {
-                            this.args.add(box)
-                        }
-                    }
+                    dataMap[s.substring(1)] = ""
                 }
+            } else {
+                this.args += s
             }
         }
+
     }
 
     fun get(key: List<String>, def: String? = null): String? {
@@ -72,7 +47,7 @@ class Demand(val source: String) {
     }
 
     override fun toString(): String {
-        return "Demand(source='$source', namespace='$namespace', dataMap=$dataMap, args=$args, tags=$tags)"
+        return "Demand(source='$source', namespace='$namespace', dataMap=$dataMap, args=$args)"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -82,7 +57,6 @@ class Demand(val source: String) {
         if (namespace != other.namespace) return false
         if (dataMap != other.dataMap) return false
         if (args != other.args) return false
-        if (tags != other.tags) return false
         return true
     }
 
@@ -91,7 +65,6 @@ class Demand(val source: String) {
         result = 31 * result + namespace.hashCode()
         result = 31 * result + dataMap.hashCode()
         result = 31 * result + args.hashCode()
-        result = 31 * result + tags.hashCode()
         return result
     }
 
