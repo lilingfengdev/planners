@@ -6,4 +6,5 @@ interface IKeySlot {
 
     val name : String
 
+    val group: String
 }

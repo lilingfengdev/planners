@@ -1,19 +1,18 @@
 package com.bh.planners.core.kether.selector
 
+import com.bh.planners.core.kether.ActionSelector
 import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.Player
 
-object FilterType : Selector {
+object Fetch : Selector {
     override val names: Array<String>
-        get() = arrayOf("filtertype", "filterType", "ft")
+        get() = arrayOf("get", "fetch")
 
     override fun check(args: String, session: Session, sender: Player, container: Target.Container) {
-        val types = args.split(",")
-        container.removeIf {
-            if (this is Target.Entity) {
-                livingEntity.type.name in types
-            } else false
+        val signTargetContainer = ActionSelector.getContainer(session, args)
+        if (signTargetContainer != null) {
+            container.merge(signTargetContainer)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.effect
 
 import com.bh.planners.api.particle.EffectOption
 import com.bh.planners.core.kether.selector.Selector
+import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
@@ -10,9 +11,9 @@ interface Target {
 
     companion object {
 
-        fun EffectOption.createContainer(sender: Player): Container {
+        fun EffectOption.createContainer(sender: Player, session: Session): Container {
 
-            return Container().also { Selector.check(sender, this, it) }
+            return Container().also { Selector.check(sender, session, this, it) }
         }
 
         fun LivingEntity.toTarget(): Entity {
@@ -25,7 +26,7 @@ interface Target {
 
     }
 
-    class Container {
+    open class Container {
 
         val targets = mutableSetOf<Target>()
 

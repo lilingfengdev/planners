@@ -13,6 +13,8 @@ class KeySlot(config: ConfigurationSection) : IKeySlot {
 
     override val key = config.name
 
+    override val group = config.getString("group", key)!!
+
     override val name = config.getString("name", key)!!
 
     companion object {

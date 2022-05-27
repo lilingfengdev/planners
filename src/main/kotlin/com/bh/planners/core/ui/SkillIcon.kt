@@ -17,13 +17,14 @@ import taboolib.platform.util.buildItem
 
 class SkillIcon(val player: Player, skillKey: String, val level: Int) {
 
+    companion object {
+        val ZERO = LazyGetter { "?" }
+    }
+
     private val skill = PlayerJob.Skill(-1, skillKey, level)
     private val option = skill.instance.option
-    private val variables = option.variables.associate { it.key to toLazyVariable(skill, it, player) }
-
-    fun test() {
-        info(format(option.root.getString("icon.name")!!))
-
+    private val variables = option.variables.associate {
+        it.key to if (level == 0) ZERO else toLazyVariable(skill, it, player)
     }
 
     fun build(): ItemStack {
@@ -33,7 +34,6 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int) {
             damage = option.root.getInt("damage")
         }
     }
-
 
     private fun toLazyVariable(skill: PlayerJob.Skill, variable: Skill.Variable, player: Player): LazyGetter<*> {
         return LazyGetter {

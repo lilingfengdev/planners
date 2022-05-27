@@ -4,11 +4,10 @@ import com.bh.planners.api.particle.EffectOption
 import com.bh.planners.api.particle.EffectSpawner
 import com.bh.planners.core.kether.effect.Target.Companion.createContainer
 import com.bh.planners.core.kether.effect.Target.Companion.toTarget
+import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.Player
-import org.bukkit.entity.PolarBear
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
-import taboolib.module.effect.Arc
 import taboolib.module.effect.Line
 import taboolib.module.effect.ParticleObj
 import taboolib.platform.util.toProxyLocation
@@ -24,8 +23,8 @@ object EffectLine : EffectLoader<EffectLine.Impl>() {
 
     class Impl(action: ParsedAction<*>) : Effect(action) {
 
-        override fun sendTo(sender: Player, option: EffectOption): ParticleObj {
-            return Lines(sender.toTarget(), option.createContainer(sender), option)
+        override fun sendTo(sender: Player, option: EffectOption, session: Session): ParticleObj {
+            return Lines(sender.toTarget(), option.createContainer(sender,session), option)
         }
     }
 

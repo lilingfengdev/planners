@@ -14,6 +14,8 @@ import taboolib.module.kether.printKetherErrorMessage
 
 class Session(val executor: Player, val skill: Skill) {
 
+    var closed = false
+
     val profile: PlayerProfile
         get() = executor.plannersProfile
 

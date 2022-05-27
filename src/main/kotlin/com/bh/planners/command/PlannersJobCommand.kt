@@ -23,7 +23,7 @@ object PlannersJobCommand {
 
 
     @CommandBody
-    val selectui = subCommand {
+    val select = subCommand {
         dynamic("player") {
             suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
 
@@ -43,16 +43,14 @@ object PlannersJobCommand {
     }
 
     @CommandBody
-    val callkey = subCommand {
+    val call = subCommand {
         dynamic("player") {
             suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
 
             dynamic("key slot") {
                 execute<ProxyCommandSender> { sender, context, argument ->
                     val player = Bukkit.getPlayerExact(context.argument(-1))!!
-                    val keySlot = PlannersAPI.keySlots.firstOrNull { it.key == argument }
-                        ?: error("KeySlot '$argument' not found.")
-                    PlayerKeydownEvent(player, keySlot).call()
+                    PlannersAPI.callKeyById(player, argument)
                 }
             }
 

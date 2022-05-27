@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.selector
 
 import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.kether.effect.Target.Companion.toTarget
+import com.bh.planners.core.pojo.Session
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
@@ -17,7 +18,7 @@ object BlockAt : Selector {
     override val names: Array<String>
         get() = arrayOf("blockAt", "ba")
 
-    override fun check(args: String, sender: Player, container: Target.Container) {
+    override fun check(args: String, session: Session, sender: Player, container: Target.Container) {
         val distance = if (args.isEmpty()) 10.0 else Coerce.toDouble(args)
         val block = getTargetLocation(sender, distance).block
         when (block.chunk.isLoaded){

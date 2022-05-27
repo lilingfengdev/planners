@@ -4,6 +4,7 @@ import com.bh.planners.api.ManaCounter.takeMana
 import com.bh.planners.api.counter.Counting
 import com.bh.planners.api.enums.ExecuteResult
 import com.bh.planners.api.event.PlayerCastSkillEvent
+import com.bh.planners.api.event.PlayerKeydownEvent
 import com.bh.planners.api.event.PlayerProfileLoadEvent
 import com.bh.planners.core.kether.evalKether
 import com.bh.planners.core.pojo.player.PlayerProfile
@@ -52,17 +53,31 @@ object PlannersAPI {
         return cast(skills.firstOrNull { it.key == skillName } ?: error("Skill '${skillName}' not found."), mark)
     }
 
+    fun callKeyByGroup(player: Player, keyGroup: String) {
+        this.callKey(player, keySlots.firstOrNull { it.group == keyGroup } ?: return)
+    }
+
+    fun callKeyById(player: Player, keyId: String) {
+        this.callKey(player, keySlots.firstOrNull { it.key == keyId } ?: return)
+    }
+
+    fun callKey(player: Player, slot: IKeySlot) {
+        PlayerKeydownEvent(player, slot).call()
+    }
+
     fun PlayerProfile.cast(skill: Skill, mark: Boolean = true): ExecuteResult {
 
         val result = if (!mark) {
             val session = Session(player, skill)
             session.cast()
+            session.closed = true
             ExecuteResult.SUCCESS
         } else if (Counting.hasNext(player, skill)) {
             val session = Session(player, skill)
             Counting.reset(player, session)
             takeMana(Coerce.toDouble(session.mpCost.get()))
             session.cast()
+            session.closed = true
             ExecuteResult.SUCCESS
         } else {
             ExecuteResult.COOLING
