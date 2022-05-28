@@ -17,8 +17,7 @@ abstract class Effect(val action: ParsedAction<*>) : ScriptAction<Void>() {
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         frame.newFrame(action).run<String>().thenAccept {
             try {
-                sendTo(frame.script().sender!!.cast(), EffectOption(it), frame.getSession())
-                    .apply { info(this) }.show()
+                sendTo(frame.script().sender!!.cast(), EffectOption(it), frame.getSession()).show()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

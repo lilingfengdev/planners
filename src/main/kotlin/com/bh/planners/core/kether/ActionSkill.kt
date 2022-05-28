@@ -35,6 +35,23 @@ class ActionSkill {
 
     companion object {
 
+        /**
+         * 技能名称
+         * skill name
+         *
+         * 技能等级
+         * skill level
+         *
+         * 技能快捷键
+         * skill key
+         *
+         * 技能切换
+         * skill switch
+         *
+         * 技能释放
+         * skill cast
+         *
+         */
         @KetherParser(["skill"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             it.switch {
@@ -59,11 +76,6 @@ class ActionSkill {
                     actionNow {
                         // TODO mark wait
                         "Ctrl + sb"
-                    }
-                }
-                case("name") {
-                    actionNow {
-                        getSkill().instance.option.name
                     }
                 }
                 case("switch") {

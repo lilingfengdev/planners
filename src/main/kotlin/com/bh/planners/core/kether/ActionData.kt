@@ -54,9 +54,17 @@ class ActionData {
     companion object {
 
         /**
+         * 取数据
          * data *key
+         * data attackStamp
+         *
+         * 设置数据
          * data *key to *value
-         * data *key to *value time e *time
+         * data attackStamp to time
+         *
+         * 设置数据 并附带存活时间
+         * data *key to *value timeout e *time
+         * data attack to time timeout 1000
          */
         @KetherParser(["data"], namespace = NAMESPACE)
         fun parser() = scriptParser {
@@ -66,7 +74,7 @@ class ActionData {
                     val valueAction = it.next(ArgTypes.ACTION)
                     val timeAction = try {
                         it.mark()
-                        it.expects("time")
+                        it.expects("timeout")
                         it.next(ArgTypes.ACTION)
                     } catch (_: Exception) {
                         it.reset()

@@ -30,6 +30,15 @@ class ActionLazyVariable {
 
     companion object {
 
+        /**
+         * 取技能的variable
+         * lazy get [var]
+         * lazy get abc
+         *
+         * 重载技能的variable
+         * lazy reload [var]
+         * lazy reload abc
+         */
         @KetherParser(["lazy"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             it.switch {

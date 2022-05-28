@@ -10,6 +10,13 @@ class ActionPlanners {
 
     companion object {
 
+        /**
+         * 法力
+         * profile mana
+         *
+         * 最大法力
+         * profile maxxMana
+         */
         @KetherParser(["profile"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             it.switch {

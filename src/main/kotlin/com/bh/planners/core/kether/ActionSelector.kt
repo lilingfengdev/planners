@@ -39,6 +39,11 @@ class ActionSelector {
             }
         }
 
+        /**
+         * 缓存目标容器
+         * selector [key] to [selector]
+         * selector g0 to "-@range 10 10 10"
+         */
         @KetherParser(["selector"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             val key = it.next(ArgTypes.ACTION)
