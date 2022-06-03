@@ -64,8 +64,9 @@ class JobUI(val player: Player) {
             onClick { event, element ->
                 event.isCancelled = true
                 if (event.clickEvent().click == ClickType.SHIFT_LEFT) {
-                    player.closeInventory()
-
+                    submit(delay = 1 , async = true){
+                        player.closeInventory() 
+                    }
                     Storage.INSTANCE.createPlayerJob(player, element.routes[0].job).thenAccept {
                         profile.job = it
                         Storage.INSTANCE.updateCurrentJob(profile)
