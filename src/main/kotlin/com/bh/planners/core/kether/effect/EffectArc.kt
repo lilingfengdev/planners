@@ -4,7 +4,6 @@ import com.bh.planners.api.particle.EffectOption
 import com.bh.planners.api.particle.EffectSpawner
 import com.bh.planners.core.kether.effect.Target.Companion.createContainer
 import com.bh.planners.core.pojo.Session
-import org.bukkit.entity.Player
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.module.effect.Arc
@@ -22,9 +21,9 @@ object EffectArc : EffectLoader<EffectArc.Impl>() {
 
     class Impl(action: ParsedAction<*>) : Effect(action) {
 
-        override fun sendTo(sender: Player, option: EffectOption, session: Session): ParticleObj {
+        override fun sendTo(target: Target?, option: EffectOption, session: Session): ParticleObj {
 
-            return Arcs(option.createContainer(sender, session), option)
+            return Arcs(option.createContainer(target, session), option)
         }
     }
 

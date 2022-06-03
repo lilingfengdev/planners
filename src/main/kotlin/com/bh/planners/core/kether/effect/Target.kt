@@ -2,23 +2,27 @@ package com.bh.planners.core.kether.effect
 
 import com.bh.planners.api.particle.Demand
 import com.bh.planners.api.particle.EffectOption
+import com.bh.planners.core.kether.ActionExecutor.Companion.toLocal
 import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import taboolib.common.platform.ProxyCommandSender
 
 
 interface Target {
 
+    fun toLocal(): String
+
     companion object {
 
-        fun Demand.createContainer(sender: Player, session: Session): Container {
-            return Container().also { Selector.check(sender, session, this, it) }
+        fun Demand.createContainer(target: Target?, session: Session): Container {
+            return Container().also { Selector.check(target, session, this, it) }
         }
 
-        fun EffectOption.createContainer(sender: Player, session: Session): Container {
+        fun EffectOption.createContainer(target: Target?, session: Session): Container {
 
-            return Container().also { Selector.check(sender, session, this, it) }
+            return Container().also { Selector.check(target, session, this, it) }
         }
 
         fun LivingEntity.toTarget(): Entity {
@@ -29,6 +33,17 @@ interface Target {
             return Location(this)
         }
 
+        fun Target.ifLocation(call: Location.() -> Unit) {
+            if (this is Location) {
+                call(this)
+            }
+        }
+
+        fun Target.ifEntity(call: Entity.() -> Unit) {
+            if (this is Entity) {
+                call(this)
+            }
+        }
     }
 
     open class Container {
@@ -98,6 +113,10 @@ interface Target {
             return value.hashCode()
         }
 
+        override fun toLocal(): String {
+            return value.toLocal()
+        }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -115,6 +134,10 @@ interface Target {
 
         override val value: org.bukkit.Location
             get() = livingEntity.eyeLocation
+
+        override fun toLocal(): String {
+            return livingEntity.uniqueId.toString()
+        }
 
 
     }

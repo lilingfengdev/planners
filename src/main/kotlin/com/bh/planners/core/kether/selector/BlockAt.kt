@@ -1,12 +1,16 @@
 package com.bh.planners.core.kether.selector
 
 import com.bh.planners.core.kether.effect.Target
+import com.bh.planners.core.kether.effect.Target.Companion.ifEntity
+import com.bh.planners.core.kether.effect.Target.Companion.ifLocation
 import com.bh.planners.core.kether.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Session
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import kotlin.math.floor
@@ -18,34 +22,44 @@ object BlockAt : Selector {
     override val names: Array<String>
         get() = arrayOf("blockAt", "ba")
 
-    override fun check(args: String, session: Session, sender: Player, container: Target.Container) {
+    override fun check(target: Target?, args: String, session: Session, container: Target.Container) {
         val distance = if (args.isEmpty()) 10.0 else Coerce.toDouble(args)
-        val block = getTargetLocation(sender, distance).block
-        when (block.chunk.isLoaded){
-            true -> {
-                if (block.type !in AIR_BLOCKS) {
-                    container.add(block.location.toTarget())
+
+        var block: Block? = null
+
+        target?.ifEntity {
+            block = getTargetLocation(livingEntity.eyeLocation, value.direction, distance).block
+        }
+        target?.ifLocation {
+            block = getTargetLocation(value, value.direction, distance).block
+        }
+
+        if (block != null) {
+            when (block!!.chunk.isLoaded) {
+                true -> {
+                    if (block!!.type !in AIR_BLOCKS) {
+                        container.add(block!!.location.toTarget())
+                    }
                 }
-            }
-            false -> {
-                submit(now = true , async = true) {
-                    block.chunk.load(true)
-                }
-                if (block.type !in AIR_BLOCKS) {
-                    container.add(block.location.toTarget())
+                false -> {
+                    submit(now = true, async = true) {
+                        block!!.chunk.load(true)
+                    }
+                    if (block!!.type !in AIR_BLOCKS) {
+                        container.add(block!!.location.toTarget())
+                    }
                 }
             }
         }
+
 
     }
 
     /**
      * by SkillAPI
      */
-    private fun getTargetLocation(entity: LivingEntity, maxRange: Double): Location {
+    private fun getTargetLocation(start: Location, dir: Vector, maxRange: Double): Location {
         var maxRange = maxRange
-        val start = entity.eyeLocation
-        val dir = entity.location.direction
         if (dir.x == 0.0) {
             dir.x = java.lang.Double.MIN_NORMAL
         }

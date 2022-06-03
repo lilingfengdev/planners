@@ -12,9 +12,8 @@ class ActionTell(val message: ParsedAction<*>, val selector: ParsedAction<*>) : 
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         return frame.newFrame(message).run<Any?>().thenAccept { message ->
-            val viewer = frame.script().sender?.cast<Player>() ?: error("No sender selected.")
             frame.newFrame(selector).run<String>().thenAccept { selector ->
-                Demand(selector).createContainer(viewer, frame.getSession()).forEachEntity {
+                Demand(selector).createContainer(frame.toOriginLocation(),frame.getSession()).forEachEntity {
                     if (this is Player) {
                         sendMessage(message.toString().trimIndent())
                     }

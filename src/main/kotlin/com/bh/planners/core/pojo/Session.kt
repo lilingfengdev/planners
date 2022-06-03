@@ -6,18 +6,20 @@ import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.entity.Player
-import taboolib.common.platform.function.adaptPlayer
-import taboolib.common.platform.function.info
-import taboolib.module.kether.KetherFunction
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.submit
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
 
-open class Session(val executor: Player, val skill: Skill) {
+open class Session(val executor: ProxyCommandSender, val skill: Skill) {
 
     var closed = false
 
+    val asPlayer: Player
+        get() = executor.cast()
+
     val profile: PlayerProfile
-        get() = executor.plannersProfile
+        get() = asPlayer.plannersProfile
 
     val playerSkill: PlayerJob.Skill
         get() = profile.getSkill(skill.key)!!
@@ -30,7 +32,7 @@ open class Session(val executor: Player, val skill: Skill) {
 
     private fun toLazyVariable(variable: Skill.Variable): LazyGetter<*> {
         return LazyGetter {
-            KetherShell.eval(variable.expression, namespace = namespaces, sender = adaptPlayer(executor)) {
+            KetherShell.eval(variable.expression, namespace = namespaces, sender = executor) {
                 rootFrame().variables()["@Session"] = this@Session
                 rootFrame().variables()["@Skill"] = playerSkill
                 variables.filter { it.key != variable.key }.forEach {
@@ -41,8 +43,16 @@ open class Session(val executor: Player, val skill: Skill) {
     }
 
     fun cast() {
+        if (skill.option.async) {
+            submit(async = true) { run() }
+        } else {
+            run()
+        }
+    }
+
+    private fun run() {
         try {
-            KetherShell.eval(skill.action, sender = adaptPlayer(executor), namespace = namespaces) {
+            KetherShell.eval(skill.action, sender = executor, namespace = namespaces) {
                 rootFrame().variables()["@Session"] = this@Session
                 rootFrame().variables()["@Skill"] = playerSkill
                 variables.forEach {

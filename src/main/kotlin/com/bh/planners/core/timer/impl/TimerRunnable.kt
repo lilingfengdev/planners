@@ -3,8 +3,10 @@ package com.bh.planners.core.timer.impl
 import com.bh.planners.core.timer.*
 import com.bh.planners.core.timer.TimerDrive.getTemplates
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.Schedule
+import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.console
 import taboolib.platform.type.BukkitProxyEvent
 
 object TimerRunnable : AbstractTimer<TimerRunnable.TimerRunnableEvent>() {
@@ -18,9 +20,14 @@ object TimerRunnable : AbstractTimer<TimerRunnable.TimerRunnableEvent>() {
     fun run() {
         getTemplates(this).filter { isClosed(it) }.forEach {
             mark(it)
-            Bukkit.getOnlinePlayers().forEach { player ->
-                TimerRunnableEvent(player, it).call()
+            if (it.sender == "console") {
+                TimerRunnableEvent(console(), it).call()
+            } else if (it.sender == "player") {
+                Bukkit.getOnlinePlayers().forEach { player ->
+                    TimerRunnableEvent(adaptPlayer(player), it).call()
+                }
             }
+
         }
     }
 
@@ -38,13 +45,16 @@ object TimerRunnable : AbstractTimer<TimerRunnable.TimerRunnableEvent>() {
         return root.getLong("__option__.period", 20L)
     }
 
-    override fun check(e: TimerRunnableEvent): Player {
-        return e.player
+    override fun check(e: TimerRunnableEvent): ProxyCommandSender? {
+        return e.sender
     }
 
     override val name: String
         get() = "runnable"
 
-    class TimerRunnableEvent(val player: Player, val template: Template) : BukkitProxyEvent()
+    val Template.sender: String
+        get() = root.getString("__option__.sender", "player")!!
+
+    class TimerRunnableEvent(val sender: ProxyCommandSender, val template: Template) : BukkitProxyEvent()
 
 }

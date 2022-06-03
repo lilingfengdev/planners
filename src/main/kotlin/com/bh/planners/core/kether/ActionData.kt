@@ -16,7 +16,7 @@ class ActionData {
     class DataGet(val action: ParsedAction<*>) : ScriptAction<Any>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Any> {
             return frame.newFrame(action).run<String>().thenApply {
-                frame.script().sender!!.cast<Player>().plannersProfile.dataContainer[it]!!.data
+                frame.asPlayer().plannersProfile.dataContainer[it]!!.data
             }
         }
 
@@ -27,7 +27,7 @@ class ActionData {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<String>().thenAccept { key ->
                 frame.newFrame(value).run<Any>().thenAccept { value ->
-                    val profile = frame.script().sender!!.cast<Player>().plannersProfile
+                    val profile = frame.asPlayer().plannersProfile
                     frame.newFrame(time).run<Long>().thenAccept { time ->
                         profile.dataContainer[key] = Data(value, survivalStamp = time)
                     }
@@ -42,7 +42,7 @@ class ActionData {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<String>().thenAccept { key ->
                 frame.newFrame(value).run<Any>().thenAccept { value ->
-                    val dataContainer = frame.script().sender!!.cast<Player>().plannersProfile.dataContainer
+                    val dataContainer = frame.asPlayer().plannersProfile.dataContainer
                     if (dataContainer.containsKey(key)) {
                         dataContainer.update(key, dataContainer[key]!!.increaseAny(value.toString()))
                     }

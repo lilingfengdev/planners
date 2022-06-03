@@ -1,5 +1,7 @@
 package com.bh.planners.core.pojo.data
 
+import org.bukkit.Location
+import taboolib.common.platform.function.info
 import taboolib.module.nms.ItemTag
 import taboolib.module.nms.ItemTagData
 import java.util.concurrent.ConcurrentHashMap
@@ -96,19 +98,19 @@ class DataContainer {
     }
 
     fun containsKey(key: String): Boolean {
-        return map.containsKey(key)
+        return map.filter { it.value.isOpened }.containsKey(key)
     }
 
     fun containsValue(value: Any): Boolean {
-        return map.containsValue(value.unsafeData())
+        return map.filter { it.value.isOpened }.containsValue(value.unsafeData())
     }
 
-    fun entries(): MutableSet<MutableMap.MutableEntry<String, Data>> {
-        return map.entries
+    fun entries(): Set<Map.Entry<String, Data>> {
+        return map.filter { it.value.isOpened }.entries
     }
 
     fun keys(): List<String> {
-        return map.keys().toList()
+        return map.filter { it.value.isOpened }.keys.toList()
     }
 
     fun copy(): DataContainer {
@@ -145,13 +147,23 @@ class DataContainer {
         return ItemTag().also {
             map.forEach { (k, v) ->
                 it[k] = ItemTag().also {
-                    it["value"] = ItemTagData.toNBT(v.data)
+                    it["value"] = toNBT(v.data)
                     it["create-stamp"] = ItemTagData(v.createStamp)
                     it["survival-stamp"] = ItemTagData(v.survivalStamp)
                 }
             }
         }
     }
+
+    fun toNBT(any: Any): ItemTagData {
+
+        return when (any) {
+            is Location -> ItemTagData("${any.world!!.name},${any.x},${any.y},${any.z}")
+            else -> ItemTagData.toNBT(any)
+        }
+
+    }
+
 
     fun toJson() = toNBT().toJson()
 
@@ -195,8 +207,9 @@ class DataContainer {
             val dataContainer = DataContainer()
             entries.forEach {
                 val compound = it.value.asCompound()
+                info(compound)
                 dataContainer[it.key] = Data(
-                    compound["value"]!!,
+                    compound["value"]!!.asString(),
                     compound["create-stamp"]!!.asLong(),
                     compound["survival-stamp"]!!.asLong(),
                 )

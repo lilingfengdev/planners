@@ -1,11 +1,14 @@
 package com.bh.planners.core.kether.selector
 
 import com.bh.planners.core.kether.effect.Target
+import com.bh.planners.core.kether.effect.Target.Companion.ifEntity
+import com.bh.planners.core.kether.effect.Target.Companion.ifLocation
 import com.bh.planners.core.kether.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Session
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.util.Vector
 import taboolib.common5.Coerce
 import kotlin.math.floor
 
@@ -13,19 +16,22 @@ object AngleLine : Selector {
     override val names: Array<String>
         get() = arrayOf("aline", "al")
 
-    override fun check(args: String, session: Session, sender: Player, container: Target.Container) {
-        val targets = getTargetLocation(sender, Coerce.toDouble(args))
-        container.addAll(targets.map { it.toTarget() })
+    override fun check(target: Target?, args: String, session: Session, container: Target.Container) {
+        val range = Coerce.toDouble(args)
+        target?.ifLocation {
+            container.addAll(getTargetLocation(this.value, this.value.direction, range).map { it.toTarget() })
+        }
+        target?.ifEntity {
+            container.addAll(getTargetLocation(livingEntity.eyeLocation, value.direction, range).map { it.toTarget() })
+        }
     }
 
 
     /**
      * by SkillAPI
      */
-    private fun getTargetLocation(entity: LivingEntity, maxRange: Double): Set<LivingEntity> {
+    private fun getTargetLocation(start: Location, dir: Vector, maxRange: Double): Set<LivingEntity> {
         var maxRange = maxRange
-        val start = entity.eyeLocation
-        val dir = entity.location.direction
         val list = mutableSetOf<LivingEntity>()
         if (dir.x == 0.0) {
             dir.x = java.lang.Double.MIN_NORMAL

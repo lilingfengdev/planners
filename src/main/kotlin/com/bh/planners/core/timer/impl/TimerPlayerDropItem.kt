@@ -2,8 +2,9 @@ package com.bh.planners.core.timer.impl
 
 import com.bh.planners.core.timer.AbstractTimer
 import com.bh.planners.core.timer.Template
-import org.bukkit.entity.Player
 import org.bukkit.event.player.*
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.adaptPlayer
 import taboolib.module.kether.ScriptContext
 
 object TimerPlayerDropItem : AbstractTimer<PlayerDropItemEvent>() {
@@ -12,8 +13,8 @@ object TimerPlayerDropItem : AbstractTimer<PlayerDropItemEvent>() {
     override val eventClazz: Class<PlayerDropItemEvent>
         get() = PlayerDropItemEvent::class.java
 
-    override fun check(e: PlayerDropItemEvent): Player? {
-        return e.player
+    override fun check(e: PlayerDropItemEvent): ProxyCommandSender? {
+        return adaptPlayer(e.player)
     }
 
     override fun onStart(context: ScriptContext, template: Template, e: PlayerDropItemEvent) {

@@ -2,6 +2,7 @@ package com.bh.planners.core.kether
 
 import com.bh.planners.api.particle.Demand
 import com.bh.planners.core.kether.effect.Target
+import com.bh.planners.core.kether.effect.Target.Companion.createContainer
 import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.Player
@@ -43,6 +44,13 @@ class ActionSelector {
          * 缓存目标容器
          * selector [key] to [selector]
          * selector g0 to "-@range 10 10 10"
+         *
+         * 删除
+         * selector [key] remove
+         *
+         * 取
+         * selector [key]
+         * selector [key] size
          */
         @KetherParser(["selector"], namespace = NAMESPACE)
         fun parser() = scriptParser {
@@ -52,22 +60,45 @@ class ActionSelector {
                     ActionTargetContainerSet(key, it.next(ArgTypes.ACTION))
                 }
                 case("remove") {
-                    ActionTargetContainerRemove(it.next(ArgTypes.ACTION))
+                    ActionTargetContainerRemove(key)
+                }
+                case("size") {
+                    ActionTargetContainerGetSize(key)
+                }
+                other {
+                    ActionTargetContainerGet(key)
                 }
             }
         }
     }
 
+    class ActionTargetContainerGetSize(val action: ParsedAction<*>) : ScriptAction<Int>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Int> {
+            return frame.newFrame(action).run<String>().thenApply { selector ->
+                (getContainer(frame.getSession(), selector) ?: Target.Container()).size
+            }
+        }
+
+    }
+
+    class ActionTargetContainerGet(val action: ParsedAction<*>) : ScriptAction<List<String>>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<List<String>> {
+            return frame.newFrame(action).run<String>().thenApply { selector ->
+                val container = getContainer(frame.getSession(), selector) ?: Target.Container()
+                container.targets.map { it.toLocal() }
+            }
+        }
+
+    }
 
     class ActionTargetContainerSet(val keyAction: ParsedAction<*>, val valueAction: ParsedAction<*>) :
         ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            val player = frame.script().sender!!.cast<Player>()
             frame.newFrame(keyAction).run<String>().thenAccept { key ->
                 frame.newFrame(valueAction).run<String>().thenAccept { value ->
                     val container = SignTargetContainer(key)
                     val demand = Demand(value)
-                    Selector.check(player, frame.getSession(), demand, container)
+                    Selector.check(frame.toOriginLocation(), frame.getSession(), demand, container)
                     add(frame.getSession(), container)
                 }
             }

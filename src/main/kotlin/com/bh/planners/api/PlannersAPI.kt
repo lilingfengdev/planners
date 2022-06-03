@@ -5,21 +5,16 @@ import com.bh.planners.api.counter.Counting
 import com.bh.planners.api.enums.ExecuteResult
 import com.bh.planners.api.event.PlayerCastSkillEvent
 import com.bh.planners.api.event.PlayerKeydownEvent
-import com.bh.planners.api.event.PlayerProfileLoadEvent
-import com.bh.planners.core.kether.evalKether
 import com.bh.planners.core.pojo.player.PlayerProfile
-import com.bh.planners.core.storage.Storage
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Router
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.key.IKeySlot
-import com.bh.planners.core.pojo.key.KeySlot
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
 import java.util.*
 
@@ -68,12 +63,12 @@ object PlannersAPI {
     fun PlayerProfile.cast(skill: Skill, mark: Boolean = true): ExecuteResult {
 
         val result = if (!mark) {
-            val session = Session(player, skill)
+            val session = Session(adaptPlayer(player), skill)
             session.cast()
             session.closed = true
             ExecuteResult.SUCCESS
         } else if (Counting.hasNext(player, skill)) {
-            val session = Session(player, skill)
+            val session = Session(adaptPlayer(player), skill)
             Counting.reset(player, session)
             takeMana(Coerce.toDouble(session.mpCost.get()))
             session.cast()

@@ -2,6 +2,7 @@ package com.bh.planners.core.timer
 
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.module.kether.ScriptContext
 
 interface Timer<E : Event> {
@@ -12,6 +13,6 @@ interface Timer<E : Event> {
 
     fun onStart(context: ScriptContext, template: Template, e: E)
 
-    fun check(e: E): Player?
+    fun check(e: E): ProxyCommandSender?
 
 }

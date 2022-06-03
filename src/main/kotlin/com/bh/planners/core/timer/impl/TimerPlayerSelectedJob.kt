@@ -2,7 +2,8 @@ package com.bh.planners.core.timer.impl
 
 import com.bh.planners.api.event.PlayerSelectedJobEvent
 import com.bh.planners.core.timer.AbstractTimer
-import org.bukkit.entity.Player
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.adaptPlayer
 
 object TimerPlayerSelectedJob : AbstractTimer<PlayerSelectedJobEvent>() {
     override val name: String
@@ -10,7 +11,7 @@ object TimerPlayerSelectedJob : AbstractTimer<PlayerSelectedJobEvent>() {
     override val eventClazz: Class<PlayerSelectedJobEvent>
         get() = PlayerSelectedJobEvent::class.java
 
-    override fun check(e: PlayerSelectedJobEvent): Player? {
-        return e.profile.player
+    override fun check(e: PlayerSelectedJobEvent): ProxyCommandSender? {
+        return adaptPlayer(e.profile.player)
     }
 }

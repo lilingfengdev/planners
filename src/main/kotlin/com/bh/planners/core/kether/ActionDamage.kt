@@ -19,9 +19,10 @@ class ActionDamage {
             frame.newFrame(value).run<String>().thenAccept { damage ->
                 frame.newFrame(event).run<String>().thenAccept { event ->
                     frame.newFrame(selector).run<String>().thenAccept { selector ->
-                        val player = frame.script().sender!!.cast<Player>()
-                        Demand(selector).createContainer(player, frame.getSession()).forEachEntity {
-                            if (Coerce.toBoolean(event)) {
+
+                        val player = frame.executor().asPlayer()
+                        Demand(selector).createContainer(frame.toOriginLocation(), frame.getSession()).forEachEntity {
+                            if (Coerce.toBoolean(event) && player != null) {
                                 this.damage(Coerce.toDouble(damage), player)
                             } else {
                                 this.damage(Coerce.toDouble(damage))

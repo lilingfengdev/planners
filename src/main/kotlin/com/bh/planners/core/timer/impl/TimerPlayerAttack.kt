@@ -4,6 +4,8 @@ import com.bh.planners.core.timer.AbstractTimer
 import com.bh.planners.core.timer.Template
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.adaptPlayer
 import taboolib.module.kether.ScriptContext
 
 object TimerPlayerAttack : AbstractTimer<EntityDamageByEntityEvent>() {
@@ -12,8 +14,9 @@ object TimerPlayerAttack : AbstractTimer<EntityDamageByEntityEvent>() {
     override val eventClazz: Class<EntityDamageByEntityEvent>
         get() = EntityDamageByEntityEvent::class.java
 
-    override fun check(e: EntityDamageByEntityEvent): Player? {
-        return e.damager as? Player
+    override fun check(e: EntityDamageByEntityEvent): ProxyCommandSender? {
+        val player = e.damager as? Player ?: return null
+        return adaptPlayer(player)
     }
 
     override fun onStart(context: ScriptContext, template: Template, e: EntityDamageByEntityEvent) {

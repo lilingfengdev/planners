@@ -12,10 +12,15 @@ object Range : Selector {
     override val names: Array<String>
         get() = arrayOf("range", "r")
 
-    override fun check(args: String, session: Session, sender: Player, container: Target.Container) {
-        val split = args.split(",").map { Coerce.toDouble(it) }
-        val targets = sender.location.world!!
-            .getNearbyEntities(sender.location, split[0], split[1], split[2])
+    override fun check(target: Target?, args: String, session: Session, container: Target.Container) {
+
+        val ranges = if (args.contains(",")) args.split(",") else listOf(args, args, args)
+        val split = ranges.map { Coerce.toDouble(it) }
+
+        val location = target as? Target.Location ?: return
+
+        val targets = location.value.world!!
+            .getNearbyEntities(location.value, split[0], split[1], split[2])
             .filterIsInstance<LivingEntity>()
             .map { it.toTarget() }
         container.addAll(targets)

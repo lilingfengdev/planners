@@ -1,6 +1,5 @@
 package com.bh.planners.core.timer
 
-import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.namespaces
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
@@ -8,6 +7,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.Awake
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.registerBukkitListener
@@ -40,29 +40,29 @@ object TimerRegistry {
         }
     }
 
-    fun <E : Event> callTimer(timer: Timer<E>, player: Player, event: E) {
+    fun <E : Event> callTimer(timer: Timer<E>, sender: ProxyCommandSender, event: E) {
         val list = TimerDrive.templates.filter { timer.name in it.triggers }
-        list.forEach { callTimer(timer, it, player, event) }
+        list.forEach { callTimer(timer, it, sender, event) }
     }
 
-    fun <E : Event> callTimer(timer: Timer<E>, template: Template, player: Player, event: E) {
+    fun <E : Event> callTimer(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
         if (template.action != null && template.action.isNotEmpty()) {
             when (template.async) {
                 true -> submit(async = true) {
-                    callTimerAction(timer, template, player, event)
+                    callTimerAction(timer, template, sender, event)
                 }
-                false -> callTimerAction(timer, template, player, event)
+                false -> callTimerAction(timer, template, sender, event)
             }
         }
     }
 
-    fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, player: Player, event: E) {
-        val timerSession = TimerSession(player)
+    fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
+        val timerSession = TimerSession(sender)
         try {
             KetherShell.eval(
                 template.action!!,
                 cacheScript = true,
-                sender = adaptPlayer(player),
+                sender = sender,
                 namespace = namespaces
             ) {
                 rootFrame().variables()["@Session"] = timerSession

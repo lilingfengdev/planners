@@ -13,6 +13,7 @@ open class Skill(val key: String, val config: ConfigurationSection) {
     open class Option(val root: ConfigurationSection) {
         open val name = root.getString("name")
         open val levelCap = root.getInt("level-cap", 5)
+        open val async = root.getBoolean("async", false)
 
         open val variables = root.getConfigurationSection("variables")?.getKeys(false)?.map {
             Variable(it, root.getString("variables.$it")!!)

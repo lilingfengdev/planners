@@ -4,7 +4,6 @@ import com.bh.planners.api.particle.EffectOption
 import com.bh.planners.api.particle.EffectSpawner
 import com.bh.planners.core.kether.effect.Target.Companion.createContainer
 import com.bh.planners.core.pojo.Session
-import org.bukkit.entity.Player
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.module.effect.Circle
@@ -22,8 +21,8 @@ object EffectCircle : EffectLoader<EffectCircle.Impl>() {
 
     class Impl(action: ParsedAction<*>) : Effect(action) {
 
-        override fun sendTo(sender: Player, option: EffectOption, session: Session): ParticleObj {
-            return Circles(option.createContainer(sender, session), option)
+        override fun sendTo(target: Target?, option: EffectOption, session: Session): ParticleObj {
+            return Circles(option.createContainer(target, session), option)
         }
     }
 

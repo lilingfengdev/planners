@@ -1,9 +1,9 @@
 package com.bh.planners.core.timer.impl
 
 import com.bh.planners.core.timer.AbstractTimer
-import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerBedEnterEvent
-import org.bukkit.event.player.PlayerMoveEvent
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.adaptPlayer
 
 object TimerPlayerBedEnter : AbstractTimer<PlayerBedEnterEvent>() {
     override val name: String
@@ -11,7 +11,7 @@ object TimerPlayerBedEnter : AbstractTimer<PlayerBedEnterEvent>() {
     override val eventClazz: Class<PlayerBedEnterEvent>
         get() = PlayerBedEnterEvent::class.java
 
-    override fun check(e: PlayerBedEnterEvent): Player? {
-        return e.player
+    override fun check(e: PlayerBedEnterEvent): ProxyCommandSender? {
+        return adaptPlayer(e.player)
     }
 }

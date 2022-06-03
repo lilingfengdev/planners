@@ -4,7 +4,6 @@ import com.bh.planners.api.particle.Demand
 import com.bh.planners.api.particle.EffectOption
 import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.pojo.Session
-import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
@@ -20,14 +19,14 @@ interface Selector {
             return selectors.firstOrNull { string in it.names } ?: error("Selector '${string}' not found")
         }
 
-        fun check(sender: Player, session: Session, option: EffectOption, container: Target.Container) {
-            check(sender, session, option.demand, container)
+        fun check(target: Target?, session: Session, option: EffectOption, container: Target.Container) {
+            check(target, session, option.demand, container)
         }
 
-        fun check(sender: Player, session: Session, demand: Demand, container: Target.Container) {
+        fun check(target: Target?, session: Session, demand: Demand, container: Target.Container) {
             demand.dataMap.keys.filter { it.startsWith('@') }.forEach {
                 val selector = getSelector(it.substring(1))
-                selector.check(demand.get(it)!!,session, sender, container)
+                selector.check(target, demand.get(it)!!, session, container)
             }
         }
 
@@ -46,6 +45,6 @@ interface Selector {
 
     val names: Array<String>
 
-    fun check(args: String,session : Session, sender: Player, container: Target.Container)
+    fun check(target: Target?, args: String, session: Session, container: Target.Container)
 
 }

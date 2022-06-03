@@ -22,10 +22,10 @@ object EffectCube : EffectLoader<EffectCube.Impl>() {
 
     class Impl(action: ParsedAction<*>) : Effect(action) {
 
-        override fun sendTo(sender: Player, option: EffectOption, session: Session): ParticleObj {
-            val container = option.createContainer(sender,session)
-            val pos1 = sender.location.toProxyLocation()
-            return Cubes(pos1, container, option)
+        override fun sendTo(target: Target?, option: EffectOption, session: Session): ParticleObj {
+            val container = option.createContainer(target, session)
+            if (target !is Target.Location) return EFFECT_AIR
+            return Cubes(target.value.toProxyLocation(), container, option)
         }
     }
 

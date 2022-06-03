@@ -23,8 +23,11 @@ object EffectLine : EffectLoader<EffectLine.Impl>() {
 
     class Impl(action: ParsedAction<*>) : Effect(action) {
 
-        override fun sendTo(sender: Player, option: EffectOption, session: Session): ParticleObj {
-            return Lines(sender.toTarget(), option.createContainer(sender,session), option)
+        override fun sendTo(target: Target?, option: EffectOption, session: Session): ParticleObj {
+
+            if (target !is Target.Location) return EFFECT_AIR
+
+            return Lines(target, option.createContainer(target, session), option)
         }
     }
 

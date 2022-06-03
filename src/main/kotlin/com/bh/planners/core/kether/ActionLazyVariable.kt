@@ -31,6 +31,8 @@ class ActionLazyVariable {
     companion object {
 
         /**
+         * 在技能释放环境食用
+         *
          * 取技能的variable
          * lazy get [var]
          * lazy get abc
