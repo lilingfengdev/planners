@@ -4,6 +4,10 @@ import com.bh.planners.core.kether.ActionSelector
 import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.pojo.Session
 
+/**
+ * 合并目标容器
+ * -@fetch t0
+ */
 object Fetch : Selector {
     override val names: Array<String>
         get() = arrayOf("get", "fetch")

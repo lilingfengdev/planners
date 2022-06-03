@@ -4,6 +4,11 @@ import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.pojo.Session
 import taboolib.common5.Coerce
 
+/**
+ * 限制选中数量
+ * -@amount 1
+ * -@size 1
+ */
 object Amount : Selector {
     override val names: Array<String>
         get() = arrayOf("amount", "size")

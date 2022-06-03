@@ -7,6 +7,10 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import java.util.*
 
+/**
+ * 根据entity id来选中特殊实体
+ * -@entity 230
+ */
 object EntityId : Selector {
     override val names: Array<String>
         get() = arrayOf("entity", "ei", "entityId")

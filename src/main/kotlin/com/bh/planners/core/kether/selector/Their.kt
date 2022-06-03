@@ -4,6 +4,11 @@ import com.bh.planners.core.kether.asPlayer
 import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.pojo.Session
 
+/**
+ * 选中非释放者的实体 反面意思是过滤自己
+ * -@their
+ * -@filterthis
+ */
 object Their : Selector {
     override val names: Array<String>
         get() = arrayOf("their", "filterthis")

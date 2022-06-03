@@ -7,6 +7,11 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common5.Coerce
 
+/**
+ * 选中根据原点来定义的范围实体
+ * -@range 10
+ * -@range 5,5,5
+ */
 object Range : Selector {
 
     override val names: Array<String>

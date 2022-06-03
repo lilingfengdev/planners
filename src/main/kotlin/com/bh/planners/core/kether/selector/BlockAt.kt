@@ -15,6 +15,11 @@ import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import kotlin.math.floor
 
+/**
+ * 视角所看向的方块
+ * step 距离
+ * -@<blockAt/ba> 10
+ */
 object BlockAt : Selector {
 
     val AIR_BLOCKS = Material.values().filter { it.isTransparent }

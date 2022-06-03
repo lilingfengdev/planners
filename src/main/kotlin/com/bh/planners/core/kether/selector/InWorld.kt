@@ -6,6 +6,14 @@ import com.bh.planners.core.pojo.Session
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 
+/**
+ * 选中世界内的实体
+ * 世界:类型限制
+ * -@inWorld world:PLAYER,ZOMBIE
+ * -@inworld world:PLAYER,ZOMBIE
+ * -@iw world:PLAYER,ZOMBIE
+ * -@piw world:PLAYER,ZOMBIE
+ */
 object InWorld : Selector {
 
     override val names: Array<String>

@@ -9,6 +9,12 @@ import org.bukkit.Location
 import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 
+/**
+ * 选中具体坐标
+ * -@loc world,0,0,0
+ * -@location world,0,0,0
+ * -@l world,0,0,0
+ */
 object Location : Selector {
     override val names: Array<String>
         get() = arrayOf("loc", "location", "l")

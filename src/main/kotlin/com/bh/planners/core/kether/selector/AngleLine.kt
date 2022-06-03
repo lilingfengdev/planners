@@ -12,6 +12,12 @@ import org.bukkit.util.Vector
 import taboolib.common5.Coerce
 import kotlin.math.floor
 
+/**
+ * 选中视角所看向的一条线
+ * step 距离
+ * -@aline 10
+ * -@al 10
+ */
 object AngleLine : Selector {
     override val names: Array<String>
         get() = arrayOf("aline", "al")
