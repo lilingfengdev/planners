@@ -42,6 +42,13 @@ fun ScriptFrame.asPlayer(): Player {
     return getSession().asPlayer
 }
 
+
+
+fun ScriptFrame.skill(): PlayerJob.Skill {
+    return getSkill()
+}
+
+
 fun ScriptFrame.getSkill(): PlayerJob.Skill {
     return rootVariables().get<PlayerJob.Skill>("@Skill").orElse(null) ?: error("Error running environment !")
 }
@@ -100,4 +107,8 @@ fun Any.toLocation(): Location {
         }
         else -> Location(null, 0.0, 0.0, 0.0)
     }
+}
+
+fun Location.toLocal(): String {
+    return "${world!!.name},$x,$y,$z"
 }

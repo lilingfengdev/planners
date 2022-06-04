@@ -2,12 +2,10 @@ package com.bh.planners.core.kether.effect
 
 import com.bh.planners.api.particle.Demand
 import com.bh.planners.api.particle.EffectOption
-import com.bh.planners.core.kether.ActionExecutor.Companion.toLocal
 import com.bh.planners.core.kether.selector.Selector
+import com.bh.planners.core.kether.toLocal
 import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
-import taboolib.common.platform.ProxyCommandSender
 
 
 interface Target {

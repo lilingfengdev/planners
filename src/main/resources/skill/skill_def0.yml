@@ -22,9 +22,9 @@ __option__:
     attackCount: math skill level * 2
     base: 10
 action: |-
-  set key to inline "mark-{{ player name }}-{{ uuid random }}"
+  set key to inline "mark-{{ meta executor name }}-{{ uuid random }}"
   set loc to executor loc
-  origin set executor loc
+  meta origin set executor loc
   global set &key to &loc timeout 600000000
   title "陷阱" subtitle "已安放" by 20 60 20
   async {

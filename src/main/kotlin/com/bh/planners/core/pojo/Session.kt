@@ -32,13 +32,17 @@ open class Session(val executor: ProxyCommandSender, val skill: Skill) {
 
     private fun toLazyVariable(variable: Skill.Variable): LazyGetter<*> {
         return LazyGetter {
-            KetherShell.eval(variable.expression, namespace = namespaces, sender = executor) {
-                rootFrame().variables()["@Session"] = this@Session
-                rootFrame().variables()["@Skill"] = playerSkill
-                variables.filter { it.key != variable.key }.forEach {
-                    rootFrame().variables()[it.key] = it.value
-                }
-            }.get()
+            try {
+                KetherShell.eval(variable.expression, namespace = namespaces, sender = executor) {
+                    rootFrame().variables()["@Session"] = this@Session
+                    rootFrame().variables()["@Skill"] = playerSkill
+                    variables.filter { it.key != variable.key }.forEach {
+                        rootFrame().variables()[it.key] = it.value
+                    }
+                }.get()
+            } catch (e: Throwable) {
+                e.printKetherErrorMessage()
+            }
         }
     }
 

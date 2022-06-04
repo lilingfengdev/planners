@@ -1,14 +1,17 @@
-package com.bh.planners.core.kether
+package com.bh.planners.core.kether.util
 
+import com.bh.planners.core.kether.NAMESPACE
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.QuestAction
-import taboolib.module.kether.*
+import taboolib.module.kether.KetherParser
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
-class ActionString {
+class Strings {
 
-    class StringContain(val action: ParsedAction<*>, val value: ParsedAction<*>) : ScriptAction<Boolean>() {
+    class Contain(val action: ParsedAction<*>, val value: ParsedAction<*>) : ScriptAction<Boolean>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Boolean> {
 
@@ -23,13 +26,13 @@ class ActionString {
         }
 
     }
-
     companion object {
 
         @KetherParser(["contain"], namespace = NAMESPACE)
-        fun parser() = scriptParser {
-            StringContain(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+        fun parser1() = scriptParser {
+            Contain(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
         }
+
 
     }
 

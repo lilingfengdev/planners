@@ -22,72 +22,22 @@ class ActionSkill {
         }
     }
 
-    class ActionSkillSwitch(val action: ParsedAction<*>) : ScriptAction<Void>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            frame.newFrame(action).run<String>().thenAccept { skill ->
-                val player = frame.script().sender!!.castSafely<Player>()!!
-                frame.rootVariables()["@Skill"] = player.plannersProfile.getSkill(skill) ?: return@thenAccept
-            }
-            return CompletableFuture.completedFuture(null)
-        }
-    }
-
-
     companion object {
 
-        /**
-         * 技能名称
-         * skill name
-         *
-         * 技能等级
-         * skill level
-         *
-         * 技能快捷键
-         * skill key
-         *
-         * 技能切换
-         * skill switch
-         *
-         * 技能释放
-         * skill cast
-         *
-         */
         @KetherParser(["skill"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             it.switch {
-                case("name") {
-                    actionNow {
-                        getSkill().instance.option.name
-                    }
-                }
-                case("level") {
-                    actionNow {
-                        mark()
-                        try {
-                            expect("cap")
-                            getSkill().instance.option.levelCap
-                        } catch (_: Exception) {
-                            reset()
-                            getSkill().level
-                        }
-                    }
-                }
                 case("key") {
                     actionNow {
                         // TODO mark wait
                         "Ctrl + sb"
                     }
                 }
-                case("switch") {
-                    ActionSkillSwitch(it.next(ArgTypes.ACTION))
-                }
                 case("cast") {
                     actionNow {
                         ActionSkillCast(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
                     }
                 }
-
-
             }
 
         }

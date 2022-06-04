@@ -1,12 +1,13 @@
-package com.bh.planners.core.kether
+package com.bh.planners.core.kether.util
 
+import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.toLocation
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class ActionLocation {
+class Locations {
 
 
     class Distance(val loc: ParsedAction<*>, val target: ParsedAction<*>) : ScriptAction<Double>() {
@@ -29,9 +30,7 @@ class ActionLocation {
 
             return future
         }
-
     }
-
 
     companion object {
 
@@ -48,7 +47,6 @@ class ActionLocation {
                 }
             }
         }
-
 
     }
 
