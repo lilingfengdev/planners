@@ -1,12 +1,7 @@
 __option__:
   triggers: [ runnable ]
-  period: 100
+  period: 1000000
   async: false
 
-action: |-
-  selector g0 to "-@blockAt 100"
-
-  timer true {
-    effect line "FLAME 0 0 0 -speed 0.0 -posY 0.2 -count 100 -step 0.5 -@fetch g0"
-  }
+action: ''
 

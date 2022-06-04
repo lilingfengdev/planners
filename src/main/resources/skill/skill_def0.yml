@@ -1,6 +1,7 @@
 __option__:
   name: '疾风斩击'
   triggers: [ player attack ]
+  async: true
   icon:
     material: SWORD_STONE
     name: "&e{{ skill name }}"
@@ -21,5 +22,33 @@ __option__:
     attackCount: math skill level * 2
     base: 10
 action: |-
-  print lazy get mp
+  set key to inline "mark-{{ player name }}-{{ uuid random }}"
+  set loc to executor loc
+  origin set executor loc
+  global set &key to &loc timeout 600000000
+  title "陷阱" subtitle "已安放" by 20 60 20
+  async {
 
+    for i in range 1 to 3 then {
+      effect circle inline "CLOUD 0 0 0 -step 10 -radius 4 -speed 0.0 -count 10 -@loc {{ &loc }}"
+      effect circle inline "CLOUD 0 0 0 -step 10 -radius 3 -speed 0.0 -count 10 -@loc {{ &loc }}"
+      effect circle inline "CLOUD 0 0 0 -step 10 -radius 2 -speed 0.0 -count 10 -@loc {{ &loc }}"
+      effect circle inline "CLOUD 0 0 0 -step 10 -radius 1 -speed 0.0 -count 10 -@loc {{ &loc }}"
+      sleep 1s
+    }
+
+  }
+  async {
+    for i in range 1 to 8 then {
+      selector t0 to "-@range 4,4,4 -@their"
+      if check selector t0 size >= 1 then {
+        damage 2 false "-@fetch t0"
+        print "break for"
+        exit success
+      }
+      sleep 1s
+    }
+
+  }
+
+  sleep 8s
