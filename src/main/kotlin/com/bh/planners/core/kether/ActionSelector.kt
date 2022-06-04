@@ -4,6 +4,7 @@ import com.bh.planners.api.particle.Demand
 import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.kether.effect.Target.Companion.createContainer
 import com.bh.planners.core.kether.selector.Selector
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.Player
 import taboolib.common.platform.Schedule
@@ -17,15 +18,15 @@ class ActionSelector {
 
     companion object {
 
-        private val sessions = Collections.synchronizedMap(mutableMapOf<Session, MutableList<SignTargetContainer>>())
+        private val sessions = Collections.synchronizedMap(mutableMapOf<Context, MutableList<SignTargetContainer>>())
 
-        fun getContainer(session: Session, key: String): SignTargetContainer? {
-            val list = sessions[session] ?: emptyList()
+        fun getContainer(context: Context, key: String): SignTargetContainer? {
+            val list = sessions[context] ?: emptyList()
             return list.firstOrNull { it.name == key }
         }
 
-        fun add(session: Session, container: SignTargetContainer) {
-            sessions.computeIfAbsent(session) { mutableListOf() } += container
+        fun add(context: Context, container: SignTargetContainer) {
+            sessions.computeIfAbsent(context) { mutableListOf() } += container
         }
 
         private val lock = Any()

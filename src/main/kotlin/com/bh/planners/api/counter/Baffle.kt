@@ -1,5 +1,7 @@
 package com.bh.planners.api.counter
 
+import kotlin.math.max
+
 class Baffle(val name: String, var millis: Long) {
 
     var mark = System.currentTimeMillis()
@@ -9,7 +11,10 @@ class Baffle(val name: String, var millis: Long) {
 
     // 当前时间 大于 结束时间
     val next: Boolean
-        get() = System.currentTimeMillis() > nestMillis
+        get() = countdown == 0L
+
+    val countdown: Long
+        get() = max(System.currentTimeMillis() - nestMillis, 0)
 
     fun reset() {
         this.mark = -1

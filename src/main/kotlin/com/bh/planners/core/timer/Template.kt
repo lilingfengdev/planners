@@ -3,13 +3,13 @@ package com.bh.planners.core.timer
 import taboolib.library.configuration.ConfigurationSection
 
 
-class Template(val id: String, var root: ConfigurationSection) {
+open class Template(val id: String, var root: ConfigurationSection) {
 
-    val triggers = root.getStringList("__option__.triggers")
+    open val triggers = root.getStringList("__option__.triggers")
 
-    val async = root.getBoolean("__option__.async")
+    open val async = root.getBoolean("__option__.async")
 
-    val action = root.getString("action")
+    open val action = root.getString("action")!!
 
 
 }

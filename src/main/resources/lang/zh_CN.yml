@@ -1,3 +1,10 @@
 shift-left-info: 'Shift + 左键 选择职业'
 job-selected: '选择 {0} 职业成功!'
 job-exists: '您已选择 {0} 职业,无法重复选择'
+
+player-not-job: '您还未选择职业,无法执行该操作哦~'
+
+skill-bind-shortcut: '技能{0}绑定快捷键{1}'
+skill-cast-level-zero: '技能{0}无法释放，请先升级'
+skill-cast-cooling: '技能{0}还需要等待{1}s后才可以释放'
+skill-upgrade-success: '技能{0}升级到{1}'

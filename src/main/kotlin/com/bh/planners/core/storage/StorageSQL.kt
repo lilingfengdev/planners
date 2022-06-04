@@ -33,7 +33,9 @@ class StorageSQL : Storage {
         const val SKILL = "skill"
         const val LEVEL = "level"
         const val EXPERIENCE = "experience"
+        const val POINT = "point"
 
+        const val SHORTCUT_KEY = "shortcut_key"
         const val SLOT_KEY = "slot"
 
     }
@@ -57,6 +59,11 @@ class StorageSQL : Storage {
         add("id") { id() }
         add(USER) { type(ColumnTypeSQL.INT, 10) }
         add(JOB) { type(ColumnTypeSQL.VARCHAR, 30) }
+        add(POINT) {
+            type(ColumnTypeSQL.INT) {
+                def(0)
+            }
+        }
         add(LEVEL) {
             type(ColumnTypeSQL.INT, 30) {
                 def(1)
@@ -74,18 +81,12 @@ class StorageSQL : Storage {
         add(USER) { type(ColumnTypeSQL.INT, 10) }
         add(JOB) { type(ColumnTypeSQL.VARCHAR, 30) }
         add(SKILL) { type(ColumnTypeSQL.VARCHAR, 30) }
+        add(SHORTCUT_KEY) { type(ColumnTypeSQL.VARCHAR, 30) }
         add(LEVEL) {
             type(ColumnTypeSQL.INT, 10) {
                 def(0)
             }
         }
-    }
-
-    val keySlot = Table("planners_key_slot", host) {
-        add("id") { id() }
-        add(USER) { type(ColumnTypeSQL.INT, 10) }
-        add(SLOT_KEY) { type(ColumnTypeSQL.VARCHAR, 10) }
-        add(SKILL) { type(ColumnTypeSQL.INT) }
     }
 
     val dataSource by lazy { host.createDataSource() }
@@ -94,7 +95,6 @@ class StorageSQL : Storage {
         userTable.createTable(dataSource)
         jobTable.createTable(dataSource)
         skillTable.createTable(dataSource)
-        keySlot.createTable(dataSource)
     }
 
 
@@ -135,10 +135,11 @@ class StorageSQL : Storage {
             where {
                 ID eq jobId
             }
-            rows(JOB, LEVEL, EXPERIENCE)
+            rows(JOB, LEVEL, EXPERIENCE, POINT)
         }.first {
             PlayerJob(jobId, getString(JOB), getInt(LEVEL), getInt(EXPERIENCE)).also {
                 it.skills += getSkills(player, it.jobKey)
+                it.point = getInt(POINT)
             }
         }
     }
@@ -152,7 +153,7 @@ class StorageSQL : Storage {
                     next()
                     Coerce.toLong(getObject(1))
                 }
-                future.complete(PlayerJob.Skill(id, skill.key, 0))
+                future.complete(PlayerJob.Skill(id, skill.key, 0, null))
             }
         }
         return future
@@ -165,6 +166,7 @@ class StorageSQL : Storage {
                 ID eq skill.id
             }
             set(LEVEL, skill.level)
+            set(SHORTCUT_KEY, skill.shortcutKey)
         }
     }
 
@@ -173,9 +175,9 @@ class StorageSQL : Storage {
         return skillTable.select(dataSource) {
             USER eq userId
             JOB eq jobKey
-            rows(ID, SKILL, LEVEL)
+            rows(ID, SKILL, LEVEL, SHORTCUT_KEY)
         }.map {
-            PlayerJob.Skill(getLong(ID), getString(SKILL), getInt(LEVEL))
+            PlayerJob.Skill(getLong(ID), getString(SKILL), getInt(LEVEL), getString(SHORTCUT_KEY))
         }
     }
 
@@ -228,6 +230,7 @@ class StorageSQL : Storage {
             where { ID eq job.id }
             set(LEVEL, job.counter.level)
             set(EXPERIENCE, job.counter.experience)
+            set(POINT, job.point)
         }
     }
 

@@ -2,6 +2,7 @@ package com.bh.planners.core.pojo.player
 
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.core.pojo.data.DataContainer
+import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.storage.Storage
 import org.bukkit.entity.Player
 
@@ -13,8 +14,14 @@ class PlayerProfile(val player: Player, val id: Long) {
 
     val keySlotTable = mutableListOf<PlayerKeySlot>()
 
-
     var mana = 0.0
+
+    var point: Int = 0
+        get() = job?.point ?: 0
+        set(value) {
+            job?.point = value
+            field = value
+        }
 
     fun getSkills(): List<PlayerJob.Skill> {
         val skillKeys = job?.instance?.skills ?: emptyList()
@@ -24,6 +31,11 @@ class PlayerProfile(val player: Player, val id: Long) {
     fun getSkill(id: Long): PlayerJob.Skill? {
         if (job == null) return null
         return job!!.skills.firstOrNull { it.id == id }
+    }
+
+    fun getSkill(slot: IKeySlot): PlayerJob.Skill? {
+        if (job == null) return null
+        return job!!.skills.firstOrNull { it.keySlot == slot }
     }
 
     fun getSkill(key: String): PlayerJob.Skill? {

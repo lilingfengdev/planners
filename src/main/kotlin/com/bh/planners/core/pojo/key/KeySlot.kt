@@ -8,6 +8,8 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.Config
+import taboolib.module.configuration.Configuration
 
 class KeySlot(config: ConfigurationSection) : IKeySlot {
 
@@ -17,22 +19,6 @@ class KeySlot(config: ConfigurationSection) : IKeySlot {
 
     override val name = config.getString("name", key)!!
 
-    companion object {
-
-        @Awake(LifeCycle.ENABLE)
-        fun loadKeySlot() {
-            PlannersAPI.keySlots.clear()
-            PlannersOption.root.getConfigurationSection("key-slot")?.getKeys(false)?.forEach {
-                val section = PlannersOption.root.getConfigurationSection("key-slot.$it")!!
-                PlannersAPI.keySlots += KeySlot(section)
-            }
-        }
-
-        @SubscribeEvent
-        fun e(e: PluginReloadEvent) {
-            this.loadKeySlot()
-        }
-
-    }
+    override val description = config.getStringList("description")
 
 }

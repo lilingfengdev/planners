@@ -12,8 +12,11 @@ class ActionLazyVariable {
     class VariableGet(val action: ParsedAction<*>) : ScriptAction<Any>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Any> {
-            return frame.newFrame(action).run<String>().thenApply {
-                frame.rootVariables().get<LazyGetter<*>>(it).get().get()
+            return frame.newFrame(action).run<Any>().thenApply {
+                val optional = frame.rootVariables().get<LazyGetter<*>>(it.toString())
+                if (optional.isPresent) {
+                    optional.get().get()
+                } else "empty $it"
             }
         }
     }

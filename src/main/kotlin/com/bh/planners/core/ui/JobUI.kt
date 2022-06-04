@@ -20,7 +20,7 @@ import taboolib.platform.util.buildItem
 import taboolib.platform.util.sendLang
 import taboolib.platform.util.toProxyLocation
 
-class JobUI(val player: Player) {
+class JobUI(viewer: Player) : IUI(viewer) {
 
     companion object {
 
@@ -29,6 +29,7 @@ class JobUI(val player: Player) {
 
         val title: String
             get() = root.getString("title")!!
+
         val rows: Int
             get() = root.getInt("rows", 6)
 
@@ -37,12 +38,8 @@ class JobUI(val player: Player) {
 
     }
 
-    val profile: PlayerProfile
-        get() = player.plannersProfile
-
-
-    fun open() {
-        player.openMenu<Linked<Router>>(title) {
+    override fun open() {
+        viewer.openMenu<Linked<Router>>(title) {
             rows(rows)
             elements { PlannersAPI.routers.filter { it.routes.isNotEmpty() } }
             slots(slots)
@@ -64,17 +61,17 @@ class JobUI(val player: Player) {
             onClick { event, element ->
                 event.isCancelled = true
                 if (event.clickEvent().click == ClickType.SHIFT_LEFT) {
-                    submit(delay = 1 , async = true){
-                        player.closeInventory() 
+                    submit(delay = 1, async = true) {
+                        viewer.closeInventory()
                     }
-                    Storage.INSTANCE.createPlayerJob(player, element.routes[0].job).thenAccept {
+                    Storage.INSTANCE.createPlayerJob(viewer, element.routes[0].job).thenAccept {
                         profile.job = it
                         Storage.INSTANCE.updateCurrentJob(profile)
                         PlayerSelectedJobEvent(profile).call()
-                        player.sendLang("job-selected", it.instance.option.name)
+                        viewer.sendLang("job-selected", it.instance.option.name)
                     }
                 } else {
-                    player.sendLang("shift-left-info", element.name)
+                    viewer.sendLang("shift-left-info", element.name)
                 }
             }
 

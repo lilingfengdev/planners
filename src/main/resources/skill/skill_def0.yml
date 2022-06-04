@@ -33,7 +33,7 @@ action: |-
       effect circle inline "CLOUD 0 0 0 -step 10 -radius 4 -speed 0.0 -count 10 -@loc {{ &loc }}"
       effect circle inline "CLOUD 0 0 0 -step 10 -radius 3 -speed 0.0 -count 10 -@loc {{ &loc }}"
       effect circle inline "CLOUD 0 0 0 -step 10 -radius 2 -speed 0.0 -count 10 -@loc {{ &loc }}"
-      effect circle inline "CLOUD 0 0 0 -step 10 -radius 1 -speed 0.0 -count 10 -@loc {{ &loc }}"
+      effect circle inline "CLOUD 0 0 0 -step 10 -radius 1 -speed 0.0 -count 10 -@loc {{ &loc }} -onCapture t0"
       sleep 1s
     }
 
@@ -52,3 +52,9 @@ action: |-
   }
 
   sleep 8s
+
+timer:
+  t0:
+    async: true
+    action: |-
+      damage 10 false inline "-@entity {{ &target }}"

@@ -30,11 +30,13 @@ class ActionMeta {
             it.switch {
 
                 case("skill") {
-                    when (expects("name", "async", "level")) {
+                    when (expects("id", "name", "async", "level", "level-cap", "level-max", "shortcut")) {
+                        "id" -> actionNow { skill().instance.key }
                         "name" -> actionNow { skill().instance.option.name }
                         "async" -> actionNow { skill().instance.option.async }
                         "level" -> actionNow { skill().level }
                         "level-cap", "level-max" -> actionNow { skill().instance.option.levelCap }
+                        "shortcut" -> actionNow { skill().keySlot?.name ?: "暂无" }
                         else -> actionNow { "error" }
                     }
 

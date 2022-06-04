@@ -18,6 +18,10 @@ object Counting {
         return getCache(player).find { it.name == skill.key }?.next ?: true
     }
 
+    fun getCountdown(player: Player, skill: Skill): Long {
+        return getCache(player).find { it.name == skill.key }?.countdown ?: -1L
+    }
+
     fun getCache(player: Player) = map.computeIfAbsent(player.name) { mutableSetOf() }
 
 }
