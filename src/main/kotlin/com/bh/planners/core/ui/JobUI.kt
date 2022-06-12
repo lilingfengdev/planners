@@ -2,6 +2,7 @@ package com.bh.planners.core.ui
 
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.attemptAcceptJob
 import com.bh.planners.api.event.PlayerSelectedJobEvent
 import com.bh.planners.core.pojo.Router
 import com.bh.planners.core.pojo.player.PlayerProfile
@@ -41,7 +42,7 @@ class JobUI(viewer: Player) : IUI(viewer) {
     override fun open() {
         viewer.openMenu<Linked<Router>>(title) {
             rows(rows)
-            elements { PlannersAPI.routers.filter { it.routes.isNotEmpty() } }
+            elements { PlannersAPI.routers }
             slots(slots)
             onGenerate { _, element, _, _ ->
                 buildItem(element.icon) {
@@ -64,11 +65,8 @@ class JobUI(viewer: Player) : IUI(viewer) {
                     submit(delay = 1, async = true) {
                         viewer.closeInventory()
                     }
-                    Storage.INSTANCE.createPlayerJob(viewer, element.routes[0].job).thenAccept {
-                        profile.job = it
-                        Storage.INSTANCE.updateCurrentJob(profile)
-                        PlayerSelectedJobEvent(profile).call()
-                        viewer.sendLang("job-selected", it.instance.option.name)
+                    if (profile.attemptAcceptJob(PlannersAPI.getRouterStartJob(element))) {
+                        viewer.sendLang("player-job-selected", element.name)
                     }
                 } else {
                     viewer.sendLang("shift-left-info", element.name)

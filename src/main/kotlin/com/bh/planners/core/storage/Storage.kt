@@ -47,7 +47,6 @@ interface Storage {
 
     fun createPlayerSkill(player: Player, job: PlayerJob, skill: Skill): CompletableFuture<PlayerJob.Skill>
 
-
     fun updateSkill(skill: PlayerJob.Skill)
 
     fun getDataContainer(player: Player): DataContainer

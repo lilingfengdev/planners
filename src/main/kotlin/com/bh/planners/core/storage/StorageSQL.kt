@@ -110,7 +110,7 @@ class StorageSQL : Storage {
         }
 
         // 初始化metadata
-        profile.dataContainer.merge(getDataContainer(player))
+        profile.flags.merge(getDataContainer(player))
 
         return profile
     }
@@ -210,7 +210,7 @@ class StorageSQL : Storage {
     }
 
     override fun createPlayerJob(player: Player, job: Job): CompletableFuture<PlayerJob> {
-        val minLevel = job.option.counter.min
+        val minLevel = job.router.counter.min
         val future = CompletableFuture<PlayerJob>()
         jobTable.insert(dataSource, USER, JOB, LEVEL, EXPERIENCE) {
             value(player.toUserId(), job.key, minLevel, 0.0)
@@ -228,6 +228,7 @@ class StorageSQL : Storage {
     override fun updateJob(player: Player, job: PlayerJob) {
         jobTable.update(dataSource) {
             where { ID eq job.id }
+            set(JOB, job.jobKey)
             set(LEVEL, job.counter.level)
             set(EXPERIENCE, job.counter.experience)
             set(POINT, job.point)

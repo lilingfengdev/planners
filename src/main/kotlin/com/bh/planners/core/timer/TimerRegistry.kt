@@ -1,6 +1,8 @@
 package com.bh.planners.core.timer
 
 import com.bh.planners.core.kether.namespaces
+import com.bh.planners.core.pojo.Context
+import com.bh.planners.core.pojo.Skill
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import taboolib.common.LifeCycle
@@ -19,7 +21,7 @@ object TimerRegistry {
 
     private val map = mutableMapOf<String, Class<out Event>>()
     val triggers = mutableMapOf<String, Timer<*>>()
-
+    val EMPTY = Skill.Empty()
 
     @Suppress("UNCHECKED_CAST")
     @Awake(LifeCycle.ENABLE)
@@ -46,7 +48,7 @@ object TimerRegistry {
     }
 
     fun <E : Event> callTimer(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
-        if (template.action != null && template.action.isNotEmpty()) {
+        if (template.action.isNotEmpty()) {
             when (template.async) {
                 true -> submit(async = true) {
                     callTimerAction(timer, template, sender, event)
@@ -59,12 +61,7 @@ object TimerRegistry {
     fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
         val timerSession = TimerSession(sender)
         try {
-            KetherShell.eval(
-                template.action!!,
-                cacheScript = true,
-                sender = sender,
-                namespace = namespaces
-            ) {
+            KetherShell.eval(template.action, cacheScript = true, sender = sender, namespace = namespaces) {
                 rootFrame().variables()["@Session"] = timerSession
                 timer.onStart(this, template, event)
             }

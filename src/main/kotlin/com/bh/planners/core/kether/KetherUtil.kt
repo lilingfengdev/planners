@@ -1,6 +1,8 @@
 package com.bh.planners.core.kether
 
+import com.bh.planners.api.particle.Demand
 import com.bh.planners.core.kether.effect.Target
+import com.bh.planners.core.kether.effect.Target.Companion.createContainer
 import com.bh.planners.core.kether.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
@@ -11,12 +13,14 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
+import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.platform.type.BukkitPlayer
 import taboolib.platform.util.toBukkitLocation
+import java.util.concurrent.CompletableFuture
 
 const val NAMESPACE = "Planners"
 
@@ -31,7 +35,7 @@ fun ScriptFrame.executor(): ProxyCommandSender {
     return getSession().executor
 }
 
-fun ProxyCommandSender.asPlayer() : Player? {
+fun ProxyCommandSender.asPlayer(): Player? {
     if (this is BukkitPlayer) {
         return player
     }
@@ -41,7 +45,6 @@ fun ProxyCommandSender.asPlayer() : Player? {
 fun ScriptFrame.asPlayer(): Player {
     return getSession().asPlayer
 }
-
 
 
 fun ScriptFrame.skill(): PlayerJob.Skill {
@@ -111,4 +114,14 @@ fun Any.toLocation(): Location {
 
 fun Location.toLocal(): String {
     return "${world!!.name},$x,$y,$z"
+}
+
+fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Target.Container> {
+    val future = CompletableFuture<Target.Container>()
+    this.newFrame(selector).run<Any>().thenAccept {
+        val demand = Demand(it.toString())
+        val container = demand.createContainer(toOriginLocation(), getSession())
+        future.complete(container)
+    }
+    return future
 }

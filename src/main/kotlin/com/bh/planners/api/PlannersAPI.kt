@@ -1,10 +1,14 @@
 package com.bh.planners.api
 
 import com.bh.planners.api.ManaCounter.takeMana
+import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.counter.Counting
 import com.bh.planners.api.enums.ExecuteResult
 import com.bh.planners.api.event.PlayerCastSkillEvent
 import com.bh.planners.api.event.PlayerKeydownEvent
+import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.namespaces
+import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Router
@@ -18,6 +22,9 @@ import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
+import taboolib.module.kether.KetherShell
+import taboolib.module.kether.printKetherErrorMessage
+import taboolib.module.kether.runKether
 import java.util.*
 
 object PlannersAPI {
@@ -84,6 +91,9 @@ object PlannersAPI {
         if (!Counting.hasNext(player, skill)) return ExecuteResult.COOLING
 
         val session = Session(adaptPlayer(player), skill)
+        val mana = Coerce.toDouble(session.mpCost.get())
+        if (toCurrentMana() < mana) return ExecuteResult.MANA_NOT_ENOUGH
+
         Counting.reset(player, session)
         takeMana(Coerce.toDouble(session.mpCost.get()))
         session.cast()
@@ -95,6 +105,64 @@ object PlannersAPI {
 
     fun getSkill(skillName: String): Skill? {
         return skills.firstOrNull { it.key == skillName }
+    }
+
+    fun checkUpgrade(player: Player, playerSkill: PlayerJob.Skill): Boolean {
+        return getUpgradeConditions(playerSkill).any { return checkCondition(player, playerSkill, it) }
+    }
+
+    fun tryUpgrade(player: Player, playerSkill: PlayerJob.Skill): Boolean {
+
+        // 如果满级 则失败
+        if (playerSkill.isMax) return false
+
+        // 如果不满足条件 则失败
+        if (!checkUpgrade(player, playerSkill)) return false
+
+        getUpgradeConditions(playerSkill).filter { it.consume != null }.forEach {
+            runKether {
+                KetherShell.eval(it.consume!!, sender = adaptPlayer(player), namespace = namespaces) {
+                    rootFrame().rootVariables()["level"] = playerSkill.level
+                }
+            }
+        }
+        player.plannersProfile.next(playerSkill)
+        return true
+    }
+
+    val PlayerJob.Skill.isMax: Boolean
+        get() = level == instance.option.levelCap
+
+    fun dissatisfyUpgrade(player: Player, playerSkill: PlayerJob.Skill): List<Skill.UpgradeCondition> {
+        val listOf = mutableListOf<Skill.UpgradeCondition>()
+
+        getUpgradeConditions(playerSkill).forEach {
+            if (!checkCondition(player, playerSkill, it)) {
+                listOf.add(it)
+            }
+        }
+        return listOf
+    }
+
+
+    fun checkCondition(player: Player, playerSkill: PlayerJob.Skill, it: Skill.UpgradeCondition): Boolean {
+        return try {
+            KetherShell.eval(it.condition, sender = adaptPlayer(player), namespace = namespaces) {
+                rootFrame().rootVariables()["level"] = playerSkill.level
+                rootFrame().rootVariables()["@Skill"] = playerSkill
+            }.thenApply { Coerce.toBoolean(it) }.get()
+        } catch (e: Throwable) {
+            e.printKetherErrorMessage()
+            false
+        }
+    }
+
+    fun hasJob(key: String) = key in jobs.map { it.key }
+
+    fun getJob(key: String) = jobs.firstOrNull { it.key == key } ?: error("Job '${key}' not found.")
+
+    fun getRouterStartJob(router: Router): Job {
+        return jobs.firstOrNull { it.key == router.start } ?: error("Job '${router.start}' not found.")
     }
 
     @SubscribeEvent

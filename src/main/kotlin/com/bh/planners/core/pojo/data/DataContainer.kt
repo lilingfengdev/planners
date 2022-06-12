@@ -70,7 +70,8 @@ class DataContainer {
      */
     fun update(key: String, value: Any) {
         if (containsKey(key)) {
-            set(key, get(key)!!)
+            val data = get(key)!!
+            set(key, Data(value, data.createStamp, data.survivalStamp))
         } else {
             set(key, Data(value, survivalStamp = -1))
         }

@@ -17,13 +17,19 @@ enum class ExecuteResult {
     COOLING {
         override val handler: Player.(Skill) -> Unit
             get() = { skill ->
-                sendLang("skill-cast-cooling", skill.option.name, Counting.getCountdown(this, skill))
+                sendLang("skill-cast-cooling", skill.option.name, Counting.getCountdown(this, skill) / 1000)
             }
     },
     SUCCESS {
         override val handler: Player.(Skill) -> Unit
             get() = {
 
+            }
+    },
+    MANA_NOT_ENOUGH {
+        override val handler: Player.(Skill) -> Unit
+            get() = { skill ->
+                sendLang("skill-cast-mana-not-enough", skill.option.name)
             }
     },
     LEVEL_ZERO {

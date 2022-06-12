@@ -1,5 +1,6 @@
 warrior:
   name: '战士'
+  counter: def0
   icon:
     material: STONE_SWORD
     name: '&f主职业: &a{name}'
@@ -8,10 +9,9 @@ warrior:
       - ' &7攻击力: 3'
       - ' &7防御力: 2'
       - ' &7移动速度: 2'
+  start: job_def0 # 初始职业
   routes:
-    - key: job_def0
-      extend-skill: true
-      target: job_def1
-      promote:
-        - check class level >= 10
-
+    job_def0: # 从job_def0 职业转职到,target下是可选职业
+      target:
+        - key: job_def1
+        - key: job_def2

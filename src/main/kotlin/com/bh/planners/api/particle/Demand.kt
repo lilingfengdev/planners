@@ -51,6 +51,10 @@ class Demand(val source: String) {
         return args.getOrNull(index) ?: def
     }
 
+    fun set(key: String, value: String) {
+        dataMap[key] = ""
+    }
+
     override fun toString(): String {
         return "Demand(source='$source', namespace='$namespace', dataMap=$dataMap, args=$args)"
     }

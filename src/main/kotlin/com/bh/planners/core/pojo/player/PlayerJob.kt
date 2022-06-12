@@ -6,14 +6,30 @@ import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.level.Level
 import com.bh.planners.core.storage.Storage
 
-class PlayerJob(val id: Long, val jobKey: String, level: Int, experience: Int) {
+class PlayerJob(val id: Long, var jobKey: String, level: Int, experience: Int) {
 
     val skills = mutableListOf<Skill>()
-    val counter: Level = instance.option.counter.toLevel(level, experience)
+    val counter: Level = instance.router.counter.toLevel(level, experience)
     var point: Int = 0
 
     val instance: Job
         get() = PlannersAPI.jobs.first { it.key == jobKey }
+
+    val level: Int
+        get() = counter.level
+
+    val experience: Int
+        get() = counter.experience
+
+    val maxExperience: Int
+        get() = counter.algorithm.getExp(level).getNow(0)
+
+    val name: String
+        get() = instance.option.name
+
+    fun addExperience(value: Int) {
+        counter.addExperience(value)
+    }
 
     fun getSkill(skillName: String): Skill? {
         return skills.firstOrNull { it.key == skillName }

@@ -9,4 +9,7 @@ object PlannersOption {
     val root: ConfigurationSection
         get() = Planners.config.getConfigurationSection("options")!!
 
+    val scopeThreshold: List<Double>
+        get() = root.getDoubleList("scope-threshold")
+
 }

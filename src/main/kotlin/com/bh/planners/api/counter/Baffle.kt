@@ -14,7 +14,7 @@ class Baffle(val name: String, var millis: Long) {
         get() = countdown == 0L
 
     val countdown: Long
-        get() = max(System.currentTimeMillis() - nestMillis, 0)
+        get() = max(nestMillis - System.currentTimeMillis(), 0)
 
     fun reset() {
         this.mark = -1

@@ -10,11 +10,7 @@ class PlayerProfile(val player: Player, val id: Long) {
 
     var job: PlayerJob? = null
 
-    val dataContainer = DataContainer()
-
-    val keySlotTable = mutableListOf<PlayerKeySlot>()
-
-    var mana = 0.0
+    val flags = DataContainer()
 
     var point: Int = 0
         get() = job?.point ?: 0
@@ -22,6 +18,15 @@ class PlayerProfile(val player: Player, val id: Long) {
             job?.point = value
             field = value
         }
+
+    val level: Int
+        get() = job?.level ?: 0
+
+    val maxExperience: Int
+        get() = job?.maxExperience ?: 0
+
+    val experience: Int
+        get() = job?.experience ?: 0
 
     fun getSkills(): List<PlayerJob.Skill> {
         val skillKeys = job?.instance?.skills ?: emptyList()

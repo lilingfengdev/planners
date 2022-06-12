@@ -31,4 +31,12 @@ object PlannersCommand {
     @CommandBody
     val job = PlannersJobCommand
 
+    @CommandBody
+    val point = PlannersPointCommand
+
+    @CommandBody
+    val level = PlannersLevelCommand
+
+    @CommandBody
+    val exp = PlannersExperienceCommand
 }

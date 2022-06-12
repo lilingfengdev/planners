@@ -6,6 +6,7 @@ import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.kether.toLocal
 import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 
 
 interface Target {
@@ -88,6 +89,16 @@ interface Target {
 
         fun forEachEntity(func: LivingEntity.(Int) -> Unit) {
             forEach<Entity> { index -> func(livingEntity, index) }
+        }
+
+        fun forEachPlayer(func: Player.(Int) -> Unit) {
+            forEachEntity {
+                var index = 0
+                if (this is Player) {
+                    func(this, index)
+                    index += 1
+                }
+            }
         }
 
         fun forEachLocation(func: org.bukkit.Location.(Int) -> Unit) {

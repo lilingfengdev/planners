@@ -24,6 +24,11 @@ taboolib {
     install("platform-bukkit")
     classifier = null
     version = "6.0.8-3"
+    description {
+        dependencies {
+            name("PlaceholderAPI").optional(true)
+        }
+    }
 }
 
 repositories {

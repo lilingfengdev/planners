@@ -3,6 +3,8 @@ package com.bh.planners.core.kether.effect
 import com.bh.planners.api.particle.EffectOption
 import com.bh.planners.api.particle.EffectSpawner
 import com.bh.planners.core.kether.effect.Target.Companion.createContainer
+import com.bh.planners.core.kether.effect.renderer.CircleRenderer
+import com.bh.planners.core.kether.effect.renderer.EffectRenderer
 import com.bh.planners.core.pojo.Session
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
@@ -21,20 +23,8 @@ object EffectCircle : EffectLoader<EffectCircle.Impl>() {
 
     class Impl(action: ParsedAction<*>) : Effect(action) {
 
-        override fun sendTo(target: Target?, option: EffectOption, session: Session): ParticleObj {
-            return Circles(option.createContainer(target, session), option)
-        }
-    }
-
-    class Circles(val container: Target.Container, option: EffectOption) : ParticleObj(EffectSpawner(option)) {
-
-        val step = Coerce.toDouble(option.demand.get(Effects.STEP, "10"))
-        val radius = Coerce.toDouble(option.demand.get(Effects.RADIUS, "360"))
-
-        override fun show() {
-            container.forEachLocation {
-                Circle(this.toProxyLocation(), radius, step, spawner).show()
-            }
+        override fun handler(target: Target?, option: EffectOption, session: Session): EffectRenderer {
+            return CircleRenderer(target!!,option.createContainer(target, session), option)
         }
     }
 }

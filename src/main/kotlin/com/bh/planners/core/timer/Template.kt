@@ -9,7 +9,7 @@ open class Template(val id: String, var root: ConfigurationSection) {
 
     open val async = root.getBoolean("__option__.async")
 
-    open val action = root.getString("action")!!
+    open val action = root.getString("action", "")!!
 
 
 }
