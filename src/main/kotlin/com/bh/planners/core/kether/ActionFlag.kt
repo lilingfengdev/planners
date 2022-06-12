@@ -13,7 +13,7 @@ import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class flag {
+class ActionFlag {
 
     class DataGet(val action: ParsedAction<*>) : ScriptAction<Any>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Any> {
@@ -57,16 +57,16 @@ class flag {
 
         /**
          * 取数据
-         * data *key
-         * data attackStamp
+         * flag *key
+         * flag attackStamp
          *
          * 设置数据
-         * data *key to *value
-         * data attackStamp to time
+         * flag *key to *value
+         * flag attackStamp to time
          *
          * 设置数据 并附带存活时间
-         * data *key to *value timeout e *time
-         * data attack to time timeout 1000
+         * flag *key to *value timeout e *time
+         * flag attack to time timeout 1000
          */
         @KetherParser(["flag"], namespace = NAMESPACE)
         fun parser() = scriptParser {
