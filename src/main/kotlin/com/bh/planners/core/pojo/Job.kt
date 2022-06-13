@@ -21,7 +21,7 @@ class Job(val key: String, val config: ConfigurationSection) {
         val name = root.getString("name")!!
         val routerKey = root.getString("router")!!
 
-        val manaCalculate = root.getString("mana-calculate") ?: error("Option 'mana-calculate' not found.")
+        val manaCalculate = root.getString("mana-eval") ?: error("Option 'mana-eval' not found.")
 
 
     }

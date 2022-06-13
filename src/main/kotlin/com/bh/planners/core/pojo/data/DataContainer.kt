@@ -208,7 +208,6 @@ class DataContainer {
             val dataContainer = DataContainer()
             entries.forEach {
                 val compound = it.value.asCompound()
-                info(compound)
                 dataContainer[it.key] = Data(
                     compound["value"]!!.asString(),
                     compound["create-stamp"]!!.asLong(),
