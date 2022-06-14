@@ -8,7 +8,7 @@ import taboolib.module.configuration.Configuration
 object Planners : Plugin() {
 
     @Config("config.yml")
-    lateinit var config : Configuration
+    lateinit var config: Configuration
 
     override fun onEnable() {
 

@@ -7,9 +7,9 @@ __option__:
       if: check profile level >= 1
       talk: tell 该技能需要1级才可以学习
     - $: 1
-      if: check vault has 100
-      consume: vault take 100
-      placeholder: '金币未满足100({{ vault get }})'
+      if: balance has 100
+      consume: balance take 100
+      placeholder: '金币未满足100({{ balance get }})'
   icon:
     material: WOODEN_SWORD
     name: "&e{{ meta skill name }}"
@@ -56,5 +56,4 @@ action: |-
     }
 
   }
-
   sleep 8s

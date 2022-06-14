@@ -20,11 +20,9 @@ class ActionBalance {
         }
     }
 
-    class BalanceGet(val action: ParsedAction<*>) : ScriptAction<Double>() {
+    class BalanceGet() : ScriptAction<Double>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Double> {
-            return frame.newFrame(action).run<Any>().thenApply {
-                bridge.getBalance(frame.script().sender!!.cast<Player>())
-            }
+            return CompletableFuture.completedFuture(bridge.getBalance(frame.script().sender!!.cast<Player>()))
         }
     }
 
@@ -57,7 +55,7 @@ class ActionBalance {
          * balance get/look
          * balance
          */
-        @KetherParser(["balance"], namespace = NAMESPACE)
+        @KetherParser(["balance"])
         fun parser() = scriptParser {
             it.switch {
                 case("has") {
@@ -70,10 +68,10 @@ class ActionBalance {
                     BalanceDeposit(next(ArgTypes.ACTION))
                 }
                 case("get", "look") {
-                    BalanceGet(next(ArgTypes.ACTION))
+                    BalanceGet()
                 }
                 other {
-                    BalanceGet(next(ArgTypes.ACTION))
+                    BalanceGet()
                 }
             }
         }

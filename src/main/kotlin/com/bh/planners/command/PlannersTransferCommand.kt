@@ -6,6 +6,7 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.addPoint
 import com.bh.planners.api.setPoint
 import com.bh.planners.api.transfer
+import com.bh.planners.core.ui.TransferJobUI
 import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
@@ -17,6 +18,20 @@ import taboolib.platform.util.sendLang
 
 @CommandHeader("transfer")
 object PlannersTransferCommand {
+
+    @CommandBody
+    val open = subCommand {
+        dynamic("player") {
+            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+
+            execute<ProxyCommandSender> { sender, context, argument ->
+                val player = Bukkit.getPlayerExact(argument)!!
+                if (player.hasJob) {
+                    TransferJobUI(player).open()
+                }
+            }
+        }
+    }
 
     @CommandBody
     val to = subCommand {

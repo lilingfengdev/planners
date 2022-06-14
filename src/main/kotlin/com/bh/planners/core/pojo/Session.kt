@@ -2,6 +2,7 @@ package com.bh.planners.core.pojo
 
 import com.bh.planners.core.kether.LazyGetter
 import com.bh.planners.core.kether.namespaces
+import com.bh.planners.core.pojo.data.DataContainer
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.submit
 import taboolib.module.kether.KetherShell
@@ -20,6 +21,8 @@ open class Session(executor: ProxyCommandSender, skill: Skill) : Context(executo
             run()
         }
     }
+
+    val flags = DataContainer()
 
     private fun run() {
         try {

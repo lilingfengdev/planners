@@ -6,12 +6,9 @@ import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.entity.Player
 import taboolib.common.platform.Schedule
 import taboolib.common.platform.function.adaptPlayer
-import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
-import kotlin.math.max
-import kotlin.math.min
 
 object ManaCounter {
 
@@ -22,7 +19,7 @@ object ManaCounter {
     fun timer() {
         PlannersAPI.profiles.values.forEach {
             if (it.player.isOnline) {
-                it.update(MAX_MANA_NAMESPACE, calculate(it.player))
+                it.updateFlag(MAX_MANA_NAMESPACE, calculate(it.player))
             }
         }
     }
@@ -49,7 +46,7 @@ object ManaCounter {
     }
 
     fun PlayerProfile.setMana(value: Double) {
-        this.update(MANA_NAMESPACE, value)
+        this.updateFlag(MANA_NAMESPACE, value)
     }
 
     fun Player.toCurrentMana(): Double {

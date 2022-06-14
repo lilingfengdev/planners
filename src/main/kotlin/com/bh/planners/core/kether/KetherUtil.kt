@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture
 
 const val NAMESPACE = "Planners"
 
-val namespaces = listOf(NAMESPACE)
+val namespaces = listOf(NAMESPACE, "kether")
 
 
 fun ScriptFrame.getSession(): Session {
@@ -108,6 +108,7 @@ fun Any.toLocation(): Location {
                 Coerce.toDouble(split[3])
             )
         }
+
         else -> Location(null, 0.0, 0.0, 0.0)
     }
 }

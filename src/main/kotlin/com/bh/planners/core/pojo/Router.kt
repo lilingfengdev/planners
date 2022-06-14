@@ -37,14 +37,19 @@ class Router(val config: ConfigurationSection) {
 
     }
 
-    class TransferJob(root: ConfigurationSection) {
+    class TransferJob(val root: ConfigurationSection) {
 
         val jobKey = root.getString("key")!!
         val extendSkill = root.getBoolean("extend-skill")
+        val conditions = root.getMapList("condition").map {
+            TransferCondition(Configuration.fromMap(it))
+        }
 
         val job: Job
             get() = PlannersAPI.jobs.firstOrNull { it.key == jobKey } ?: error("Job '$jobKey' not found.")
 
     }
+
+    class TransferCondition(option: ConfigurationSection) : Condition(option)
 
 }

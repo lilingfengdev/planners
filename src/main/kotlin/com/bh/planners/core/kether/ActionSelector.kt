@@ -3,9 +3,11 @@ package com.bh.planners.core.kether
 import com.bh.planners.api.particle.Demand
 import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.kether.effect.Target.Companion.createContainer
+import com.bh.planners.core.kether.selector.Fetch.asContainer
 import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
+import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
 import org.bukkit.entity.Player
 import taboolib.common.platform.Schedule
 import taboolib.library.kether.ArgTypes
@@ -16,30 +18,50 @@ import java.util.concurrent.CompletableFuture
 
 class ActionSelector {
 
-    companion object {
-
-        private val sessions = Collections.synchronizedMap(mutableMapOf<Context, MutableList<SignTargetContainer>>())
-
-        fun getContainer(context: Context, key: String): SignTargetContainer? {
-            val list = sessions[context] ?: emptyList()
-            return list.firstOrNull { it.name == key }
-        }
-
-        fun add(context: Context, container: SignTargetContainer) {
-            sessions.computeIfAbsent(context) { mutableListOf() } += container
-        }
-
-        private val lock = Any()
-
-        @Schedule(period = 60 * 20)
-        fun timer() {
-            val removeList = sessions.keys.filter { it.closed }
-            synchronized(lock) {
-                removeList.forEach {
-                    sessions.remove(it)
-                }
+    class ActionTargetContainerGetSize(val action: ParsedAction<*>) : ScriptAction<Int>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Int> {
+            return frame.newFrame(action).run<String>().thenApply { selector ->
+                (frame.getSession().flags[selector]?.asContainer() ?: Target.Container()).size
             }
         }
+
+    }
+
+    class ActionTargetContainerGet(val action: ParsedAction<*>) : ScriptAction<Target.Container?>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Target.Container?> {
+            return frame.newFrame(action).run<String>().thenApply { selector ->
+                frame.getSession().flags[selector]?.asContainer()
+            }
+        }
+
+    }
+
+    class ActionTargetContainerSet(val keyAction: ParsedAction<*>, val valueAction: ParsedAction<*>) :
+        ScriptAction<Void>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.newFrame(keyAction).run<String>().thenAccept { key ->
+                val session = frame.getSession()
+                frame.newFrame(valueAction).run<Any>().thenAccept { value ->
+                    session.flags[key.toString()] = if (value is Target.Container) {
+                        value.unsafeData()
+                    } else Demand(value.toString()).createContainer(frame.toOriginLocation(), session).unsafeData()
+                }
+            }
+
+            return CompletableFuture.completedFuture(null)
+        }
+    }
+
+    class ActionTargetContainerRemove(val keyAction: ParsedAction<*>) : ScriptAction<Void>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.newFrame(keyAction).run<String>().thenAccept { key ->
+                frame.getSession().flags.remove(key)
+            }
+            return CompletableFuture.completedFuture(null)
+        }
+    }
+
+    companion object {
 
         /**
          * 缓存目标容器
@@ -72,51 +94,5 @@ class ActionSelector {
             }
         }
     }
-
-    class ActionTargetContainerGetSize(val action: ParsedAction<*>) : ScriptAction<Int>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Int> {
-            return frame.newFrame(action).run<String>().thenApply { selector ->
-                (getContainer(frame.getSession(), selector) ?: Target.Container()).size
-            }
-        }
-
-    }
-
-    class ActionTargetContainerGet(val action: ParsedAction<*>) : ScriptAction<List<String>>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<List<String>> {
-            return frame.newFrame(action).run<String>().thenApply { selector ->
-                val container = getContainer(frame.getSession(), selector) ?: Target.Container()
-                container.targets.map { it.toLocal() }
-            }
-        }
-
-    }
-
-    class ActionTargetContainerSet(val keyAction: ParsedAction<*>, val valueAction: ParsedAction<*>) :
-        ScriptAction<Void>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            frame.newFrame(keyAction).run<String>().thenAccept { key ->
-                frame.newFrame(valueAction).run<String>().thenAccept { value ->
-                    val container = SignTargetContainer(key)
-                    val demand = Demand(value)
-                    Selector.check(frame.toOriginLocation(), frame.getSession(), demand, container)
-                    add(frame.getSession(), container)
-                }
-            }
-
-            return CompletableFuture.completedFuture(null)
-        }
-    }
-
-    class ActionTargetContainerRemove(val keyAction: ParsedAction<*>) : ScriptAction<Void>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            frame.newFrame(keyAction).run<String>().thenAccept { key ->
-                frame.rootVariables().remove(key)
-            }
-            return CompletableFuture.completedFuture(null)
-        }
-    }
-
-    class SignTargetContainer(val name: String) : Target.Container()
 
 }

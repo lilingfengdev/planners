@@ -3,6 +3,7 @@ package com.bh.planners.core.kether.selector
 import com.bh.planners.core.kether.ActionSelector
 import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.pojo.Session
+import com.bh.planners.core.pojo.data.Data
 
 /**
  * 合并目标容器
@@ -12,10 +13,11 @@ object Fetch : Selector {
     override val names: Array<String>
         get() = arrayOf("get", "fetch")
 
+    fun Data.asContainer(): Target.Container {
+        return data as Target.Container
+    }
+
     override fun check(target: Target?, args: String, session: Session, container: Target.Container) {
-        val signTargetContainer = ActionSelector.getContainer(session, args)
-        if (signTargetContainer != null) {
-            container.merge(signTargetContainer)
-        }
+        container.merge(session.flags[args]?.asContainer() ?: Target.Container())
     }
 }

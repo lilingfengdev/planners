@@ -91,20 +91,14 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
     fun toConditionText(): List<String> {
         val list = PlannersAPI.dissatisfyUpgrade(viewer, playerSkill)
         return if (list.isNotEmpty() && nextCondition.isNotEmpty()) {
-            val listOf = mutableListOf<String>()
-            nextCondition.forEach {
-                if (it.contains("\$entry")) {
-                    list.filter { it.placeholder != null }.forEach {
-                        listOf.add(toPlaceholder(it.placeholder!!))
-                    }
+            nextCondition.flatMap { s ->
+                if (s.contains("\$entry")) {
+                    list.filter { it.placeholder != null }.map { s.replace("\$entry", toPlaceholder(it.placeholder!!)) }
                 } else {
-                    listOf.add(it)
+                    listOf(s)
                 }
             }
-            listOf
-        } else {
-            emptyList()
-        }
+        } else emptyList()
     }
 
     fun toPlaceholder(string: String): String {

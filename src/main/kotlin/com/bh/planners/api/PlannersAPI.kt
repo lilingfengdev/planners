@@ -6,25 +6,20 @@ import com.bh.planners.api.counter.Counting
 import com.bh.planners.api.enums.ExecuteResult
 import com.bh.planners.api.event.PlayerCastSkillEvent
 import com.bh.planners.api.event.PlayerKeydownEvent
-import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.kether.rootVariables
+import com.bh.planners.core.pojo.*
 import com.bh.planners.core.pojo.player.PlayerProfile
-import com.bh.planners.core.pojo.Job
-import com.bh.planners.core.pojo.Router
-import com.bh.planners.core.pojo.Session
-import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
-import com.bh.planners.core.storage.Storage
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
 import taboolib.module.kether.KetherShell
+import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.printKetherErrorMessage
-import taboolib.module.kether.runKether
 import java.util.*
 
 object PlannersAPI {
@@ -62,6 +57,10 @@ object PlannersAPI {
 
     fun PlayerProfile.cast(skillName: String, mark: Boolean = true): ExecuteResult {
         return cast(skills.firstOrNull { it.key == skillName } ?: error("Skill '${skillName}' not found."), mark)
+    }
+
+    fun getRouter(routerKey: String): Router {
+        return routers.firstOrNull { it.key == routerKey } ?: error("Router '${routerKey}' not found.")
     }
 
     fun callKeyByGroup(player: Player, keyGroup: String) {
@@ -119,16 +118,15 @@ object PlannersAPI {
         // 如果不满足条件 则失败
         if (!checkUpgrade(player, playerSkill)) return false
 
-        getUpgradeConditions(playerSkill).filter { it.consume != null }.forEach {
-            runKether {
-                KetherShell.eval(it.consume!!, sender = adaptPlayer(player), namespace = namespaces) {
-                    rootFrame().rootVariables()["level"] = playerSkill.level
-                }
+        getUpgradeConditions(playerSkill).forEach {
+            it.consumeTo(player) {
+                rootFrame().rootVariables()["level"] = playerSkill.level
             }
         }
         player.plannersProfile.next(playerSkill)
         return true
     }
+
 
     val PlayerJob.Skill.isMax: Boolean
         get() = level == instance.option.levelCap
@@ -145,11 +143,17 @@ object PlannersAPI {
     }
 
 
-    fun checkCondition(player: Player, playerSkill: PlayerJob.Skill, it: Skill.UpgradeCondition): Boolean {
+    fun checkCondition(player: Player, playerSkill: PlayerJob.Skill, it: Condition): Boolean {
+        return checkCondition(player, it) {
+            rootFrame().rootVariables()["level"] = playerSkill.level
+            rootFrame().rootVariables()["@Skill"] = playerSkill
+        }
+    }
+
+    fun checkCondition(player: Player, condition: Condition, context: ScriptContext.() -> Unit): Boolean {
         return try {
-            KetherShell.eval(it.condition, sender = adaptPlayer(player), namespace = namespaces) {
-                rootFrame().rootVariables()["level"] = playerSkill.level
-                rootFrame().rootVariables()["@Skill"] = playerSkill
+            KetherShell.eval(condition.condition, sender = adaptPlayer(player), namespace = namespaces) {
+                context(this)
             }.thenApply { Coerce.toBoolean(it) }.get()
         } catch (e: Throwable) {
             e.printKetherErrorMessage()

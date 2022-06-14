@@ -29,6 +29,9 @@ object PlannersCommand {
     }
 
     @CommandBody
+    val combat = PlannersCombatCommand
+
+    @CommandBody
     val job = PlannersJobCommand
 
     @CommandBody
@@ -39,4 +42,7 @@ object PlannersCommand {
 
     @CommandBody
     val exp = PlannersExperienceCommand
+
+    @CommandBody
+    val transfer = PlannersTransferCommand
 }

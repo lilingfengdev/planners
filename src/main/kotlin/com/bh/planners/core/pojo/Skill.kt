@@ -29,14 +29,10 @@ open class Skill(val key: String, val config: ConfigurationSection) {
 
     }
 
-    class UpgradeCondition(val option: ConfigurationSection) {
-
-        val condition = option.getString("if")!!
-        val indexTo = option.getInt("$")
-        val consume = option.getString("consume")
-        val placeholder = option.getString("placeholder")
-
-    }
+    /**
+     * 目的是为了以后有拓展不影响其他条件条目
+     */
+    class UpgradeCondition(option: ConfigurationSection) : Condition(option)
 
     class Variable(val key: String, val expression: String)
 

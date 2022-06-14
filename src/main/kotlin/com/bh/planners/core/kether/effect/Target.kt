@@ -61,6 +61,7 @@ interface Target {
         }
 
         fun merge(container: Container) {
+            if (container.targets.isEmpty()) return
             targets += container.targets
         }
 

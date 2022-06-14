@@ -13,7 +13,7 @@ class PlayerJob(val id: Long, var jobKey: String, level: Int, experience: Int) {
     var point: Int = 0
 
     val instance: Job
-        get() = PlannersAPI.jobs.first { it.key == jobKey }
+        get() = PlannersAPI.getJob(jobKey)
 
     val level: Int
         get() = counter.level

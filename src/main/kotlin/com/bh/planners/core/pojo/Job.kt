@@ -20,6 +20,10 @@ class Job(val key: String, val config: ConfigurationSection) {
 
         val name = root.getString("name")!!
         val routerKey = root.getString("router")!!
+        val actionbar = root.getString("actionbar")
+
+        val router : Router
+            get() = PlannersAPI.getRouter(routerKey)
 
         val manaCalculate = root.getString("mana-eval") ?: error("Option 'mana-eval' not found.")
 
