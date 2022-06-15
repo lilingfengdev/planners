@@ -13,7 +13,7 @@ object Amount : Selector {
     override val names: Array<String>
         get() = arrayOf("amount", "size")
 
-    override fun check(target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
         val value = Coerce.toInteger(args)
         if (value > container.size) {
             container.remove(container.size - value)

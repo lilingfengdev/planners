@@ -13,7 +13,7 @@ object Their : Selector {
     override val names: Array<String>
         get() = arrayOf("their", "filterthis")
 
-    override fun check(target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
         val player = session.executor.asPlayer() ?: return
         container.removeIf {
             if (this is Target.Entity) {

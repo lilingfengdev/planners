@@ -1,6 +1,5 @@
 package com.bh.planners.core.kether.selector
 
-import com.bh.planners.core.kether.ActionSelector
 import com.bh.planners.core.kether.effect.Target
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.data.Data
@@ -17,7 +16,7 @@ object Fetch : Selector {
         return data as Target.Container
     }
 
-    override fun check(target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
         container.merge(session.flags[args]?.asContainer() ?: Target.Container())
     }
 }

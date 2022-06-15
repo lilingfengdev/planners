@@ -1,0 +1,28 @@
+package com.bh.planners.core.kether.selector
+
+import com.bh.planners.api.common.Plugin
+import com.bh.planners.core.kether.effect.Target
+import com.bh.planners.core.pojo.Session
+import org.bukkit.entity.Player
+import org.serverct.ersha.dungeon.DungeonPlus
+
+@Plugin("DungeonPlus")
+object Team : Selector {
+    override val names: Array<String>
+        get() = arrayOf("team", "!team")
+
+    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
+        val entityTarget = target as? Target.Entity ?: return
+        if (entityTarget.livingEntity !is Player) return
+
+        val team = DungeonPlus.teamManager.getTeam(entityTarget.livingEntity) ?: return
+        team.getOfflinePlayers().forEach {  }
+
+        if (name.isNon()) {
+
+        } else {
+
+        }
+
+    }
+}

@@ -15,7 +15,7 @@ object EntityId : Selector {
     override val names: Array<String>
         get() = arrayOf("entity", "ei", "entityId")
 
-    override fun check(target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
         args.split(",").forEach {
             val entity = Bukkit.getEntity(UUID.fromString(it)) as? LivingEntity ?: return@forEach
             container.add(entity.toTarget())

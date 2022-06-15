@@ -20,7 +20,7 @@ object InWorld : Selector {
         get() = arrayOf("inWorld", "inworld", "iw", "piw")
 
     // -@inWorld world:PLAYER,ZOMBIE
-    override fun check(target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
 
         val worldName = if (args.contains(":")) {
             args.split(":")[0]

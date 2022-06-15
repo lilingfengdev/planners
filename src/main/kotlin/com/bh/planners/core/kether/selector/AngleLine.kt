@@ -7,7 +7,6 @@ import com.bh.planners.core.kether.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Session
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
 import kotlin.math.floor
@@ -22,7 +21,7 @@ object AngleLine : Selector {
     override val names: Array<String>
         get() = arrayOf("aline", "al")
 
-    override fun check(target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
         val range = Coerce.toDouble(args)
         target?.ifLocation {
             container.addAll(getTargetLocation(this.value, this.value.direction, range).map { it.toTarget() })
