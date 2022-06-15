@@ -25,7 +25,6 @@ class ActionVelocity(
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        val vector = CompletableFuture<Any>()
         frame.newFrame(x).run<Any>().thenApply { x ->
             frame.newFrame(y).run<Any>().thenApply { y ->
                 frame.newFrame(z).run<Any>().thenApply { z ->
@@ -41,7 +40,6 @@ class ActionVelocity(
                                 Mode.SET -> vec.set(toVector.x, toVector.y, toVector.z)
                             }
                             this.velocity = vec
-                            vector.complete(vec)
                         }
                     }
                 }
