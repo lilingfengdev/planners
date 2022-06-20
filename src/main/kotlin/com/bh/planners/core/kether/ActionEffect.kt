@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether
 
-import com.bh.planners.core.kether.effect.EffectArc
-import com.bh.planners.core.kether.effect.Effects
+import com.bh.planners.core.skill.effect.EffectArc
+import com.bh.planners.core.skill.effect.Effects
 import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.expects

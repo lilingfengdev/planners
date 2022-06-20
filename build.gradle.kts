@@ -12,7 +12,7 @@ taboolib {
     install("module-chat")
     install("module-configuration")
     install("module-database")
-    install("module-effect")
+//    install("module-effect")
     install("module-kether")
     install("module-lang")
     install("module-navigation")

@@ -1,16 +1,10 @@
-package com.bh.planners.core.kether.effect
+package com.bh.planners.core.skill.effect
 
-import com.bh.planners.api.particle.EffectOption
-import com.bh.planners.api.particle.EffectSpawner
-import com.bh.planners.core.kether.effect.Target.Companion.createContainer
-import com.bh.planners.core.kether.effect.renderer.CubeRenderer
-import com.bh.planners.core.kether.effect.renderer.EffectRenderer
+import com.bh.planners.core.skill.effect.Target.Companion.createContainer
+import com.bh.planners.core.skill.effect.renderer.CubeRenderer
+import com.bh.planners.core.skill.effect.renderer.EffectRenderer
 import com.bh.planners.core.pojo.Session
-import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
-import taboolib.module.effect.Cube
-import taboolib.module.effect.ParticleObj
-import taboolib.platform.util.toProxyLocation
 
 object EffectCube : EffectLoader<EffectCube.Impl>() {
 

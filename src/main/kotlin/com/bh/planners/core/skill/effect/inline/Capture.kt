@@ -1,4 +1,4 @@
-package com.bh.planners.core.skill.inline
+package com.bh.planners.core.skill.effect.inline
 
 import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.pojo.Session

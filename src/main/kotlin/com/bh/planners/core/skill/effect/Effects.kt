@@ -1,4 +1,4 @@
-package com.bh.planners.core.kether.effect
+package com.bh.planners.core.skill.effect
 
 import taboolib.common.LifeCycle
 import taboolib.common.io.getInstance

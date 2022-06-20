@@ -1,4 +1,4 @@
-package com.bh.planners.core.kether.effect
+package com.bh.planners.core.skill.effect
 
 import taboolib.common.reflect.Reflex.Companion.invokeConstructor
 import taboolib.library.kether.ArgTypes

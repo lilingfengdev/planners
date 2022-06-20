@@ -10,16 +10,13 @@ import com.bh.planners.core.storage.Storage
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemFlag
-import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.function.submit
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.xseries.getItemStack
-import taboolib.module.effect.Circle
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Linked
 import taboolib.platform.util.buildItem
 import taboolib.platform.util.sendLang
-import taboolib.platform.util.toProxyLocation
 
 class JobUI(viewer: Player) : IUI(viewer) {
 

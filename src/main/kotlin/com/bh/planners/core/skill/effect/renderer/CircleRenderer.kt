@@ -1,8 +1,7 @@
-package com.bh.planners.core.kether.effect.renderer
+package com.bh.planners.core.skill.effect.renderer
 
-import com.bh.planners.api.particle.EffectOption
-import com.bh.planners.core.kether.effect.Target
-import org.bukkit.entity.LivingEntity
+import com.bh.planners.core.skill.effect.EffectOption
+import com.bh.planners.core.skill.effect.Target
 
 class CircleRenderer(target: Target, container: Target.Container, option: EffectOption) : ArcRenderer(target, container,
     option

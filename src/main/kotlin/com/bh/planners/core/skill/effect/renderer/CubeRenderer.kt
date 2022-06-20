@@ -1,12 +1,10 @@
-package com.bh.planners.core.kether.effect.renderer
+package com.bh.planners.core.skill.effect.renderer
 
-import com.bh.planners.api.particle.EffectOption
-import com.bh.planners.core.kether.effect.Effects
-import com.bh.planners.core.kether.effect.Target
-import com.bh.planners.core.kether.effect.capture
-import com.bh.planners.core.kether.effect.rotateAroundAxisY
+import com.bh.planners.core.skill.effect.EffectOption
+import com.bh.planners.core.skill.effect.Effects
+import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.core.skill.effect.rotateAroundAxisY
 import org.bukkit.Location
-import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
 
@@ -24,18 +22,15 @@ open class CubeRenderer(target: Target, container: Target.Container, option: Eff
         get() = Coerce.toDouble(this.demand.get(Effects.STEP, "0.0"))
 
 
-    override fun sendTo(): Set<LivingEntity> {
-        val mutableSet = mutableSetOf<LivingEntity>()
+    override fun sendTo() {
         if (target is Target.Location) {
             val pos1 = target.value
             container.forEachLocation {
                 show(pos1, this, option.step) {
-                    option.spawn(pos1, it)
-                    mutableSet.addAll(it.capture())
+                    spawnParticle(pos1,it)
                 }
             }
         }
-        return mutableSet
     }
 
     open fun show(minLoc: Location, maxLoc: Location, step: Double, callback: (Location) -> Unit) {

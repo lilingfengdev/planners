@@ -1,9 +1,9 @@
 package com.bh.planners.core.kether
 
-import com.bh.planners.api.particle.Demand
-import com.bh.planners.core.kether.effect.Target
-import com.bh.planners.core.kether.effect.Target.Companion.createContainer
-import com.bh.planners.core.kether.effect.Target.Companion.toTarget
+import com.bh.planners.api.common.Demand
+import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.core.skill.effect.Target.Companion.createContainer
+import com.bh.planners.core.skill.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.util.StringNumber
@@ -19,7 +19,6 @@ import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.platform.type.BukkitPlayer
-import taboolib.platform.util.toBukkitLocation
 import java.util.concurrent.CompletableFuture
 
 const val NAMESPACE = "Planners"
@@ -125,4 +124,14 @@ fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Targ
         future.complete(container)
     }
     return future
+}
+
+fun catchRunning(action: () -> Unit) {
+    try {
+        action()
+    } catch (e: Exception) {
+        e.printKetherErrorMessage()
+    } catch (e: Throwable) {
+        e.printKetherErrorMessage()
+    }
 }

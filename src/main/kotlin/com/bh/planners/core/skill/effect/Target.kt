@@ -1,7 +1,6 @@
-package com.bh.planners.core.kether.effect
+package com.bh.planners.core.skill.effect
 
-import com.bh.planners.api.particle.Demand
-import com.bh.planners.api.particle.EffectOption
+import com.bh.planners.api.common.Demand
 import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.kether.toLocal
 import com.bh.planners.core.pojo.Session
@@ -143,12 +142,26 @@ interface Target {
     class Entity(val livingEntity: LivingEntity) : Location(null) {
 
         override val value: org.bukkit.Location
-            get() = livingEntity.eyeLocation
+            get() = livingEntity.location
 
         override fun toLocal(): String {
             return livingEntity.uniqueId.toString()
         }
 
+        override fun hashCode(): Int {
+            return livingEntity.hashCode()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Entity
+
+            if (livingEntity != other.livingEntity) return false
+
+            return true
+        }
 
     }
 

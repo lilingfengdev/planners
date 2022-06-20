@@ -1,4 +1,4 @@
-package com.bh.planners.api.particle
+package com.bh.planners.core.skill.effect
 
 import taboolib.common.util.Vector
 

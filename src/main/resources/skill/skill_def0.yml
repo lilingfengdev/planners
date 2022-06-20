@@ -19,13 +19,14 @@ __option__:
       - '&f冷却时间 &a{{ lazy cooldown }}'
       - '&f蓝量消耗 &a{{ lazy mp }}'
       - ''
-      - '&f对前方敌人造成&a{{ lazy attackCount }}&f段伤害,每段造成&a{{ lazy base }}'
+      - '&f对前方敌人造成&a{{ lazy attackCount }}&f段伤害'
+      - '&f每段造成&a{{ lazy *damage }}'
       - ''
 
   variables:
     cooldown: math meta skill level * 10
     mp: math meta skill level * 2.8
-    damage: math lazy base * 1.2"
+    damage: math lazy base * 1.2
     attackCount: math meta skill level * 2
     upgradePoint: math meta skill level * 2
     base: 10

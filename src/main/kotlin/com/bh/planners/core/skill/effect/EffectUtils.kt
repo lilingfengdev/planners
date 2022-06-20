@@ -1,10 +1,10 @@
-package com.bh.planners.core.kether.effect
+package com.bh.planners.core.skill.effect
 
 import com.bh.planners.api.PlannersOption
+import com.bh.planners.core.skill.effect.common.Matrix
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
-import taboolib.module.effect.Matrix
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -50,13 +50,13 @@ fun Matrix.applyInBukkit3DVector(vector: Vector): Vector {
     return Vector(ax + ay + az, bx + by + bz, cx + cy + cz)
 }
 
-fun Location.capture(): List<LivingEntity> {
+fun Location.capture(): MutableList<LivingEntity> {
     return world!!.getNearbyEntities(
         this,
         PlannersOption.scopeThreshold[0],
         PlannersOption.scopeThreshold[1],
         PlannersOption.scopeThreshold[2]
-    ).filterIsInstance<LivingEntity>()
+    ).filterIsInstance<LivingEntity>().toMutableList()
 }
 
 

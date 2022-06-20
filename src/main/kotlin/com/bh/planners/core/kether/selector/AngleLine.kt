@@ -1,9 +1,9 @@
 package com.bh.planners.core.kether.selector
 
-import com.bh.planners.core.kether.effect.Target
-import com.bh.planners.core.kether.effect.Target.Companion.ifEntity
-import com.bh.planners.core.kether.effect.Target.Companion.ifLocation
-import com.bh.planners.core.kether.effect.Target.Companion.toTarget
+import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.core.skill.effect.Target.Companion.ifEntity
+import com.bh.planners.core.skill.effect.Target.Companion.ifLocation
+import com.bh.planners.core.skill.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Session
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
@@ -66,8 +66,8 @@ object AngleLine : Selector {
         return (floor(value + offset) - value) / dir
     }
 
-    fun Location.entityAt(): List<LivingEntity> {
-        return world!!.getNearbyEntities(this, 1.0, 1.0, 1.0).filterIsInstance<LivingEntity>()
+    fun Location.entityAt(): MutableList<LivingEntity> {
+        return world!!.getNearbyEntities(this, 1.0, 1.0, 1.0).filterIsInstance<LivingEntity>().toMutableList()
     }
 
 }

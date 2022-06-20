@@ -1,9 +1,9 @@
 package com.bh.planners.core.kether.selector
 
+import com.bh.planners.api.common.Demand
 import com.bh.planners.api.common.Plugin
-import com.bh.planners.api.particle.Demand
-import com.bh.planners.api.particle.EffectOption
-import com.bh.planners.core.kether.effect.Target
+import com.bh.planners.core.skill.effect.EffectOption
+import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.pojo.Session
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle

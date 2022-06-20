@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.selector
 
 import com.bh.planners.api.common.Plugin
-import com.bh.planners.core.kether.effect.Target
+import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.Player
 import org.serverct.ersha.dungeon.DungeonPlus

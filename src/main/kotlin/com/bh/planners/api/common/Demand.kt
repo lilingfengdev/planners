@@ -1,4 +1,4 @@
-package com.bh.planners.api.particle
+package com.bh.planners.api.common
 
 import taboolib.common.platform.function.info
 
@@ -22,12 +22,16 @@ class Demand(val source: String) {
                 when {
                     index + 1 >= args.size -> {
                         dataMap[s.substring(1)] = ""
-
+                    }
+                    s[1] == '!' && args[index + 1][0] == '-' -> {
+                        dataMap[s.substring(2)] = args[index + 1]
+                        skipIndex += index + 1
                     }
                     args[index + 1][0] != '-' -> {
                         dataMap[s.substring(1)] = args[index + 1]
                         skipIndex += index + 1
                     }
+
                     else -> {
                         dataMap[s.substring(1)] = ""
                     }
@@ -38,6 +42,8 @@ class Demand(val source: String) {
         }
 
     }
+
+    fun has(key: String) = dataMap.containsKey(key)
 
     fun get(key: List<String>, def: String? = null): String? {
         return key.mapNotNull { get(it) }.firstOrNull() ?: def
