@@ -209,6 +209,13 @@ class StorageSQL : Storage {
         }
     }
 
+    override fun update(profile: PlayerProfile) {
+        userTable.update(dataSource) {
+            where { ID eq profile.id }
+            set(DATA, profile.flags.toJson())
+        }
+    }
+
     override fun createPlayerJob(player: Player, job: Job): CompletableFuture<PlayerJob> {
         val minLevel = job.router.counter.min
         val future = CompletableFuture<PlayerJob>()

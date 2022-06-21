@@ -165,7 +165,6 @@ class DataContainer {
 
     }
 
-
     fun toJson() = toNBT().toJson()
 
     fun isEmpty(): Boolean {

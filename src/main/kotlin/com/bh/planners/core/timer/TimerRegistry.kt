@@ -63,6 +63,7 @@ object TimerRegistry {
         try {
             KetherShell.eval(template.action, cacheScript = true, sender = sender, namespace = namespaces) {
                 rootFrame().variables()["@Session"] = timerSession
+                rootFrame().variables()["@Event"] = event
                 timer.onStart(this, template, event)
             }
         } catch (e: Throwable) {

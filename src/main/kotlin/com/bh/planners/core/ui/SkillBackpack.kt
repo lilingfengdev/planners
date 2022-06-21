@@ -62,12 +62,15 @@ class SkillBackpack(viewer: Player) : IUI(viewer) {
                     Faceplate(viewer, element).open()
                 }
                 if (event.clickEvent().isRightClick) {
-                    ShortcutSelector(viewer) {
-                        element.shortcutKey = this.key
-                        Storage.INSTANCE.updateSkill(element)
-                        viewer.sendLang("skill-bind-shortcut", element.instance.option.name!!, name)
-                        open()
-                    }.open()
+                    if (element.instance.option.isBind) {
+                        ShortcutSelector(viewer) {
+                            element.shortcutKey = this.key
+                            Storage.INSTANCE.updateSkill(element)
+                            viewer.sendLang("skill-bind-shortcut", element.instance.option.name!!, name)
+                            open()
+                        }.open()
+                    }
+
                 }
             }
 

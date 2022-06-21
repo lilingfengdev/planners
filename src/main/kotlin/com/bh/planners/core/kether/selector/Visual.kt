@@ -12,14 +12,14 @@ import taboolib.common5.Coerce
 import kotlin.math.floor
 
 /**
- * 选中视角所看向的一条线
- * step 距离
+ * 选中视角所看向的实体集群
+ * step 最大距离
  * -@aline 10
  * -@al 10
  */
-object AngleLine : Selector {
+object Visual : Selector {
     override val names: Array<String>
-        get() = arrayOf("aline", "al")
+        get() = arrayOf("visual", "vi")
 
     override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
         val range = Coerce.toDouble(args)

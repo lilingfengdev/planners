@@ -8,6 +8,7 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.addPoint
 import com.bh.planners.api.combat.Combat.isCombat
 import com.bh.planners.api.combat.Combat.isCombatLocal
+import com.bh.planners.api.common.Operator
 import com.bh.planners.api.setPoint
 import org.bukkit.entity.Player
 import taboolib.common5.Coerce
@@ -126,8 +127,5 @@ class ActionProfile {
 
     }
 
-    enum class Operator {
-        ADD, TAKE, SET
-    }
 
 }

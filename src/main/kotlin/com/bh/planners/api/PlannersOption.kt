@@ -12,4 +12,7 @@ object PlannersOption {
     val scopeThreshold: List<Double>
         get() = root.getDoubleList("scope-threshold")
 
+    val autoSaveFlagPeriod: Long
+        get() = root.getLong("autoSaveFlagPeriod",6000)
+
 }

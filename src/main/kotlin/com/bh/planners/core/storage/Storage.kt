@@ -8,7 +8,6 @@ import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.info
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -48,6 +47,8 @@ interface Storage {
     fun createPlayerSkill(player: Player, job: PlayerJob, skill: Skill): CompletableFuture<PlayerJob.Skill>
 
     fun updateSkill(skill: PlayerJob.Skill)
+
+    fun update(profile: PlayerProfile)
 
     fun getDataContainer(player: Player): DataContainer
 }

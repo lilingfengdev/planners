@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.api.common.Demand
+import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.createContainer
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
@@ -15,7 +16,9 @@ import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
+import taboolib.library.kether.QuestReader
 import taboolib.module.kether.KetherShell
+import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.platform.type.BukkitPlayer
@@ -134,4 +137,9 @@ fun catchRunning(action: () -> Unit) {
     } catch (e: Throwable) {
         e.printKetherErrorMessage()
     }
+}
+
+
+fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParser {
+    return ActionEventParser(resolve)
 }
