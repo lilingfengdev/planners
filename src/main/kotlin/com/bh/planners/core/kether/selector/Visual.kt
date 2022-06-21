@@ -5,6 +5,7 @@ import com.bh.planners.core.skill.effect.Target.Companion.ifEntity
 import com.bh.planners.core.skill.effect.Target.Companion.ifLocation
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Session
+import com.bh.planners.util.entityAt
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
@@ -66,8 +67,5 @@ object Visual : Selector {
         return (floor(value + offset) - value) / dir
     }
 
-    fun Location.entityAt(): MutableList<LivingEntity> {
-        return world!!.getNearbyEntities(this, 1.0, 1.0, 1.0).filterIsInstance<LivingEntity>().toMutableList()
-    }
 
 }

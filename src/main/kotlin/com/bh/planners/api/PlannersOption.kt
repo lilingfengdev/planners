@@ -13,6 +13,9 @@ object PlannersOption {
         get() = root.getDoubleList("scope-threshold")
 
     val autoSaveFlagPeriod: Long
-        get() = root.getLong("autoSaveFlagPeriod",6000)
+        get() = root.getLong("autoSaveFlagPeriod", 6000)
+
+    val infos: List<String>
+        get() = root.getStringList("infos")
 
 }

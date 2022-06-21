@@ -10,6 +10,8 @@ database:
 options:
   scope-threshold: [ 1.0,1.0,1.0 ]
   auto-save-flag-period: 60000
+  infos:
+    - '{{ player name }}'
 # by chemdah
 level:
   def0:

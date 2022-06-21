@@ -1,7 +1,10 @@
 package com.bh.planners.command
 
 import com.bh.planners.Planners
+import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.event.PluginReloadEvent
+import com.bh.planners.core.kether.namespaces
+import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.entity.Player
@@ -10,7 +13,10 @@ import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
+import taboolib.common.platform.function.adaptPlayer
 import taboolib.expansion.createHelper
+import taboolib.module.kether.KetherFunction
+import taboolib.module.kether.runKether
 
 @CommandHeader("planners", aliases = ["ps", "pl"], permission = "planners.command")
 object PlannersCommand {
@@ -50,22 +56,24 @@ object PlannersCommand {
     val transfer = PlannersTransferCommand
 
     @CommandBody
-    val test = subCommand {
-        execute<Player> { sender, context, argument ->
-            val location = sender.location
-            val color = java.awt.Color(187, 255, 255)
-            location.world!!.spawnParticle(
-                Particle.REDSTONE,
-                location.getX(),
-                location.getY(),
-                location.getZ(),
-                0,
-                (color.red / 255.0f).toDouble(),
-                (color.green / 255.0f).toDouble(),
-                (color.blue / 255.0f).toDouble(),
-                1.0
-            )
+    val mana = PlannersManaCommand
+
+    @CommandBody
+    val info = subCommand {
+        dynamic("player") {
+            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+
+            execute<ProxyCommandSender> { sender, context, argument ->
+                val playerExact = Bukkit.getPlayerExact(argument) ?: return@execute
+                runKether {
+                    KetherFunction
+                        .parse(PlannersOption.infos, namespace = namespaces, sender = adaptPlayer(playerExact))
+                        .forEach(sender::sendMessage)
+                }
+
+            }
 
         }
     }
+
 }

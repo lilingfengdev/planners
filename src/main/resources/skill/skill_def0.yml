@@ -1,6 +1,5 @@
 __option__:
   name: '疾风斩击'
-  triggers: [ player attack ]
   async: true
   bind: true
   upgrade-condition:
@@ -10,18 +9,18 @@ __option__:
     - $: 1
       if: balance has 100
       consume: balance take 100
-      placeholder: '金币未满足100({{ balance get }})'
+      placeholder: '金币未满足100({{ balance }})'
   icon:
     material: WOODEN_SWORD
     name: "&e{{ meta skill name }}"
     lore:
       - '&f技能等级 &a{{ meta skill level }}'
       - ''
-      - '&f冷却时间 &a{{ lazy cooldown }}'
-      - '&f蓝量消耗 &a{{ lazy mp }}'
+      - '&f冷却时间 &a{{ scaled lazy cooldown }}'
+      - '&f蓝量消耗 &a{{ scaled lazy mp }}'
       - ''
       - '&f对前方敌人造成&a{{ lazy attackCount }}&f段伤害'
-      - '&f每段造成&a{{ lazy *damage }}'
+      - '&f每段造成&a{{ scaled lazy *damage }}'
       - ''
 
   variables:

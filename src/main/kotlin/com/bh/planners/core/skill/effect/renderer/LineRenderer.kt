@@ -1,13 +1,12 @@
 package com.bh.planners.core.skill.effect.renderer
 
-import com.bh.planners.core.kether.catchRunning
-import com.bh.planners.core.kether.selector.AngleLine.entityAt
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.skill.effect.*
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.common.Line
 import com.bh.planners.core.skill.effect.inline.Capture
 import com.bh.planners.core.skill.effect.inline.InlineEvent.Companion.callEvent
+import com.bh.planners.util.entityAt
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector

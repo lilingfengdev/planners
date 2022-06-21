@@ -131,7 +131,7 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
     val nextUpgradePoint = nextUpgradePoint(viewer, playerSkill)
 
     override fun open() {
-        viewer.openMenu<Linked<SkillIcon>>(title) {
+        viewer.openMenu<Linked<SkillIcon>>(title.replace("{name}", skill.option.name)) {
             rows(rows)
             elements { (1..skill.option.levelCap).map { SkillIcon(viewer, skill.key, it, false) } }
             slots(slots)
@@ -156,6 +156,7 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
                             addItemFlags(*ItemFlag.values())
                         }
                     }
+
                     else -> element.build()
                 }
             }
@@ -169,7 +170,7 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
     }
 
     fun next() {
-        if (PlannersAPI.tryUpgrade(viewer,playerSkill)) {
+        if (PlannersAPI.tryUpgrade(viewer, playerSkill)) {
             viewer.sendLang("skill-upgrade-success", skill.option.name, playerSkill.level)
             open()
         }

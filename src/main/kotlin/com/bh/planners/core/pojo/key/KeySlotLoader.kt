@@ -20,6 +20,7 @@ object KeySlotLoader {
             val section = config.getConfigurationSection(it)!!
             PlannersAPI.keySlots += KeySlot(section)
         }
+        PlannersAPI.keySlots.sortBy { it.sort }
     }
 
     @SubscribeEvent

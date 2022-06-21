@@ -19,6 +19,8 @@ class KeySlot(config: ConfigurationSection) : IKeySlot {
 
     override val name = config.getString("name", key)!!
 
+    override val sort = config.getLong("sort", 1)
+
     override val description = config.getStringList("description")
 
 }
