@@ -16,7 +16,12 @@ options:
   grid-interact: RIGHT_CLICK_AIR
   grid-actionbar: '{name}: {countdown'
   infos:
-    - '{{ player name }}'
+    - '----------------'
+    - '§d{{ profile job }} §6{{ player name }}'
+    - '§eLv§f.§6{{ profile level }} §eEXP§f: §6{{ profile exp }}§f/§6{{ profile max-exp }}'
+    - '§bMana§f: §6{{ profile mana }}§f/§6{{ profile max-mana }}'
+    - '§aSkill Point§f: §6{{ profile point }}'
+    - '----------------'  
 # by chemdah
 level:
   def0:
