@@ -1,20 +1,20 @@
 def0:
-  name: '数字键 1'
-  group: '1'
+  name: '格子 1'
+  group: 'minecraft 1'
   sort: 1
 def1:
-  name: '数字键 2'
-  group: '2'
+  name: '格子 2'
+  group: 'minecraft 2'
   sort: 2
 def2:
-  name: '数字键 3'
-  group: '3'
+  name: '格子 3'
+  group: 'minecraft 3'
   sort: 3
 def3:
-  name: '数字键 4'
-  group: '4'
+  name: '格子 4'
+  group: 'minecraft 4'
   sort: 4
 def4:
-  name: '数字键 5'
-  group: '5'
+  name: '格子 5'
+  group: 'minecraft 5'
   sort: 5

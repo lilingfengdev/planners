@@ -1,11 +1,11 @@
 package com.bh.planners.core.ui
 
+import com.bh.planners.api.event.PlayerSkillBindEvent
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.storage.Storage
 import com.bh.planners.core.ui.SkillIcon.Companion.toIcon
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
-import taboolib.common.platform.function.info
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.xseries.getItemStack
 import taboolib.module.ui.openMenu
@@ -14,7 +14,7 @@ import taboolib.platform.util.buildItem
 import taboolib.platform.util.modifyLore
 import taboolib.platform.util.sendLang
 
-class SkillBackpack(viewer: Player) : IUI(viewer) {
+class Backpack(viewer: Player) : IUI(viewer) {
 
     companion object {
 
@@ -66,7 +66,8 @@ class SkillBackpack(viewer: Player) : IUI(viewer) {
                         ShortcutSelector(viewer) {
                             element.shortcutKey = this.key
                             Storage.INSTANCE.updateSkill(element)
-                            viewer.sendLang("skill-bind-shortcut", element.instance.option.name!!, name)
+                            PlayerSkillBindEvent(viewer, element, this, PlayerSkillBindEvent.Type.INSTANCE).call()
+                            viewer.sendLang("skill-bind-shortcut", element.instance.option.name, name)
                             open()
                         }.open()
                     }

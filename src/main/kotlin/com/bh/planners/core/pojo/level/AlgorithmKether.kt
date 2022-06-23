@@ -8,6 +8,10 @@ import java.util.concurrent.CompletableFuture
 
 class AlgorithmKether(val section: ConfigurationSection) : Algorithm() {
 
+
+    override val minLevel: Int
+        get() = section.getInt("min")
+
     override val maxLevel: Int
         get() = section.getInt("max")
 

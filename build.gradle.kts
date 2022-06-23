@@ -27,6 +27,10 @@ taboolib {
     description {
         dependencies {
             name("PlaceholderAPI").optional(true)
+            name("OriginAttribute").optional(true)
+            name("AttributeSystem").optional(true)
+            name("AttributePlus").optional(true)
+            name("SX-Attribute").optional(true)
         }
     }
 }
@@ -41,6 +45,7 @@ dependencies {
     compileOnly("ink.ptms.core:v11800:11800-minimize:mapped")
     compileOnly("com.google.code.gson:gson:2.8.5")
     compileOnly("com.google.guava:guava:21.0")
+    compileOnly("com.elmakers.mine.bukkit:EffectLib:9.4")
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
 }
@@ -68,6 +73,8 @@ publishing {
                 create<BasicAuthentication>("basic")
             }
         }
+        maven { url = uri("https://repo1.maven.org/maven2") }
+        maven { url = uri("http://maven.elmakers.com/repository") }
     }
     publications {
         create<MavenPublication>("library") {

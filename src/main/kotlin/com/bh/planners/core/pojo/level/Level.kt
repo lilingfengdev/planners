@@ -19,11 +19,17 @@ class Level(val algorithm: Algorithm, level: Int, experience: Int) {
 
     fun setLevel(value: Int): CompletableFuture<Void> {
         level = value
+        correct()
         return addExperience(0)
+    }
+
+    fun correct() {
+        level = level.coerceAtLeast(algorithm.minLevel).coerceAtMost(algorithm.maxLevel)
     }
 
     fun addLevel(value: Int): CompletableFuture<Void> {
         level += value
+        correct()
         return addExperience(0)
     }
 
@@ -47,6 +53,7 @@ class Level(val algorithm: Algorithm, level: Int, experience: Int) {
         fun getNextLevel() = algorithm.getExp(lvl).thenAccept {
             expNextLevel = if (it <= 0) Int.MAX_VALUE else it
         }
+
         fun finish() {
             if (lvl >= algorithm.maxLevel) {
                 level = algorithm.maxLevel
@@ -57,6 +64,7 @@ class Level(val algorithm: Algorithm, level: Int, experience: Int) {
             }
             future.complete(null)
         }
+
         fun process() {
             getNextLevel().thenAccept {
                 if (exp >= expNextLevel) {

@@ -1,7 +1,10 @@
 package com.bh.planners.api
 
 import com.bh.planners.Planners
+import org.bukkit.inventory.ItemStack
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.library.xseries.XMaterial
+import taboolib.library.xseries.getItemStack
 import taboolib.module.configuration.Configuration
 
 object PlannersOption {
@@ -17,5 +20,8 @@ object PlannersOption {
 
     val infos: List<String>
         get() = root.getStringList("infos")
+
+    val gridAirIcon: ItemStack
+        get() = root.getItemStack("grid-air") ?: XMaterial.STONE.parseItem()!!
 
 }

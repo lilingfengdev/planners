@@ -4,13 +4,9 @@ import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.hasJob
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.attemptAcceptJob
-import com.bh.planners.api.event.PlayerKeydownEvent
 import com.bh.planners.api.reset
-import com.bh.planners.core.ui.IUI.Companion.open
 import com.bh.planners.core.ui.JobUI
-import com.bh.planners.core.ui.SkillBackpack
-import com.bh.planners.core.ui.SkillIcon
-import com.bh.planners.core.ui.SkillUI
+import com.bh.planners.core.ui.Backpack
 import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
@@ -95,7 +91,7 @@ object PlannersJobCommand {
                 val playerExact = Bukkit.getPlayerExact(argument) ?: return@execute
 
                 if (playerExact.hasJob) {
-                    SkillBackpack(playerExact).open()
+                    Backpack(playerExact).open()
                 }
 
             }

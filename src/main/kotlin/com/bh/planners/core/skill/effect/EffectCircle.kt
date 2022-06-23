@@ -6,19 +6,14 @@ import com.bh.planners.core.skill.effect.renderer.EffectRenderer
 import com.bh.planners.core.pojo.Session
 import taboolib.library.kether.ParsedAction
 
-object EffectCircle : EffectLoader<EffectCircle.Impl>() {
-
-    override val clazz: Class<Impl>
-        get() = Impl::class.java
+object EffectCircle : Effect() {
 
     override val name: String
         get() = "circle"
 
-
-    class Impl(action: ParsedAction<*>) : Effect(action) {
-
-        override fun handler(target: Target?, option: EffectOption, session: Session): EffectRenderer {
-            return CircleRenderer(target!!,option.createContainer(target, session), option)
-        }
+    override fun sendTo(target: Target?, option: EffectOption, session: Session) {
+        CircleRenderer(target!!, option.createContainer(target, session), option).sendTo()
     }
+
+
 }

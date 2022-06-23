@@ -7,7 +7,7 @@ import taboolib.common.platform.Awake
 
 object Effects {
 
-    val loaders = mutableMapOf<String, EffectLoader<*>>()
+    val effects = mutableMapOf<String, Effect>()
 
 
     val STEP = listOf("step", "s")
@@ -15,22 +15,24 @@ object Effects {
     val ANGLE = listOf("angle", "a")
 
 
-    fun get(key: String): EffectLoader<*> {
-        return loaders[key]!!
+    fun get(key: String): Effect {
+        return effects[key]!!
     }
 
     @Awake(LifeCycle.LOAD)
     fun load() {
         runningClasses.forEach {
-            if (EffectLoader::class.java.isAssignableFrom(it)) {
-                (it.getInstance()?.get() as? EffectLoader<*>)?.let { loader ->
-                    loaders[loader.name] = loader
+            if (Effect::class.java.isAssignableFrom(it)) {
+                if (Effect::class.java.isAssignableFrom(it)) {
+                    (it.getInstance()?.get() as? Effect)?.let { effect ->
+                        effects[effect.name] = effect
+                    }
                 }
             }
         }
     }
 
-    val loaderKeys: Set<String>
-        get() = loaders.keys
+    val effectKeys: Set<String>
+        get() = effects.keys
 
 }

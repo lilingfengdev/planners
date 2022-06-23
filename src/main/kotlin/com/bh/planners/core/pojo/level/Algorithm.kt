@@ -6,5 +6,7 @@ abstract class Algorithm {
 
     abstract val maxLevel: Int
 
+    abstract val minLevel: Int
+
     abstract fun getExp(level: Int): CompletableFuture<Int>
 }

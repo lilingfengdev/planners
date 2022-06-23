@@ -10,6 +10,8 @@ import com.bh.planners.api.updateFlag
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.data.Data
 import com.bh.planners.core.pojo.player.PlayerJob
+import com.bh.planners.core.skill.bukkit.BukkitGrid
+import com.bh.planners.core.skill.bukkit.BukkitGrid.isHandGrid
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -91,11 +93,16 @@ object Combat {
 
     @Awake(LifeCycle.ENABLE)
     fun enableActionbarTask() {
-        info(isPlaceholderAPIEnable, isActionbarEnable)
         if (!isPlaceholderAPIEnable || !isActionbarEnable) return
         actionbarPlatformTask = submit(period = actionbarPeriod, async = true) {
             Bukkit.getOnlinePlayers().forEach {
-                it.sendActionBar(PlaceholderAPI.setPlaceholders(it, it.actionbarMessage ?: actionbarMessage))
+                // 如果手持技能icon
+                if (it.isHandGrid) {
+                    it.sendActionBar(BukkitGrid.toActionbarValue(it))
+                } else {
+                    it.sendActionBar(PlaceholderAPI.setPlaceholders(it, it.actionbarMessage ?: actionbarMessage))
+                }
+
             }
         }
     }

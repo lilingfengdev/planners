@@ -10,6 +10,11 @@ database:
 options:
   scope-threshold: [ 1.0,1.0,1.0 ]
   auto-save-flag-period: 60000
+  grid-air:
+    material: WHEAT_SEEDS
+    name: '空技能'
+  grid-interact: RIGHT_CLICK_AIR
+  grid-actionbar: '{name}: {countdown'
   infos:
     - '{{ player name }}'
 # by chemdah

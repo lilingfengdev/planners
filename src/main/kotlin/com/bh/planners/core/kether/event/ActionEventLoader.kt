@@ -37,7 +37,6 @@ object ActionEventLoader : Injector.Methods {
         if (method.isAnnotationPresent(KetherParser::class.java) && method.returnType == ActionEventParser::class.java) {
             val annotation = method.getAnnotation(KetherParser::class.java)
             val parser = method.invoke(instance.get()) as ActionEventParser
-            info("register ${annotation.value} $parser")
             actions[annotation.value] = parser
         }
 

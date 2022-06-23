@@ -6,22 +6,16 @@ import com.bh.planners.core.skill.effect.renderer.LineRenderer
 import com.bh.planners.core.pojo.Session
 import taboolib.library.kether.ParsedAction
 
-object EffectLine : EffectLoader<EffectLine.Impl>() {
-
-    override val clazz: Class<Impl>
-        get() = Impl::class.java
+object EffectLine : Effect() {
 
     override val name: String
         get() = "line"
 
+    override fun sendTo(target: Target?, option: EffectOption, session: Session) {
 
-    class Impl(action: ParsedAction<*>) : Effect(action) {
+        if (target !is Target.Location) return
 
-        override fun handler(target: Target?, option: EffectOption, session: Session): EffectRenderer {
-
-            if (target !is Target.Location) return EFFECT_AIR
-
-            return LineRenderer(target, option.createContainer(target, session), option, session)
-        }
+        LineRenderer(target, option.createContainer(target, session), option, session)
     }
+
 }

@@ -1,16 +1,9 @@
 package com.bh.planners.command
 
-import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.hasJob
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.addPoint
-import com.bh.planners.api.event.PlayerKeydownEvent
 import com.bh.planners.api.setPoint
-import com.bh.planners.core.ui.IUI.Companion.open
-import com.bh.planners.core.ui.JobUI
-import com.bh.planners.core.ui.SkillBackpack
-import com.bh.planners.core.ui.SkillIcon
-import com.bh.planners.core.ui.SkillUI
 import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
