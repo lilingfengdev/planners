@@ -31,7 +31,7 @@ __option__:
     upgradePoint: math meta skill level * 2
     base: 10
 action: |-
-  set loc to executor loc
+  set loc to meta executor loc
   meta origin set executor loc
   title "陷阱" subtitle "已安放" by 20 60 20
   async {

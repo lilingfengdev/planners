@@ -5,4 +5,4 @@ value-false: '关闭'
 actionbar:
   enable: true
   period: 20
-  message: 'Lv.%planners_profile level% Exp.%planners_profile exp%/%planners_profile max-exp% MP.%planners_profile mana% Combat.%planners_profile combat-local%'
+  message: '§eLv§f.§6%planners_profile level% §eExp§f:§6%planners_profile exp%§f/§6%planners_profile max-exp% §bMP§f:§6%planners_profile mana%'
