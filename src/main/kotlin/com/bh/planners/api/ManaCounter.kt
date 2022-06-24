@@ -6,6 +6,7 @@ import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.entity.Player
 import taboolib.common.platform.Schedule
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
@@ -15,7 +16,7 @@ object ManaCounter {
     private const val MANA_NAMESPACE = "@Mana"
     private const val MAX_MANA_NAMESPACE = "@MaxMana"
 
-    @Schedule(period = 20, async = true)
+    @Schedule(period = 100, async = true)
     fun timer() {
         PlannersAPI.profiles.values.forEach {
             if (it.player.isOnline) {

@@ -38,9 +38,6 @@ object PlannersCommand {
     }
 
     @CommandBody
-    val combat = PlannersCombatCommand
-
-    @CommandBody
     val job = PlannersJobCommand
 
     @CommandBody

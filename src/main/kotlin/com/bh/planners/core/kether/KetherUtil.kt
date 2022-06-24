@@ -2,6 +2,7 @@ package com.bh.planners.core.kether
 
 import com.bh.planners.api.common.Demand
 import com.bh.planners.core.kether.event.ActionEventParser
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.createContainer
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
@@ -29,6 +30,10 @@ const val NAMESPACE = "Planners"
 val namespaces = listOf(NAMESPACE, "kether")
 
 
+fun ScriptFrame.getContext(): Context {
+    return rootVariables().get<Context>("@Session").orElse(null) ?: error("Error running environment !")
+}
+
 fun ScriptFrame.getSession(): Session {
     return rootVariables().get<Session>("@Session").orElse(null) ?: error("Error running environment !")
 }
@@ -44,10 +49,9 @@ fun ProxyCommandSender.asPlayer(): Player? {
     return null
 }
 
-fun ScriptFrame.asPlayer(): Player {
-    return getSession().asPlayer
+fun ScriptFrame.asPlayer(): Player? {
+    return getContext().executor.asPlayer()
 }
-
 
 fun ScriptFrame.skill(): PlayerJob.Skill {
     return getSkill()
@@ -58,17 +62,20 @@ fun ScriptFrame.getSkill(): PlayerJob.Skill {
     return rootVariables().get<PlayerJob.Skill>("@Skill").orElse(null) ?: error("Error running environment !")
 }
 
-fun ScriptFrame.toOriginLocation(): Target.Location? {
-
-    val optional = rootVariables().get<Location>("@Origin")
-    if (optional.isPresent) {
-        return optional.get().toTarget()
-    }
+fun ScriptFrame.toTarget(): Target? {
     val executor = executor()
     if (executor is BukkitPlayer) {
         return executor.player.toTarget()
     }
     return Any().toLocation().toTarget()
+}
+
+fun ScriptFrame.toOriginLocation(): Target.Location? {
+    val optional = rootVariables().get<Location>("@Origin")
+    if (optional.isPresent) {
+        return optional.get().toTarget()
+    }
+    return toTarget() as Target.Location
 }
 
 fun ScriptFrame.rootVariables(): QuestContext.VarTable {

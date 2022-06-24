@@ -1,7 +1,7 @@
 __option__:
   name: '战士'
   router: warrior
-  mana-eval: math player level * 2 + papi "%rpg_Map:max-mana%"
+  mana-eval: 'math player level * 2 + 50'
   actionbar: '124'
 
 

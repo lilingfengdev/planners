@@ -40,18 +40,31 @@ open class ArcRenderer(target: Target, container: Target.Container, option: Effe
 
             var i = 0.0
             val coordinate = PlayerFrontCoordinate(this)
-            submit(async = true, period = option.period) {
-                if (i > option.angle) {
-                    cancel()
-                    return@submit
+
+            if (option.period == 0L) {
+                while (i < option.angle) {
+                    val radians = Math.toRadians(i + option.startAngle)
+                    val x: Double = option.radius * cos(radians)
+                    val z: Double = option.radius * sin(radians)
+                    val loc = coordinate.newLocation(x, i * option.slope, z)
+                    spawnParticle(loc, loc)
+                    i += option.step
                 }
-                val radians = Math.toRadians(i + option.startAngle)
-                val x: Double = option.radius * cos(radians)
-                val z: Double = option.radius * sin(radians)
-                val loc = coordinate.newLocation(x, i * option.slope, z)
-                spawnParticle(loc, loc)
-                i += option.step
+            } else {
+                submit(async = true, period = option.period) {
+                    if (i > option.angle) {
+                        cancel()
+                        return@submit
+                    }
+                    val radians = Math.toRadians(i + option.startAngle)
+                    val x: Double = option.radius * cos(radians)
+                    val z: Double = option.radius * sin(radians)
+                    val loc = coordinate.newLocation(x, i * option.slope, z)
+                    spawnParticle(loc, loc)
+                    i += option.step
+                }
             }
+
 
         }
     }

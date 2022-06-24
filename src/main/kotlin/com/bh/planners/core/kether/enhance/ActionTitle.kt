@@ -28,9 +28,8 @@ class ActionTitle(
                     frame.newFrame(stay).run<Any>().thenAccept { stay ->
                         frame.newFrame(fadeOut).run<Any>().thenAccept { fadeOut ->
 
-                            val viewer = frame.asPlayer()
-                            val title = t.toString().trimIndent().replace("@sender", viewer.name)
-                            val subTitle = s.toString().trimIndent().replace("@sender", viewer.name)
+                            val title = t.toString()
+                            val subTitle = s.toString()
                             frame.createTargets(selector).thenAccept {
                                 it.forEachPlayer {
                                     sendTitle(

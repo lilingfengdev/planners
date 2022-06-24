@@ -21,6 +21,7 @@ class Job(val key: String, val config: ConfigurationSection) {
         val name = root.getString("name")!!
         val routerKey = root.getString("router")!!
         val actionbar = root.getString("actionbar")
+        val regainManaExperience = root.getString("regain-mana-eval")
 
         val router : Router
             get() = PlannersAPI.getRouter(routerKey)

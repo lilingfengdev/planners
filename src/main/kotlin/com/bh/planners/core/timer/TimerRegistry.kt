@@ -21,6 +21,7 @@ object TimerRegistry {
 
     private val map = mutableMapOf<String, Class<out Event>>()
     val triggers = mutableMapOf<String, Timer<*>>()
+
     val EMPTY = Skill.Empty()
 
     @Suppress("UNCHECKED_CAST")
@@ -53,16 +54,16 @@ object TimerRegistry {
                 true -> submit(async = true) {
                     callTimerAction(timer, template, sender, event)
                 }
+
                 false -> callTimerAction(timer, template, sender, event)
             }
         }
     }
 
     fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
-        val timerSession = TimerSession(sender)
         try {
             KetherShell.eval(template.action, cacheScript = true, sender = sender, namespace = namespaces) {
-                rootFrame().variables()["@Session"] = timerSession
+                rootFrame().variables()["@Session"] = Context.Impl(sender, EMPTY)
                 rootFrame().variables()["@Event"] = event
                 timer.onStart(this, template, event)
             }

@@ -1,6 +1,7 @@
 warrior:
   name: '战士'
   counter: def0
+  regain-mana-eval: math profile level * 0.5
   icon:
     material: STONE_SWORD
     name: '&f主职业: &a{name}'

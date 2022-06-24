@@ -35,17 +35,14 @@ class Locations {
     companion object {
 
         /**
-         * loc [location] distance [location]
+         * distance [location] and [location]
          */
-        @KetherParser(["loc"], namespace = NAMESPACE)
+        @KetherParser(["distance"], namespace = NAMESPACE)
         fun parser() = scriptParser {
-            val locAction = it.next(ArgTypes.ACTION)
-            it.switch {
-                case("distance") {
-                    val target = it.next(ArgTypes.ACTION)
-                    Distance(locAction, target)
-                }
-            }
+            val pos1 = it.next(ArgTypes.ACTION)
+            it.expect("and")
+            val pos2 = it.next(ArgTypes.ACTION)
+            Distance(pos1, pos2)
         }
 
     }

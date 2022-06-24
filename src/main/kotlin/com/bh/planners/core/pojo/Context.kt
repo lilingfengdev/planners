@@ -41,4 +41,7 @@ abstract class Context(val executor: ProxyCommandSender, val skill: Skill) {
             }
         }
     }
+
+    open class Impl(executor: ProxyCommandSender, skill: Skill) : Context(executor, skill) {}
+
 }

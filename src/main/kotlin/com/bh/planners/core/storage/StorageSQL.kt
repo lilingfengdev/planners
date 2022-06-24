@@ -1,6 +1,7 @@
 package com.bh.planners.core.storage
 
 import com.bh.planners.Planners
+import com.bh.planners.api.hasJob
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.data.DataContainer
@@ -120,7 +121,7 @@ class StorageSQL : Storage {
         return userTable.select(dataSource) {
             where { ID eq player.toUserId() }
             rows(DATA)
-        }.first { DataContainer() }
+        }.firstOrNull { DataContainer.fromJson(getString(DATA)) } ?: DataContainer()
     }
 
     fun getCurrentJobId(player: Player): Long? {
@@ -213,6 +214,9 @@ class StorageSQL : Storage {
         userTable.update(dataSource) {
             where { ID eq profile.id }
             set(DATA, profile.flags.toJson())
+        }
+        if (profile.hasJob) {
+            updateJob(profile.player, profile.job!!)
         }
     }
 

@@ -1,9 +1,9 @@
-package com.bh.planners.api.combat.attribute
+package com.bh.planners.core.feature.attribute
 
 import org.bukkit.entity.LivingEntity
 import java.util.*
 
-class SXAttributeBridge : AttributeBridge{
+class SXAttributeBridge : AttributeBridge {
     override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>): String {
         TODO("Not yet implemented")
     }

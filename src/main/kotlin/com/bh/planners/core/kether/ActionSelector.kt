@@ -5,6 +5,7 @@ import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.createContainer
 import com.bh.planners.core.kether.selector.Fetch.asContainer
 import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -24,9 +25,14 @@ class ActionSelector {
 
     class ActionTargetContainerGet(val action: ParsedAction<*>) : ScriptAction<Target.Container?>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container?> {
-            return frame.newFrame(action).run<String>().thenApply { selector ->
-                frame.getSession().flags[selector]?.asContainer()
+            val future = CompletableFuture<Target.Container?>()
+            frame.newFrame(action).run<Any>().thenAccept { selector ->
+                val session = frame.getSession()
+                val data = session.flags[selector.toString()]
+                info(data)
+                future.complete(data?.asContainer())
             }
+            return future
         }
 
     }
@@ -36,10 +42,8 @@ class ActionSelector {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.newFrame(keyAction).run<String>().thenAccept { key ->
                 val session = frame.getSession()
-                frame.newFrame(valueAction).run<Any>().thenAccept { value ->
-                    session.flags[key.toString()] = if (value is Target.Container) {
-                        value.unsafeData()
-                    } else Demand(value.toString()).createContainer(frame.toOriginLocation(), session).unsafeData()
+                frame.createTargets(valueAction).thenAccept { selector ->
+                    session.flags[key] = selector.unsafeData()
                 }
             }
 

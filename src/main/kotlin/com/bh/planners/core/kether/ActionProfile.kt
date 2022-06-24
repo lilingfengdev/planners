@@ -6,8 +6,6 @@ import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.ManaCounter.toMaxMana
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.addPoint
-import com.bh.planners.api.combat.Combat.isCombat
-import com.bh.planners.api.combat.Combat.isCombatLocal
 import com.bh.planners.api.common.Operator
 import com.bh.planners.api.setPoint
 import org.bukkit.entity.Player
@@ -22,7 +20,7 @@ class ActionProfile {
     class PointOperation(val action: ParsedAction<*>, val operator: Operator) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<Any>().thenAccept {
-                val profile = frame.asPlayer().plannersProfile
+                val profile = frame.asPlayer()!!.plannersProfile
                 when (operator) {
                     Operator.ADD -> profile.addPoint(Coerce.toInteger(it))
                     Operator.TAKE -> profile.addPoint(-Coerce.toInteger(it))
@@ -35,7 +33,7 @@ class ActionProfile {
     class ManaOperation(val action: ParsedAction<*>, val operator: Operator) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<Any>().thenAccept {
-                val profile = frame.asPlayer().plannersProfile
+                val profile = frame.asPlayer()!!.plannersProfile
                 when (operator) {
                     Operator.ADD -> profile.addMana(Coerce.toDouble(it))
                     Operator.TAKE -> profile.addMana(-Coerce.toDouble(it))
@@ -109,16 +107,6 @@ class ActionProfile {
                 case("max-exp", "max-experience") {
                     actionNow {
                         script().sender!!.cast<Player>().plannersProfile.maxExperience
-                    }
-                }
-                case("combat") {
-                    actionNow {
-                        script().sender!!.cast<Player>().isCombat
-                    }
-                }
-                case("combat-local") {
-                    actionNow {
-                        script().sender!!.cast<Player>().isCombatLocal
                     }
                 }
 

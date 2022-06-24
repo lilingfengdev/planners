@@ -1,11 +1,8 @@
 package com.bh.planners.command
 
+import com.bh.planners.api.*
 import com.bh.planners.api.PlannersAPI.hasJob
 import com.bh.planners.api.PlannersAPI.plannersProfile
-import com.bh.planners.api.addExperience
-import com.bh.planners.api.addLevel
-import com.bh.planners.api.addPoint
-import com.bh.planners.api.setPoint
 import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody

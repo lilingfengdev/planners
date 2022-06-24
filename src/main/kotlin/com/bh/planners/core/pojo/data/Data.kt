@@ -75,6 +75,6 @@ open class Data(
     }
 
     companion object {
-        fun unsafeData(any: Any, survivalStamp: Long = -1L) = Data(any, survivalStamp)
+        fun unsafeData(any: Any, survivalStamp: Long = -1L) = Data(any, survivalStamp = survivalStamp)
     }
 }

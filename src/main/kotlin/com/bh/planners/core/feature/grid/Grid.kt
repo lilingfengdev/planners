@@ -1,7 +1,6 @@
-package com.bh.planners.core.skill.bukkit
+package com.bh.planners.core.feature.grid
 
 import com.bh.planners.core.pojo.key.IKeySlot
-import com.bh.planners.core.pojo.key.KeySlot
 import taboolib.common5.Coerce
 
 enum class Grid(val id: Int, val slot: Int) {

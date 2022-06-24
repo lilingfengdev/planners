@@ -4,6 +4,7 @@ import com.bh.planners.api.PlannersAPI.hasJob
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.addExperience
 import com.bh.planners.api.addPoint
+import com.bh.planners.api.hasJob
 import com.bh.planners.api.setPoint
 import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender

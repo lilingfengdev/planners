@@ -1,4 +1,4 @@
-package com.bh.planners.api.combat.attribute
+package com.bh.planners.core.feature.attribute
 
 import ac.github.oa.internal.core.attribute.AttributeData
 import org.bukkit.Bukkit

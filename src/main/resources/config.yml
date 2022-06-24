@@ -14,14 +14,16 @@ options:
     material: WHEAT_SEEDS
     name: '空技能'
   grid-interact: RIGHT_CLICK_AIR
-  grid-actionbar: '{name}: {countdown'
+  grid-actionbar: '{{ meta skill name }} Counting.{{ math meta skill countdown / 1000 }}s'
   infos:
     - '----------------'
     - '§d{{ profile job }} §6{{ player name }}'
     - '§eLv§f.§6{{ profile level }} §eEXP§f: §6{{ profile exp }}§f/§6{{ profile max-exp }}'
     - '§bMana§f: §6{{ profile mana }}§f/§6{{ profile max-mana }}'
     - '§aSkill Point§f: §6{{ profile point }}'
-    - '----------------'  
+    - '----------------'
+  regain-mana-period: 100
+  regain-mana-eval: math profile level * 0.5
 # by chemdah
 level:
   def0:

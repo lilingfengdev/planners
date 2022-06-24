@@ -1,5 +1,7 @@
 package com.bh.planners.api
 
+import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.event.PlayerGetExperienceEvent
 import com.bh.planners.api.event.PlayerLevelChangeEvent
 import com.bh.planners.api.event.PlayerSelectedJobEvent
@@ -40,7 +42,7 @@ fun PlayerProfile.addExperience(value: Int) {
     if (job == null) return
     val event = PlayerGetExperienceEvent(player, value)
     event.call()
-    if (event.isCancelled) {
+    if (!event.isCancelled) {
         val mark = job!!.level
         job!!.addExperience(value)
         if (mark != job!!.level) {
@@ -96,6 +98,13 @@ fun PlayerProfile.isTransfer(): Boolean {
 
     return true
 }
+
+val Player.hasJob: Boolean
+    get() = plannersProfileIsLoaded && plannersProfile.job != null
+
+
+val PlayerProfile.hasJob: Boolean
+    get() = job != null
 
 /**
  * 满足条件：

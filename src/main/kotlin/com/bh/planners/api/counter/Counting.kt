@@ -13,7 +13,7 @@ object Counting {
 
     fun reset(player: Player, session: Session) {
         val get = session.cooldown.get()
-        getCache(player) += Baffle(session.skill.key, Coerce.toLong(get))
+        getCache(player) += Baffle(session.skill.key, Coerce.toLong(get) * 1000)
     }
 
     fun hasNext(player: Player, skill: Skill): Boolean {
@@ -21,7 +21,7 @@ object Counting {
     }
 
     fun getCountdown(player: Player, skill: Skill): Long {
-        return getCache(player).find { it.name == skill.key }?.countdown ?: -1L
+        return getCache(player).find { it.name == skill.key }?.countdown ?: 0
     }
 
     fun getCache(player: Player) = map.computeIfAbsent(player.name) { mutableSetOf() }

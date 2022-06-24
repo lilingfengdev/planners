@@ -40,8 +40,6 @@ object PlannersAPI {
     val Player.plannersProfileIsLoaded: Boolean
         get() = profiles.containsKey(uniqueId)
 
-    val Player.hasJob: Boolean
-        get() = plannersProfileIsLoaded && plannersProfile.job != null
 
     fun cast(player: Player, skillName: String, mark: Boolean = true): ExecuteResult {
         return player.plannersProfile.cast(skillName, mark)
@@ -169,10 +167,6 @@ object PlannersAPI {
         return jobs.firstOrNull { it.key == router.start } ?: error("Job '${router.start}' not found.")
     }
 
-    @SubscribeEvent
-    fun e(e: PlayerQuitEvent) {
-        profiles.remove(e.player.uniqueId)
-    }
 
     fun PlayerProfile.hasCast(skill: Skill): Boolean {
         return getSkill(skill.key)?.level ?: 0 > 0

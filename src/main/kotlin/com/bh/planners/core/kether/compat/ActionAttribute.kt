@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.compat
 
-import com.bh.planners.api.combat.attribute.AttributeBridge
+import com.bh.planners.core.feature.attribute.AttributeBridge
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.createTargets
 import taboolib.common.util.asList

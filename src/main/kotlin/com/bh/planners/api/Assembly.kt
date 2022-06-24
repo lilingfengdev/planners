@@ -1,11 +1,13 @@
 package com.bh.planners.api
 
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.event.PlayerInitializeEvent
 import com.bh.planners.api.event.PlayerProfileLoadEvent
 import com.bh.planners.core.storage.Storage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Schedule
@@ -16,7 +18,9 @@ object Assembly {
 
     @SubscribeEvent
     fun e(e: PlayerJoinEvent) {
-        PlannersAPI.profiles[e.player.uniqueId] = Storage.INSTANCE.loadProfile(e.player)
+        val profile = Storage.INSTANCE.loadProfile(e.player)
+        PlannersAPI.profiles[e.player.uniqueId] = profile
+        PlayerInitializeEvent(e.player, profile).call()
     }
 
     @Awake(LifeCycle.ENABLE)
@@ -24,6 +28,12 @@ object Assembly {
         submit(async = true, period = PlannersOption.autoSaveFlagPeriod, delay = PlannersOption.autoSaveFlagPeriod) {
             saveAll()
         }
+    }
+
+    @SubscribeEvent
+    fun e(e: PlayerQuitEvent) {
+        save(e.player)
+        PlannersAPI.profiles.remove(e.player.uniqueId)
     }
 
     @Awake(LifeCycle.DISABLE)

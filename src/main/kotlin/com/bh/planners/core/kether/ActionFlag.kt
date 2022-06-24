@@ -18,7 +18,7 @@ class ActionFlag {
     class DataGet(val action: ParsedAction<*>) : ScriptAction<Any>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Any> {
             return frame.newFrame(action).run<String>().thenApply {
-                frame.asPlayer().plannersProfile.getFlag(it)!!.data
+                frame.asPlayer()!!.plannersProfile.getFlag(it)!!.data
             }
         }
 
@@ -29,7 +29,7 @@ class ActionFlag {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<String>().thenAccept { key ->
                 frame.newFrame(value).run<Any>().thenAccept { value ->
-                    val profile = frame.asPlayer().plannersProfile
+                    val profile = frame.asPlayer()!!.plannersProfile
                     frame.newFrame(time).run<Long>().thenAccept { time ->
                         profile.setFlag(key,Data(value, survivalStamp = time))
                     }
@@ -44,7 +44,7 @@ class ActionFlag {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<String>().thenAccept { key ->
                 frame.newFrame(value).run<Any>().thenAccept { value ->
-                    val dataContainer = frame.asPlayer().plannersProfile.flags
+                    val dataContainer = frame.asPlayer()!!.plannersProfile.flags
                     if (dataContainer.containsKey(key)) {
                         dataContainer.update(key, dataContainer[key]!!.increaseAny(value.toString()))
                     }
@@ -72,7 +72,7 @@ class ActionFlag {
         fun parser() = scriptParser {
             val keyAction = it.next(ArgTypes.ACTION)
             it.switch {
-                case("to", "set") {
+                case("to") {
                     val valueAction = it.next(ArgTypes.ACTION)
                     val timeAction = try {
                         it.mark()

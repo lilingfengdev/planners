@@ -200,7 +200,7 @@ class DataContainer {
     companion object {
 
         fun Any.unsafeData(): Data {
-            return Data.unsafeData(this)
+            return Data.unsafeData(this,-1)
         }
 
         fun ItemTag.dataContainer(): DataContainer {

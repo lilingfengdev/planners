@@ -17,7 +17,7 @@ class Baffle(val name: String, var millis: Long) {
         get() = max(nestMillis - System.currentTimeMillis(), 0)
 
     fun reset() {
-        this.mark = -1
+        this.mark > 0L
     }
 
     fun reduce(stamp: Long) {

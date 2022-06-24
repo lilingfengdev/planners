@@ -24,4 +24,10 @@ object PlannersOption {
     val gridAirIcon: ItemStack
         get() = root.getItemStack("grid-air") ?: XMaterial.STONE.parseItem()!!
 
+    val regainManaPeriod: Long
+        get() = root.getLong("regain-mana-period", 20L)
+
+    val regainManaExperience: String
+        get() = root.getString("regain-mana-eval")!!
+
 }

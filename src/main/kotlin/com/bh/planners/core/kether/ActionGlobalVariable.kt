@@ -72,35 +72,39 @@ class ActionGlobalVariable {
          */
         @KetherParser(["global"], namespace = NAMESPACE)
         fun parser() = scriptParser {
-            it.switch {
-                case("get") {
-                    Get(it.next(ArgTypes.ACTION))
-                }
-                case("set") {
-                    val key = it.next(ArgTypes.ACTION)
-                    it.expect("to")
-                    val value = it.next(ArgTypes.ACTION)
-                    mark()
-                    val timeout = try {
-                        it.expect("timeout")
-                        it.next(ArgTypes.ACTION)
-                    } catch (e: Exception) {
-                        reset()
-                        ParsedAction(LiteralAction<Long>("-1"))
+            val key = it.next(ArgTypes.ACTION)
+            try {
+                when (it.expects("get", "set", "to", "=", "keys")) {
+                    "to", "set", "=" -> {
+                        val value = it.next(ArgTypes.ACTION)
+                        val timeout = try {
+                            it.mark()
+                            it.expects("timeout", "time", "t")
+                            it.next(ArgTypes.ACTION)
+                        } catch (_: Throwable) {
+                            it.reset()
+                            ParsedAction(LiteralAction<Long>("-1"))
+                        }
+                        Set(key, value, timeout)
                     }
-                    Set(key, value, timeout)
-                }
-                case("keys") {
-                    mark()
-                    val check = try {
-                        expect("check")
-                        it.next(ArgTypes.ACTION)
-                    } catch (e: Exception) {
-                        reset()
-                        ParsedAction(LiteralAction<String>("*"))
+
+                    "keys" -> {
+                        val check = try {
+                            it.mark()
+                            it.expect("check")
+                            it.next(ArgTypes.ACTION)
+                        } catch (e: Exception) {
+                            it.reset()
+                            ParsedAction(LiteralAction<String>("*"))
+                        }
+                        Keys(check)
                     }
-                    Keys(check)
+
+                    "get" -> Get(key)
+                    else -> error("!")
                 }
+            } catch (_: Throwable) {
+                Get(key)
             }
         }
 

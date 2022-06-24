@@ -4,6 +4,7 @@ import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.hasJob
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.attemptAcceptJob
+import com.bh.planners.api.hasJob
 import com.bh.planners.api.reset
 import com.bh.planners.core.ui.JobUI
 import com.bh.planners.core.ui.Backpack

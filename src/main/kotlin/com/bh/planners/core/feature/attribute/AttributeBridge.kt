@@ -1,4 +1,4 @@
-package com.bh.planners.api.combat.attribute
+package com.bh.planners.core.feature.attribute
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
