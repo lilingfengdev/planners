@@ -15,6 +15,7 @@ import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.expansion.createHelper
+import taboolib.module.chat.colored
 import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.runKether
 
@@ -65,7 +66,7 @@ object PlannersCommand {
                 runKether {
                     KetherFunction
                         .parse(PlannersOption.infos, namespace = namespaces, sender = adaptPlayer(playerExact))
-                        .forEach(sender::sendMessage)
+                        .forEach { sender.sendMessage(it.colored()) }
                 }
 
             }

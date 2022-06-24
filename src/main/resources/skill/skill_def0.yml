@@ -44,7 +44,6 @@ action: |-
   }
   async {
     set damage to lazy *damage
-    tell &d
     for i in range 1 to 8 then {
       selector t0 to "-@range 4,4,4 -@their"
       if check selector t0 size >= 1 then {

@@ -90,7 +90,7 @@ class ActionProfile {
                 }
                 case("job") {
                     actionNow {
-                        script().sender!!.cast<Player>().plannersProfile.job?.name
+                        script().sender!!.cast<Player>().plannersProfile.job?.name ?: "暂无"
                     }
                 }
                 case("level") {
