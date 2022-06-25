@@ -133,8 +133,8 @@ object PlannersJobCommand {
         dynamic("player") {
             suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
 
-            execute<ProxyCommandSender> { sender, context, argument ->
-                val playerExact = Bukkit.getPlayerExact(context.argument(-1))!!
+            execute<ProxyCommandSender> { sender, _, argument ->
+                val playerExact = Bukkit.getPlayerExact(argument)!!
                 if (!playerExact.hasJob) {
                     sender.sendLang("console-player-job-not-exists", playerExact.plannersProfile.job!!.name)
                     return@execute

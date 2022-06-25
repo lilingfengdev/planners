@@ -39,7 +39,7 @@ fun ScriptFrame.getSession(): Session {
 }
 
 fun ScriptFrame.executor(): ProxyCommandSender {
-    return getSession().executor
+    return getContext().executor
 }
 
 fun ProxyCommandSender.asPlayer(): Player? {
