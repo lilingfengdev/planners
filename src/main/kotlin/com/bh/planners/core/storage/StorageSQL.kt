@@ -121,7 +121,9 @@ class StorageSQL : Storage {
         return userTable.select(dataSource) {
             where { ID eq player.toUserId() }
             rows(DATA)
-        }.firstOrNull { DataContainer.fromJson(getString(DATA)) } ?: DataContainer()
+        }.firstOrNull {
+            DataContainer.fromJson(getString(DATA) ?: "{}")
+        } ?: DataContainer()
     }
 
     fun getCurrentJobId(player: Player): Long? {
