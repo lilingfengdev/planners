@@ -4,6 +4,7 @@ import com.bh.planners.api.ManaCounter.addMana
 import com.bh.planners.api.ManaCounter.setMana
 import com.bh.planners.api.ManaCounter.takeMana
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.common.Operator
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.createTargets
 import taboolib.common5.Coerce
@@ -13,14 +14,10 @@ import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 class ActionMana(
-    val mode: Mode,
+    val mode: Operator,
     val amount: ParsedAction<*>,
     val selector: ParsedAction<*>
 ) : ScriptAction<Void>() {
-
-    enum class Mode {
-        ADD, TAKE, SET
-    }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         frame.newFrame(amount).run<Any>().thenApply { amount ->
@@ -29,9 +26,9 @@ class ActionMana(
                     val profile = this.plannersProfile
                     val value = Coerce.toDouble(amount)
                     when (mode) {
-                        Mode.ADD -> profile.addMana(value)
-                        Mode.TAKE -> profile.takeMana(value)
-                        Mode.SET -> profile.setMana(value)
+                        Operator.ADD -> profile.addMana(value)
+                        Operator.TAKE -> profile.takeMana(value)
+                        Operator.SET -> profile.setMana(value)
                     }
                 }
             }
@@ -50,14 +47,23 @@ class ActionMana(
          */
         @KetherParser(["mana"], namespace = NAMESPACE)
         fun parser() = scriptParser {
-            val mode = when (it.expects("add, give, take, subtract, set")) {
-                "add", "give" -> Mode.ADD
-                "take", "subtract" -> Mode.TAKE
-                "set" -> Mode.SET
-                else -> error("error")
+
+            it.switch {
+                case("add", "give") {
+                    ActionMana(Operator.ADD, it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+                }
+
+                case("take", "subtract") {
+                    ActionMana(Operator.TAKE, it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+                }
+
+                case("set") {
+                    ActionMana(Operator.SET, it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+                }
+                other {
+                    error("error of case!")
+                }
             }
-            val amount = it.next(ArgTypes.ACTION)
-            ActionMana(mode, amount, it.next(ArgTypes.ACTION))
         }
     }
 }
