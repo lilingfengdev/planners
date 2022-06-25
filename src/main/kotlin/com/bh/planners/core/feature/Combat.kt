@@ -3,6 +3,7 @@ package com.bh.planners.core.feature
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.event.PluginReloadEvent
+import com.bh.planners.api.hasJob
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.feature.grid.BukkitGrid
@@ -62,6 +63,7 @@ object Combat {
         if (!isPlaceholderAPIEnable || !isActionbarEnable) return
         actionbarPlatformTask = submit(period = actionbarPeriod, async = true) {
             Bukkit.getOnlinePlayers().forEach {
+                if (it.hasJob) return@forEach
                 // 如果手持技能icon
                 if (it.isHandGrid) {
                     it.sendActionBar(BukkitGrid.toActionbarValue(it))
