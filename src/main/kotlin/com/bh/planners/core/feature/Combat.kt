@@ -63,7 +63,7 @@ object Combat {
         if (!isPlaceholderAPIEnable || !isActionbarEnable) return
         actionbarPlatformTask = submit(period = actionbarPeriod, async = true) {
             Bukkit.getOnlinePlayers().forEach {
-                if (it.hasJob) return@forEach
+                if (!it.hasJob) return@forEach
                 // 如果手持技能icon
                 if (it.isHandGrid) {
                     it.sendActionBar(BukkitGrid.toActionbarValue(it))
