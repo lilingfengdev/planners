@@ -45,7 +45,7 @@ class ActionMeta {
                 }
 
                 case("executor") {
-                    when (expects("name", "uuid", "loc", "location")) {
+                    when (expects("name", "uuid", "loc", "location","mana","max-mana")) {
                         "name" -> actionNow { executor().name }
                         "uuid" -> actionNow { asPlayer()!!.uniqueId.toString() }
                         "loc", "location" -> actionNow { asPlayer()!!.location.toLocal() }
