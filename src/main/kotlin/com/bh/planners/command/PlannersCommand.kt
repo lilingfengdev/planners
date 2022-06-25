@@ -57,6 +57,9 @@ object PlannersCommand {
     val mana = PlannersManaCommand
 
     @CommandBody
+    val skill = PlannersSkillCommand
+
+    @CommandBody
     val info = subCommand {
         dynamic("player") {
             suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
