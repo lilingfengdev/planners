@@ -2,6 +2,7 @@ package com.bh.planners.core.kether
 
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.kether.selector.Fetch.asContainer
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.data.Data
 import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
@@ -37,7 +38,7 @@ class ActionTarget {
             return getSession().getTarget()
         }
 
-        fun Session.getTarget(): Target? {
+        fun Context.getTarget(): Target? {
             return flags["@Target"]?.asTarget()
         }
 

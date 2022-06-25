@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.selector
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.toLocation
-import com.bh.planners.core.pojo.Session
+import com.bh.planners.core.pojo.Context
 
 /**
  * 选中具体坐标
@@ -15,7 +15,7 @@ object Location : Selector {
     override val names: Array<String>
         get() = arrayOf("loc", "location", "l")
 
-    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container) {
         container.add(args.toLocation().toTarget())
     }
 

@@ -1,10 +1,10 @@
 package com.bh.planners.core.kether.selector
 
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.ifEntity
 import com.bh.planners.core.skill.effect.Target.Companion.ifLocation
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
-import com.bh.planners.core.pojo.Session
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -25,7 +25,7 @@ object BlockAt : Selector {
     override val names: Array<String>
         get() = arrayOf("blockAt", "ba")
 
-    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container) {
         val distance = if (args.isEmpty()) 10.0 else Coerce.toDouble(args)
 
         var block: Block? = null

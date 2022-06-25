@@ -22,7 +22,6 @@ open class Session(executor: ProxyCommandSender, skill: Skill) : Context(executo
         }
     }
 
-    val flags = DataContainer()
 
     private fun run() {
         try {

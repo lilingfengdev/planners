@@ -3,6 +3,7 @@ package com.bh.planners.core.pojo
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.core.kether.LazyGetter
 import com.bh.planners.core.kether.namespaces
+import com.bh.planners.core.pojo.data.DataContainer
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.entity.Player
@@ -23,6 +24,8 @@ abstract class Context(val executor: ProxyCommandSender, val skill: Skill) {
 
     open val playerSkill: PlayerJob.Skill
         get() = profile.getSkill(skill.key)!!
+
+    val flags = DataContainer()
 
     val variables = skill.option.variables.associate { it.key to toLazyVariable(it) }
 

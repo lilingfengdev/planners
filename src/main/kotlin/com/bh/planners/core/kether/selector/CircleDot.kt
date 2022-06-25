@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.selector
 
-import com.bh.planners.core.pojo.Session
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
 import com.bh.planners.core.skill.effect.common.PlayerFrontCoordinate
@@ -17,7 +17,7 @@ object CircleDot : Selector {
     override val names: Array<String>
         get() = arrayOf("c-dot", "cdot", "cd")
 
-    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container) {
         val location = target as? Target.Location ?: return
         val coordinate = PlayerFrontCoordinate(location.value)
         val split = args.split(",")

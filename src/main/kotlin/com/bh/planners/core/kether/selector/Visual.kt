@@ -1,10 +1,10 @@
 package com.bh.planners.core.kether.selector
 
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.ifEntity
 import com.bh.planners.core.skill.effect.Target.Companion.ifLocation
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
-import com.bh.planners.core.pojo.Session
 import com.bh.planners.util.entityAt
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
@@ -22,7 +22,7 @@ object Visual : Selector {
     override val names: Array<String>
         get() = arrayOf("visual", "vi")
 
-    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container) {
         val range = Coerce.toDouble(args)
         target?.ifLocation {
             container.addAll(getTargetLocation(this.value, this.value.direction, range).map { it.toTarget() })

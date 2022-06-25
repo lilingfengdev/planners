@@ -3,6 +3,7 @@ package com.bh.planners.core.skill.effect
 import com.bh.planners.api.common.Demand
 import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.kether.toLocal
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -18,9 +19,9 @@ interface Target {
             return Container().also { Selector.check(target, session, this, it) }
         }
 
-        fun EffectOption.createContainer(target: Target?, session: Session): Container {
+        fun EffectOption.createContainer(target: Target?, context: Context): Container {
 
-            return Container().also { Selector.check(target, session, this, it) }
+            return Container().also { Selector.check(target, context, this, it) }
         }
 
         fun LivingEntity.toTarget(): Entity {

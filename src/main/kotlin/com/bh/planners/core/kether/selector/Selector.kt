@@ -2,9 +2,9 @@ package com.bh.planners.core.kether.selector
 
 import com.bh.planners.api.common.Demand
 import com.bh.planners.api.common.Plugin
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.EffectOption
 import com.bh.planners.core.skill.effect.Target
-import com.bh.planners.core.pojo.Session
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.io.getInstance
@@ -21,15 +21,15 @@ interface Selector {
             return selectors.firstOrNull { string in it.names } ?: error("Selector '${string}' not found")
         }
 
-        fun check(target: Target?, session: Session, option: EffectOption, container: Target.Container) {
-            check(target, session, option.demand, container)
+        fun check(target: Target?, context: Context, option: EffectOption, container: Target.Container) {
+            check(target, context, option.demand, container)
         }
 
-        fun check(target: Target?, session: Session, demand: Demand, container: Target.Container) {
+        fun check(target: Target?, context: Context, demand: Demand, container: Target.Container) {
             demand.dataMap.keys.filter { it.startsWith('@') }.forEach {
                 val selector = getSelector(it.substring(1))
                 demand.dataMap[it]!!.forEach { s ->
-                    selector.check(it.substring(1), target, s, session, container)
+                    selector.check(it.substring(1), target, s, context, container)
                 }
             }
         }
@@ -56,7 +56,7 @@ interface Selector {
 
     val names: Array<String>
 
-    fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container)
+    fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container)
 
     fun String.isNon(): Boolean {
         return get(0) == '!'

@@ -1,21 +1,19 @@
 package com.bh.planners.core.skill.effect
 
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.Target.Companion.createContainer
-import com.bh.planners.core.skill.effect.renderer.EffectRenderer
 import com.bh.planners.core.skill.effect.renderer.LineRenderer
-import com.bh.planners.core.pojo.Session
-import taboolib.library.kether.ParsedAction
 
 object EffectLine : Effect() {
 
     override val name: String
         get() = "line"
 
-    override fun sendTo(target: Target?, option: EffectOption, session: Session) {
+    override fun sendTo(target: Target?, option: EffectOption, context: Context) {
 
         if (target !is Target.Location) return
 
-        LineRenderer(target, option.createContainer(target, session), option, session)
+        LineRenderer(target, option.createContainer(target, context), option, context)
     }
 
 }

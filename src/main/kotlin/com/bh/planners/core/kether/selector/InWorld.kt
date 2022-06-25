@@ -1,8 +1,8 @@
 package com.bh.planners.core.kether.selector
 
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
-import com.bh.planners.core.pojo.Session
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 
@@ -20,7 +20,7 @@ object InWorld : Selector {
         get() = arrayOf("inWorld", "inworld", "iw", "piw")
 
     // -@inWorld world:PLAYER,ZOMBIE
-    override fun check(name: String, target: Target?, args: String, session: Session, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container) {
 
         val worldName = if (args.contains(":")) {
             args.split(":")[0]
