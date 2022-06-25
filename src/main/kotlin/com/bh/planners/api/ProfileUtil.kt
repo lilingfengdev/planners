@@ -5,6 +5,7 @@ import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.event.PlayerGetExperienceEvent
 import com.bh.planners.api.event.PlayerLevelChangeEvent
 import com.bh.planners.api.event.PlayerSelectedJobEvent
+import com.bh.planners.api.event.PlayerSkillUpgradeEvent
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.Condition
 import com.bh.planners.core.pojo.Job
@@ -35,6 +36,7 @@ fun PlayerProfile.next(skill: PlayerJob.Skill) {
     if (1 + skill.level < skill.instance.option.levelCap) {
         skill.level++
         Storage.INSTANCE.updateSkill(skill)
+        PlayerSkillUpgradeEvent(player, skill).call()
     }
 }
 

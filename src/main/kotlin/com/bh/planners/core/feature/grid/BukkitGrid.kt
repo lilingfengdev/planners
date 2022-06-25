@@ -7,6 +7,7 @@ import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.counter.Counting
 import com.bh.planners.api.event.PlayerInitializeEvent
 import com.bh.planners.api.event.PlayerSkillBindEvent
+import com.bh.planners.api.event.PlayerSkillUpgradeEvent
 import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.kether.rootVariables
@@ -40,8 +41,8 @@ object BukkitGrid {
         grids += PlannersAPI.keySlots.mapNotNull { Grid.get(it.group) }
     }
 
-    val gridInteract: String
-        get() = PlannersOption.root.getString("grid-interact")!!
+    val gridInteractActions: List<String>
+        get() = PlannersOption.root.getStringList("grid-interact-actions")
 
     val gridActionbarValue: String
         get() = PlannersOption.root.getString("grid-actionbar")!!
@@ -119,16 +120,21 @@ object BukkitGrid {
     }
 
     @SubscribeEvent
-    fun e(e: PlayerSkillBindEvent) {
-        val grid = Grid.get(e.keySlot) ?: return
-        if (grid in grids) {
+    fun e0(e: PlayerSkillBindEvent) {
+        updateAll(e.player)
+    }
+
+    @SubscribeEvent
+    fun e(e: PlayerSkillUpgradeEvent) {
+        if (e.skill.shortcutKey != null) {
+            val grid = Grid.get(e.skill.keySlot!!) ?: return
             update(e.player, grid)
         }
     }
 
     @SubscribeEvent
     fun e(e: PlayerInteractEvent) {
-        if (e.hasItem() && e.action.name == gridInteract && e.hand == EquipmentSlot.HAND) {
+        if (e.hasItem() && e.action.name in gridInteractActions && e.hand == EquipmentSlot.HAND) {
             val player = e.player
             val heldItemSlot = player.inventory.heldItemSlot
             val grid = grids.firstOrNull { it.slot == heldItemSlot } ?: return

@@ -40,6 +40,9 @@ class PlayerJob(val id: Long, var jobKey: String, level: Int, experience: Int) {
         val instance: com.bh.planners.core.pojo.Skill
             get() = PlannersAPI.skills.first { it.key == key }
 
+        val name : String
+            get() = instance.option.name
+
         val keySlot: IKeySlot?
             get() = PlannersAPI.keySlots.firstOrNull { it.key == shortcutKey }
 

@@ -18,6 +18,7 @@ open class Skill(val key: String, val config: ConfigurationSection) {
         open val levelCap = root.getInt("level-cap", 5)
         open val async = root.getBoolean("async", false)
         open val isBind = root.getBoolean("bind", false)
+        open val isNatural = root.getBoolean("natural", false)
 
         @Suppress("UNCHECKED_CAST")
         open val upgradeConditions = root.getMapList("upgrade-condition").map {

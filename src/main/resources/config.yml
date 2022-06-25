@@ -13,7 +13,7 @@ options:
   grid-air:
     material: WHEAT_SEEDS
     name: '空技能'
-  grid-interact: RIGHT_CLICK_AIR
+  grid-interact-actions: [ RIGHT_CLICK_AIR , RIGHT_CLICK_BLOCK ]
   grid-actionbar: '{{ meta skill name }} Counting.{{ math meta skill countdown / 1000 }}s'
   infos:
     - ''

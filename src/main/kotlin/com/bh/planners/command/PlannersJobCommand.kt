@@ -84,7 +84,7 @@ object PlannersJobCommand {
     }
 
     @CommandBody
-    val skill = subCommand {
+    val backpack = subCommand {
         dynamic("player") {
             suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
 

@@ -3,6 +3,7 @@ package com.bh.planners.api
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.event.PlayerInitializeEvent
 import com.bh.planners.api.event.PlayerProfileLoadEvent
+import com.bh.planners.api.event.PlayerSelectedJobEvent
 import com.bh.planners.core.storage.Storage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -43,6 +44,16 @@ object Assembly {
 
     fun save(player: Player) {
         Storage.INSTANCE.update(player.plannersProfile)
+    }
+
+    @SubscribeEvent
+    fun e(e: PlayerSelectedJobEvent) {
+        if (e.profile.hasJob) {
+            e.profile.getSkills().filter { it.level == 0 && it.instance.option.isNatural }.forEach {
+                it.level = 1
+                Storage.INSTANCE.updateSkill(it)
+            }
+        }
     }
 
 

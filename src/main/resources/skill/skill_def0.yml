@@ -2,6 +2,7 @@ __option__:
   name: '陷阱安置'
   async: true
   bind: true
+  natural: true
   upgrade-condition:
     - $: 0
       if: check profile level >= 1

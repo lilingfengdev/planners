@@ -40,6 +40,7 @@ class ActionSkill {
         }
     }
 
+
     enum class Type {
         KEY, NAME, LEVEL, LEVEL_MAX, SHORTCUT_KEY
     }

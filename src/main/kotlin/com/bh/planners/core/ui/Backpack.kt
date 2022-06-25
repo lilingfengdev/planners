@@ -62,15 +62,35 @@ class Backpack(viewer: Player) : IUI(viewer) {
                     Faceplate(viewer, element).open()
                 }
                 if (event.clickEvent().isRightClick) {
-                    if (element.instance.option.isBind) {
-                        ShortcutSelector(viewer) {
-                            element.shortcutKey = this.key
-                            Storage.INSTANCE.updateSkill(element)
-                            PlayerSkillBindEvent(viewer, element, this, PlayerSkillBindEvent.Type.INSTANCE).call()
-                            viewer.sendLang("skill-bind-shortcut", element.instance.option.name, name)
-                            open()
-                        }.open()
+
+                    if (element.level == 0) {
+                        viewer.sendMessage("skill-zero", element.name)
+                        return@onClick
                     }
+
+                    if (!element.instance.option.isBind) {
+                        viewer.sendMessage("skill-not-bind", element.name)
+                        return@onClick
+                    }
+
+                    ShortcutSelector(viewer) {
+
+                        val oldKeySlot = element.keySlot
+
+                        // 取消绑定
+                        if (element.shortcutKey == this.key) {
+                            element.shortcutKey = null
+                            viewer.sendLang("skill-un-bind-shortcut", element.instance.option.name)
+                        } else {
+                            element.shortcutKey = this.key
+                            viewer.sendLang("skill-bind-shortcut", element.instance.option.name, name)
+                        }
+
+
+                        Storage.INSTANCE.updateSkill(element)
+                        PlayerSkillBindEvent(viewer, element, oldKeySlot).call()
+                        open()
+                    }.open()
 
                 }
             }
