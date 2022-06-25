@@ -12,9 +12,8 @@ import java.util.concurrent.CompletableFuture
 
 abstract class Effect {
 
-    abstract val name : String
+    abstract val name: String
 
     abstract fun sendTo(target: Target?, option: EffectOption, session: Session)
-
 
 }

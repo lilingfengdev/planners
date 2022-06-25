@@ -3,6 +3,7 @@ package com.bh.planners.core.skill.effect.common
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 
 /**
  * 表示一条线
@@ -10,13 +11,8 @@ import taboolib.common.platform.function.submit
  * @author Zoyn
  */
 class Line(
-    var start: Location,
-    var end: Location,
-    var step: Double,
-    override var period: Long,
-    spawner: ParticleSpawner
-) :
-    ParticleObj(spawner), Playable {
+    var start: Location, var end: Location, var step: Double, override var period: Long, spawner: ParticleSpawner
+) : ParticleObj(spawner), Playable {
 
     private var vector: Vector? = null
     /**
@@ -65,7 +61,7 @@ class Line(
 
     override fun play() {
 
-        submit(now = false, async = false, delay = 0, period = period, commit = null) {
+        submit(now = false, async = true, delay = 0, period = period, commit = null) {
             if (currentStep > length) {
                 cancel()
                 return@submit
@@ -75,6 +71,20 @@ class Line(
             spawnParticle(start.clone().add(vectorTemp))
         }
 
+    }
+
+    fun callPlay(call: Location.(PlatformExecutor.PlatformTask) -> Unit) {
+        submit(now = false, async = false, delay = 0, period = period, commit = null) {
+            if (currentStep > length) {
+                cancel()
+                return@submit
+            }
+            currentStep += step
+            val vectorTemp = vector!!.clone().multiply(currentStep)
+            spawnParticle(start.clone().add(vectorTemp).apply {
+                call(this, this@submit)
+            })
+        }
     }
 
     override fun playNextPoint() {

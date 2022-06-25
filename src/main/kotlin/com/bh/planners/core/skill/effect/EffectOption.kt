@@ -1,6 +1,7 @@
 package com.bh.planners.core.skill.effect
 
 import com.bh.planners.api.common.Demand
+import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.google.common.base.Enums
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.util.Vector
@@ -12,7 +13,7 @@ import java.awt.Color
  */
 open class EffectOption(text: String) {
 
-    val demand = Demand(text)
+    val demand = text.toDemand()
     val particle = Enums.getIfPresent(ProxyParticle::class.java, demand.namespace.uppercase()).or(ProxyParticle.FLAME)!!
     val offsetX = Coerce.toDouble(demand.get(1, "0")!!)
     val offsetY = Coerce.toDouble(demand.get(2, "0")!!)

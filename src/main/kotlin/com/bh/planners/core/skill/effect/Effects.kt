@@ -8,6 +8,7 @@ import taboolib.common.platform.Awake
 object Effects {
 
     val effects = mutableMapOf<String, Effect>()
+    val parsers = mutableMapOf<Array<String>, EffectParser>()
 
 
     val STEP = listOf("step", "s")

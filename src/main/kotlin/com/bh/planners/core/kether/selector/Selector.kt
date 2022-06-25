@@ -28,7 +28,9 @@ interface Selector {
         fun check(target: Target?, session: Session, demand: Demand, container: Target.Container) {
             demand.dataMap.keys.filter { it.startsWith('@') }.forEach {
                 val selector = getSelector(it.substring(1))
-                selector.check(it.substring(1), target, demand.get(it)!!, session, container)
+                demand.dataMap[it]!!.forEach { s ->
+                    selector.check(it.substring(1), target, s, session, container)
+                }
             }
         }
 

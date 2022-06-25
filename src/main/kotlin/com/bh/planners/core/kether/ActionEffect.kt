@@ -1,9 +1,9 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.core.skill.effect.Effect
-import com.bh.planners.core.skill.effect.EffectArc
 import com.bh.planners.core.skill.effect.EffectOption
 import com.bh.planners.core.skill.effect.Effects
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -11,13 +11,14 @@ import java.util.concurrent.CompletableFuture
 
 object ActionEffect {
 
+    // action FLAME 0 0 0 pos1 [ -@c-dot 3,0 ] pos2 [ -@c-dot 4,0 ]
     class Parser(val effect: Effect, val action: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            frame.newFrame(action).run<String>().thenAccept {
+            frame.newFrame(action).run<Any>().thenAccept {
                 try {
                     val session = frame.getSession()
-                    val effectOption = EffectOption(it)
+                    val effectOption = EffectOption(it.toString())
                     effect.sendTo(frame.toOriginLocation(), effectOption, session)
                 } catch (e: Exception) {
                     e.printStackTrace()

@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether
 
-import com.bh.planners.api.common.Demand
+import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.Target
@@ -129,7 +129,7 @@ fun Location.toLocal(): String {
 fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Target.Container> {
     val future = CompletableFuture<Target.Container>()
     this.newFrame(selector).run<Any>().thenAccept {
-        val demand = Demand(it.toString())
+        val demand = it.toString().toDemand()
         val container = demand.createContainer(toOriginLocation(), getSession())
         future.complete(container)
     }

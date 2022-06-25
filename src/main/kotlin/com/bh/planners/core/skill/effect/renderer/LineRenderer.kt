@@ -41,30 +41,23 @@ class LineRenderer(target: Target, container: Target.Container, option: EffectOp
         // 追踪目标
         // 两个参数 period 和
         if (option.lock) {
-            var currentTime = 0L
             container.forEachEntity {
-                val handler = Handler(target.value, this.eyeLocation)
-                submit(async = true, period = option.period) {
-
-                    if (currentTime >= option.time) {
-                        cancel()
-                        return@submit
+                var currentTime = 0L
+                val line = Line(target.value, this.eyeLocation, option.step, period = option.period, spawner)
+                line.callPlay { task ->
+                    if (currentTime > option.time) {
+                        task.cancel()
+                        return@callPlay
                     }
-
-                    handler.end = this@forEachEntity.eyeLocation
-                    handler.resetVector()
-                    val vector = handler.vector!!.clone().multiply(option.step)
-                    handler.start = handler.start.clone().add(vector)
-                    spawnParticle(target.value, handler.start)
+                    line.setStart(location)
+                    line.setEnd(this@forEachEntity.eyeLocation)
                     currentTime += option.period
-                    if (handler.start.distance(handler.end) < 1.0) {
-                        cancel()
-                        session.callEvent(option.onCapture ?: return@submit, Capture(this@forEachEntity))
+                    if (this.distance(this@forEachEntity.eyeLocation) < 1.0) {
+                        task.cancel()
+                        session.callEvent(option.onCapture ?: return@callPlay, Capture(this@forEachEntity))
                     }
-
                 }
             }
-
         } else {
             val property = target.getProperty<LivingEntity>("livingEntity")
             container.forEachLocation {
@@ -75,61 +68,18 @@ class LineRenderer(target: Target, container: Target.Container, option: EffectOp
                     val entityAt = this.entityAt().apply { remove(property) }
                     session.callEvent(option.onCapture ?: return@forEachLocation, Capture(entityAt.first()))
                 } else {
-
-                    val handler = Handler(target.value, this)
-                    handler.resetVector()
-                    var i = 0.0
-                    submit(async = true, period = option.period) {
-                        if (i > handler.length) {
-                            cancel()
-                            return@submit
-                        }
-                        val vectorTemp = handler.vector!!.clone().multiply(i)
-                        val location = handler.start.clone().add(vectorTemp)
-                        spawnParticle(location = location)
-                        val entityAt = location.entityAt().apply { remove(property) }
-                        // 如果捕获到实体 立刻停止
+                    val line = Line(target.value, this, option.step, period = option.period, spawner)
+                    line.callPlay { task ->
+                        val entityAt = this.entityAt().apply { remove(property) }
                         if (entityAt.isNotEmpty()) {
-                            cancel()
-                            session.callEvent(option.onCapture ?: return@submit, Capture(entityAt.first()))
-                            return@submit
+                            task.cancel()
+                            session.callEvent(option.onCapture ?: return@callPlay, Capture(entityAt.first()))
                         }
-                        i += option.step
                     }
                 }
 
             }
         }
-
-        fun getLocationEntity(location: Location): LivingEntity? {
-            return location.entityAt().firstOrNull()
-        }
-
-
-//        container.forEachLocation {
-//            val handler = Handler(target.value, this, option.step)
-//            handler.resetVector()
-//            var i = 0.0
-//            while (i < handler.length) {
-//                val vectorTemp: Vector = handler.vector!!.clone().multiply(i)
-//                option.spawn(target.value, handler.start.clone().add(vectorTemp))
-//                i += handler.step
-//            }
-//        }
-    }
-
-    class Handler(var start: Location, var end: Location) {
-
-        var vector: Vector? = null
-        var length: Double = 0.0
-
-
-        fun resetVector() {
-            this.vector = this.end.clone().subtract(this.start).toVector()
-            this.length = this.vector!!.length()
-            this.vector!!.normalize()
-        }
-
     }
 
 }

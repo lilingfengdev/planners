@@ -1,10 +1,13 @@
 package com.bh.planners.core.skill.effect
 
 import com.bh.planners.api.PlannersOption
+import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.skill.effect.common.Matrix
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
+import taboolib.library.kether.QuestReader
+import taboolib.module.kether.ScriptAction
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -69,4 +72,9 @@ fun Vector.rotateAroundAxisY(angle: Double): Vector {
     val x = this.x * cos + this.z * sin
     val z = this.x * -sin + this.z * cos
     return this.setX(x).setZ(z)
+}
+
+
+fun <T> effectParser(resolve: (QuestReader) -> ScriptAction<T>): EffectParser {
+    return EffectParser(resolve)
 }
