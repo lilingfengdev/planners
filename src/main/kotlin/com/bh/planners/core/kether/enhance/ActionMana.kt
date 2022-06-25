@@ -4,6 +4,7 @@ import com.bh.planners.api.ManaCounter.addMana
 import com.bh.planners.api.ManaCounter.setMana
 import com.bh.planners.api.ManaCounter.takeMana
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.common.Operator
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.createTargets
@@ -13,16 +14,13 @@ import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionMana(
-    val mode: Operator,
-    val amount: ParsedAction<*>,
-    val selector: ParsedAction<*>
-) : ScriptAction<Void>() {
+class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         frame.newFrame(amount).run<Any>().thenApply { amount ->
             frame.createTargets(selector).thenApply { container ->
                 container.forEachPlayer {
+                    if (!this.plannersProfileIsLoaded) return@forEachPlayer
                     val profile = this.plannersProfile
                     val value = Coerce.toDouble(amount)
                     when (mode) {
