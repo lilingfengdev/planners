@@ -63,7 +63,7 @@ object TimerRegistry {
     fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
         try {
             KetherShell.eval(template.action, cacheScript = true, sender = sender, namespace = namespaces) {
-                rootFrame().variables()["@Session"] = Context.Impl(sender, EMPTY)
+                rootFrame().variables()["@Session"] = Context.Impl0(sender)
                 rootFrame().variables()["@Event"] = event
                 timer.onStart(this, template, event)
             }

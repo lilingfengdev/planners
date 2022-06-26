@@ -1,9 +1,12 @@
 package com.bh.planners.api
 
 import com.bh.planners.api.PlannersAPI.plannersProfile
-import com.bh.planners.api.event.PlayerInitializeEvent
-import com.bh.planners.api.event.PlayerProfileLoadEvent
-import com.bh.planners.api.event.PlayerSelectedJobEvent
+import com.bh.planners.api.event.*
+import com.bh.planners.core.kether.namespaces
+import com.bh.planners.core.pojo.Context
+import com.bh.planners.core.pojo.Job
+import com.bh.planners.core.pojo.Router
+import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -13,9 +16,19 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Schedule
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.submit
+import taboolib.common5.Coerce
+import taboolib.module.kether.KetherShell
 
 object Assembly {
+
+    val Job.upgradePoints: String?
+        get() = config.getString("upgrade-points")
+
+    val Router.upgradePoints: String?
+        get() = config.getString("upgrade-points")
+
 
     @SubscribeEvent
     fun e(e: PlayerJoinEvent) {
@@ -54,6 +67,36 @@ object Assembly {
                 Storage.INSTANCE.updateSkill(it)
             }
         }
+    }
+
+    @SubscribeEvent
+    fun e(e: PlayerLevelChangeEvent) {
+        if (e.isUpgraded) {
+            val i = e.to - e.from
+            val profile = e.player.plannersProfile
+            val nextUpgradeGetPoints = nextUpgradeGetPoints(profile, i)
+            if (nextUpgradeGetPoints > 0) {
+                profile.addPoint(nextUpgradeGetPoints)
+            }
+        }
+    }
+
+    fun nextUpgradeGetPoints(profile: PlayerProfile, value: Int): Int {
+        if (profile.hasJob) {
+            val expression = profile.job!!.instance.upgradePoints ?: profile.job!!.instance.router.upgradePoints
+            ?: PlannersOption.upgradePoints ?: return 0
+            return try {
+
+                KetherShell.eval(expression, sender = adaptPlayer(profile.player), namespace = namespaces) {
+                    rootFrame().variables()["@Session"] = Context.Impl0(sender!!)
+                    rootFrame().variables()["value"] = value
+                }.thenApply { Coerce.toInteger(it) }.get()
+
+            } catch (_: Throwable) {
+                0
+            }
+        }
+        return 0
     }
 
 

@@ -1,6 +1,7 @@
 package com.bh.planners.api
 
 import com.bh.planners.Planners
+import com.bh.planners.core.pojo.Router
 import org.bukkit.inventory.ItemStack
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.xseries.XMaterial
@@ -30,4 +31,6 @@ object PlannersOption {
     val regainManaExperience: String
         get() = root.getString("regain-mana-eval")!!
 
+    val upgradePoints: String?
+        get() = root.getString("upgrade-points")
 }

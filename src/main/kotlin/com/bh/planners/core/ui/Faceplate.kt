@@ -71,7 +71,7 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
             get() = config.getStringList("next-icon.condition")
 
         fun nextUpgradePoint(player: Player, skill: PlayerJob.Skill): Int {
-            val session = Session(adaptPlayer(player), skill)
+            val session = ContextImpl(adaptPlayer(player), skill)
             return Coerce.toInteger(session.upgradePoint.get())
         }
 
@@ -81,8 +81,7 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
     val playerSkill: PlayerJob.Skill
         get() = profile.getSkill(skill.key)!!
 
-    class Session(executor: ProxyCommandSender, override val playerSkill: PlayerJob.Skill) :
-        Context(executor, playerSkill.instance) {
+    class ContextImpl(executor: ProxyCommandSender, override val playerSkill: PlayerJob.Skill) : Context.Impl(executor, playerSkill.instance) {
 
         val upgradePoint = variables["upgradePoint"] ?: LazyGetter { 0 }
 

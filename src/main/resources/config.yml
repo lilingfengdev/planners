@@ -28,6 +28,7 @@ options:
     - ''
   regain-mana-period: 100
   regain-mana-eval: math profile level * 0.5
+  upgrade-points: math &value * 2
 # by chemdah
 level:
   def0:

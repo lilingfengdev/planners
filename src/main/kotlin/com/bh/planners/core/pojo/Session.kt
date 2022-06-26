@@ -8,7 +8,7 @@ import taboolib.common.platform.function.submit
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
 
-open class Session(executor: ProxyCommandSender, skill: Skill) : Context(executor, skill) {
+open class Session(executor: ProxyCommandSender, skill: Skill) : Context.Impl(executor, skill) {
 
     val cooldown = variables["cooldown"] ?: LazyGetter { 0 }
 
