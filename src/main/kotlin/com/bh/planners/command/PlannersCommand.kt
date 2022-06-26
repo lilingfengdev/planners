@@ -4,9 +4,8 @@ import com.bh.planners.Planners
 import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.core.kether.namespaces
+import de.slikey.effectlib.EffectManager
 import org.bukkit.Bukkit
-import org.bukkit.Color
-import org.bukkit.Particle
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
@@ -18,6 +17,7 @@ import taboolib.expansion.createHelper
 import taboolib.module.chat.colored
 import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.runKether
+import taboolib.platform.BukkitPlugin
 
 @CommandHeader("planners", aliases = ["ps", "pl"], permission = "planners.command")
 object PlannersCommand {
@@ -74,6 +74,14 @@ object PlannersCommand {
 
             }
 
+        }
+    }
+
+    val effectManager = EffectManager(BukkitPlugin.getInstance())
+
+    @CommandBody
+    val test = subCommand {
+        execute<Player> { sender, context, argument ->
         }
     }
 

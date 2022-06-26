@@ -17,6 +17,7 @@ import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.info
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.runKether
@@ -35,8 +36,8 @@ fun PlayerProfile.setPoint(point: Int) {
 fun PlayerProfile.next(skill: PlayerJob.Skill) {
     if (1 + skill.level < skill.instance.option.levelCap) {
         skill.level++
-        Storage.INSTANCE.updateSkill(skill)
         PlayerSkillUpgradeEvent(player, skill).call()
+        Storage.INSTANCE.updateSkill(skill)
     }
 }
 
@@ -87,6 +88,7 @@ fun PlayerProfile.addLevel(value: Int) {
 fun PlayerProfile.reset() {
     job = null
     Storage.INSTANCE.updateCurrentJob(this)
+    PlayerSelectedJobEvent(this).call()
 }
 
 fun PlayerProfile.getRoute(): Router.Route? {

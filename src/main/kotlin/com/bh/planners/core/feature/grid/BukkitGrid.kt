@@ -50,6 +50,12 @@ object BukkitGrid {
     val Player.isHandGrid: Boolean
         get() = inventory.heldItemSlot in grids.map { it.slot }
 
+    val Player.handGrid: Grid?
+        get() = grids.firstOrNull { it.slot == inventory.heldItemSlot }
+
+    val Player.handSkill: PlayerJob.Skill?
+        get() = get(this, handGrid)
+
     fun toActionbarValue(player: Player): String {
         val heldItemSlot = player.inventory.heldItemSlot
         val grid = grids.firstOrNull { it.slot == heldItemSlot } ?: return ""
@@ -90,7 +96,8 @@ object BukkitGrid {
         return skills.filter { it.keySlot != null }.firstOrNull { Grid.get(it.keySlot!!) == grid }
     }
 
-    fun get(player: Player, grid: Grid): PlayerJob.Skill? {
+    fun get(player: Player, grid: Grid?): PlayerJob.Skill? {
+        if (grid == null) return null
         if (player.plannersProfileIsLoaded) {
             val profile = player.plannersProfile
             return getSkillByGrid(profile, grid)
@@ -120,7 +127,7 @@ object BukkitGrid {
     }
 
     @SubscribeEvent
-    fun e0(e: PlayerSkillBindEvent) {
+    fun e(e: PlayerSkillBindEvent) {
         updateAll(e.player)
     }
 

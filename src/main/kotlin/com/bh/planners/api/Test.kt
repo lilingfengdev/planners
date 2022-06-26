@@ -7,11 +7,7 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.info
 
 object Test {
-//
-//    @SubscribeEvent
-//    fun e(e: PlayerBucketEmptyEvent) {
-//        info(e.blockClicked, e.blockFace)
-////        info(e.blockData)
-//    }
+
+
 
 }

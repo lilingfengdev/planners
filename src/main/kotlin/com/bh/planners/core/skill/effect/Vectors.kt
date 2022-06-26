@@ -27,7 +27,7 @@ fun rotateAroundAxisX(v: Vector, angle: Double): Vector? {
  * @param angle 旋转角度
  * @return [Vector]
  */
-fun rotateAroundAxisY(v: Vector, angle: Double): Vector? {
+fun rotateAroundAxisY(v: Vector, angle: Double): Vector {
     var angle = angle
     angle = -angle
     angle = Math.toRadians(angle)
@@ -45,7 +45,7 @@ fun rotateAroundAxisY(v: Vector, angle: Double): Vector? {
  * @param angle 旋转角度
  * @return [Vector]
  */
-fun rotateAroundAxisZ(v: Vector, angle: Double): Vector? {
+fun rotateAroundAxisZ(v: Vector, angle: Double): Vector {
     var angle = angle
     angle = Math.toRadians(angle)
     val cos = Math.cos(angle)
@@ -69,7 +69,7 @@ fun rotateAroundAxisZ(v: Vector, angle: Double): Vector? {
  * @param pitchDegrees pitch的角度
  * @return [Vector]
  */
-fun rotateVector(v: Vector, yawDegrees: Float, pitchDegrees: Float): Vector? {
+fun rotateVector(v: Vector, yawDegrees: Float, pitchDegrees: Float): Vector {
     val yaw = Math.toRadians((-1 * (yawDegrees + 90)).toDouble())
     val pitch = Math.toRadians(-pitchDegrees.toDouble())
     val cosYaw = Math.cos(yaw)

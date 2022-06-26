@@ -7,6 +7,7 @@ import com.bh.planners.api.hasJob
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.feature.grid.BukkitGrid
+import com.bh.planners.core.feature.grid.BukkitGrid.handSkill
 import com.bh.planners.core.feature.grid.BukkitGrid.isHandGrid
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
@@ -65,7 +66,7 @@ object Combat {
             Bukkit.getOnlinePlayers().forEach {
                 if (!it.hasJob) return@forEach
                 // 如果手持技能icon
-                if (it.isHandGrid) {
+                if (it.handSkill != null) {
                     it.sendActionBar(BukkitGrid.toActionbarValue(it))
                 } else {
                     it.sendActionBar(PlaceholderAPI.setPlaceholders(it, it.actionbarMessage ?: actionbarMessage))
