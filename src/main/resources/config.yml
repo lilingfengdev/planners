@@ -21,7 +21,7 @@ options:
     - ''
     - '   &c&lName &7{{ player name }} &e&l& &7{{ profile job }}({{ profile level }})'
     - ''
-    - '     &b&lMana &7{{ profile mana }}/{{ profile max-mana }}'
+    - '     &b&lMana &7{{scaled profile mana }}/{{ profile max-mana }}'
     - '     &d&lSkill points &7{{ profile point }}'
     - '     &6&lExperience &7{{ profile exp }}/{{ profile max-exp }}'
     - ''
