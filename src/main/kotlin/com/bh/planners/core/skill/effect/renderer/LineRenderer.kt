@@ -5,7 +5,7 @@ import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.skill.effect.*
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.common.Line
-import com.bh.planners.core.skill.effect.inline.Capture
+import com.bh.planners.core.skill.effect.inline.CaptureEntity
 import com.bh.planners.core.skill.effect.inline.InlineEvent.Companion.callEvent
 import com.bh.planners.util.entityAt
 import org.bukkit.Location
@@ -55,7 +55,7 @@ class LineRenderer(target: Target, container: Target.Container, option: EffectOp
                     currentTime += option.period
                     if (this.distance(this@forEachEntity.eyeLocation) < 1.0 && context is Session) {
                         task.cancel()
-                        context.callEvent(option.onCapture ?: return@callPlay, Capture(this@forEachEntity))
+                        context.callEvent(option.onCapture ?: return@callPlay, CaptureEntity(this@forEachEntity))
                     }
                 }
             }
@@ -67,7 +67,7 @@ class LineRenderer(target: Target, container: Target.Container, option: EffectOp
                     Line.buildLine(target.value, this, option.step, EffectSpawner(option))
                     if (context is Session) {
                         val entityAt = this.entityAt().apply { remove(property) }
-                        context.callEvent(option.onCapture ?: return@forEachLocation, Capture(entityAt.first()))
+                        context.callEvent(option.onCapture ?: return@forEachLocation, CaptureEntity(entityAt.first()))
                     }
                 } else {
                     val line = Line(target.value, this, option.step, period = option.period, spawner)
@@ -78,7 +78,7 @@ class LineRenderer(target: Target, container: Target.Container, option: EffectOp
                             val entityAt = this.entityAt().apply { remove(property) }
                             if (entityAt.isNotEmpty()) {
                                 task.cancel()
-                                (context as Session).callEvent(option.onCapture ?: return@callPlay, Capture(entityAt.first()))
+                                (context as Session).callEvent(option.onCapture ?: return@callPlay, CaptureEntity(entityAt.first()))
                             }
                         }
                     }
