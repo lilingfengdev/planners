@@ -1,10 +1,7 @@
 package com.bh.planners.core.kether.enhance
 
 import com.bh.planners.api.PlannersAPI
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.asPlayer
-import com.bh.planners.core.kether.createTargets
-import com.bh.planners.core.kether.selectorAction
+import com.bh.planners.core.kether.*
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
@@ -26,10 +23,8 @@ class ActionSkillCast {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(skill).run<Any>().thenAccept { skill ->
                 if (selector != null) {
-                    frame.createTargets(selector).thenAccept { container ->
-                        container.forEachPlayer {
-                            PlannersAPI.cast(this, skill.toString(), true)
-                        }
+                    frame.execPlayer(selector) {
+                        PlannersAPI.cast(this, skill.toString(), true)
                     }
                 } else {
                     PlannersAPI.cast(frame.asPlayer() ?: return@thenAccept, skill.toString(), true)
@@ -46,10 +41,8 @@ class ActionSkillCast {
                 frame.newFrame(level).run<Any>().thenAccept {
                     val level = Coerce.toInteger(it)
                     if (selector != null) {
-                        frame.createTargets(selector).thenAccept { container ->
-                            container.forEachPlayer {
-                                ContextImpl(adaptPlayer(this), skill, level).cast()
-                            }
+                        frame.execPlayer(selector) {
+                            ContextImpl(adaptPlayer(this), skill, level).cast()
                         }
                     } else {
                         ContextImpl(adaptPlayer(frame.asPlayer() ?: return@thenAccept), skill, level).cast()

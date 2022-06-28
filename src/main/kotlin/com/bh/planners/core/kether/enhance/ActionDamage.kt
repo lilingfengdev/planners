@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.enhance
 
 import com.bh.planners.core.kether.*
+import com.bh.planners.core.skill.effect.Target
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
@@ -14,30 +15,20 @@ class ActionDamage {
     class Damage(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(value).run<Any>().thenAccept { damage ->
-                frame.createTargets(selector).thenAccept {
-                    it.forEachEntity {
-                        this.damage(Coerce.toDouble(damage))
-                    }
+                frame.execEntity(selector) {
+                    this.damage(Coerce.toDouble(damage))
                 }
-
             }
         }
-
     }
 
     class Attack(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(value).run<Any>().thenAccept { damage ->
                 val asPlayer = frame.asPlayer() ?: return@thenAccept
-                frame.createTargets(selector).thenAccept {
-                    submit(async = false) {
-                        it.forEachEntity {
-                            this.damage(Coerce.toDouble(damage), asPlayer)
-                        }
-                    }
-
+                frame.execEntity(selector) {
+                    this.damage(Coerce.toDouble(damage),asPlayer)
                 }
-
             }
         }
 

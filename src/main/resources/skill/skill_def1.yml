@@ -8,21 +8,13 @@ __option__:
     base: 10
 action: |-
   
-  if flag "t0-target" has then {
-    teleport entity loc flag "t0-target"
-    tell "第二段"
-  } else {
-    effect line "FLAME 0 0 0 -@range 10 -time 5 -period 5  -onCapture tp0"
-    tell "第一段"
-  }
-
-
-
-
-events:
-  tp0:
-    async: false
-    action: |-
-      if not check &@isThis then {
-        flag add "t0-target" 10000 &%entityUniqueId
+  for i in range 1 to 10 then {
+    selector g0 to "-@range 10"
+    for target in selector g0 then {
+      if check inline "{{ &target }}-damaged" == true then {
+        damage 10 &target
       }
+      set inline "{{ &target }}-damaged" to true
+    }
+  }
+  

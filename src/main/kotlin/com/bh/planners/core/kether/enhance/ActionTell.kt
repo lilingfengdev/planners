@@ -1,9 +1,6 @@
 package com.bh.planners.core.kether.enhance
 
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.asPlayer
-import com.bh.planners.core.kether.createTargets
-import com.bh.planners.core.kether.selectorAction
+import com.bh.planners.core.kether.*
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -14,11 +11,7 @@ class ActionTell(val message: ParsedAction<*>, val selector: ParsedAction<*>?) :
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         return frame.newFrame(message).run<Any?>().thenAccept { message ->
             if (selector != null) {
-                frame.createTargets(selector).thenAccept {
-                    it.forEachPlayer {
-                        sendMessage(message.toString().trimIndent())
-                    }
-                }
+                frame.execPlayer(selector) { sendMessage(message.toString().trimIndent()) }
             } else {
                 frame.asPlayer()?.sendMessage(message.toString().trimIndent())
             }

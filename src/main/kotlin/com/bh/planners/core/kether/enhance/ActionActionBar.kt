@@ -19,10 +19,8 @@ class ActionActionBar(val message: ParsedAction<*>, val selector: ParsedAction<*
 
             if (selector != null) {
                 frame.newFrame(selector).run<Any>().thenAccept {
-                    frame.createTargets(selector).thenAccept {
-                        it.forEachPlayer {
-                            sendActionBar(message.toString().trimIndent().replace("@sender", this.name))
-                        }
+                    frame.execPlayer(selector) {
+                        this.sendActionBar(message.toString().trimIndent().replace("@sender", this.name))
                     }
                 }
             } else {

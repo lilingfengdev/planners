@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.enhance
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.createTargets
+import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.selectorAction
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -21,9 +22,7 @@ class ActionSound(val sound: String, val volume: Float, val pitch: Float, val se
     override fun run(frame: QuestContext.Frame): CompletableFuture<Void> {
 
         if (selector != null) {
-            frame.createTargets(selector).thenAccept {
-                it.forEachPlayer { execute(this, sound, volume, pitch) }
-            }
+            frame.execPlayer(selector) { execute(this, sound, volume, pitch) }
         } else {
             val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
             execute(viewer, sound, volume, pitch)

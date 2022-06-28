@@ -1,9 +1,6 @@
 package com.bh.planners.core.kether.enhance
 
-import com.bh.planners.core.kether.asPlayer
-import com.bh.planners.core.kether.createTargets
-import com.bh.planners.core.kether.selectorAction
-import com.bh.planners.core.kether.toLocation
+import com.bh.planners.core.kether.*
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import taboolib.library.kether.ArgTypes
@@ -19,11 +16,7 @@ class ActionTeleport(
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         return frame.newFrame(action).run<Any>().thenAccept {
             if (selector != null) {
-                frame.createTargets(selector).thenAccept { container ->
-                    container.forEachEntity {
-                        execute(this, it)
-                    }
-                }
+                frame.execEntity(selector) { execute(this, it) }
             } else {
                 execute(frame.asPlayer() ?: return@thenAccept, it)
             }

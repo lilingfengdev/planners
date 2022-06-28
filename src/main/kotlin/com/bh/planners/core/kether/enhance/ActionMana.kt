@@ -6,10 +6,7 @@ import com.bh.planners.api.ManaCounter.takeMana
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.common.Operator
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.asPlayer
-import com.bh.planners.core.kether.createTargets
-import com.bh.planners.core.kether.selectorAction
+import com.bh.planners.core.kether.*
 import org.bukkit.entity.Player
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
@@ -24,11 +21,7 @@ class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: 
         frame.newFrame(amount).run<Any>().thenApply {
             val amount = Coerce.toDouble(it)
             if (selector != null) {
-                frame.createTargets(selector).thenApply { container ->
-                    container.forEachPlayer {
-                        execute(this, mode, amount)
-                    }
-                }
+                frame.execPlayer(selector) { execute(this, mode, amount) }
             } else {
                 execute(frame.asPlayer() ?: return@thenApply, mode, amount)
             }

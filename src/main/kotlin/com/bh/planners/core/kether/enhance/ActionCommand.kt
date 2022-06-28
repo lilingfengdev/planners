@@ -1,9 +1,6 @@
 package com.bh.planners.core.kether.enhance
 
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.asPlayer
-import com.bh.planners.core.kether.createTargets
-import com.bh.planners.core.kether.selectorAction
+import com.bh.planners.core.kether.*
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.console
 import taboolib.library.kether.ArgTypes
@@ -50,10 +47,8 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
         return frame.newFrame(command).run<Any>().thenAcceptAsync({
             val command = it.toString().trimIndent()
             if (selector != null) {
-                frame.createTargets(selector).thenAccept { container ->
-                    container.forEachPlayer {
-                        execute(this, this@ActionCommand.type, command)
-                    }
+                frame.execPlayer(selector) {
+                    execute(this, this@ActionCommand.type, command)
                 }
             } else {
                 execute(frame.asPlayer() ?: return@thenAcceptAsync, this@ActionCommand.type, command)

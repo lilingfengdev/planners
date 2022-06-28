@@ -38,11 +38,7 @@ class ActionTitle(
                         frame.newFrame(fadeOut).run<Any>().thenAccept {
                             val fadeOut = Coerce.toInteger(it)
                             if (selector != null) {
-                                frame.createTargets(selector).thenAccept {
-                                    it.forEachPlayer {
-                                        execute(this, title, subTitle, fadeIn, stay, fadeOut)
-                                    }
-                                }
+                                frame.execPlayer(selector) { execute(this, title, subTitle, fadeIn, stay, fadeOut) }
                             } else {
                                 execute(frame.asPlayer()!!, title, subTitle, fadeIn, stay, fadeOut)
                             }

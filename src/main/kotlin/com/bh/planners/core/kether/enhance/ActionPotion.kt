@@ -1,8 +1,6 @@
 package com.bh.planners.core.kether.enhance
 
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.createTargets
-import com.bh.planners.core.kether.selectorAction
+import com.bh.planners.core.kether.*
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -43,9 +41,7 @@ class ActionPotion {
                         val effectType = PotionEffectType.getByName(name.toString().uppercase(Locale.getDefault()))
 
                         if (selector != null) {
-                            frame.createTargets(selector).thenAccept {
-                                it.forEachPlayer { execute(this, effectType, duration, amplifier) }
-                            }
+                            frame.execPlayer(selector) { execute(this, effectType, duration, amplifier) }
                         } else {
                             val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
                             execute(viewer, effectType, duration, amplifier)
@@ -60,7 +56,7 @@ class ActionPotion {
 
     class Remove(val name: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
-        fun execute(player: Player,effectType: PotionEffectType?) {
+        fun execute(player: Player, effectType: PotionEffectType?) {
             if (effectType != null) {
                 player.removePotionEffect(effectType)
             }
@@ -71,9 +67,7 @@ class ActionPotion {
                 val effectType = PotionEffectType.getByName(name.toString().uppercase(Locale.getDefault()))
 
                 if (selector != null) {
-                    frame.createTargets(selector).thenAccept {
-                        it.forEachPlayer { execute(this, effectType) }
-                    }
+                    frame.execPlayer(selector) { execute(this, effectType) }
                 } else {
                     val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
                     execute(viewer, effectType)
@@ -89,12 +83,11 @@ class ActionPotion {
         fun execute(player: Player) {
             player.activePotionEffects.toList().forEach { player.removePotionEffect(it.type) }
         }
+
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             submit {
                 if (selector != null) {
-                    frame.createTargets(selector).thenAccept {
-                        it.forEachPlayer { execute(this) }
-                    }
+                    frame.execPlayer(selector) { execute(this) }
                 } else {
                     val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
                     execute(viewer)

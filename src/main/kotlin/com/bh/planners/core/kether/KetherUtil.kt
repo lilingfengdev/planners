@@ -11,6 +11,7 @@ import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.util.StringNumber
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
@@ -124,6 +125,42 @@ fun Location.toLocal(): String {
     return "${world!!.name},$x,$y,$z"
 }
 
+fun ScriptFrame.exec(selector: ParsedAction<*>, call: Target.() -> Unit) {
+    this.newFrame(selector).run<Any>().thenAccept {
+        if (it is Target) {
+            call(it)
+        } else {
+            val demand = it.toString().toDemand()
+            val container = demand.createContainer(toOriginLocation(), getSession())
+            container.targets.forEach(call)
+        }
+    }
+}
+
+fun ScriptFrame.execEntity(selector: ParsedAction<*>, call: LivingEntity.() -> Unit) {
+    exec(selector) {
+        if (this is Target.Entity) {
+            call(this.livingEntity)
+        }
+    }
+}
+
+fun ScriptFrame.execLocation(selector: ParsedAction<*>, call: Location.() -> Unit) {
+    exec(selector) {
+        if (this is Target.Location) {
+            call(this.value)
+        }
+    }
+}
+
+fun ScriptFrame.execPlayer(selector: ParsedAction<*>, call: Player.() -> Unit) {
+    exec(selector) {
+        if (this is Target.Entity) {
+            call(this.livingEntity as? Player ?: return@exec)
+        }
+    }
+}
+
 fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Target.Container> {
     val future = CompletableFuture<Target.Container>()
     this.newFrame(selector).run<Any>().thenAccept {
@@ -149,7 +186,7 @@ fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParse
     return ActionEventParser(resolve)
 }
 
-fun QuestReader.selectorAction() : ParsedAction<*>? {
+fun QuestReader.selectorAction(): ParsedAction<*>? {
     return try {
         mark()
         expects("selector", "they")

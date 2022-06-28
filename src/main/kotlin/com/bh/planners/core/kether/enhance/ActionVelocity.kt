@@ -1,9 +1,6 @@
 package com.bh.planners.core.kether.enhance
 
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.asPlayer
-import com.bh.planners.core.kether.createTargets
-import com.bh.planners.core.kether.selectorAction
+import com.bh.planners.core.kether.*
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
@@ -43,11 +40,7 @@ class ActionVelocity(
                 frame.newFrame(z).run<Any>().thenApply { z ->
                     val toVector = Vector(Coerce.toDouble(x), Coerce.toDouble(y), Coerce.toDouble(z))
                     if (selector != null) {
-                        frame.createTargets(selector).thenApply { container ->
-                            container.forEachEntity {
-                                execute(this, mode, toVector)
-                            }
-                        }
+                        frame.execEntity(selector) { execute(this, mode, toVector) }
                     } else {
                         execute(frame.asPlayer()!!, mode, toVector)
                     }
