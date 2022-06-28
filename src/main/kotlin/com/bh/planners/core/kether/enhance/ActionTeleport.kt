@@ -44,6 +44,16 @@ class ActionTeleport(
     }
 
     companion object {
+
+        /**
+         *
+         * 传送实体到指定目标 传入the参数则给选中实体目标全部传送 不传则默认执行者
+         * entity test: teleport entity of &@entityUniqueId
+         * location test: teleport location
+         * location test: teleport "world,0,0,0"
+         *
+         * teleport [location&entity] <the "selector">
+         */
         @KetherParser(["teleport", "tp"])
         fun parser() = scriptParser {
             val parsedAction = it.next(ArgTypes.ACTION)

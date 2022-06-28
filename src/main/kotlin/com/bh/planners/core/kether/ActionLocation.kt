@@ -53,10 +53,9 @@ class ActionLocation(
     internal object Parser {
 
         /**
+         *
+         * 声明坐标 x y z <and yaw pitch>
          * location 10 20 10 and 0 0
-         *
-         * location of
-         *
          */
         @KetherParser(["loc", "location"], namespace = NAMESPACE)
         fun parser() = scriptParser {
