@@ -3,13 +3,11 @@ package com.bh.planners.core.kether.enhance
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.createTargets
 import org.bukkit.util.Vector
-import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import taboolib.module.navigation.set
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class ActionVelocity(
@@ -50,6 +48,11 @@ class ActionVelocity(
 
     internal object Parser {
 
+        /**
+         * 为目标设置 "固定" 向量 (不跟随视角方向)
+         * velocity [mode] [x] [y] [z] [selector]
+         * velocity add 1 1 0 "-@self"
+         */
         @KetherParser(["velocity"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             val mode = when (it.expects("add", "subtract", "sub", "minus", "multiply", "mul", "div", "divide", "set")) {
