@@ -14,8 +14,8 @@ class ActionSelector {
 
     class ActionTargetContainerGetSize(val action: ParsedAction<*>) : ScriptAction<Int>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Int> {
-            return frame.newFrame(action).run<String>().thenApply { selector ->
-                (frame.getSession().flags[selector]?.asContainer() ?: Target.Container()).size
+            return frame.newFrame(action).run<Any>().thenApply {
+                frame.rootVariables().get<Target.Container>(it.toString()).orElse(Target.Container()).size
             }
         }
 
@@ -23,14 +23,9 @@ class ActionSelector {
 
     class ActionTargetContainerGet(val action: ParsedAction<*>) : ScriptAction<Target.Container?>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container?> {
-            val future = CompletableFuture<Target.Container?>()
-            frame.newFrame(action).run<Any>().thenAccept { selector ->
-                val session = frame.getSession()
-                val data = session.flags[selector.toString()]
-                info(data)
-                future.complete(data?.asContainer())
+            return frame.newFrame(action).run<Any>().thenApply {
+                frame.rootVariables().get<Target.Container>(it.toString()).get()
             }
-            return future
         }
 
     }
@@ -39,12 +34,10 @@ class ActionSelector {
         ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.newFrame(keyAction).run<String>().thenAccept { key ->
-                val session = frame.getSession()
-                frame.createTargets(valueAction).thenAccept { selector ->
-                    session.flags[key] = selector.unsafeData()
+                frame.createTargets(valueAction).thenAccept { container ->
+                    frame.rootVariables()[key] = container
                 }
             }
-
             return CompletableFuture.completedFuture(null)
         }
     }
@@ -52,9 +45,19 @@ class ActionSelector {
     class ActionTargetContainerRemove(val keyAction: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.newFrame(keyAction).run<String>().thenAccept { key ->
-                frame.getSession().flags.remove(key)
+                frame.rootVariables().remove(key)
             }
             return CompletableFuture.completedFuture(null)
+        }
+    }
+
+    class ActionTargetContainerList(val key: ParsedAction<*>) : ScriptAction<Set<Target>>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Set<Target>> {
+
+            return frame.newFrame(key).run<String>().thenApply {
+                frame.rootVariables().get<Target.Container>(it.toString()).orElse(Target.Container()).targets
+            }
+
         }
     }
 
@@ -67,6 +70,9 @@ class ActionSelector {
          *
          * 删除
          * selector [key] remove
+         *
+         * 列表
+         * selector [key] list
          *
          * 取
          * selector [key]
@@ -84,6 +90,9 @@ class ActionSelector {
                 }
                 case("size") {
                     ActionTargetContainerGetSize(key)
+                }
+                case("list") {
+                    ActionTargetContainerList(key)
                 }
                 other {
                     ActionTargetContainerGet(key)
