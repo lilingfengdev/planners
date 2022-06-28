@@ -15,13 +15,11 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
+import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
 import taboolib.library.kether.QuestReader
-import taboolib.module.kether.KetherShell
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.printKetherErrorMessage
+import taboolib.module.kether.*
 import taboolib.platform.type.BukkitPlayer
 import java.util.concurrent.CompletableFuture
 
@@ -149,4 +147,15 @@ fun catchRunning(action: () -> Unit) {
 
 fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParser {
     return ActionEventParser(resolve)
+}
+
+fun QuestReader.selectorAction() : ParsedAction<*>? {
+    return try {
+        mark()
+        expects("selector", "they")
+        next(ArgTypes.ACTION)
+    } catch (_: Throwable) {
+        reset()
+        null
+    }
 }

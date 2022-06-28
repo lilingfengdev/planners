@@ -1,8 +1,10 @@
 package com.bh.planners.core.kether.enhance
 
 import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.asPlayer
 import com.bh.planners.core.kether.createTargets
-import com.bh.planners.core.kether.executor
+import com.bh.planners.core.kether.selectorAction
+import org.bukkit.entity.Player
 import taboolib.common.platform.function.console
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -12,7 +14,7 @@ import java.util.concurrent.CompletableFuture
 /**
  * @author IzzelAliz
  */
-class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: ParsedAction<*>) :
+class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: ParsedAction<*>?) :
     ScriptAction<Void>() {
 
     enum class Type {
@@ -21,36 +23,44 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        return frame.newFrame(command).run<Any>().thenAcceptAsync({
-            val command = it.toString().trimIndent()
-            frame.createTargets(selector).thenAccept { container ->
-                when (type) {
-                    Type.PLAYER -> {
-                        container.forEachPlayer { performCommand(command.replace("@player", name)) }
-                    }
-                    Type.OPERATOR -> {
-                        container.forEachPlayer {
-                            val isOp = isOp
-                            this.isOp = true
-                            try {
-                                performCommand(command.replace("@player", name))
-                            } catch (ex: Throwable) {
-                                ex.printStackTrace()
-                            }
-                            this.isOp = isOp
-                        }
-                    }
-                    Type.CONSOLE -> {
-                        container.forEachPlayer {
-                            console().performCommand(command.replace("@player", name))
-                        }
-                    }
+
+        fun execute(player: Player, type: Type, command: String) {
+            when (type) {
+                Type.PLAYER -> {
+                    player.performCommand(command.replace("@player", player.name))
                 }
 
+                Type.OPERATOR -> {
+                    val isOp = player.isOp
+                    player.isOp = true
+                    try {
+                        player.performCommand(command.replace("@player", player.name))
+                    } catch (ex: Throwable) {
+                        ex.printStackTrace()
+                    }
+                    player.isOp = isOp
+                }
+
+                Type.CONSOLE -> {
+                    console().performCommand(command.replace("@player", player.name))
+                }
             }
+        }
 
-
+        return frame.newFrame(command).run<Any>().thenAcceptAsync({
+            val command = it.toString().trimIndent()
+            if (selector != null) {
+                frame.createTargets(selector).thenAccept { container ->
+                    container.forEachPlayer {
+                        execute(this, this@ActionCommand.type, command)
+                    }
+                }
+            } else {
+                execute(frame.asPlayer() ?: return@thenAcceptAsync, this@ActionCommand.type, command)
+            }
         }, frame.context().executor)
+
+
     }
 
     internal object Parser {
@@ -71,7 +81,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
                 it.reset()
                 Type.PLAYER
             }
-            ActionCommand(command, by, it.next(ArgTypes.ACTION))
+            ActionCommand(command, by, it.selectorAction())
         }
     }
 }

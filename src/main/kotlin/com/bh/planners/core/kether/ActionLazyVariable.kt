@@ -53,6 +53,7 @@ class ActionLazyVariable {
 
                 case("reload") {
                     VariableReload(it.next(ArgTypes.ACTION))
+
                 }
 
                 other {

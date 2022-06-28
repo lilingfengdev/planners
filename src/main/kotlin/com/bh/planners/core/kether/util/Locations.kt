@@ -38,7 +38,7 @@ class Locations {
          * distance [location] and [location]
          */
         @KetherParser(["distance"], namespace = NAMESPACE)
-        fun parser() = scriptParser {
+        fun parser1() = scriptParser {
             val pos1 = it.next(ArgTypes.ACTION)
             it.expect("and")
             val pos2 = it.next(ArgTypes.ACTION)

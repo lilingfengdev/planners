@@ -7,11 +7,22 @@ __option__:
     upgradePoint: math meta skill level * 2
     base: 10
 action: |-
-  effect line "FLAME 0 0 0 -@range 10 -time 5 -period 5  -onCapture tp0"
   
+  if flag "t0-target" has then {
+    teleport entity loc flag "t0-target"
+    tell "第二段"
+  } else {
+    effect line "FLAME 0 0 0 -@range 10 -time 5 -period 5  -onCapture tp0"
+    tell "第一段"
+  }
+
+
+
 
 events:
   tp0:
     async: false
     action: |-
-      teleport target location
+      if not check &@isThis then {
+        flag add "t0-target" 10000 &%entityUniqueId
+      }

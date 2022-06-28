@@ -1,7 +1,10 @@
 package com.bh.planners.core.kether.enhance
 
 import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.asPlayer
 import com.bh.planners.core.kether.createTargets
+import com.bh.planners.core.kether.selectorAction
+import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
@@ -13,22 +16,32 @@ class ActionLaunch(
     val x: ParsedAction<*>,
     val y: ParsedAction<*>,
     val z: ParsedAction<*>,
-    val selector: ParsedAction<*>
+    val selector: ParsedAction<*>?
 ) : ScriptAction<Void>() {
 
+    fun execute(livingEntity: LivingEntity, x: Double, y: Double, z: Double) {
+        val vector1 = livingEntity.location.direction.setY(0).normalize()
+        val vector2 = vector1.clone().crossProduct(Vector(0, 1, 0))
+        vector1.multiply(Coerce.toDouble(x))
+        vector1.add(vector2.multiply(Coerce.toDouble(z))).y = Coerce.toDouble(y)
+        livingEntity.velocity = vector1
+    }
+
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.newFrame(x).run<Any>().thenApply { x ->
-            frame.newFrame(y).run<Any>().thenApply { y ->
-                frame.newFrame(z).run<Any>().thenApply { z ->
-                    frame.createTargets(selector).thenApply { container ->
-                        container.forEachEntity {
-                            val vector1 = this.location.direction.setY(0).normalize()
-                            val vector2 = vector1.clone().crossProduct(Vector(0, 1, 0))
-                            vector1.multiply(Coerce.toDouble(x))
-                            vector1.add(vector2.multiply(Coerce.toDouble(z))).y = Coerce.toDouble(y)
-                            this.velocity = vector1
+        frame.newFrame(x).run<Any>().thenApply {
+            val x = Coerce.toDouble(it)
+            frame.newFrame(y).run<Any>().thenApply {
+                val y = Coerce.toDouble(it)
+                frame.newFrame(z).run<Any>().thenApply {
+                    val z = Coerce.toDouble(it)
+                    if (selector != null) {
+                        frame.createTargets(selector).thenApply { container ->
+                            container.forEachEntity { execute(this, x, y, z) }
                         }
+                    } else {
+                        execute(frame.asPlayer()!!, x, y, z)
                     }
+
                 }
             }
         }
@@ -48,7 +61,7 @@ class ActionLaunch(
             val x = it.next(ArgTypes.ACTION)
             val y = it.next(ArgTypes.ACTION)
             val z = it.next(ArgTypes.ACTION)
-            ActionLaunch(x, y, z, it.next(ArgTypes.ACTION))
+            ActionLaunch(x, y, z, it.selectorAction())
         }
     }
 }

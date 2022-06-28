@@ -2,7 +2,9 @@ package com.bh.planners.core.kether.enhance
 
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.asPlayer
 import com.bh.planners.core.kether.createTargets
+import com.bh.planners.core.kether.selectorAction
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
@@ -20,30 +22,37 @@ import java.util.concurrent.CompletableFuture
 
 class ActionSkillCast {
 
-    class TryCast(val skill: ParsedAction<*>, val selector: ParsedAction<*>) :
-        ScriptAction<Void>() {
+    class TryCast(val skill: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(skill).run<Any>().thenAccept { skill ->
-                frame.createTargets(selector).thenAccept { container ->
-                    container.forEachPlayer {
-                        PlannersAPI.cast(this, skill.toString(), true)
+                if (selector != null) {
+                    frame.createTargets(selector).thenAccept { container ->
+                        container.forEachPlayer {
+                            PlannersAPI.cast(this, skill.toString(), true)
+                        }
                     }
+                } else {
+                    PlannersAPI.cast(frame.asPlayer() ?: return@thenAccept, skill.toString(), true)
                 }
             }
         }
     }
 
-    class DirectCast(val skill: ParsedAction<*>, val level: ParsedAction<*>, val selector: ParsedAction<*>) :
+    class DirectCast(val skill: ParsedAction<*>, val level: ParsedAction<*>, val selector: ParsedAction<*>?) :
         ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(skill).run<Any>().thenAccept {
                 val skill = PlannersAPI.getSkill(it.toString()) ?: return@thenAccept
                 frame.newFrame(level).run<Any>().thenAccept {
                     val level = Coerce.toInteger(it)
-                    frame.createTargets(selector).thenAccept { container ->
-                        container.forEachPlayer {
-                            ContextImpl(adaptPlayer(this), skill, level).cast()
+                    if (selector != null) {
+                        frame.createTargets(selector).thenAccept { container ->
+                            container.forEachPlayer {
+                                ContextImpl(adaptPlayer(this), skill, level).cast()
+                            }
                         }
+                    } else {
+                        ContextImpl(adaptPlayer(frame.asPlayer() ?: return@thenAccept), skill, level).cast()
                     }
                 }
             }
@@ -68,7 +77,7 @@ class ActionSkillCast {
          */
         @KetherParser(["try-cast"], namespace = NAMESPACE)
         fun parser1() = scriptParser {
-            TryCast(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+            TryCast(it.next(ArgTypes.ACTION), it.selectorAction())
         }
 
         /**
@@ -79,7 +88,7 @@ class ActionSkillCast {
          */
         @KetherParser(["direct-cast"], namespace = NAMESPACE)
         fun parser2() = scriptParser {
-            DirectCast(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+            DirectCast(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.selectorAction())
         }
     }
 

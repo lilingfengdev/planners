@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.enhance
 
 import com.bh.planners.core.kether.*
+import org.bukkit.entity.Player
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -18,28 +19,32 @@ class ActionTitle(
     val fadeIn: ParsedAction<*>,
     val stay: ParsedAction<*>,
     val fadeOut: ParsedAction<*>,
-    val selector: ParsedAction<*>
+    val selector: ParsedAction<*>?
 ) : ScriptAction<Void>() {
 
-    override fun run(frame: QuestContext.Frame): CompletableFuture<Void> {
-        return frame.newFrame(title).run<Any>().thenAccept { t ->
-            frame.newFrame(subTitle).run<Any>().thenAccept { s ->
-                frame.newFrame(fadeIn).run<Any>().thenAccept { fadeIn ->
-                    frame.newFrame(stay).run<Any>().thenAccept { stay ->
-                        frame.newFrame(fadeOut).run<Any>().thenAccept { fadeOut ->
+    fun execute(player: Player, t: String, s: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        player.sendTitle(t, s, fadeIn, stay, fadeOut)
+    }
 
-                            val title = t.toString()
-                            val subTitle = s.toString()
-                            frame.createTargets(selector).thenAccept {
-                                it.forEachPlayer {
-                                    sendTitle(
-                                        title,
-                                        subTitle,
-                                        Coerce.toInteger(fadeIn),
-                                        Coerce.toInteger(stay),
-                                        Coerce.toInteger(fadeOut)
-                                    )
+    override fun run(frame: QuestContext.Frame): CompletableFuture<Void> {
+        return frame.newFrame(title).run<Any>().thenAccept {
+            val title = it.toString()
+            frame.newFrame(subTitle).run<Any>().thenAccept { s ->
+                val subTitle = it.toString()
+                frame.newFrame(fadeIn).run<Any>().thenAccept {
+                    val fadeIn = Coerce.toInteger(it)
+                    frame.newFrame(stay).run<Any>().thenAccept {
+                        val stay = Coerce.toInteger(it)
+                        frame.newFrame(fadeOut).run<Any>().thenAccept {
+                            val fadeOut = Coerce.toInteger(it)
+                            if (selector != null) {
+                                frame.createTargets(selector).thenAccept {
+                                    it.forEachPlayer {
+                                        execute(this, title, subTitle, fadeIn, stay, fadeOut)
+                                    }
                                 }
+                            } else {
+                                execute(frame.asPlayer()!!, title, subTitle, fadeIn, stay, fadeOut)
                             }
                         }
                     }

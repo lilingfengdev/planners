@@ -31,7 +31,7 @@ class ActionFlag {
                 frame.newFrame(value).run<Any>().thenAccept { value ->
                     val profile = frame.asPlayer()!!.plannersProfile
                     frame.newFrame(time).run<Long>().thenAccept { time ->
-                        profile.setFlag(key,Data(value, survivalStamp = time))
+                        profile.setFlag(key, Data(value, survivalStamp = time))
                     }
                 }
             }
@@ -49,6 +49,15 @@ class ActionFlag {
                         dataContainer.update(key, dataContainer[key]!!.increaseAny(value.toString()))
                     }
                 }
+            }
+        }
+    }
+
+    class DataHas(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Boolean> {
+            return frame.newFrame(action).run<String>().thenApply { key ->
+                val dataContainer = frame.asPlayer()!!.plannersProfile.flags
+                dataContainer.containsKey(key)
             }
         }
     }
@@ -86,6 +95,9 @@ class ActionFlag {
                 }
                 case("add") {
                     DataAdd(keyAction, it.next(ArgTypes.ACTION))
+                }
+                case("has") {
+                    DataHas(keyAction)
                 }
                 other {
                     DataGet(keyAction)

@@ -1,7 +1,10 @@
 package com.bh.planners.core.kether.enhance
 
 import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.asPlayer
 import com.bh.planners.core.kether.createTargets
+import com.bh.planners.core.kether.selectorAction
+import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
@@ -15,30 +18,38 @@ class ActionVelocity(
     val x: ParsedAction<*>,
     val y: ParsedAction<*>,
     val z: ParsedAction<*>,
-    val selector: ParsedAction<*>
+    val selector: ParsedAction<*>?
 ) : ScriptAction<Void>() {
 
     enum class Mode {
         ADD, SUBTRACT, MULTIPLY, DIVIDE, SET
     }
 
+    fun execute(entity: LivingEntity, mode: Mode, vector: Vector) {
+        val vec = entity.velocity
+        when (mode) {
+            Mode.ADD -> vec.add(vector)
+            Mode.SUBTRACT -> vec.subtract(vector)
+            Mode.MULTIPLY -> vec.multiply(vector)
+            Mode.DIVIDE -> vec.divide(vector)
+            Mode.SET -> vec.set(vector.x, vector.y, vector.z)
+        }
+        entity.velocity = vec
+    }
+
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         frame.newFrame(x).run<Any>().thenApply { x ->
             frame.newFrame(y).run<Any>().thenApply { y ->
                 frame.newFrame(z).run<Any>().thenApply { z ->
-                    frame.createTargets(selector).thenApply { container ->
-                        val toVector = Vector(Coerce.toDouble(x), Coerce.toDouble(y), Coerce.toDouble(z))
-                        container.forEachEntity {
-                            val vec = this.velocity
-                            when (mode) {
-                                Mode.ADD -> vec.add(toVector)
-                                Mode.SUBTRACT -> vec.subtract(toVector)
-                                Mode.MULTIPLY -> vec.multiply(toVector)
-                                Mode.DIVIDE -> vec.divide(toVector)
-                                Mode.SET -> vec.set(toVector.x, toVector.y, toVector.z)
+                    val toVector = Vector(Coerce.toDouble(x), Coerce.toDouble(y), Coerce.toDouble(z))
+                    if (selector != null) {
+                        frame.createTargets(selector).thenApply { container ->
+                            container.forEachEntity {
+                                execute(this, mode, toVector)
                             }
-                            this.velocity = vec
                         }
+                    } else {
+                        execute(frame.asPlayer()!!, mode, toVector)
                     }
                 }
             }
@@ -66,7 +77,7 @@ class ActionVelocity(
             val x = it.next(ArgTypes.ACTION)
             val y = it.next(ArgTypes.ACTION)
             val z = it.next(ArgTypes.ACTION)
-            ActionVelocity(mode, x, y, z, it.next(ArgTypes.ACTION))
+            ActionVelocity(mode, x, y, z, it.selectorAction())
         }
     }
 }

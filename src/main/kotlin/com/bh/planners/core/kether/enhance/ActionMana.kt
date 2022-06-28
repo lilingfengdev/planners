@@ -7,31 +7,44 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.common.Operator
 import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.asPlayer
 import com.bh.planners.core.kether.createTargets
+import com.bh.planners.core.kether.selectorAction
+import org.bukkit.entity.Player
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
+class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: ParsedAction<*>?) :
+    ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.newFrame(amount).run<Any>().thenApply { amount ->
-            frame.createTargets(selector).thenApply { container ->
-                container.forEachPlayer {
-                    if (!this.plannersProfileIsLoaded) return@forEachPlayer
-                    val profile = this.plannersProfile
-                    val value = Coerce.toDouble(amount)
-                    when (mode) {
-                        Operator.ADD -> profile.addMana(value)
-                        Operator.TAKE -> profile.takeMana(value)
-                        Operator.SET -> profile.setMana(value)
+        frame.newFrame(amount).run<Any>().thenApply {
+            val amount = Coerce.toDouble(it)
+            if (selector != null) {
+                frame.createTargets(selector).thenApply { container ->
+                    container.forEachPlayer {
+                        execute(this, mode, amount)
                     }
                 }
+            } else {
+                execute(frame.asPlayer() ?: return@thenApply, mode, amount)
             }
         }
         return CompletableFuture.completedFuture(null)
+    }
+
+    fun execute(player: Player, mode: Operator, amount: Double) {
+        if (!player.plannersProfileIsLoaded) return
+        val profile = player.plannersProfile
+        val value = Coerce.toDouble(amount)
+        when (mode) {
+            Operator.ADD -> profile.addMana(value)
+            Operator.TAKE -> profile.takeMana(value)
+            Operator.SET -> profile.setMana(value)
+        }
     }
 
     internal object Parser {
@@ -48,15 +61,15 @@ class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: 
 
             it.switch {
                 case("add", "give") {
-                    ActionMana(Operator.ADD, it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+                    ActionMana(Operator.ADD, it.next(ArgTypes.ACTION), it.selectorAction())
                 }
 
                 case("take", "subtract") {
-                    ActionMana(Operator.TAKE, it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+                    ActionMana(Operator.TAKE, it.next(ArgTypes.ACTION), it.selectorAction())
                 }
 
                 case("set") {
-                    ActionMana(Operator.SET, it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+                    ActionMana(Operator.SET, it.next(ArgTypes.ACTION), it.selectorAction())
                 }
                 other {
                     error("error of case!")

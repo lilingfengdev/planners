@@ -1,7 +1,9 @@
 package com.bh.planners.core.timer.impl
 
+import com.bh.planners.core.skill.effect.Target.Companion.toTarget
 import com.bh.planners.core.timer.AbstractTimer
 import com.bh.planners.core.timer.Template
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import taboolib.common.platform.ProxyCommandSender
@@ -21,6 +23,9 @@ object TimerPlayerAttack : AbstractTimer<EntityDamageByEntityEvent>() {
 
     override fun onStart(context: ScriptContext, template: Template, e: EntityDamageByEntityEvent) {
         super.onStart(context, template, e)
+        if (e.damager is LivingEntity) {
+            context.rootFrame().variables()["@Target"] = (e.entity as LivingEntity).toTarget()
+        }
         context.rootFrame().variables()["damager"] = e.damager.name
         context.rootFrame().variables()["entity"] = e.entity.name
         context.rootFrame().variables()["cause"] = e.cause
