@@ -1,0 +1,17 @@
+__option__:
+  name: 't'
+  variables:
+    cooldown: 0
+    mp: math meta skill level * 2.8
+    damage: math meta skill level * 1.2 * lazy base
+    upgradePoint: math meta skill level * 2
+    base: 10
+action: |-
+  effect line "FLAME 0 0 0 -@range 10 -time 5 -period 5  -onCapture tp0"
+  
+
+events:
+  tp0:
+    async: false
+    action: |-
+      teleport target location

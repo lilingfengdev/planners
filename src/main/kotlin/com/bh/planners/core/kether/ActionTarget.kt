@@ -6,6 +6,7 @@ import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.data.Data
 import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
+import org.bukkit.Location
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -25,6 +26,12 @@ class ActionTarget {
     class ActionTargetGet : ScriptAction<Target?>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target?> {
             return CompletableFuture.completedFuture(frame.getTarget())
+        }
+    }
+
+    class ActionTargetLocation() : ScriptAction<Location>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Location> {
+            return CompletableFuture.completedFuture(frame.getTarget()?.toLocation())
         }
     }
 
@@ -50,6 +57,9 @@ class ActionTarget {
                 }
                 case("get") {
                     ActionTargetGet()
+                }
+                case("location") {
+                    ActionTargetLocation()
                 }
                 other {
                     ActionTargetGet()
