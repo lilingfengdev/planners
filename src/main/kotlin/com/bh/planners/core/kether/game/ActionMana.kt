@@ -1,4 +1,4 @@
-package com.bh.planners.core.kether.enhance
+package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.ManaCounter.addMana
 import com.bh.planners.api.ManaCounter.setMana

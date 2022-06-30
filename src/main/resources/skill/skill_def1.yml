@@ -10,11 +10,11 @@ action: |-
   
   for i in range 1 to 10 then {
     selector g0 to "-@range 10"
-    for target in selector g0 then {
-      if check inline "{{ &target }}-damaged" == true then {
+    for target in selector g0 list then {
+      if check &target then {
         damage 10 &target
       }
-      set inline "{{ &target }}-damaged" to true
+      set &target to true
     }
   }
   

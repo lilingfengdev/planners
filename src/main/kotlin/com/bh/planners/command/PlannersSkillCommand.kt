@@ -1,10 +1,8 @@
 package com.bh.planners.command
 
 import com.bh.planners.api.PlannersAPI
-import com.bh.planners.api.PlannersAPI.plannersProfile
-import com.bh.planners.api.addPoint
 import com.bh.planners.api.hasJob
-import com.bh.planners.core.kether.enhance.ActionSkillCast
+import com.bh.planners.core.kether.game.ActionSkillCast
 import com.bh.planners.core.ui.Faceplate
 import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
@@ -13,7 +11,6 @@ import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
-import taboolib.platform.util.sendLang
 
 @CommandHeader("plannersskill")
 object PlannersSkillCommand {

@@ -1,6 +1,8 @@
 package com.bh.planners.core.ui
 
+import com.bh.planners.api.bind
 import com.bh.planners.api.event.PlayerSkillBindEvent
+import com.bh.planners.api.next
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.storage.Storage
 import com.bh.planners.core.ui.SkillIcon.Companion.toIcon
@@ -74,21 +76,13 @@ class Backpack(viewer: Player) : IUI(viewer) {
                     }
 
                     ShortcutSelector(viewer) {
-
-                        val oldKeySlot = element.keySlot
-
                         // 取消绑定
                         if (element.shortcutKey == this.key) {
-                            element.shortcutKey = null
                             viewer.sendLang("skill-un-bind-shortcut", element.instance.option.name)
                         } else {
-                            element.shortcutKey = this.key
                             viewer.sendLang("skill-bind-shortcut", element.instance.option.name, name)
                         }
-
-
-                        Storage.INSTANCE.updateSkill(element)
-                        PlayerSkillBindEvent(viewer, element, oldKeySlot).call()
+                        profile.bind(element, this)
                         open()
                     }.open()
 

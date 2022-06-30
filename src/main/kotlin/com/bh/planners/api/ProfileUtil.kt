@@ -2,16 +2,14 @@ package com.bh.planners.api
 
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
-import com.bh.planners.api.event.PlayerGetExperienceEvent
-import com.bh.planners.api.event.PlayerLevelChangeEvent
-import com.bh.planners.api.event.PlayerSelectedJobEvent
-import com.bh.planners.api.event.PlayerSkillUpgradeEvent
+import com.bh.planners.api.event.*
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.Condition
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Router
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.data.Data
+import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
@@ -21,6 +19,7 @@ import taboolib.common.platform.function.info
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.runKether
+import taboolib.platform.util.sendLang
 
 
 fun PlayerProfile.addPoint(point: Int) {
@@ -138,6 +137,29 @@ fun hasTransfer(origin: Job, target: Job): Boolean {
 
 fun getUpgradeConditions(playerSkill: PlayerJob.Skill): List<Skill.UpgradeCondition> {
     return playerSkill.instance.option.upgradeConditions.filter { it.indexTo == playerSkill.level }
+}
+
+fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {
+
+    // 取消绑定
+    if (skill.keySlot == iKeySlot) {
+        val oldKeySlot = skill.keySlot
+        skill.shortcutKey = null
+        PlayerSkillBindEvent(player, skill, oldKeySlot).call()
+        Storage.INSTANCE.updateSkill(skill)
+    } else {
+        // 解绑同快捷键技能
+        val orNull = this.getSkills().filter { it.key != skill.key && it.keySlot == iKeySlot }.firstOrNull()
+        if (orNull != null) {
+            bind(orNull, iKeySlot)
+        }
+        val oldKeySlot = skill.keySlot
+        skill.shortcutKey = iKeySlot.key
+        PlayerSkillBindEvent(player, skill, oldKeySlot).call()
+        Storage.INSTANCE.updateSkill(skill)
+    }
+
+
 }
 
 fun Condition.consumeTo(player: Player, context: (ScriptContext.() -> Unit)? = null) {

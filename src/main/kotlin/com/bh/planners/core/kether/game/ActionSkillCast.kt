@@ -1,8 +1,7 @@
-package com.bh.planners.core.kether.enhance
+package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.core.kether.*
-import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.player.PlayerJob

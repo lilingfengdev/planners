@@ -1,4 +1,4 @@
-package com.bh.planners.core.kether.enhance
+package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.*
 import org.bukkit.entity.Player

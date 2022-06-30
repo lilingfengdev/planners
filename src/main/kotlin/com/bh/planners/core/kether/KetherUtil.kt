@@ -129,6 +129,8 @@ fun ScriptFrame.exec(selector: ParsedAction<*>, call: Target.() -> Unit) {
     this.newFrame(selector).run<Any>().thenAccept {
         if (it is Target) {
             call(it)
+        } else if (it is Target.Container) {
+            it.targets.forEach(call)
         } else {
             val demand = it.toString().toDemand()
             val container = demand.createContainer(toOriginLocation(), getSession())
@@ -189,9 +191,9 @@ fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParse
 fun QuestReader.selectorAction(): ParsedAction<*>? {
     return try {
         mark()
-        expects("selector", "they")
+        expects("they", "the")
         next(ArgTypes.ACTION)
-    } catch (_: Throwable) {
+    } catch (e: Exception) {
         reset()
         null
     }

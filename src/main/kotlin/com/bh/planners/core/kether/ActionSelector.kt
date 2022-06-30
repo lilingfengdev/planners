@@ -81,22 +81,19 @@ class ActionSelector {
         @KetherParser(["selector"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             val key = it.next(ArgTypes.ACTION)
-            it.switch {
-                case("to", "set") {
-                    ActionTargetContainerSet(key, it.next(ArgTypes.ACTION))
+            try {
+                it.mark()
+                when (it.expects("to", "set", "remove", "size", "list")) {
+                    "to", "set" -> ActionTargetContainerSet(key, it.next(ArgTypes.ACTION))
+                    "remove" -> ActionTargetContainerRemove(key)
+                    "size" -> ActionTargetContainerGetSize(key)
+                    "list" -> ActionTargetContainerList(key)
+                    "get" -> ActionTargetContainerGet(key)
+                    else -> error("error of case!")
                 }
-                case("remove") {
-                    ActionTargetContainerRemove(key)
-                }
-                case("size") {
-                    ActionTargetContainerGetSize(key)
-                }
-                case("list") {
-                    ActionTargetContainerList(key)
-                }
-                other {
-                    ActionTargetContainerGet(key)
-                }
+            } catch (_: Exception) {
+                it.reset()
+                ActionTargetContainerGet(key)
             }
         }
     }
