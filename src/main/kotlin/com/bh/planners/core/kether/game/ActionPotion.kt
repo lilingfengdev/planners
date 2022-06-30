@@ -100,7 +100,9 @@ class ActionPotion {
     companion object {
 
         /**
-         * effect give *SPEED *10 *10
+         * potion give SPEED 10 10 <they selector>
+         * potion clear <they selector>
+         * potion remove <they selector>
          */
         @KetherParser(["potion"], namespace = NAMESPACE)
         fun parser() = scriptParser {
