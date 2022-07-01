@@ -5,6 +5,8 @@ import com.bh.planners.api.event.PluginReloadEvent
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.module.configuration.Config
+import taboolib.module.configuration.Configuration
 
 /**
  * Chemdah
@@ -15,6 +17,8 @@ import taboolib.common.platform.event.SubscribeEvent
  */
 object LevelSystem {
 
+    @Config("counter.yml")
+    lateinit var config: Configuration
 
     val levels = HashMap<String, LevelOption>()
 
@@ -25,8 +29,8 @@ object LevelSystem {
     @Awake(LifeCycle.ENABLE)
     fun load() {
         levels.clear()
-        Planners.config.getConfigurationSection("level")?.getKeys(false)?.forEach { node ->
-            val section = Planners.config.getConfigurationSection("level.$node")!!
+        config.getKeys(false).forEach { node ->
+            val section = config.getConfigurationSection(node)!!
             val algorithm = AlgorithmKether(section)
             levels[node] = LevelOption(algorithm, section.getInt("min"), section)
         }
@@ -34,6 +38,7 @@ object LevelSystem {
 
     @SubscribeEvent
     fun e(e: PluginReloadEvent) {
+        config.reload()
         this.load()
     }
 }
