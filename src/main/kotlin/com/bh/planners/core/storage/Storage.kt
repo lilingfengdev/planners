@@ -1,5 +1,6 @@
 package com.bh.planners.core.storage
 
+import com.bh.planners.Planners
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.data.DataContainer
@@ -8,6 +9,10 @@ import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.module.database.ColumnBuilder
+import taboolib.module.database.Host
+import taboolib.module.database.SQL
+import taboolib.module.database.SQLite
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -16,10 +21,17 @@ interface Storage {
     companion object {
 
         val INSTANCE by lazy {
-            StorageSQL()
+            when (type) {
+                "SQL" -> StorageSQL()
+                "SQLITE" -> StorageSqlite()
+                else -> error("None database source.")
+            }
         }
 
         val userIdCache = mutableMapOf<UUID, Long>()
+
+        val type: String
+            get() = Planners.config.getString("database.use", "SQLITE")!!
 
         fun Player.toUserId(): Long {
             return INSTANCE.getUserId(this)
@@ -31,6 +43,13 @@ interface Storage {
             userIdCache.remove(e.player.uniqueId)
         }
 
+        fun ColumnBuilder.id() {
+            if (this is SQL) {
+                id()
+            } else if (this is SQLite) {
+                id()
+            }
+        }
 
     }
 

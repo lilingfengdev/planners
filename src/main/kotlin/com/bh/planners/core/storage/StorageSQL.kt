@@ -16,7 +16,7 @@ import taboolib.module.database.getHost
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class StorageSQL : Storage {
+open class StorageSQL : Storage {
 
     val host = Planners.config.getHost("database.sql")
 
@@ -41,8 +41,7 @@ class StorageSQL : Storage {
 
     }
 
-
-    val userTable = Table("planners_user", host) {
+    open val userTable : Table<*,*> = Table("planners_user", host) {
         add("id") { id() }
         add(UUID) { type(ColumnTypeSQL.VARCHAR, 36) }
         add(MANA) {
@@ -56,7 +55,7 @@ class StorageSQL : Storage {
         }
     }
 
-    val jobTable = Table("planners_job", host) {
+    open val jobTable : Table<*,*> = Table("planners_job", host) {
         add("id") { id() }
         add(USER) { type(ColumnTypeSQL.INT, 10) }
         add(JOB) { type(ColumnTypeSQL.VARCHAR, 30) }
@@ -77,7 +76,7 @@ class StorageSQL : Storage {
         }
     }
 
-    val skillTable = Table("planners_skill", host) {
+    open val skillTable : Table<*,*> = Table("planners_skill", host) {
         add("id") { id() }
         add(USER) { type(ColumnTypeSQL.INT, 10) }
         add(JOB) { type(ColumnTypeSQL.VARCHAR, 30) }
