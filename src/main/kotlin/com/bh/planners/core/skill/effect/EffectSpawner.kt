@@ -17,33 +17,23 @@ class EffectSpawner(val option: EffectOption) : ParticleSpawner {
 
     override fun spawn(location: Location) {
         try {
-            getViewer(location).thenAccept {
-                it.forEach { player ->
-                    player.sendParticle(
-                        particle = option.particle,
-                        location = location.add(option.posX, option.posY, option.posZ),
-                        offset = option.offsetVector,
-                        count = option.count,
-                        data = option.data,
-                        speed = option.speed,
-                    )
-                }
+            getViewer(location).forEach { player ->
+                player.sendParticle(
+                    particle = option.particle,
+                    location = location.add(option.posX, option.posY, option.posZ),
+                    offset = option.offsetVector,
+                    count = option.count,
+                    data = option.data,
+                    speed = option.speed,
+                )
             }
         } catch (_: Exception) {
         }
 
     }
 
-    private fun getViewer(location: Location) : CompletableFuture<List<Player>> {
-        val future = CompletableFuture<List<Player>>()
-        if (MinecraftVersion.majorLegacy > 11200 && !Bukkit.isPrimaryThread()) {
-            submit(async = false) {
-                future.complete(location.world!!.getNearbyEntities(location, 100.0, 100.0, 100.0).filterIsInstance<Player>())
-            }
-        } else {
-            future.complete(location.world!!.getNearbyEntities(location, 100.0, 100.0, 100.0).filterIsInstance<Player>())
-        }
-        return future
+    private fun getViewer(location: Location): List<Player> {
+        return location.world?.players ?: emptyList()
     }
 
 

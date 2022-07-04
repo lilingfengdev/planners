@@ -2,7 +2,7 @@ package com.bh.planners.core.kether
 
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.common.Operator
-import com.bh.planners.api.counter.Counting
+import com.bh.planners.api.Counting
 import com.bh.planners.core.pojo.Skill
 import org.bukkit.entity.Player
 import taboolib.common5.Coerce

@@ -1,4 +1,4 @@
-package com.bh.planners.api.counter
+package com.bh.planners.api.common
 
 import kotlin.math.max
 

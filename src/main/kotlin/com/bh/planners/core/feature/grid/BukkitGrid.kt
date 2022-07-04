@@ -4,7 +4,6 @@ import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.PlannersOption
-import com.bh.planners.api.counter.Counting
 import com.bh.planners.api.event.PlayerInitializeEvent
 import com.bh.planners.api.event.PlayerSkillBindEvent
 import com.bh.planners.api.event.PlayerSkillUpgradeEvent
@@ -12,7 +11,6 @@ import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.pojo.Context
-import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.ui.SkillIcon.Companion.toIcon
@@ -23,10 +21,8 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
-import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
-import taboolib.common.platform.function.info
 import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.printKetherErrorMessage
 

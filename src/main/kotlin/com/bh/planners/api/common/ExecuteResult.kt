@@ -1,8 +1,7 @@
-package com.bh.planners.api.enums
+package com.bh.planners.api.common
 
-import com.bh.planners.api.counter.Counting
+import com.bh.planners.api.Counting
 import com.bh.planners.core.pojo.Skill
-import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.entity.Player
 import taboolib.platform.util.sendLang
 

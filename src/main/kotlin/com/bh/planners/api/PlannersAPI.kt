@@ -2,8 +2,7 @@ package com.bh.planners.api
 
 import com.bh.planners.api.ManaCounter.takeMana
 import com.bh.planners.api.ManaCounter.toCurrentMana
-import com.bh.planners.api.counter.Counting
-import com.bh.planners.api.enums.ExecuteResult
+import com.bh.planners.api.common.ExecuteResult
 import com.bh.planners.api.event.PlayerCastSkillEvent
 import com.bh.planners.api.event.PlayerKeydownEvent
 import com.bh.planners.core.kether.namespaces
@@ -13,7 +12,6 @@ import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
