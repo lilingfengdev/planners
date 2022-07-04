@@ -6,12 +6,11 @@ import java.io.File
 
 
 fun files(path: String, defs: List<String>, callback: (File) -> Unit) {
-    defs.forEach {
-        releaseResourceFile("$path/$it")
+    val file = File(getDataFolder(), path)
+    if (!file.exists()) {
+        defs.forEach { releaseResourceFile("$path/$it") }
     }
-    getFiles(File(getDataFolder(), path)).forEach {
-        callback(it)
-    }
+    getFiles(file).forEach { callback(it) }
 }
 
 fun getFiles(file: File): List<File> {

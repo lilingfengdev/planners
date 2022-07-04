@@ -59,7 +59,7 @@ class JobUI(viewer: Player) : IUI(viewer) {
             onClick { event, element ->
                 event.isCancelled = true
                 if (event.clickEvent().click == ClickType.SHIFT_LEFT) {
-                    submit(delay = 1, async = true) {
+                    submit(delay = 1, async = false) {
                         viewer.closeInventory()
                     }
                     if (profile.attemptAcceptJob(PlannersAPI.getRouterStartJob(element))) {
