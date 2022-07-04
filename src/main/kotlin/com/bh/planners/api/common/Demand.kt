@@ -23,11 +23,10 @@ class Demand(val source: String) {
                         put(s.substring(1), "")
                     }
 
-                    s[1] == '!' && args[index + 1][0] == '-' -> {
-                        put(s.substring(2), args[index + 1])
+                    args[index + 1].startsWith("\\-") -> {
+                        put(s.substring(1), args[index + 1].substring(1))
                         skipIndex += index + 1
                     }
-
                     args[index + 1][0] != '-' -> {
                         put(s.substring(1), args[index + 1])
                         skipIndex += index + 1

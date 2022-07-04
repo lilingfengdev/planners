@@ -17,15 +17,15 @@ class Demand(val source: String) {
         namespace = args[0]
         val skipIndex = arrayListOf<Int>()
         args.forEachIndexed { index, s ->
-            if (index in skipIndex) return@forEachIndexed
+            if (index in skipIndex || s.isEmpty()) return@forEachIndexed
             if (s[0] == '-') {
                 when {
                     index + 1 >= args.size -> {
                         put(s.substring(1), "")
                     }
 
-                    s[1] == '!' && args[index + 1][0] == '-' -> {
-                        put(s.substring(2), args[index + 1])
+                    args[index + 1].startsWith("\\-") -> {
+                        put(s.substring(1), args[index + 1].substring(1))
                         skipIndex += index + 1
                     }
 

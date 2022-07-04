@@ -16,8 +16,8 @@ import kotlin.math.floor
 /**
  * 选中视角所看向的实体集群
  * step 最大距离
- * -@aline 10
- * -@al 10
+ * -@visual 10
+ * -@vi 10
  */
 object Visual : Selector {
     override val names: Array<String>
