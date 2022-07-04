@@ -14,6 +14,7 @@ import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.ui.SkillIcon.Companion.toIcon
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
@@ -152,6 +153,7 @@ object BukkitGrid {
     @SubscribeEvent
     fun e(e: PluginReloadEvent) {
         initGrids()
+        Bukkit.getOnlinePlayers().forEach(this::updateAll)
     }
 
 
