@@ -41,7 +41,7 @@ class ActionSkillCast {
                     val level = Coerce.toInteger(it)
                     if (selector != null) {
                         frame.execPlayer(selector) {
-                            ContextImpl(adaptPlayer(this), skill, level).cast()
+                            ContextImpl(adaptPlayer(this), skill, level).apply {  }.cast()
                         }
                     } else {
                         ContextImpl(adaptPlayer(frame.asPlayer() ?: return@thenAccept), skill, level).cast()

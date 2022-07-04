@@ -5,6 +5,7 @@ import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
+import java.util.concurrent.CompletableFuture
 
 /**
  * 选中世界内的实体
@@ -20,12 +21,12 @@ object InWorld : Selector {
         get() = arrayOf("inWorld", "inworld", "iw", "piw")
 
     // -@inWorld world:PLAYER,ZOMBIE
-    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
 
         val worldName = if (args.contains(":")) {
             args.split(":")[0]
         } else {
-            val location = target as? Target.Location ?: return
+            val location = target as? Target.Location ?: return CompletableFuture.completedFuture(null)
             location.value.world!!.name
         }
         val types = args.replaceFirst("${worldName}:", "").split(",").map { it.uppercase() }
@@ -35,6 +36,7 @@ object InWorld : Selector {
             .filter { it.type.name in types }
             .map { it.toTarget() }
         container.addAll(targets)
+        return CompletableFuture.completedFuture(null)
     }
 
 }

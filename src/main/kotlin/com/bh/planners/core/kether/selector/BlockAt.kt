@@ -11,6 +11,7 @@ import org.bukkit.block.Block
 import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
+import java.util.concurrent.CompletableFuture
 import kotlin.math.floor
 
 /**
@@ -25,7 +26,7 @@ object BlockAt : Selector {
     override val names: Array<String>
         get() = arrayOf("blockAt", "ba")
 
-    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
         val distance = if (args.isEmpty()) 10.0 else Coerce.toDouble(args)
 
         var block: Block? = null
@@ -54,8 +55,7 @@ object BlockAt : Selector {
                 }
             }
         }
-
-
+        return CompletableFuture.completedFuture(null)
     }
 
     /**

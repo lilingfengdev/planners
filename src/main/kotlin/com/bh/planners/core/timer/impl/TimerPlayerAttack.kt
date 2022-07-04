@@ -21,6 +21,13 @@ object TimerPlayerAttack : AbstractTimer<EntityDamageByEntityEvent>() {
         return adaptPlayer(player)
     }
 
+    /**
+     * @Target 被攻击目标
+     * damager 攻击者的名称
+     * entity 被攻击者的名称
+     * cause 攻击原因
+     * damage 攻击伤害
+     */
     override fun onStart(context: ScriptContext, template: Template, e: EntityDamageByEntityEvent) {
         super.onStart(context, template, e)
         if (e.damager is LivingEntity) {

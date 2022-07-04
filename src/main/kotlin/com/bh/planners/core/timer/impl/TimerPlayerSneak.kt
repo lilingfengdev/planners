@@ -18,6 +18,9 @@ object TimerPlayerSneak : Timer<PlayerToggleSneakEvent> {
         return adaptPlayer(e.player)
     }
 
+    /**
+     * isSneaking 是否在潜行
+     */
     override fun onStart(context: ScriptContext, template: Template, e: PlayerToggleSneakEvent) {
         context.rootFrame().variables()["isSneaking"] = e.isSneaking
     }

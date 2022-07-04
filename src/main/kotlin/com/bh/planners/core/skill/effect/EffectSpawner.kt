@@ -2,32 +2,48 @@ package com.bh.planners.core.skill.effect
 
 import com.bh.planners.core.skill.effect.common.ParticleSpawner
 import org.bukkit.*
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
 import taboolib.common.platform.ProxyParticle
+import taboolib.common.platform.function.submit
 import taboolib.common.util.Vector
 import taboolib.module.nms.MinecraftVersion
 import taboolib.platform.util.toBukkitLocation
+import java.util.concurrent.CompletableFuture
 
 class EffectSpawner(val option: EffectOption) : ParticleSpawner {
 
     override fun spawn(location: Location) {
         try {
-            val entities = location.world!!.getNearbyEntities(location, 100.0, 100.0, 100.0)
-            entities.filterIsInstance<Player>().forEach { player ->
-                player.sendParticle(
-                    particle = option.particle,
-                    location = location.add(option.posX, option.posY, option.posZ),
-                    offset = option.offsetVector,
-                    count = option.count,
-                    data = option.data,
-                    speed = option.speed,
-                )
+            getViewer(location).thenAccept {
+                it.forEach { player ->
+                    player.sendParticle(
+                        particle = option.particle,
+                        location = location.add(option.posX, option.posY, option.posZ),
+                        offset = option.offsetVector,
+                        count = option.count,
+                        data = option.data,
+                        speed = option.speed,
+                    )
+                }
             }
         } catch (_: Exception) {
         }
 
+    }
+
+    private fun getViewer(location: Location) : CompletableFuture<List<Player>> {
+        val future = CompletableFuture<List<Player>>()
+        if (MinecraftVersion.majorLegacy > 11200 && !Bukkit.isPrimaryThread()) {
+            submit(async = false) {
+                future.complete(location.world!!.getNearbyEntities(location, 100.0, 100.0, 100.0).filterIsInstance<Player>())
+            }
+        } else {
+            future.complete(location.world!!.getNearbyEntities(location, 100.0, 100.0, 100.0).filterIsInstance<Player>())
+        }
+        return future
     }
 
 

@@ -1,8 +1,10 @@
 package com.bh.planners.core.kether.selector
 
+import com.bh.planners.core.kether.catchRunning
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.pojo.data.Data
+import java.util.concurrent.CompletableFuture
 
 /**
  * 合并目标容器
@@ -16,7 +18,10 @@ object Fetch : Selector {
         return data as Target.Container
     }
 
-    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container) {
-        container.merge(context.flags[args]?.asContainer() ?: Target.Container())
+    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
+        catchRunning {
+            container.merge(context.flags[args]?.asContainer() ?: Target.Container())
+        }
+        return CompletableFuture.completedFuture(null)
     }
 }

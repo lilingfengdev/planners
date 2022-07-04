@@ -1,7 +1,9 @@
 package com.bh.planners.core.kether.selector
 
+import com.bh.planners.api.common.CompletableQueueFuture
 import com.bh.planners.api.common.Demand
 import com.bh.planners.api.common.Plugin
+import com.bh.planners.core.kether.catchRunning
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.EffectOption
 import com.bh.planners.core.skill.effect.Target
@@ -10,6 +12,8 @@ import taboolib.common.LifeCycle
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.Awake
+import taboolib.common.platform.function.info
+import java.util.concurrent.CompletableFuture
 
 interface Selector {
 
@@ -21,17 +25,36 @@ interface Selector {
             return selectors.firstOrNull { string in it.names } ?: error("Selector '${string}' not found")
         }
 
-        fun check(target: Target?, context: Context, option: EffectOption, container: Target.Container) {
-            check(target, context, option.demand, container)
+        fun check(
+            target: Target?, context: Context, option: EffectOption, container: Target.Container
+        ): CompletableFuture<Void> {
+            return check(target, context, option.demand, container)
         }
 
-        fun check(target: Target?, context: Context, demand: Demand, container: Target.Container) {
-            demand.dataMap.keys.filter { it.startsWith('@') }.forEach {
-                val selector = getSelector(it.substring(1))
-                demand.dataMap[it]!!.forEach { s ->
-                    selector.check(it.substring(1), target, s, context, container)
+        fun check(
+            target: Target?, context: Context, demand: Demand, container: Target.Container
+        ): CompletableFuture<Void> {
+            val future = CompletableQueueFuture()
+            val keys = demand.dataMap.filter { it.key[0] == '@' }.keys.toMutableList()
+
+            fun process(cur: Int) {
+                val key = keys[cur]
+                catchRunning {
+                    val namespace = key.substring(1)
+                    val futures = demand.dataMap[key]?.map {
+                        getSelector(namespace).check(namespace, target, it, context, container)
+                    } ?: emptyList()
+                    CompletableFuture.allOf(*futures.toTypedArray()).thenAccept {
+                        if (cur < keys.size - 1) {
+                            process(cur + 1)
+                        } else {
+                            future.complete(null)
+                        }
+                    }
                 }
             }
+            process(0)
+            return future
         }
 
         @Awake(LifeCycle.LOAD)
@@ -56,7 +79,9 @@ interface Selector {
 
     val names: Array<String>
 
-    fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container)
+    fun check(
+        name: String, target: Target?, args: String, context: Context, container: Target.Container
+    ): CompletableFuture<Void>
 
     fun String.isNon(): Boolean {
         return get(0) == '!'

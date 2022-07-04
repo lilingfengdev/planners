@@ -19,16 +19,19 @@ object EffectTieLine : Effect() {
         get() = Coerce.toLong(this.demand.get("period", "0"))
 
     override fun sendTo(target: Target?, option: EffectOption, context: Context) {
-        val pos1 = option.createContainer(target, context).getLocationTarget(0) ?: return
-        val pos2 = option.createContainer(target, context).getLocationTarget(1) ?: return
-        val period = option.period
 
-
-        if (period <= 0) {
-            Line.buildLine(pos1, pos2, option.step, EffectSpawner(option))
-        } else {
-            Line(pos1, pos2, option.step, period, EffectSpawner(option)).play()
+        option.createContainer(target, context).thenAccept {
+            val pos1 = it.getLocationTarget(0) ?: return@thenAccept
+            val pos2 = it.getLocationTarget(1) ?: return@thenAccept
+            val period = option.period
+            if (period <= 0) {
+                Line.buildLine(pos1, pos2, option.step, EffectSpawner(option))
+            } else {
+                Line(pos1, pos2, option.step, period, EffectSpawner(option)).play()
+            }
         }
+
+
 
     }
 

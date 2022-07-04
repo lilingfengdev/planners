@@ -10,6 +10,7 @@ import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
+import java.util.concurrent.CompletableFuture
 import kotlin.math.floor
 
 /**
@@ -22,7 +23,7 @@ object Visual : Selector {
     override val names: Array<String>
         get() = arrayOf("visual", "vi")
 
-    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container) {
+    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
         val range = Coerce.toDouble(args)
         target?.ifLocation {
             container.addAll(getTargetLocation(this.value, this.value.direction, range).map { it.toTarget() })
@@ -30,6 +31,7 @@ object Visual : Selector {
         target?.ifEntity {
             container.addAll(getTargetLocation(livingEntity.eyeLocation, value.direction, range).map { it.toTarget() })
         }
+        return CompletableFuture.completedFuture(null)
     }
 
 

@@ -2,6 +2,7 @@ package com.bh.planners.core.kether
 
 import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.bh.planners.core.kether.event.ActionEventParser
+import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.createContainer
@@ -15,6 +16,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -133,8 +135,10 @@ fun ScriptFrame.exec(selector: ParsedAction<*>, call: Target.() -> Unit) {
             it.targets.forEach(call)
         } else {
             val demand = it.toString().toDemand()
-            val container = demand.createContainer(toOriginLocation(), getSession())
-            container.targets.forEach(call)
+            demand.createContainer(toOriginLocation(), getSession()).thenAccept {
+                it.targets.forEach(call)
+            }
+
         }
     }
 }
@@ -167,8 +171,10 @@ fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Targ
     val future = CompletableFuture<Target.Container>()
     this.newFrame(selector).run<Any>().thenAccept {
         val demand = it.toString().toDemand()
-        val container = demand.createContainer(toOriginLocation(), getSession())
-        future.complete(container)
+        val container = Target.Container()
+        Selector.check(toOriginLocation(), getContext().apply {  }, demand, container).thenAccept {
+            future.complete(container)
+        }
     }
     return future
 }

@@ -7,9 +7,10 @@ import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
 import taboolib.common.util.random
 import taboolib.common5.Coerce
+import java.util.concurrent.CompletableFuture
 
-open class CircleRenderer(target: Target, container: Target.Container, option: EffectOption) : AbstractEffectRenderer(
-    target, container, option
+open class CircleRenderer(target: Target, future: CompletableFuture<Target.Container>, option: EffectOption) : AbstractEffectRenderer(
+    target, future, option
 ) {
 
     open val EffectOption.radius: Double
@@ -33,37 +34,42 @@ open class CircleRenderer(target: Target, container: Target.Container, option: E
 
 
     override fun sendTo() {
-        container.forEachLocation {
-            var i = 0.0
 
-            if (option.period == 0L) {
-                while (i < 360.0) {
-                    val radians = Math.toRadians(i)
-                    val vector = Vector()
-                    vector.x = option.radius * Math.cos(radians)
-                    vector.z = option.radius * Math.sin(radians)
-                    rotateVector(vector)
-                    spawnParticle(location = this.clone().add(vector))
-                    i += option.step
-                }
-            } else {
-                submit(async = true, period = option.period) {
+        getContainer {
+            forEachLocation {
+                var i = 0.0
 
-                    if (i >= 360) {
-                        cancel()
-                        return@submit
+                if (option.period == 0L) {
+                    while (i < 360.0) {
+                        val radians = Math.toRadians(i)
+                        val vector = Vector()
+                        vector.x = option.radius * Math.cos(radians)
+                        vector.z = option.radius * Math.sin(radians)
+                        rotateVector(vector)
+                        spawnParticle(location = this.clone().add(vector))
+                        i += option.step
                     }
+                } else {
+                    submit(async = true, period = option.period) {
 
-                    val radians = Math.toRadians(i)
-                    val vector = Vector()
-                    vector.x = option.radius * Math.cos(radians)
-                    vector.z = option.radius * Math.sin(radians)
-                    rotateVector(vector)
-                    spawnParticle(location = this@forEachLocation.add(vector))
-                    i += option.step
+                        if (i >= 360) {
+                            cancel()
+                            return@submit
+                        }
+
+                        val radians = Math.toRadians(i)
+                        val vector = Vector()
+                        vector.x = option.radius * Math.cos(radians)
+                        vector.z = option.radius * Math.sin(radians)
+                        rotateVector(vector)
+                        spawnParticle(location = this@forEachLocation.add(vector))
+                        i += option.step
+                    }
                 }
             }
         }
+
+
 
     }
 

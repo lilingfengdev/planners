@@ -15,7 +15,7 @@ class ActionSelector {
     class ActionTargetContainerGetSize(val action: ParsedAction<*>) : ScriptAction<Int>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Int> {
             return frame.newFrame(action).run<Any>().thenApply {
-                frame.rootVariables().get<Target.Container>(it.toString()).orElse(Target.Container()).size
+                frame.getContext().flags.get(it.toString())?.asContainer()?.size ?: 0
             }
         }
 
@@ -24,7 +24,7 @@ class ActionSelector {
     class ActionTargetContainerGet(val action: ParsedAction<*>) : ScriptAction<Target.Container?>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container?> {
             return frame.newFrame(action).run<Any>().thenApply {
-                frame.rootVariables().get<Target.Container>(it.toString()).get()
+                frame.getContext().flags.get(it.toString())?.asContainer()
             }
         }
 
@@ -33,19 +33,21 @@ class ActionSelector {
     class ActionTargetContainerSet(val keyAction: ParsedAction<*>, val valueAction: ParsedAction<*>) :
         ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            val future = CompletableFuture<Void>()
             frame.newFrame(keyAction).run<String>().thenAccept { key ->
                 frame.createTargets(valueAction).thenAccept { container ->
-                    frame.rootVariables()[key] = container
+                    frame.getContext().flags[key] = container.unsafeData()
+                    future.complete(null)
                 }
             }
-            return CompletableFuture.completedFuture(null)
+            return future
         }
     }
 
     class ActionTargetContainerRemove(val keyAction: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.newFrame(keyAction).run<String>().thenAccept { key ->
-                frame.rootVariables().remove(key)
+                frame.getContext().flags.remove(key)
             }
             return CompletableFuture.completedFuture(null)
         }
@@ -55,7 +57,7 @@ class ActionSelector {
         override fun run(frame: ScriptFrame): CompletableFuture<Set<Target>> {
 
             return frame.newFrame(key).run<String>().thenApply {
-                frame.rootVariables().get<Target.Container>(it.toString()).orElse(Target.Container()).targets
+                frame.getContext().flags.get(it.toString())?.asContainer()?.targets ?: emptySet()
             }
 
         }

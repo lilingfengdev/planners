@@ -24,7 +24,7 @@ taboolib {
     install("expansion-command-helper")
     install("platform-bukkit")
     classifier = null
-    version = "6.0.8-3"
+    version = "6.0.9-14"
     description {
         dependencies {
             name("PlaceholderAPI").optional(true)
@@ -51,11 +51,18 @@ dependencies {
     compileOnly(fileTree("libs"))
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = listOf("-Xjvm-default=all")
+    }
+}
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 tasks.withType<Jar> {
     destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
+//    destinationDir = file("F:/Server/spigot 1.18.2/plugins")
 }
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8

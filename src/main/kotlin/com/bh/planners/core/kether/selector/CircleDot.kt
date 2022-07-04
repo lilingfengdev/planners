@@ -5,6 +5,7 @@ import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
 import com.bh.planners.core.skill.effect.common.PlayerFrontCoordinate
 import taboolib.common5.Coerce
+import java.util.concurrent.CompletableFuture
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -17,8 +18,10 @@ object CircleDot : Selector {
     override val names: Array<String>
         get() = arrayOf("c-dot", "cdot", "cd")
 
-    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container) {
-        val location = target as? Target.Location ?: return
+    override fun check(
+        name: String, target: Target?, args: String, context: Context, container: Target.Container
+    ): CompletableFuture<Void> {
+        val location = target as? Target.Location ?: return CompletableFuture.completedFuture(null)
         val coordinate = PlayerFrontCoordinate(location.value)
         val split = args.split(",")
         val radius = Coerce.toDouble(split[0])
@@ -28,5 +31,6 @@ object CircleDot : Selector {
         val x: Double = radius * cos(radians)
         val z: Double = radius * sin(radians)
         container.add(coordinate.newLocation(x, y, z).toTarget())
+        return CompletableFuture.completedFuture(null)
     }
 }

@@ -14,10 +14,16 @@ import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common5.Coerce
+import java.util.concurrent.CompletableFuture
 
-class LineRenderer(target: Target, container: Target.Container, option: EffectOption, val context: Context) :
+class LineRenderer(
+    target: Target,
+    future: CompletableFuture<Target.Container>,
+    option: EffectOption,
+    val context: Context
+) :
     AbstractEffectRenderer(
-        target, container, option
+        target, future, option
     ) {
 
     val EffectOption.step: Double
@@ -42,50 +48,61 @@ class LineRenderer(target: Target, container: Target.Container, option: EffectOp
         // 追踪目标
         // 两个参数 period 和
         if (option.lock) {
-            container.forEachEntity {
-                var currentTime = 0L
-                val line = Line(target.value, this.eyeLocation, option.step, period = option.period, spawner)
-                line.callPlay { task ->
-                    if (currentTime > option.time) {
-                        task.cancel()
-                        return@callPlay
-                    }
-                    line.setStart(location)
-                    line.setEnd(this@forEachEntity.eyeLocation)
-                    currentTime += option.period
-                    if (this.distance(this@forEachEntity.eyeLocation) < 1.0 && context is Session) {
-                        task.cancel()
-                        context.callEvent(option.onCapture ?: return@callPlay, CaptureEntity(this@forEachEntity))
+            getContainer {
+                forEachEntity {
+                    var currentTime = 0L
+                    val line = Line(target.value, this.eyeLocation, option.step, period = option.period, spawner)
+                    line.callPlay { task ->
+                        if (currentTime > option.time) {
+                            task.cancel()
+                            return@callPlay
+                        }
+                        line.setStart(location)
+                        line.setEnd(this@forEachEntity.eyeLocation)
+                        currentTime += option.period
+                        if (this.distance(this@forEachEntity.eyeLocation) < 1.0 && context is Session) {
+                            task.cancel()
+                            context.callEvent(option.onCapture ?: return@callPlay, CaptureEntity(this@forEachEntity))
+                        }
                     }
                 }
             }
         } else {
-            val property = target.getProperty<LivingEntity>("livingEntity")
-            container.forEachLocation {
+            getContainer {
+                val property = target.getProperty<LivingEntity>("livingEntity")
+                forEachLocation {
 
-                if (option.period <= 0) {
-                    Line.buildLine(target.value, this, option.step, EffectSpawner(option))
-                    if (context is Session) {
-                        val entityAt = this.entityAt().apply { remove(property) }
-                        context.callEvent(option.onCapture ?: return@forEachLocation, CaptureEntity(entityAt.first()))
-                    }
-                } else {
-                    val line = Line(target.value, this, option.step, period = option.period, spawner)
-                    if (context is Session) {
-                        line.play()
-                    } else {
-                        line.callPlay { task ->
+                    if (option.period <= 0) {
+                        Line.buildLine(target.value, this, option.step, EffectSpawner(option))
+                        if (context is Session) {
                             val entityAt = this.entityAt().apply { remove(property) }
-                            if (entityAt.isNotEmpty()) {
-                                task.cancel()
-                                (context as Session).callEvent(option.onCapture ?: return@callPlay, CaptureEntity(entityAt.first()))
+                            context.callEvent(
+                                option.onCapture ?: return@forEachLocation,
+                                CaptureEntity(entityAt.first())
+                            )
+                        }
+                    } else {
+                        val line = Line(target.value, this, option.step, period = option.period, spawner)
+                        if (context is Session) {
+                            line.play()
+                        } else {
+                            line.callPlay { task ->
+                                val entityAt = this.entityAt().apply { remove(property) }
+                                if (entityAt.isNotEmpty()) {
+                                    task.cancel()
+                                    (context as Session).callEvent(
+                                        option.onCapture ?: return@callPlay,
+                                        CaptureEntity(entityAt.first())
+                                    )
+                                }
                             }
                         }
+
                     }
 
                 }
-
             }
+
         }
     }
 

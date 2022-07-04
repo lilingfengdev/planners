@@ -20,6 +20,9 @@ object TimerPlayerSpring : Timer<PlayerToggleSprintEvent> {
         return adaptPlayer(e.player)
     }
 
+    /**
+     * isSprinting 是否在疾跑
+     */
     override fun onStart(context: ScriptContext, template: Template, e: PlayerToggleSprintEvent) {
         context.rootFrame().variables()["isSprinting"] = e.isSprinting
     }

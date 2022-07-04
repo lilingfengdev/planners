@@ -5,8 +5,13 @@ import com.bh.planners.core.skill.effect.Target
 import com.bh.planners.core.skill.effect.common.Matrix
 import org.bukkit.Location
 import taboolib.common5.Coerce
+import java.util.concurrent.CompletableFuture
 
-abstract class AbstractEffectRenderer(val target: Target, val container: Target.Container, val option: EffectOption) :
+abstract class AbstractEffectRenderer(
+    val target: Target,
+    val future: CompletableFuture<Target.Container>,
+    val option: EffectOption
+) :
     EffectRenderer {
 
 
@@ -20,6 +25,10 @@ abstract class AbstractEffectRenderer(val target: Target, val container: Target.
 
     val EffectOption.size: Int
         get() = Coerce.toInteger(option.demand.get(listOf("size", "s"), "1"))
+
+    fun getContainer(call: Target.Container.() -> Unit) {
+        future.thenAccept(call)
+    }
 
     /**
      * 通过给定一个坐标就可以使用已经指定的参数来播放粒子

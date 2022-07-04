@@ -7,10 +7,10 @@ import com.bh.planners.core.skill.effect.rotateAroundAxisY
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
+import java.util.concurrent.CompletableFuture
 
-open class CubeRenderer(target: Target, container: Target.Container, option: EffectOption) : AbstractEffectRenderer(target, container,
-    option
-) {
+open class CubeRenderer(target: Target, future: CompletableFuture<Target.Container>, option: EffectOption) :
+    AbstractEffectRenderer(target, future, option) {
 
     companion object {
         private val RIGHT = Vector(1, 0, 0).normalize()
@@ -25,9 +25,11 @@ open class CubeRenderer(target: Target, container: Target.Container, option: Eff
     override fun sendTo() {
         if (target is Target.Location) {
             val pos1 = target.value
-            container.forEachLocation {
-                show(pos1, this, option.step) {
-                    spawnParticle(pos1,it)
+            getContainer {
+                forEachLocation {
+                    show(pos1, this, option.step) {
+                        spawnParticle(pos1,it)
+                    }
                 }
             }
         }

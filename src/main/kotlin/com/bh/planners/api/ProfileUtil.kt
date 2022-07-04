@@ -164,7 +164,7 @@ fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {
 
 fun Condition.consumeTo(player: Player, context: (ScriptContext.() -> Unit)? = null) {
     runKether {
-        KetherShell.eval(consume ?: return, sender = adaptPlayer(player), namespace = namespaces) {
+        KetherShell.eval(consume ?: return@runKether, sender = adaptPlayer(player), namespace = namespaces) {
             if (context != null) {
                 context(this)
             }

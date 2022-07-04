@@ -6,11 +6,12 @@ import com.bh.planners.core.skill.effect.common.PlayerFrontCoordinate
 import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
+import java.util.concurrent.CompletableFuture
 import kotlin.math.cos
 import kotlin.math.sin
 
-open class ArcRenderer(target: Target, container: Target.Container, option: EffectOption) : AbstractEffectRenderer(
-    target, container, option
+open class ArcRenderer(target: Target, future: CompletableFuture<Target.Container>, option: EffectOption) : AbstractEffectRenderer(
+    target,future, option
 ) {
 
     open val EffectOption.startAngle: Double
@@ -36,43 +37,41 @@ open class ArcRenderer(target: Target, container: Target.Container, option: Effe
 
 
     override fun sendTo() {
+        getContainer {
+            forEachLocation {
+                var i = 0.0
+                val coordinate = PlayerFrontCoordinate(this)
 
-        container.forEachLocation {
-
-            var i = 0.0
-            val coordinate = PlayerFrontCoordinate(this)
-
-            if (option.period == 0L) {
-                while (i < option.angle) {
-                    val radians = Math.toRadians(i + option.startAngle)
-                    val x: Double = option.radius * cos(radians)
-                    val z: Double = option.radius * sin(radians)
-                    val loc = coordinate.newLocation(x, i * option.slope, z)
-                    spawnParticle(location = loc)
-                    i += option.step
-                }
-            } else {
-                var size = option.size
-                submit(async = true, period = option.period) {
-                    if (i > option.angle) {
-                        if (size == 0) {
-                            cancel()
-                            return@submit
-                        } else {
-                            size--
-                            i = 0.0
-                        }
+                if (option.period == 0L) {
+                    while (i < option.angle) {
+                        val radians = Math.toRadians(i + option.startAngle)
+                        val x: Double = option.radius * cos(radians)
+                        val z: Double = option.radius * sin(radians)
+                        val loc = coordinate.newLocation(x, i * option.slope, z)
+                        spawnParticle(location = loc)
+                        i += option.step
                     }
-                    val radians = Math.toRadians(i + option.startAngle)
-                    val x: Double = option.radius * cos(radians)
-                    val z: Double = option.radius * sin(radians)
-                    val loc = coordinate.newLocation(x, i * option.slope, z)
-                    spawnParticle(loc, loc)
-                    i += option.step
+                } else {
+                    var size = option.size
+                    submit(async = true, period = option.period) {
+                        if (i > option.angle) {
+                            if (size == 0) {
+                                cancel()
+                                return@submit
+                            } else {
+                                size--
+                                i = 0.0
+                            }
+                        }
+                        val radians = Math.toRadians(i + option.startAngle)
+                        val x: Double = option.radius * cos(radians)
+                        val z: Double = option.radius * sin(radians)
+                        val loc = coordinate.newLocation(x, i * option.slope, z)
+                        spawnParticle(loc, loc)
+                        i += option.step
+                    }
                 }
             }
-
-
         }
     }
 

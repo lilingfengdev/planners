@@ -10,6 +10,7 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.submit
 import taboolib.module.kether.KetherShell
+import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.printKetherErrorMessage
 
 abstract class Context(val executor: ProxyCommandSender) {

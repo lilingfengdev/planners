@@ -17,6 +17,12 @@ object TimerPlayerDropItem : AbstractTimer<PlayerDropItemEvent>() {
         return adaptPlayer(e.player)
     }
 
+    /**
+     * displayName 掉落物品名称
+     * lore 掉落物品lore
+     * material 掉落物品的材质
+     * item 掉落物品实例
+     */
     override fun onStart(context: ScriptContext, template: Template, e: PlayerDropItemEvent) {
         super.onStart(context, template, e)
         val itemStack = e.itemDrop.itemStack

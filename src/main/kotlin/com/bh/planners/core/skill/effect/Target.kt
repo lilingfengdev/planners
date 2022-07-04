@@ -5,8 +5,10 @@ import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.kether.toLocal
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
+import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import java.util.concurrent.CompletableFuture
 
 
 interface Target {
@@ -15,13 +17,17 @@ interface Target {
 
     companion object {
 
-        fun Demand.createContainer(target: Target?, session: Session): Container {
-            return Container().also { Selector.check(target, session, this, it) }
+        fun Demand.createContainer(target: Target?, context: Context): CompletableFuture<Container> {
+            val future = CompletableFuture<Container>()
+            val container = Container()
+            Selector.check(target, context, this, container).thenAccept {
+                future.complete(container)
+            }
+            return future
         }
 
-        fun EffectOption.createContainer(target: Target?, context: Context): Container {
-
-            return Container().also { Selector.check(target, context, this, it) }
+        fun EffectOption.createContainer(target: Target?, context: Context): CompletableFuture<Container> {
+            return demand.createContainer(target, context)
         }
 
         fun LivingEntity.toTarget(): Entity {
@@ -131,11 +137,9 @@ interface Target {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as Location
-
-            if (loc != other.value) return false
+            if (other is org.bukkit.Location) {
+                return this.loc == other
+            }
 
             return true
         }
@@ -157,11 +161,9 @@ interface Target {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as Entity
-
-            if (livingEntity != other.livingEntity) return false
+            if (other is LivingEntity) {
+                return this.livingEntity == other
+            }
 
             return true
         }
