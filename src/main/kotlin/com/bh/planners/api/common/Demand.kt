@@ -16,7 +16,7 @@ class Demand(val source: String) {
         namespace = args[0]
         val skipIndex = arrayListOf<Int>()
         args.forEachIndexed { index, s ->
-            if (index in skipIndex) return@forEachIndexed
+            if (index in skipIndex || s.isEmpty()) return@forEachIndexed
             if (s[0] == '-') {
                 when {
                     index + 1 >= args.size -> {

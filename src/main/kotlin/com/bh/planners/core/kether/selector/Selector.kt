@@ -53,7 +53,7 @@ interface Selector {
                     }
                 }
             }
-            process(0)
+            if (keys.isNotEmpty()) process(0)
             return future
         }
 
