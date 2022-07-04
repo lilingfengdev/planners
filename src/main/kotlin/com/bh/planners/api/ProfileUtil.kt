@@ -33,7 +33,7 @@ fun PlayerProfile.setPoint(point: Int) {
 }
 
 fun PlayerProfile.next(skill: PlayerJob.Skill) {
-    if (1 + skill.level < skill.instance.option.levelCap) {
+    if (1 + skill.level <= skill.instance.option.levelCap) {
         skill.level++
         PlayerSkillUpgradeEvent(player, skill).call()
         Storage.INSTANCE.updateSkill(skill)

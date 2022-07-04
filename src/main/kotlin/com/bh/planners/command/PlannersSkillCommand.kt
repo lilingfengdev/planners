@@ -1,6 +1,7 @@
 package com.bh.planners.command
 
 import com.bh.planners.api.PlannersAPI
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.hasJob
 import com.bh.planners.core.kether.game.ActionSkillCast
 import com.bh.planners.core.ui.Faceplate
@@ -21,6 +22,13 @@ object PlannersSkillCommand {
             suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
 
             dynamic("value") {
+
+                suggestion<ProxyCommandSender> { sender, context ->
+                    val player = Bukkit.getPlayerExact(context.argument(-1))!!
+                    if (player.hasJob) {
+                        player.plannersProfile.getSkills().map { it.key }
+                    } else emptyList()
+                }
                 execute<ProxyCommandSender> { sender, context, argument ->
                     val player = Bukkit.getPlayerExact(context.argument(-1))!!
                     if (player.hasJob) {
@@ -37,6 +45,12 @@ object PlannersSkillCommand {
             suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
 
             dynamic("value") {
+                suggestion<ProxyCommandSender> { sender, context ->
+                    val player = Bukkit.getPlayerExact(context.argument(-1))!!
+                    if (player.hasJob) {
+                        player.plannersProfile.getSkills().map { it.key }
+                    } else emptyList()
+                }
                 execute<ProxyCommandSender> { sender, context, argument ->
                     val player = Bukkit.getPlayerExact(context.argument(-1))!!
                     if (player.hasJob) {
@@ -52,6 +66,9 @@ object PlannersSkillCommand {
         dynamic("player") {
             suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
             dynamic("skill") {
+                suggestion<ProxyCommandSender> { sender, context ->
+                    PlannersAPI.skills.map { it.key }
+                }
                 dynamic("level") {
                     execute<ProxyCommandSender> { sender, context, argument ->
                         val player = Bukkit.getPlayerExact(context.argument(-2))!!

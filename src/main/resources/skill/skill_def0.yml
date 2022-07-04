@@ -2,6 +2,7 @@ __option__:
   name: '陷阱安置'
   async: true
   bind: true
+  level-cap: 10
   natural: true
   upgrade-condition:
     - $: 0
@@ -29,7 +30,6 @@ __option__:
     cooldown: 0
     mp: math meta skill level * 2.8
     damage: math meta skill level * 1.2 * lazy base
-    upgradePoint: math meta skill level * 2
     base: 10
 action: |-
   set loc0 to meta executor loc
