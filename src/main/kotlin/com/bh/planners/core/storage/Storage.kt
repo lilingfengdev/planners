@@ -22,8 +22,8 @@ interface Storage {
 
         val INSTANCE by lazy {
             when (type) {
-                "SQL" -> StorageSQL()
-                "SQLITE" -> StorageSqlite()
+                "SQL","MYSQL" -> StorageSQL()
+                "LOCAL","YAML" -> StorageLocal()
                 else -> error("None database source.")
             }
         }
@@ -65,9 +65,11 @@ interface Storage {
 
     fun createPlayerSkill(player: Player, job: PlayerJob, skill: Skill): CompletableFuture<PlayerJob.Skill>
 
-    fun updateSkill(skill: PlayerJob.Skill)
+    fun updateSkill(profile: PlayerProfile,skill: PlayerJob.Skill)
 
     fun update(profile: PlayerProfile)
 
     fun getDataContainer(player: Player): DataContainer
+    fun getJob(player: Player, jobId: Long): PlayerJob
+    fun getCurrentJobId(player: Player): Long?
 }

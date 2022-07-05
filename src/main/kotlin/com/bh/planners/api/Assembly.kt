@@ -32,9 +32,23 @@ object Assembly {
 
     @SubscribeEvent
     fun e(e: PlayerJoinEvent) {
-        val profile = Storage.INSTANCE.loadProfile(e.player)
-        PlannersAPI.profiles[e.player.uniqueId] = profile
-        PlayerInitializeEvent(e.player, profile).call()
+        loadProfile(e.player)
+    }
+
+    fun loadProfile(player: Player) {
+        val profile = Storage.INSTANCE.loadProfile(player)
+
+        // 初始化职业
+        Storage.INSTANCE.getCurrentJobId(player)?.let { jobId ->
+            if (jobId != 0L) {
+                profile.job = Storage.INSTANCE.getJob(player, jobId)
+            }
+        }
+        // 初始化flag容器
+        profile.flags.merge(Storage.INSTANCE.getDataContainer(player))
+
+        PlannersAPI.profiles[player.uniqueId] = profile
+        PlayerInitializeEvent(player, profile).call()
     }
 
     @Awake(LifeCycle.ENABLE)
@@ -64,7 +78,7 @@ object Assembly {
         if (e.profile.hasJob) {
             e.profile.getSkills().filter { it.level == 0 && it.instance.option.isNatural }.forEach {
                 it.level = 1
-                Storage.INSTANCE.updateSkill(it)
+                Storage.INSTANCE.updateSkill(e.profile,it)
             }
         }
     }

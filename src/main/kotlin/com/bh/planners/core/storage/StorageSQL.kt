@@ -37,11 +37,10 @@ open class StorageSQL : Storage {
         const val POINT = "point"
 
         const val SHORTCUT_KEY = "shortcut_key"
-        const val SLOT_KEY = "slot"
 
     }
 
-    open val userTable : Table<*,*> = Table("planners_user", host) {
+    val userTable: Table<*, *> = Table("planners_user", host) {
         add("id") { id() }
         add(UUID) { type(ColumnTypeSQL.VARCHAR, 36) }
         add(MANA) {
@@ -55,7 +54,7 @@ open class StorageSQL : Storage {
         }
     }
 
-    open val jobTable : Table<*,*> = Table("planners_job", host) {
+    val jobTable: Table<*, *> = Table("planners_job", host) {
         add("id") { id() }
         add(USER) { type(ColumnTypeSQL.INT, 10) }
         add(JOB) { type(ColumnTypeSQL.VARCHAR, 30) }
@@ -76,7 +75,7 @@ open class StorageSQL : Storage {
         }
     }
 
-    open val skillTable : Table<*,*> = Table("planners_skill", host) {
+    val skillTable: Table<*, *> = Table("planners_skill", host) {
         add("id") { id() }
         add(USER) { type(ColumnTypeSQL.INT, 10) }
         add(JOB) { type(ColumnTypeSQL.VARCHAR, 30) }
@@ -100,19 +99,7 @@ open class StorageSQL : Storage {
 
     override fun loadProfile(player: Player): PlayerProfile {
         val userId = player.toUserId()
-        val profile = PlayerProfile(player, userId)
-
-        // 获取职业对应技能
-        getCurrentJobId(player)?.let { jobId ->
-            if (jobId != 0L) {
-                profile.job = getJob(player, jobId)
-            }
-        }
-
-        // 初始化metadata
-        profile.flags.merge(getDataContainer(player))
-
-        return profile
+        return PlayerProfile(player, userId)
     }
 
 
@@ -125,14 +112,14 @@ open class StorageSQL : Storage {
         } ?: DataContainer()
     }
 
-    fun getCurrentJobId(player: Player): Long? {
+    override fun getCurrentJobId(player: Player): Long? {
         return userTable.select(dataSource) {
             where { ID eq player.toUserId() }
             rows(JOB)
         }.firstOrNull { getLong(JOB) }
     }
 
-    fun getJob(player: Player, jobId: Long): PlayerJob {
+    override fun getJob(player: Player, jobId: Long): PlayerJob {
         return jobTable.select(dataSource) {
             where {
                 ID eq jobId
@@ -161,7 +148,7 @@ open class StorageSQL : Storage {
         return future
     }
 
-    override fun updateSkill(skill: PlayerJob.Skill) {
+    override fun updateSkill(profile: PlayerProfile,skill: PlayerJob.Skill) {
         if (skill.id == -1L) return
         skillTable.update(dataSource) {
             where {
@@ -216,9 +203,7 @@ open class StorageSQL : Storage {
             where { ID eq profile.id }
             set(DATA, profile.flags.toJson())
         }
-        if (profile.hasJob) {
-            updateJob(profile.player, profile.job!!)
-        }
+        updateJob(profile.player, profile.job ?: return)
     }
 
     override fun createPlayerJob(player: Player, job: Job): CompletableFuture<PlayerJob> {
@@ -241,8 +226,8 @@ open class StorageSQL : Storage {
         jobTable.update(dataSource) {
             where { ID eq job.id }
             set(JOB, job.jobKey)
-            set(LEVEL, job.counter.level)
-            set(EXPERIENCE, job.counter.experience)
+            set(LEVEL, job.level)
+            set(EXPERIENCE, job.experience)
             set(POINT, job.point)
         }
     }

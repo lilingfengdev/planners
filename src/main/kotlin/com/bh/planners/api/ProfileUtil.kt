@@ -36,7 +36,7 @@ fun PlayerProfile.next(skill: PlayerJob.Skill) {
     if (1 + skill.level <= skill.instance.option.levelCap) {
         skill.level++
         PlayerSkillUpgradeEvent(player, skill).call()
-        Storage.INSTANCE.updateSkill(skill)
+        Storage.INSTANCE.updateSkill(this,skill)
     }
 }
 
@@ -146,7 +146,7 @@ fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {
         val oldKeySlot = skill.keySlot
         skill.shortcutKey = null
         PlayerSkillBindEvent(player, skill, oldKeySlot).call()
-        Storage.INSTANCE.updateSkill(skill)
+        Storage.INSTANCE.updateSkill(this,skill)
     } else {
         // 解绑同快捷键技能
         val orNull = this.getSkills().filter { it.key != skill.key && it.keySlot == iKeySlot }.firstOrNull()
@@ -156,7 +156,7 @@ fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {
         val oldKeySlot = skill.keySlot
         skill.shortcutKey = iKeySlot.key
         PlayerSkillBindEvent(player, skill, oldKeySlot).call()
-        Storage.INSTANCE.updateSkill(skill)
+        Storage.INSTANCE.updateSkill(this,skill)
     }
 
 

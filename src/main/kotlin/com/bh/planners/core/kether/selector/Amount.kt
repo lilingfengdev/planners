@@ -16,7 +16,7 @@ object Amount : Selector {
 
     override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
         val value = Coerce.toInteger(args)
-        if (value > container.size) {
+        if (container.size > value) {
             container.remove(container.size - value)
         }
         return CompletableFuture.completedFuture(null)
