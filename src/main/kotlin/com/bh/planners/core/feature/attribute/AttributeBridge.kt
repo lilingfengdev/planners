@@ -14,8 +14,8 @@ interface AttributeBridge {
         val inspects = mutableListOf(
             Inspect(arrayOf("SX-Attribute"), SXAttributeBridge::class.java) { isEnable },
             Inspect(arrayOf("AttributePlus@3"), AttributePlus3Bridge::class.java) {
-                isEnable && Bukkit.getPluginManager()
-                    .getPlugin("AttributePlus")!!.description.version.split(".")[0] == "3"
+                (Bukkit.getPluginManager().getPlugin("AttributePlus")?.description?.version?.split(".")?.get(0)
+                    ?: "-1") == "3"
             },
             Inspect(arrayOf("OriginAttribute"), OriginAttributeBridge::class.java) { isEnable },
             Inspect(arrayOf("AttributeSystem"), AttributeSystemBridge::class.java) { isEnable },
@@ -25,6 +25,7 @@ interface AttributeBridge {
 
         @Awake(LifeCycle.ENABLE)
         fun createBridge() {
+            info("create bridge")
             val inspect = inspects.firstOrNull { it.check(it) } ?: return
             info("|- Attribute drive lock to [${inspect.names.joinToString(",")}]")
             INSTANCE = inspect.clazz.newInstance()
@@ -42,9 +43,9 @@ interface AttributeBridge {
     }
 
 
-    fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>): String
+    fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>)
 
-    fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>): String
+    fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>)
 
     fun removeAttributes(uuid: UUID, source: String)
 

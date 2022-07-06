@@ -4,11 +4,11 @@ import org.bukkit.entity.LivingEntity
 import java.util.*
 
 class SXAttributeBridge : AttributeBridge {
-    override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>): String {
+    override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>) {
         TODO("Not yet implemented")
     }
 
-    override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>): String {
+    override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>) {
         TODO("Not yet implemented")
     }
 

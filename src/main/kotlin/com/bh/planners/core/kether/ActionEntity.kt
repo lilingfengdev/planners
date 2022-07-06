@@ -31,6 +31,10 @@ class ActionEntity {
 
     companion object {
 
+        /**
+         * entity of [uuid: action]
+         * entity loc [entity : action]
+         */
         @KetherParser(["entity"])
         fun parser() = scriptParser {
             it.switch {

@@ -4,14 +4,19 @@ import com.bh.planners.Planners
 import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.core.kether.namespaces
+import com.bh.planners.core.skill.effect.EffectSpawner.Companion.sendParticle
 import org.bukkit.Bukkit
+import org.bukkit.Color
+import org.bukkit.Particle
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.util.Vector
 import taboolib.expansion.createHelper
 import taboolib.module.chat.colored
 import taboolib.module.kether.KetherFunction
@@ -76,6 +81,15 @@ object PlannersCommand {
     @CommandBody
     val test = subCommand {
         execute<Player> { sender, context, argument ->
+//            sender.world.spawnParticle(
+//                Particle.REDSTONE,
+//                sender.location, 10,
+//                1.0, 1.0, 1.0, 0.0, Particle.DustOptions(Color.GREEN, 1f)
+//            )
+            sender.sendParticle(
+                ProxyParticle.REDSTONE, sender.location, Vector(1.0, 1.0, 1.0), 10, 0.0,
+                ProxyParticle.DustData(java.awt.Color(255, 255, 255), 1f)
+            )
         }
     }
 

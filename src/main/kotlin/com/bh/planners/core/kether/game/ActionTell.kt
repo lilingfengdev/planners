@@ -9,11 +9,12 @@ import java.util.concurrent.CompletableFuture
 class ActionTell(val message: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        return frame.newFrame(message).run<Any?>().thenAccept { message ->
+        return frame.newFrame(message).run<Any?>().thenAccept {
+            val message = it?.toString() ?: "null"
             if (selector != null) {
-                frame.execPlayer(selector) { sendMessage(message.toString().trimIndent()) }
+                frame.execPlayer(selector) { sendMessage(message.trimIndent()) }
             } else {
-                frame.asPlayer()?.sendMessage(message.toString().trimIndent())
+                frame.asPlayer()?.sendMessage(message.trimIndent())
             }
 
         }

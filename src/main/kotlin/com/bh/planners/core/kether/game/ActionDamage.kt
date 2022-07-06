@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.*
+import org.bukkit.entity.LivingEntity
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -24,10 +25,13 @@ class ActionDamage {
             return frame.newFrame(value).run<Any>().thenAccept { damage ->
                 val asPlayer = frame.asPlayer() ?: return@thenAccept
                 frame.execEntity(selector) {
-                    this.damage(Coerce.toDouble(damage),asPlayer)
+                    this.damage(Coerce.toDouble(damage), asPlayer)
                 }
             }
         }
+    }
+
+    fun obtain(livingEntity: LivingEntity, experience: String) {
 
     }
 

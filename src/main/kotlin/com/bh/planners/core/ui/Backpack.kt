@@ -66,12 +66,12 @@ class Backpack(viewer: Player) : IUI(viewer) {
                 if (event.clickEvent().isRightClick) {
 
                     if (element.level == 0) {
-                        viewer.sendMessage("skill-zero", element.name)
+                        viewer.sendLang("skill-zero", element.name)
                         return@onClick
                     }
 
                     if (!element.instance.option.isBind) {
-                        viewer.sendMessage("skill-not-bind", element.name)
+                        viewer.sendLang("skill-not-bind", element.name)
                         return@onClick
                     }
 

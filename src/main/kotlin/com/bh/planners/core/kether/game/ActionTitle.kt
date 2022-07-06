@@ -29,7 +29,7 @@ class ActionTitle(
     override fun run(frame: QuestContext.Frame): CompletableFuture<Void> {
         return frame.newFrame(title).run<Any>().thenAccept {
             val title = it.toString()
-            frame.newFrame(subTitle).run<Any>().thenAccept { s ->
+            frame.newFrame(subTitle).run<Any>().thenAccept {
                 val subTitle = it.toString()
                 frame.newFrame(fadeIn).run<Any>().thenAccept {
                     val fadeIn = Coerce.toInteger(it)

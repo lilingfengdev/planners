@@ -49,9 +49,9 @@ class ActionBalance {
 
 
         /**
-         * balance has 100
-         * balance take/withdraw 100
-         * balance add/deposit 100
+         * balance has [value: action]
+         * balance take/withdraw [value: action]
+         * balance add/deposit [value: action]
          * balance get/look
          * balance
          */

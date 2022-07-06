@@ -10,15 +10,14 @@ import kotlin.math.max
 class OriginAttributeBridge : AttributeBridge {
 
 
-    override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>): String {
-        return addAttributes(UUID.randomUUID().toString(), uuid, timeout, reads)
+    override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>) {
+        addAttributes(UUID.randomUUID().toString(), uuid, timeout, reads)
     }
 
-    override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>): String {
+    override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>) {
         val data = Data(timeout)
         data.merge(OriginAttributeAPI.loadList(reads))
         OriginAttributeAPI.setExtra(uuid, source, data)
-        return source
     }
 
     override fun update(entity: LivingEntity) {

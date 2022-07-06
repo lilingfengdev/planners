@@ -33,16 +33,15 @@ class AttributePlus3Bridge : AttributeBridge {
         return cache.computeIfAbsent(livingEntity) { mutableListOf() }
     }
 
-    override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>): String {
-        return addAttributes(UUID.randomUUID().toString(), uuid, timeout, reads)
+    override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>) {
+        addAttributes(UUID.randomUUID().toString(), uuid, timeout, reads)
     }
 
-    override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>): String {
+    override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>) {
         val entity = Bukkit.getEntity(uuid) as? LivingEntity ?: error("null")
         val attributeSource = AttributeAPI.getAttributeSource(reads)
         getCache(entity) += Data(source, timeout)
         AttributeAPI.addSourceAttribute(entity.getAttributeData, source, attributeSource)
-        return source
     }
 
     override fun removeAttributes(uuid: UUID, source: String) {

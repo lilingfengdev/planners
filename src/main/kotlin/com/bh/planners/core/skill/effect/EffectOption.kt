@@ -43,7 +43,7 @@ open class EffectOption(text: String) {
                     Coerce.toInteger(color.getOrElse(1) { "1" }),
                     Coerce.toInteger(color.getOrElse(2) { "2" })
                 ),
-                Coerce.toFloat(it.split("~").getOrElse(1) { "0" })
+                Coerce.toFloat(it.split("~").getOrElse(1) { "1" })
             )
         }
     }

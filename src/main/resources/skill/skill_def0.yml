@@ -16,14 +16,14 @@ __option__:
     material: WOODEN_SWORD
     name: "&e{{ meta skill name }}"
     lore:
-      - '&f技能等级 &a{{ meta skill level }}'
+      - '§f技能等级 §a{{ meta skill level }}'
       - ''
-      - '&f冷却时间 &a{{ scaled lazy cooldown }}'
-      - '&f蓝量消耗 &a{{ scaled lazy mp }}'
+      - '§f冷却时间 §a{{ scaled lazy cooldown }}'
+      - '§f蓝量消耗 §a{{ scaled lazy mp }}'
       - ''
-      - '&f安放一个存在&68s&f范围为&64格&f的&e陷阱&f, 该&e陷阱&f会'
-      - '&f显形&63s&f, 然后隐藏, 生物踩上后将会引发&c爆'
-      - '&c炸&f且造成&6{{ lazy *damage }}&f点伤害.'
+      - '§f安放一个存在§68s§f范围为§64格§f的§e陷阱§f, 该§e陷阱§f会'
+      - '§f显形§63s§f, 然后隐藏, 生物踩上后将会引发§c爆'
+      - '§c炸&f且造成§6{{ lazy *damage }}§f点伤害.'
       - ''
 
   variables:
@@ -40,7 +40,7 @@ action: |-
         effect circle inline "CLOUD 1 0 1 -step 30 -radius 3 -speed 0.0 -count 10 -@loc {{ &loc0 }}"
         effect circle inline "CLOUD 1 0 1 -step 30 -radius 2 -speed 0.0 -count 10 -@loc {{ &loc0 }}"
         effect circle inline "CLOUD 1 0 1 -step 30 -radius 1 -speed 0.0 -count 10 -@loc {{ &loc0 }}"
-        sleep 1s
+        sleep 20
     }
   }
   async {
@@ -51,7 +51,7 @@ action: |-
         attack &damageEval "-@fetch t0"
         exit success
       }
-      sleep 1s
+      sleep 20
     }
   }
-  sleep 8s
+  sleep math 8 * 20

@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemFlag
 import taboolib.common.platform.function.submit
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.xseries.getItemStack
+import taboolib.module.chat.colored
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Linked
 import taboolib.platform.util.buildItem
@@ -43,7 +44,7 @@ class JobUI(viewer: Player) : IUI(viewer) {
             slots(slots)
             onGenerate { _, element, _, _ ->
                 buildItem(element.icon) {
-                    name = toLabel(name!!, element)
+                    name = toLabel(name!!, element).colored()
                     flags += ItemFlag.values()
                 }
             }

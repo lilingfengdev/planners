@@ -56,7 +56,7 @@ class StorageLocal : Storage {
                 Coerce.toLong(it),
                 node.getString("key")!!,
                 node.getInt("level"),
-                node.getString("shortcut")!!
+                node.getString("shortcut")
             )
         } ?: emptyList()
     }
@@ -102,8 +102,8 @@ class StorageLocal : Storage {
 
     override fun updateSkill(profile: PlayerProfile, skill: PlayerJob.Skill) {
         at(profile.player) {
-            this["skill.${skill.id}.level"] = skill.level
-            this["skill.${skill.id}.shortcut"] = skill.shortcutKey
+            this["job.${profile.job?.id}.skill.${skill.id}.level"] = skill.level
+            this["job.${profile.job?.id}.skill.${skill.id}.shortcut"] = skill.shortcutKey
         }
     }
 

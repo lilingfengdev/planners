@@ -1,13 +1,14 @@
 package com.bh.planners.core.kether.compat
 
 import com.bh.planners.core.feature.attribute.AttributeBridge
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.createTargets
+import com.bh.planners.core.kether.*
+import org.bukkit.entity.LivingEntity
 import taboolib.common.util.asList
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
 class ActionAttribute {
@@ -16,55 +17,63 @@ class ActionAttribute {
         val source: ParsedAction<*>,
         val timeout: ParsedAction<*>,
         val list: ParsedAction<*>,
-        val selector: ParsedAction<*>
+        val selector: ParsedAction<*>?
     ) :
-        ScriptAction<String>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<String> {
-            val future = CompletableFuture<String>()
-            frame.newFrame(source).run<Any>().thenAccept { source ->
-                frame.newFrame(timeout).run<Any>().thenAccept { timeout ->
-                    frame.newFrame(list).run<Any>().thenAccept { list ->
-                        frame.createTargets(selector).thenAccept { selector ->
-                            selector.forEachEntity {
-                                AttributeBridge.INSTANCE?.addAttributes(
-                                    source.toString(),
-                                    uniqueId,
-                                    Coerce.toLong(timeout),
-                                    list.asList()
-                                )
-                                AttributeBridge.INSTANCE?.update(uniqueId)
-                            }
-                            future.complete(source.toString())
+        ScriptAction<Void>() {
+
+        fun execute(entity: LivingEntity, source: String, timeout: Long, list: List<String>) {
+            AttributeBridge.INSTANCE?.addAttributes(source, entity.uniqueId, timeout, list)
+        }
+
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+
+            return frame.newFrame(source).run<Any>().thenAccept {
+                val source = it.toString()
+                frame.newFrame(timeout).run<Any>().thenAccept {
+                    val timeout = Coerce.toLong(it)
+                    frame.newFrame(list).run<Any>().thenAccept {
+                        val list = it.toString().split(",")
+                        if (selector != null) {
+                            frame.execEntity(selector) { execute(this, source, timeout, list) }
+                        } else {
+                            execute(frame.asPlayer() ?: return@thenAccept, source, timeout, list)
                         }
                     }
                 }
             }
-            return future
         }
     }
 
-    class AttributeTake(val source: ParsedAction<*>, val selector: ParsedAction<*>) :
+    class AttributeTake(val source: ParsedAction<*>, val selector: ParsedAction<*>?) :
         ScriptAction<Void>() {
+        fun execute(entity: LivingEntity, source: String) {
+            AttributeBridge.INSTANCE?.removeAttributes(entity.uniqueId, source)
+            AttributeBridge.INSTANCE?.update(entity.uniqueId)
+        }
+
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            frame.newFrame(source).run<Any>().thenAccept { source ->
-                frame.createTargets(selector).thenAccept { selector ->
-                    selector.forEachEntity {
-                        AttributeBridge.INSTANCE?.removeAttributes(uniqueId, source.toString())
-                        AttributeBridge.INSTANCE?.update(uniqueId)
-                    }
+            return frame.newFrame(source).run<Any>().thenAccept {
+                val source = it.toString()
+                if (selector != null) {
+                    frame.execEntity(selector) { execute(this, source) }
+                } else {
+                    execute(frame.asPlayer() ?: return@thenAccept, source)
                 }
             }
-            return CompletableFuture.completedFuture(null)
         }
     }
 
-    class AttributeUpdate(val selector: ParsedAction<*>) :
-        ScriptAction<Void>() {
+    class AttributeUpdate(val selector: ParsedAction<*>?) : ScriptAction<Void>() {
+
+        fun execute(entity: LivingEntity) {
+            AttributeBridge.INSTANCE?.update(entity.uniqueId)
+        }
+
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            frame.createTargets(selector).thenAccept { selector ->
-                selector.forEachEntity {
-                    AttributeBridge.INSTANCE?.update(uniqueId)
-                }
+            if (selector != null) {
+                frame.execEntity(selector) { execute(this) }
+            } else {
+                execute(frame.asPlayer() ?: return CompletableFuture.completedFuture(null))
             }
             return CompletableFuture.completedFuture(null)
         }
@@ -73,14 +82,14 @@ class ActionAttribute {
     companion object {
 
         /**
-         * attribute [add/+=] [source] [timeout] [attribute list] [selector]
-         * test: attribute add def0 60000 [ "攻击力 +10" ] "-@self"
+         * attribute [add/+=] [source] [timeout] [attribute: action(,分割)] [selector]
+         * test: attribute add def0 60000 "攻击力 +10,生命 +20" they "-@self"
          *
          * attribute [take/-=] [source] [selector]
-         * test: attribute take def0 "-@self"
+         * test: attribute take def0 they  "-@self"
          *
          * attribute update [selector]
-         * test: attribute update "-@self"
+         * test: attribute update they  "-@self"
          */
         @KetherParser(["attribute"], namespace = NAMESPACE)
         fun parser() = scriptParser {
@@ -90,14 +99,14 @@ class ActionAttribute {
                         it.next(ArgTypes.ACTION),
                         it.next(ArgTypes.ACTION),
                         it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION)
+                        it.selectorAction()
                     )
                 }
                 case("take", "-=") {
-                    AttributeTake(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+                    AttributeTake(it.next(ArgTypes.ACTION), it.selectorAction())
                 }
                 case("update", "refresh") {
-                    AttributeUpdate(it.next(ArgTypes.ACTION))
+                    AttributeUpdate(it.selectorAction())
                 }
             }
         }

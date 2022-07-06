@@ -29,7 +29,7 @@ object ActionEffect {
     }
 
     /**
-     * effect <loader> <option: string>
+     * effect 【loader: action】 [option: string>]
      * effect line "FLAME 0 0 0 -speed 1.0 -count 10 -@self"
      */
     @KetherParser(["effect"], namespace = NAMESPACE)
