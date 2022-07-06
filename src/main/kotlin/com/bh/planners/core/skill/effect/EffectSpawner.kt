@@ -61,7 +61,7 @@ class EffectSpawner(val option: EffectOption) : ParticleSpawner {
                     (color.red / 255.0f).toDouble(),
                     (color.green / 255.0f).toDouble(),
                     (color.blue / 255.0f).toDouble(),
-                    1.0
+                    speed
                 )
                 return
             }
