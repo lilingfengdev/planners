@@ -29,7 +29,7 @@ object Visual : Selector {
             container.addAll(getTargetLocation(this.value, this.value.direction, range).map { it.toTarget() })
         }
         target?.ifEntity {
-            container.addAll(getTargetLocation(livingEntity.eyeLocation, value.direction, range).map { it.toTarget() })
+            container.addAll(getTargetLocation(value, value.direction, range).map { it.toTarget() })
         }
         return CompletableFuture.completedFuture(null)
     }

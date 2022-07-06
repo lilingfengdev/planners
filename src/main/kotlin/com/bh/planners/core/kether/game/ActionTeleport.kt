@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.*
 import org.bukkit.Location
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -16,7 +17,8 @@ class ActionTeleport(
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         return frame.newFrame(action).run<Any>().thenAccept {
             if (selector != null) {
-                frame.execEntity(selector) { execute(this, it) }
+                frame.execEntity(selector) {
+                    execute(this, it) }
             } else {
                 execute(frame.asPlayer() ?: return@thenAccept, it)
             }
@@ -25,9 +27,8 @@ class ActionTeleport(
 
     }
 
-    fun execute(entity: LivingEntity, it: Any) {
-
-        if (it is LivingEntity) {
+    fun execute(entity: Entity, it: Any) {
+        if (it is Entity) {
             entity.teleport(it)
         } else if (it is Location) {
             entity.teleport(it)

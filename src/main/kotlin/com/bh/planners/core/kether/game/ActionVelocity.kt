@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.*
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
@@ -22,7 +23,7 @@ class ActionVelocity(
         ADD, SUBTRACT, MULTIPLY, DIVIDE, SET
     }
 
-    fun execute(entity: LivingEntity, mode: Mode, vector: Vector) {
+    fun execute(entity: Entity, mode: Mode, vector: Vector) {
         val vec = entity.velocity
         when (mode) {
             Mode.ADD -> vec.add(vector)

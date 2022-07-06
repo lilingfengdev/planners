@@ -3,10 +3,11 @@ package com.bh.planners.core.skill.effect.inline
 import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.skill.effect.Target.Companion.toTarget
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import taboolib.module.kether.ScriptContext
 
-class CaptureEntity(val entity: LivingEntity) : InlineEvent {
+class CaptureEntity(val entity: Entity) : InlineEvent {
 
     override val name: String
         get() = "onCapture"

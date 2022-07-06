@@ -21,14 +21,13 @@ interface AttributeBridge {
             Inspect(arrayOf("AttributeSystem"), AttributeSystemBridge::class.java) { isEnable },
         )
 
-        var INSTANCE: AttributeBridge? = null
+        val INSTANCE: AttributeBridge? by lazy { createBridge() }
 
         @Awake(LifeCycle.ENABLE)
-        fun createBridge() {
-            info("create bridge")
-            val inspect = inspects.firstOrNull { it.check(it) } ?: return
+        fun createBridge(): AttributeBridge? {
+            val inspect = inspects.firstOrNull { it.check(it) } ?: return null
             info("|- Attribute drive lock to [${inspect.names.joinToString(",")}]")
-            INSTANCE = inspect.clazz.newInstance()
+            return inspect.clazz.newInstance()
         }
 
 

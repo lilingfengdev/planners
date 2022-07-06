@@ -29,7 +29,7 @@ class ActionHealth {
                 val value = Coerce.toDouble(it)
                 catchRunning {
                     if (selector != null) {
-                        frame.execEntity(selector) { execute(this, value) }
+                        frame.execLivingEntity(selector) { execute(this, value) }
                     } else {
                         execute(frame.asPlayer() ?: return@catchRunning, value)
                     }

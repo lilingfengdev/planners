@@ -9,6 +9,7 @@ import com.bh.planners.core.skill.effect.inline.CaptureEntity
 import com.bh.planners.core.skill.effect.inline.InlineEvent.Companion.callEvent
 import com.bh.planners.util.entityAt
 import org.bukkit.Location
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
@@ -41,6 +42,8 @@ class LineRenderer(
     val EffectOption.onCapture: String?
         get() = demand.get("onCapture")
 
+    val Entity.nearestLocation : Location
+        get() = if (this is LivingEntity) this.eyeLocation else this.location
 
     override fun sendTo() {
         if (target !is Target.Location) return
@@ -51,16 +54,16 @@ class LineRenderer(
             getContainer {
                 forEachEntity {
                     var currentTime = 0L
-                    val line = Line(target.value, this.eyeLocation, option.step, period = option.period, spawner)
+                    val line = Line(target.value, this.nearestLocation, option.step, period = option.period, spawner)
                     line.callPlay { task ->
                         if (currentTime > option.time) {
                             task.cancel()
                             return@callPlay
                         }
                         line.setStart(location)
-                        line.setEnd(this@forEachEntity.eyeLocation)
+                        line.setEnd(this@forEachEntity.nearestLocation)
                         currentTime += option.period
-                        if (this.distance(this@forEachEntity.eyeLocation) < 1.0 && context is Session) {
+                        if (this.distance(this@forEachEntity.nearestLocation) < 1.0 && context is Session) {
                             task.cancel()
                             context.callEvent(option.onCapture ?: return@callPlay, CaptureEntity(this@forEachEntity))
                         }

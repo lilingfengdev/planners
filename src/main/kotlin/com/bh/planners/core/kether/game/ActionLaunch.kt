@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.*
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
@@ -16,12 +17,12 @@ class ActionLaunch(
     val selector: ParsedAction<*>?
 ) : ScriptAction<Void>() {
 
-    fun execute(livingEntity: LivingEntity, x: Double, y: Double, z: Double) {
-        val vector1 = livingEntity.location.direction.setY(0).normalize()
+    fun execute(entity: Entity, x: Double, y: Double, z: Double) {
+        val vector1 = entity.location.direction.setY(0).normalize()
         val vector2 = vector1.clone().crossProduct(Vector(0, 1, 0))
         vector1.multiply(Coerce.toDouble(x))
         vector1.add(vector2.multiply(Coerce.toDouble(z))).y = Coerce.toDouble(y)
-        livingEntity.velocity = vector1
+        entity.velocity = vector1
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
@@ -32,7 +33,9 @@ class ActionLaunch(
                 frame.newFrame(z).run<Any>().thenApply {
                     val z = Coerce.toDouble(it)
                     if (selector != null) {
-                        frame.execEntity(selector) { execute(this, x, y, z) }
+                        frame.execLivingEntity(selector) {
+
+                            execute(this, x, y, z) }
                     } else {
                         execute(frame.asPlayer()!!, x, y, z)
                     }

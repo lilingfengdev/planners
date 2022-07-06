@@ -14,9 +14,9 @@ object Team : Selector {
 
     override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
         val entityTarget = target as? Target.Entity ?: return CompletableFuture.completedFuture(null)
-        if (entityTarget.livingEntity !is Player) return CompletableFuture.completedFuture(null)
+        if (entityTarget.entity !is Player) return CompletableFuture.completedFuture(null)
 
-        val team = DungeonPlus.teamManager.getTeam(entityTarget.livingEntity) ?: return CompletableFuture.completedFuture(null)
+        val team = DungeonPlus.teamManager.getTeam(entityTarget.entity) ?: return CompletableFuture.completedFuture(null)
         team.getOfflinePlayers().forEach {  }
 
         if (name.isNon()) {

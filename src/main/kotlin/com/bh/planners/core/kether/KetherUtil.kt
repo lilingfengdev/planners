@@ -12,6 +12,7 @@ import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.util.StringNumber
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
@@ -143,10 +144,18 @@ fun ScriptFrame.exec(selector: ParsedAction<*>, call: Target.() -> Unit) {
     }
 }
 
-fun ScriptFrame.execEntity(selector: ParsedAction<*>, call: LivingEntity.() -> Unit) {
+fun ScriptFrame.execEntity(selector: ParsedAction<*>, call: Entity.() -> Unit) {
     exec(selector) {
         if (this is Target.Entity) {
-            call(this.livingEntity)
+            call(this.entity)
+        }
+    }
+}
+
+fun ScriptFrame.execLivingEntity(selector: ParsedAction<*>, call: LivingEntity.() -> Unit) {
+    execEntity(selector) {
+        if (this is LivingEntity) {
+            call(this)
         }
     }
 }
@@ -162,7 +171,7 @@ fun ScriptFrame.execLocation(selector: ParsedAction<*>, call: Location.() -> Uni
 fun ScriptFrame.execPlayer(selector: ParsedAction<*>, call: Player.() -> Unit) {
     exec(selector) {
         if (this is Target.Entity) {
-            call(this.livingEntity as? Player ?: return@exec)
+            call(this.entity as? Player ?: return@exec)
         }
     }
 }
@@ -172,7 +181,7 @@ fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Targ
     this.newFrame(selector).run<Any>().thenAccept {
         val demand = it.toString().toDemand()
         val container = Target.Container()
-        Selector.check(toOriginLocation(), getContext().apply {  }, demand, container).thenAccept {
+        Selector.check(toOriginLocation(), getContext().apply { }, demand, container).thenAccept {
             future.complete(container)
         }
     }

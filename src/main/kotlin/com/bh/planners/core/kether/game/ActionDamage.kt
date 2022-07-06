@@ -13,7 +13,7 @@ class ActionDamage {
     class Damage(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(value).run<Any>().thenAccept { damage ->
-                frame.execEntity(selector) {
+                frame.execLivingEntity(selector) {
                     this.damage(Coerce.toDouble(damage))
                 }
             }
@@ -24,7 +24,7 @@ class ActionDamage {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(value).run<Any>().thenAccept { damage ->
                 val asPlayer = frame.asPlayer() ?: return@thenAccept
-                frame.execEntity(selector) {
+                frame.execLivingEntity(selector) {
                     this.damage(Coerce.toDouble(damage), asPlayer)
                 }
             }

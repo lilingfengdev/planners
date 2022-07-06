@@ -6,6 +6,7 @@ import com.bh.planners.core.kether.toLocal
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import org.bukkit.Location
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -30,7 +31,7 @@ interface Target {
             return demand.createContainer(target, context)
         }
 
-        fun LivingEntity.toTarget(): Entity {
+        fun org.bukkit.entity.Entity.toTarget(): Entity {
             return Entity(this)
         }
 
@@ -49,6 +50,7 @@ interface Target {
                 call(this)
             }
         }
+
     }
 
     open class Container {
@@ -94,8 +96,16 @@ interface Target {
             }
         }
 
-        fun forEachEntity(func: LivingEntity.(Int) -> Unit) {
-            forEach<Entity> { index -> func(livingEntity, index) }
+        fun forEachEntity(func: org.bukkit.entity.Entity.(Int) -> Unit) {
+            forEach<Entity> { index -> func(entity, index) }
+        }
+
+        fun forEachLivingEntity(func: LivingEntity.(Int) -> Unit) {
+            forEach<Entity> { index ->
+                if (entity is LivingEntity) {
+                    func(entity, index)
+                }
+            }
         }
 
         fun forEachPlayer(func: Player.(Int) -> Unit) {
@@ -114,7 +124,7 @@ interface Target {
 
         fun firstTarget() = targets.firstOrNull()
 
-        fun firstEntityTarget() = targets.filterIsInstance<Entity>().firstOrNull()?.livingEntity
+        fun firstEntityTarget() = targets.filterIsInstance<Entity>().firstOrNull()?.entity
 
         fun getLocationTarget(index: Int) = targets.filterIsInstance<Location>().getOrNull(index)?.value
 
@@ -146,23 +156,31 @@ interface Target {
 
     }
 
-    class Entity(val livingEntity: LivingEntity) : Location(null) {
+    class Entity(val entity: org.bukkit.entity.Entity) : Location(null) {
 
         override val value: org.bukkit.Location
-            get() = livingEntity.location
+            get() = if (isLiving) asLivingEntity!!.eyeLocation else entity.location
+
+        val isLiving: Boolean
+            get() = entity is LivingEntity
+
+        val asLivingEntity: LivingEntity?
+            get() = entity as LivingEntity
+
+        val type = entity.type
 
         override fun toLocal(): String {
-            return livingEntity.uniqueId.toString()
+            return entity.uniqueId.toString()
         }
 
         override fun hashCode(): Int {
-            return livingEntity.hashCode()
+            return entity.hashCode()
         }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (other is LivingEntity) {
-                return this.livingEntity == other
+            if (other is org.bukkit.entity.Entity) {
+                return this.entity == other
             }
 
             return true

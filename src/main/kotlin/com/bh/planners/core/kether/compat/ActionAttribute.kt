@@ -34,7 +34,7 @@ class ActionAttribute {
                     frame.newFrame(list).run<Any>().thenAccept {
                         val list = it.toString().split(",")
                         if (selector != null) {
-                            frame.execEntity(selector) { execute(this, source, timeout, list) }
+                            frame.execLivingEntity(selector) { execute(this, source, timeout, list) }
                         } else {
                             execute(frame.asPlayer() ?: return@thenAccept, source, timeout, list)
                         }
@@ -55,7 +55,7 @@ class ActionAttribute {
             return frame.newFrame(source).run<Any>().thenAccept {
                 val source = it.toString()
                 if (selector != null) {
-                    frame.execEntity(selector) { execute(this, source) }
+                    frame.execLivingEntity(selector) { execute(this, source) }
                 } else {
                     execute(frame.asPlayer() ?: return@thenAccept, source)
                 }
@@ -71,7 +71,7 @@ class ActionAttribute {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             if (selector != null) {
-                frame.execEntity(selector) { execute(this) }
+                frame.execLivingEntity(selector) { execute(this) }
             } else {
                 execute(frame.asPlayer() ?: return CompletableFuture.completedFuture(null))
             }

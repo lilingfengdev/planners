@@ -26,13 +26,20 @@ object BlockAt : Selector {
     override val names: Array<String>
         get() = arrayOf("blockAt", "ba")
 
-    override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
+    override fun check(
+        name: String,
+        target: Target?,
+        args: String,
+        context: Context,
+        container: Target.Container
+    ): CompletableFuture<Void> {
         val distance = if (args.isEmpty()) 10.0 else Coerce.toDouble(args)
 
         var block: Block? = null
 
+
         target?.ifEntity {
-            block = getTargetLocation(livingEntity.eyeLocation, value.direction, distance).block
+            block = getTargetLocation(this.value, value.direction, distance).block
         }
         target?.ifLocation {
             block = getTargetLocation(value, value.direction, distance).block
@@ -45,6 +52,7 @@ object BlockAt : Selector {
                         container.add(block!!.location.toTarget())
                     }
                 }
+
                 false -> {
                     submit(now = true, async = true) {
                         block!!.chunk.load(true)
