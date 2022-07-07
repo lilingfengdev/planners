@@ -25,6 +25,7 @@ import taboolib.library.kether.QuestContext
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
 import taboolib.platform.type.BukkitPlayer
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 const val NAMESPACE = "Planners"
@@ -144,6 +145,10 @@ fun ScriptFrame.exec(selector: ParsedAction<*>, call: Target.() -> Unit) {
     }
 }
 
+fun ScriptFrame.runAny(action: ParsedAction<*>, call: Any.() -> Unit): CompletableFuture<Void> {
+    return this.newFrame(action).run<Any>().thenAccept(call)
+}
+
 fun ScriptFrame.execEntity(selector: ParsedAction<*>, call: Entity.() -> Unit) {
     exec(selector) {
         if (this is Target.Entity) {
@@ -179,11 +184,27 @@ fun ScriptFrame.execPlayer(selector: ParsedAction<*>, call: Player.() -> Unit) {
 fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Target.Container> {
     val future = CompletableFuture<Target.Container>()
     this.newFrame(selector).run<Any>().thenAccept {
-        val demand = it.toString().toDemand()
         val container = Target.Container()
-        Selector.check(toOriginLocation(), getContext().apply { }, demand, container).thenAccept {
+
+        if (it is List<*>) {
+            val list = it.mapNotNull { entry ->
+                if (entry is Entity) {
+                    entry.toTarget()
+                } else if (entry is String) {
+                    Bukkit.getEntity(UUID.fromString(entry.toString()))?.toTarget()
+                } else error("Transfer $entry to target failed")
+            }
+            container.addAll(list)
             future.complete(container)
+        } else if (it is Entity) {
+            container.add(it.toTarget())
+        } else {
+            val demand = it.toString().toDemand()
+            Selector.check(toOriginLocation(), getContext().apply { }, demand, container).thenAccept {
+                future.complete(container)
+            }
         }
+
     }
     return future
 }

@@ -11,11 +11,14 @@ import java.util.concurrent.CompletableFuture
 class ActionSet(val action: ParsedAction<*>, val value: ParsedAction<*>) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        return frame.newFrame(action).run<Any>().thenAccept { key ->
+        val future = CompletableFuture<Void>()
+        frame.newFrame(action).run<Any>().thenAccept { key ->
             frame.newFrame(value).run<Any>().thenAccept {
                 frame.rootVariables()[key.toString()] = it
+                future.complete(null)
             }
         }
+        return future
     }
 
     internal object Parser {

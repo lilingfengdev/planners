@@ -2,6 +2,7 @@ package com.bh.planners.core.skill.effect
 
 import com.bh.planners.core.kether.catchRunning
 import com.bh.planners.core.pojo.Context
+import com.bh.planners.core.skill.effect.Target.Companion.createContainer
 import com.bh.planners.core.skill.effect.common.Sphere
 import taboolib.common5.Coerce
 
@@ -19,10 +20,11 @@ object EffectSphere : Effect() {
         get() = Coerce.toDouble(demand.get("radius", "1"))
 
     override fun sendTo(target: Target?, option: EffectOption, context: Context) {
-        catchRunning {
-            val location = target as? Target.Location ?: return@catchRunning
-            val sphere = Sphere(location.value, option.sample, option.radius, EffectSpawner(option))
-            sphere.show()
+        option.createContainer(target, context).thenAccept {
+            it.forEachLocation {
+                val sphere = Sphere(this, option.sample, option.radius, EffectSpawner(option))
+                sphere.show()
+            }
         }
     }
 }
