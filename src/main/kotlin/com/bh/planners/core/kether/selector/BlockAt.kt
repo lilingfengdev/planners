@@ -16,8 +16,9 @@ import kotlin.math.floor
 
 /**
  * 视角所看向的方块
- * step 距离
- * -@<blockAt/ba> 10
+ * -@blockAt [距离],[x偏移],[y偏移],[z偏移]
+ * -@blockAt 10,0,0,0
+ * -@blockAt 13.5,0.3,3.6,0.5
  */
 object BlockAt : Selector {
 
@@ -33,7 +34,11 @@ object BlockAt : Selector {
         context: Context,
         container: Target.Container
     ): CompletableFuture<Void> {
-        val distance = if (args.isEmpty()) 10.0 else Coerce.toDouble(args)
+        val arg = args.split(",")
+        val distance = if (arg.isEmpty()) 10.0 else Coerce.toDouble(arg[0])
+        val offsetX = if (arg.size <= 1) 0.0 else Coerce.toDouble(arg[1])
+        val offsetY = if (arg.size <= 2) 0.0 else Coerce.toDouble(arg[2])
+        val offsetZ = if (arg.size <= 3) 0.0 else Coerce.toDouble(arg[3])
 
         var block: Block? = null
 
@@ -46,10 +51,11 @@ object BlockAt : Selector {
         }
 
         if (block != null) {
+            var loc: Location? = null
             when (block!!.chunk.isLoaded) {
                 true -> {
                     if (block!!.type !in AIR_BLOCKS) {
-                        container.add(block!!.location.toTarget())
+                        loc = block!!.location
                     }
                 }
 
@@ -58,10 +64,11 @@ object BlockAt : Selector {
                         block!!.chunk.load(true)
                     }
                     if (block!!.type !in AIR_BLOCKS) {
-                        container.add(block!!.location.toTarget())
+                        loc = block!!.location
                     }
                 }
             }
+            container.add(loc!!.add(offsetX, offsetY, offsetZ).toTarget())
         }
         return CompletableFuture.completedFuture(null)
     }
