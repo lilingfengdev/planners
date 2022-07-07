@@ -11,6 +11,8 @@ import java.util.concurrent.CompletableFuture
  * 选中自己
  * -@self
  * -@this
+ * 选中自己脚下坐标
+ * -@self m
  */
 object Self : Selector {
 
@@ -23,7 +25,7 @@ object Self : Selector {
         if (name.isNon()) {
             container.removeIf { this == entity }
         } else {
-            container.add(entity)
+            container.add(if (args.contains("m")) Target.Location(entity.entity.location) else entity)
         }
         return CompletableFuture.completedFuture(null)
     }
