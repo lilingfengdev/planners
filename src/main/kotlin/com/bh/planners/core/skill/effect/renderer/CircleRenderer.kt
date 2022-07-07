@@ -62,7 +62,7 @@ open class CircleRenderer(target: Target, future: CompletableFuture<Target.Conta
                         vector.x = option.radius * Math.cos(radians)
                         vector.z = option.radius * Math.sin(radians)
                         rotateVector(vector)
-                        spawnParticle(location = this@forEachLocation.add(vector))
+                        spawnParticle(location = this@forEachLocation.clone().add(vector))
                         i += option.step
                     }
                 }
