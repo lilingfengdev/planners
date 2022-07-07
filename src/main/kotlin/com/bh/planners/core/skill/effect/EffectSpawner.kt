@@ -52,17 +52,12 @@ class EffectSpawner(val option: EffectOption) : ParticleSpawner {
             // 1.12.2
             if (particle == ProxyParticle.REDSTONE && MinecraftVersion.majorLegacy == 11202 && data != null && data is ProxyParticle.DustData) {
                 val color = data.color
-                location.world!!.spawnParticle(
-                    Particle.REDSTONE,
-                    location.x,
-                    location.y,
-                    location.z,
-                    0,
-                    (color.red / 255.0f).toDouble(),
-                    (color.green / 255.0f).toDouble(),
-                    (color.blue / 255.0f).toDouble(),
-                    speed
-                )
+                val r = (color.red / 255.0f).toDouble()
+                val g = (color.green / 255.0f).toDouble()
+                val b = (color.blue / 255.0f).toDouble()
+                (0 until count).forEach {
+                    spawnParticle(Particle.REDSTONE, location.x, location.y, location.z, 0, r, g, b)
+                }
                 return
             }
 
@@ -83,7 +78,10 @@ class EffectSpawner(val option: EffectOption) : ParticleSpawner {
                     }
 
                     is ProxyParticle.DustData -> {
-                        Particle.DustOptions(Color.fromRGB(data.color.red, data.color.green, data.color.blue), data.size)
+                        Particle.DustOptions(
+                            Color.fromRGB(data.color.red, data.color.green, data.color.blue),
+                            data.size
+                        )
                     }
 
                     is ProxyParticle.ItemData -> {
