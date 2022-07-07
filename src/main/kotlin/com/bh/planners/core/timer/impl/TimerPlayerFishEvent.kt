@@ -18,7 +18,20 @@ class TimerPlayerFishEvent : AbstractTimer<PlayerFishEvent>() {
     }
 
     /**
-     * state 状态 FISHING, CAUGHT_FISH, CAUGHT_ENTITY, IN_GROUND, FAILED_ATTEMPT, REEL_IN, BITE
+     * state 状态
+     * BITE
+     * Called when there is a bite on the hook and it is ready to be reeled in.
+     * CAUGHT_ENTITY
+     * When a player has successfully caught an entity.
+     * CAUGHT_FISH
+     * When a player has successfully caught a fish and is reeling it in.
+     * FAILED_ATTEMPT
+     * When a player fails to catch anything while fishing usually due to poor aiming or timing.
+     * FISHING
+     * When a player is fishing, ie casting the line out.
+     * IN_GROUND
+     * When a bobber is stuck in the ground.
+     *
      * entity 钓到的实体，state在CAUGHT_FISH,CAUGHT_ENTITY 才存在
      */
     override fun onStart(context: ScriptContext, template: Template, e: PlayerFishEvent) {
