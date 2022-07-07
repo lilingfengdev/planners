@@ -15,6 +15,7 @@ class ActionDamage {
             return frame.newFrame(value).run<Any>().thenAccept { damage ->
                 frame.execLivingEntity(selector) {
                     this.damage(Coerce.toDouble(damage))
+                    this.noDamageTicks = 0
                 }
             }
         }
@@ -26,6 +27,7 @@ class ActionDamage {
                 val asPlayer = frame.asPlayer() ?: return@thenAccept
                 frame.execLivingEntity(selector) {
                     this.damage(Coerce.toDouble(damage), asPlayer)
+                    this.noDamageTicks = 0
                 }
             }
         }
