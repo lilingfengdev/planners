@@ -167,7 +167,7 @@ object PlannersAPI {
 
 
     fun PlayerProfile.hasCast(skill: Skill): Boolean {
-        return getSkill(skill.key)?.level ?: 0 > 0
+        return (getSkill(skill.key)?.level ?: 0) > 0
     }
 
     @SubscribeEvent
