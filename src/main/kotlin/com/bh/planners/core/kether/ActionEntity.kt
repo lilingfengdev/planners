@@ -79,7 +79,7 @@ class ActionEntity {
                 entity.maxHealth = health
                 entity.health = health
             }
-            EntityAPI.register(entity, timeout)
+            EntityAPI.register(entity, (timeout * 50 + System.currentTimeMillis()))
             return entity.uniqueId
         }
 
