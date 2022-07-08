@@ -68,7 +68,9 @@ object BlockAt : Selector {
                     }
                 }
             }
-            container.add(loc!!.add(offsetX, offsetY, offsetZ).toTarget())
+            try {
+                container.add(loc!!.add(offsetX, offsetY, offsetZ).toTarget())
+            } catch (_: Exception) {}
         }
         return CompletableFuture.completedFuture(null)
     }
