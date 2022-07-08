@@ -17,29 +17,26 @@ import java.util.concurrent.CompletableFuture
 
 object ActionEffect {
 
-    val executor = BukkitExecutor()
-
-    @Awake(LifeCycle.ENABLE)
-    fun run() {
-        executor.start()
-    }
-
     // action FLAME 0 0 0 pos1 [ -@c-dot 3,0 ] pos2 [ -@c-dot 4,0 ]
     class Parser(val effect: Effect, val action: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            val future = CompletableFuture<Void>()
+
             frame.newFrame(action).run<Any>().thenAccept {
                 try {
                     val context = frame.getContext()
-                    val effectOption = EffectOption(it.toString())
-                    info("isPrimaryThread " + Bukkit.isPrimaryThread())
-                    effect.sendTo(frame.toOriginLocation(), effectOption, context)
+                    future.complete(null)
+                    submit(async = true) {
+                        val effectOption = EffectOption(it.toString())
+                        effect.sendTo(frame.toOriginLocation(), effectOption, context)
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
 
-            return CompletableFuture.completedFuture(null)
+            return future
         }
     }
 

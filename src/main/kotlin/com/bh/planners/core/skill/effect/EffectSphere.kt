@@ -20,9 +20,10 @@ object EffectSphere : Effect() {
         get() = Coerce.toDouble(demand.get("radius", "1"))
 
     override fun sendTo(target: Target?, option: EffectOption, context: Context) {
+        val effectSpawner = EffectSpawner(option)
         option.createContainer(target, context).thenAccept {
             it.forEachLocation {
-                val sphere = Sphere(this, option.sample, option.radius, EffectSpawner(option))
+                val sphere = Sphere(this, option.sample, option.radius, effectSpawner)
                 sphere.show()
             }
         }

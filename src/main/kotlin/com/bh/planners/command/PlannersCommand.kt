@@ -4,7 +4,10 @@ import com.bh.planners.Planners
 import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.core.kether.namespaces
+import com.bh.planners.core.skill.effect.EffectOption
+import com.bh.planners.core.skill.effect.EffectSpawner
 import com.bh.planners.core.skill.effect.EffectSpawner.Companion.sendParticle
+import com.bh.planners.core.skill.effect.common.Sphere
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Particle
@@ -81,15 +84,9 @@ object PlannersCommand {
     @CommandBody
     val test = subCommand {
         execute<Player> { sender, context, argument ->
-//            sender.world.spawnParticle(
-//                Particle.REDSTONE,
-//                sender.location, 10,
-//                1.0, 1.0, 1.0, 0.0, Particle.DustOptions(Color.GREEN, 1f)
-//            )
-            sender.sendParticle(
-                ProxyParticle.REDSTONE, sender.location, Vector(1.0, 1.0, 1.0), 10, 0.0,
-                ProxyParticle.DustData(java.awt.Color(255, 255, 255), 1f)
-            )
+            val spawner = EffectSpawner(EffectOption("END_ROD"))
+            val vector = sender.location.direction
+
         }
     }
 

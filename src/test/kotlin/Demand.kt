@@ -13,8 +13,14 @@ class Demand(val source: String) {
     val args = mutableListOf<String>()
 
     init {
-        val args = source.split(" ")
-        namespace = args[0]
+        var args = source.split(" ")
+        if (source[0] != '-') {
+            this.args += args.subList(0, 4).toMutableList()
+            namespace = args[0]
+            args = args.subList(4,args.size)
+        } else {
+            namespace = "EMPTY"
+        }
         val skipIndex = arrayListOf<Int>()
         args.forEachIndexed { index, s ->
             if (index in skipIndex || s.isEmpty()) return@forEachIndexed
@@ -37,18 +43,6 @@ class Demand(val source: String) {
                     else -> {
                         put(s.substring(1), "")
                     }
-                }
-            } else {
-                if (args.size != index + 1 && args[index + 1][0] == '[') {
-                    val values = args.sub(index + 1, "[", "]")
-                    skipIndex += index + 1
-                    skipIndex += index + 2 + values.size
-                    values.forEachIndexed { valueIndex, s ->
-                        skipIndex += index + 2 + valueIndex
-                    }
-                    children[s] = Demand(values.joinToString(" "))
-                } else {
-                    this.args += s
                 }
             }
         }
