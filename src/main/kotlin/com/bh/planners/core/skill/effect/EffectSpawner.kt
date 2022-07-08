@@ -1,19 +1,14 @@
 package com.bh.planners.core.skill.effect
 
 import com.bh.planners.core.skill.effect.common.ParticleSpawner
-import net.minecraft.server.v1_16_R3.PacketPlayOutWorldParticles
 import org.bukkit.*
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
 import taboolib.common.platform.ProxyParticle
-import taboolib.common.platform.function.info
-import taboolib.common.platform.function.submit
 import taboolib.common.util.Vector
 import taboolib.module.nms.MinecraftVersion
 import taboolib.platform.util.toBukkitLocation
-import java.util.concurrent.CompletableFuture
 
 class EffectSpawner(val option: EffectOption) : ParticleSpawner {
 
@@ -49,13 +44,14 @@ class EffectSpawner(val option: EffectOption) : ParticleSpawner {
             speed: Double,
             data: ProxyParticle.Data?
         ) {
+
             // 1.12.2
             if (particle == ProxyParticle.REDSTONE && MinecraftVersion.majorLegacy == 11202 && data != null && data is ProxyParticle.DustData) {
                 val color = data.color
                 val r = (color.red / 255.0f).toDouble()
                 val g = (color.green / 255.0f).toDouble()
                 val b = (color.blue / 255.0f).toDouble()
-                (0 until count).forEach {
+                (0 until count).forEach { _ ->
                     spawnParticle(Particle.REDSTONE, location.x, location.y, location.z, 0, r, g, b)
                 }
                 return

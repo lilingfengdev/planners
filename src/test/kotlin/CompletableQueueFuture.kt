@@ -9,14 +9,5 @@ class CompletableQueueFuture : CompletableFuture<Void>() {
         val executor = Executors.newSingleThreadExecutor()
     }
 
-    fun add(future: CompletableFuture<*>) {
-        map[map.size] = future
-    }
-
-    fun check(): CompletableQueueFuture {
-        map.forEach { it.value.get() }
-        complete(null)
-        return this
-    }
 
 }

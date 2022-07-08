@@ -1,5 +1,7 @@
 package com.bh.planners.core.kether
 
+import org.bukkit.Bukkit
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
@@ -17,8 +19,7 @@ class ActionWait(val ticks: ParsedAction<*>) : ScriptAction<Void>() {
 
         frame.newFrame(ticks).run<Any>().thenAccept {
             val ticks = Coerce.toLong(it)
-
-            val bukkitTask = submit(delay = ticks) {
+            val bukkitTask = submit(delay = ticks, async = !Bukkit.isPrimaryThread()) {
                 // 如果玩家在等待过程中离线则终止脚本
                 if (frame.script().sender?.isOnline() == false) {
                     ScriptService.terminateQuest(frame.script())

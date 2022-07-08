@@ -3,9 +3,16 @@ package com.bh.planners.core.kether
 import com.bh.planners.core.skill.effect.Effect
 import com.bh.planners.core.skill.effect.EffectOption
 import com.bh.planners.core.skill.effect.Effects
+import org.bukkit.Bukkit
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
+import taboolib.common.platform.function.info
+import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
+import taboolib.platform.BukkitExecutor
 import java.util.concurrent.CompletableFuture
 
 object ActionEffect {
@@ -14,17 +21,22 @@ object ActionEffect {
     class Parser(val effect: Effect, val action: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            val future = CompletableFuture<Void>()
+
             frame.newFrame(action).run<Any>().thenAccept {
                 try {
                     val context = frame.getContext()
-                    val effectOption = EffectOption(it.toString())
-                    effect.sendTo(frame.toOriginLocation(), effectOption, context)
+                    future.complete(null)
+                    submit(async = true) {
+                        val effectOption = EffectOption(it.toString())
+                        effect.sendTo(frame.toOriginLocation(), effectOption, context)
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
 
-            return CompletableFuture.completedFuture(null)
+            return future
         }
     }
 

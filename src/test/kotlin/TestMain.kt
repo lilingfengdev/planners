@@ -5,22 +5,8 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val thread1 = Thread() {
-            println(generatorId())
-            println(generatorId())
-            println(generatorId())
-            println(generatorId())
-            println(generatorId())
-        }
-        val thread2 = Thread() {
-            println(generatorId())
-            println(generatorId())
-            println(generatorId())
-            println(generatorId())
-            println(generatorId())
-        }
-        thread1.start()
-        thread2.start()
+        val demand = Demand("END_ROD 0 -3.0 0 -radius 0.5 -sample 100 -speed 0.5 -count 0 -@offset 2,5,3")
+        println(demand)
     }
 
     class TestTarget : Target {
