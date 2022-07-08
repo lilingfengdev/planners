@@ -26,7 +26,7 @@ class Sphere(override var origin: Location, var sample: Int, var  radius: Double
     }
 
     override fun show() {
-        locations.forEach(Consumer { loc: Location? -> loc?.let { spawnParticle(it) } })
+        locations.forEach { spawnParticle(it) }
     }
 
     fun setSample(sample: Int): Sphere {

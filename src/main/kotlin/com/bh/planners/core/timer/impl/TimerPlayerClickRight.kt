@@ -15,8 +15,8 @@ object TimerPlayerClickRight : AbstractTimer<PlayerInteractEvent>() {
 
     override fun check(e: PlayerInteractEvent): ProxyCommandSender? {
 
-        if (e.action == Action.RIGHT_CLICK_AIR || e.action == Action.RIGHT_CLICK_AIR) {
-            return adaptPlayer(e.action)
+        if (e.action == Action.RIGHT_CLICK_AIR || e.action == Action.RIGHT_CLICK_BLOCK) {
+            return adaptPlayer(e.player)
         }
         return null
     }

@@ -55,7 +55,7 @@ class EffectSpawner(val option: EffectOption) : ParticleSpawner {
                 val r = (color.red / 255.0f).toDouble()
                 val g = (color.green / 255.0f).toDouble()
                 val b = (color.blue / 255.0f).toDouble()
-                (0 until count).forEach {
+                (0 until count).forEach { _ ->
                     spawnParticle(Particle.REDSTONE, location.x, location.y, location.z, 0, r, g, b)
                 }
                 return
