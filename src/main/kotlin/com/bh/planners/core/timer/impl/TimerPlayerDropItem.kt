@@ -9,7 +9,7 @@ import taboolib.module.kether.ScriptContext
 
 object TimerPlayerDropItem : AbstractTimer<PlayerDropItemEvent>() {
     override val name: String
-        get() = "player bucked empty"
+        get() = "player drop item"
     override val eventClazz: Class<PlayerDropItemEvent>
         get() = PlayerDropItemEvent::class.java
 
