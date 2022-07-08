@@ -39,7 +39,7 @@ class ActionExplosion(
     companion object {
 
         /**
-         * 在指定(目标)坐标处召唤无伤害的爆炸效果
+         * 在指定(目标)坐标处召唤一次爆炸
          * explosion [power] [selector]
          */
         @KetherParser(["explosion"], namespace = NAMESPACE)
