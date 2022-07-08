@@ -3,7 +3,9 @@ package com.bh.planners.core.skill.effect
 import com.bh.planners.api.common.Demand
 import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.google.common.base.Enums
+import ink.ptms.adyeshach.common.bukkit.data.DataWatcher.DataVillagerData.toInt
 import taboolib.common.platform.ProxyParticle
+import taboolib.common.platform.function.info
 import taboolib.common.util.Vector
 import taboolib.common5.Coerce
 import java.awt.Color
@@ -30,7 +32,11 @@ open class EffectOption(text: String) {
 
     init {
         demand.get("block")?.let {
-            data = ProxyParticle.BlockData(it)
+            val args = it.split(",")
+            data = ProxyParticle.BlockData(
+                args.getOrElse(0) { "DIRT" },
+                Coerce.toInteger(args.getOrElse(1) { 0 })
+            )
         }
         demand.get("item")?.let {
             data = ProxyParticle.ItemData(it.split(":")[0], Coerce.toInteger(it.split(":").getOrElse(1) { "0" }))

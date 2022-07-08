@@ -68,7 +68,9 @@ object BlockAt : Selector {
                     }
                 }
             }
-            container.add(loc!!.add(offsetX, offsetY, offsetZ).toTarget())
+            try {
+                container.add(loc!!.add(offsetX, offsetY, offsetZ).toTarget())
+            } catch (_: Exception) {}
         }
         return CompletableFuture.completedFuture(null)
     }
@@ -81,6 +83,9 @@ object BlockAt : Selector {
         if (dir.x == 0.0) {
             dir.x = java.lang.Double.MIN_NORMAL
         }
+        // 同步没事吧？
+        // 啥意思 把你的代码顶掉
+        // ok
         if (dir.y == 0.0) {
             dir.y = java.lang.Double.MIN_NORMAL
         }

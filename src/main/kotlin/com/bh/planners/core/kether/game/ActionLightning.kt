@@ -37,7 +37,8 @@ class ActionLightning(
     companion object {
 
         /**
-         * 在指定 坐标,目标坐标 召唤一条无伤闪电
+         * 在指定(目标)坐标处召唤一条无伤闪电
+         * lightning [selector]
          */
         @KetherParser(["lightning"], namespace = NAMESPACE)
         fun parser() = scriptParser {
