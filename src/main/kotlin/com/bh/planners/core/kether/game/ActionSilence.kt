@@ -35,6 +35,7 @@ class ActionSilence(
         private val silenceMap = mutableMapOf<UUID, Long>()
         /**
          * 沉默目标 使对方在一定时间内无法释放技能
+         *  *** 暂时无效 等PlayerCastSkillEvent完善即可
          * silence [seconds] [selector]
          */
         @KetherParser(["silence"], namespace = NAMESPACE)
