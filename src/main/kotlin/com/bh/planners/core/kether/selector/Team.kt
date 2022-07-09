@@ -2,7 +2,7 @@ package com.bh.planners.core.kether.selector
 
 import com.bh.planners.api.common.Plugin
 import com.bh.planners.core.pojo.Context
-import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.core.effect.Target
 import org.bukkit.entity.Player
 import org.serverct.ersha.dungeon.DungeonPlus
 import java.util.concurrent.CompletableFuture

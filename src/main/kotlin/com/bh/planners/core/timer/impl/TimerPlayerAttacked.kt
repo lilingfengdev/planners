@@ -1,6 +1,6 @@
 package com.bh.planners.core.timer.impl
 
-import com.bh.planners.core.skill.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.timer.AbstractTimer
 import com.bh.planners.core.timer.Template
 import org.bukkit.entity.LivingEntity

@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether
 
-import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.selector.Fetch.asContainer
 import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
 import taboolib.common.platform.function.info

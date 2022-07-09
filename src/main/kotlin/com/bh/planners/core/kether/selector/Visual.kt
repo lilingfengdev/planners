@@ -1,10 +1,10 @@
 package com.bh.planners.core.kether.selector
 
 import com.bh.planners.core.pojo.Context
-import com.bh.planners.core.skill.effect.Target
-import com.bh.planners.core.skill.effect.Target.Companion.ifEntity
-import com.bh.planners.core.skill.effect.Target.Companion.ifLocation
-import com.bh.planners.core.skill.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.ifEntity
+import com.bh.planners.core.effect.Target.Companion.ifLocation
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.util.entityAt
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity

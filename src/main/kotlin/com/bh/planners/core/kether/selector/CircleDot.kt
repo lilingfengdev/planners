@@ -1,9 +1,9 @@
 package com.bh.planners.core.kether.selector
 
 import com.bh.planners.core.pojo.Context
-import com.bh.planners.core.skill.effect.Target
-import com.bh.planners.core.skill.effect.Target.Companion.toTarget
-import com.bh.planners.core.skill.effect.common.PlayerFrontCoordinate
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.common.PlayerFrontCoordinate
 import taboolib.common5.Coerce
 import java.util.concurrent.CompletableFuture
 import kotlin.math.cos

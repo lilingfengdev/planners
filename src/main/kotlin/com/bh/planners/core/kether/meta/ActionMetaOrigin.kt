@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.meta
 import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.kether.toLocation
 import com.bh.planners.core.kether.toOriginLocation
-import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.core.effect.Target
 import org.bukkit.Location
 import taboolib.common.platform.function.info
 import taboolib.library.kether.ParsedAction

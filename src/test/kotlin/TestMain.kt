@@ -1,4 +1,4 @@
-import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.core.effect.Target
 import com.bh.planners.util.generatorId
 
 object TestMain {

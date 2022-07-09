@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.selector
 
-import com.bh.planners.core.skill.effect.Target
-import com.bh.planners.core.skill.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.toLocation
 import com.bh.planners.core.pojo.Context
 import java.util.concurrent.CompletableFuture

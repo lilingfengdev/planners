@@ -1,7 +1,8 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.api.EntityAPI
-import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.api.common.SimpleTimeoutTask
+import com.bh.planners.core.effect.Target
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -36,7 +37,7 @@ class ActionEntity {
     }
 
     class ActionEntitySpawn(
-        val type: ParsedAction<*>, val name: ParsedAction<*>, val health: ParsedAction<*>, val timeout: ParsedAction<*>,
+        val type: ParsedAction<*>, val name: ParsedAction<*>, val health: ParsedAction<*>, val tick: ParsedAction<*>,
         val selector: ParsedAction<*>?
     ) : ScriptAction<List<Entity>>() {
 
@@ -46,11 +47,11 @@ class ActionEntity {
             locations: List<Location>,
             name: String,
             health: Double,
-            timeout: Long
+            tick: Long
         ): CompletableFuture<List<Entity>> {
             val future = CompletableFuture<List<Entity>>()
             spawn(entityType, locations).thenAccept {
-                it.forEach { register(it, name, health, timeout) }
+                it.forEach { register(it, name, health, tick) }
                 future.complete(it)
             }
             return future
@@ -73,13 +74,16 @@ class ActionEntity {
         }
 
 
-        fun register(entity: Entity, name: String, health: Double, timeout: Long): UUID {
+        fun register(entity: Entity, name: String, health: Double, tick: Long): UUID {
             entity.customName = name
             if (entity is LivingEntity) {
                 entity.maxHealth = health
                 entity.health = health
             }
-            EntityAPI.register(entity, (timeout * 50 + System.currentTimeMillis()))
+            // 注册销毁任务
+            SimpleTimeoutTask.createSimpleTask(tick,false) {
+                entity.remove()
+            }
             return entity.uniqueId
         }
 
@@ -91,17 +95,23 @@ class ActionEntity {
                     val name = toString()
                     frame.runAny(health) {
                         val health = Coerce.toDouble(this)
-                        frame.runAny(timeout) {
-                            val timeout = Coerce.toLong(this)
+                        frame.runAny(tick) {
+                            val tick = Coerce.toLong(this)
                             if (selector != null) {
                                 frame.createTargets(selector).thenAccept {
                                     val locations = it.targets.filterIsInstance<Target.Location>().map { it.value }
-                                    spawn(entityType, locations, name, health, timeout).thenAccept {
+                                    spawn(entityType, locations, name, health, tick).thenAccept {
                                         future.complete(it)
                                     }
                                 }
                             } else {
-                                spawn(entityType, listOf(frame.toOriginLocation()!!.value), name, health, timeout).thenAccept {
+                                spawn(
+                                    entityType,
+                                    listOf(frame.toOriginLocation()!!.value),
+                                    name,
+                                    health,
+                                    tick
+                                ).thenAccept {
                                     future.complete(it)
                                 }
                             }
@@ -123,9 +133,9 @@ class ActionEntity {
         /**
          * entity of [uuid: action]
          * entity loc [entity : action]
-         * entity spawn type name health timeout 返回 [ UUID ]
+         * entity spawn type name health tick 返回 [ UUID ]
          */
-        @KetherParser(["entity"])
+        @KetherParser(["entity"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             it.switch {
                 case("of") {

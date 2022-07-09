@@ -2,8 +2,8 @@ package com.bh.planners.core.kether.compat
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.createTargets
-import com.bh.planners.core.skill.effect.Target
-import com.bh.planners.core.skill.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import io.lumine.xikage.mythicmobs.MythicMobs
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob
 import taboolib.common5.Coerce

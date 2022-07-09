@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.*
-import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.core.effect.Target
 import org.bukkit.Location
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction

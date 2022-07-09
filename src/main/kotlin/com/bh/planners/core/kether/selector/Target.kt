@@ -2,7 +2,7 @@ package com.bh.planners.core.kether.selector
 
 import com.bh.planners.core.kether.ActionTarget.Companion.getTarget
 import com.bh.planners.core.pojo.Context
-import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.core.effect.Target
 import java.util.concurrent.CompletableFuture
 
 object Target : Selector {

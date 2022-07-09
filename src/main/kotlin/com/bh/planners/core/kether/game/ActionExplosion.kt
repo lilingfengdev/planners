@@ -22,8 +22,8 @@ class ActionExplosion(
         frame.newFrame(power).run<Any>().thenApply {
             frame.exec(selector!!) {
                 val loc = when (this) {
-                    is com.bh.planners.core.skill.effect.Target.Entity -> this.entity.location
-                    is com.bh.planners.core.skill.effect.Target.Location -> this.value
+                    is com.bh.planners.core.effect.Target.Entity -> this.entity.location
+                    is com.bh.planners.core.effect.Target.Location -> this.value
                     else -> return@exec
                 }
                 createExplosion(loc, Coerce.toFloat(it))

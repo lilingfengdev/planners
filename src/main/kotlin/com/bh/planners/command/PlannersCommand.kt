@@ -4,10 +4,10 @@ import com.bh.planners.Planners
 import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.core.kether.namespaces
-import com.bh.planners.core.skill.effect.EffectOption
-import com.bh.planners.core.skill.effect.EffectSpawner
-import com.bh.planners.core.skill.effect.EffectSpawner.Companion.sendParticle
-import com.bh.planners.core.skill.effect.common.Sphere
+import com.bh.planners.core.effect.EffectOption
+import com.bh.planners.core.effect.EffectSpawner
+import com.bh.planners.core.effect.EffectSpawner.Companion.sendParticle
+import com.bh.planners.core.effect.common.Sphere
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Particle

@@ -4,9 +4,10 @@ import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.pojo.Context
-import com.bh.planners.core.skill.effect.Target
-import com.bh.planners.core.skill.effect.Target.Companion.createContainer
-import com.bh.planners.core.skill.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.createContainer
+import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.kether.util.Strings
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.util.StringNumber
@@ -186,22 +187,31 @@ fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Targ
     this.newFrame(selector).run<Any>().thenAccept {
         val container = Target.Container()
 
-        if (it is List<*>) {
-            val list = it.mapNotNull { entry ->
-                if (entry is Entity) {
-                    entry.toTarget()
-                } else if (entry is String) {
-                    Bukkit.getEntity(UUID.fromString(entry.toString()))?.toTarget()
-                } else error("Transfer $entry to target failed")
-            }
-            container.addAll(list)
-            future.complete(container)
-        } else if (it is Entity) {
-            container.add(it.toTarget())
-        } else {
-            val demand = it.toString().toDemand()
-            Selector.check(toOriginLocation(), getContext().apply { }, demand, container).thenAccept {
+        when (it) {
+            is List<*> -> {
+                val list = it.mapNotNull { entry ->
+                    if (entry is Entity) {
+                        entry.toTarget()
+                    } else if (entry is String) {
+                        Bukkit.getEntity(UUID.fromString(entry.toString()))?.toTarget()
+                    } else error("Transfer $entry to target failed")
+                }
+                container.addAll(list)
                 future.complete(container)
+            }
+
+            is Target.Container -> future.complete(it)
+
+            is Entity -> {
+                container.add(it.toTarget())
+                future.complete(container)
+            }
+
+            else -> {
+                val demand = it.toString().toDemand()
+                Selector.check(toOriginLocation(), getContext().apply { }, demand, container).thenAccept {
+                    future.complete(container)
+                }
             }
         }
 

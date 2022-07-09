@@ -5,8 +5,8 @@ import com.bh.planners.api.common.Demand
 import com.bh.planners.api.common.Plugin
 import com.bh.planners.core.kether.catchRunning
 import com.bh.planners.core.pojo.Context
-import com.bh.planners.core.skill.effect.EffectOption
-import com.bh.planners.core.skill.effect.Target
+import com.bh.planners.core.effect.EffectOption
+import com.bh.planners.core.effect.Target
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.io.getInstance
