@@ -38,9 +38,9 @@ class PlayerJob(val id: Long, var jobKey: String, level: Int, experience: Int) {
     class Skill(val id: Long, val key: String, var level: Int, var shortcutKey: String?) {
 
         val instance: com.bh.planners.core.pojo.Skill
-            get() = PlannersAPI.skills.first { it.key == key }
+            get() = PlannersAPI.getSkill(key) ?: error("Skill '$key' not found.")
 
-        val name : String
+        val name: String
             get() = instance.option.name
 
         val keySlot: IKeySlot?
