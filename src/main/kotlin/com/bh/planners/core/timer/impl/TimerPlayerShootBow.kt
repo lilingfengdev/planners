@@ -8,7 +8,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.module.kether.ScriptContext
 
-object TimerShootBow : AbstractTimer<EntityShootBowEvent>() {
+object TimerPlayerShootBow : AbstractTimer<EntityShootBowEvent>() {
     override val name: String
         get() = "player shoot"
     override val eventClazz: Class<EntityShootBowEvent>
