@@ -1,41 +1,49 @@
 package com.bh.planners.api
 
+import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.core.pojo.data.Data
+import com.bh.planners.core.pojo.data.DataContainer
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
+import org.bukkit.entity.Player
 import taboolib.common.platform.Schedule
+import java.util.Collections
 import java.util.UUID
 
 object EntityAPI {
 
-    private val map = mutableMapOf<UUID, Long>()
-    private val waitRemove = mutableListOf<Entity>()
+    private val map = Collections.synchronizedMap(mutableMapOf<UUID, DataContainer>())
 
-    fun register(uuid: UUID, timeout: Long) {
-        map[uuid] = timeout
+
+    fun Entity.getDataContainer(): DataContainer {
+        if (this is Player) {
+            return plannersProfile.flags
+        } else {
+            return map.computeIfAbsent(this.uniqueId) { DataContainer() }
+        }
     }
 
-    fun register(entity: Entity, timeout: Long) {
-        register(entity.uniqueId, timeout)
-    }
-
-    @Schedule(delay = 20, period = 20, async = true)
+    /**
+     * 一小时清理一次无用实体
+     */
+    @Schedule(period = 20 * 60 * 60)
     fun task() {
-        val removed = mutableListOf<UUID>()
-        val timeMillis = System.currentTimeMillis()
-        map.forEach {
-            if (it.value < timeMillis) {
-                waitRemove += Bukkit.getEntity(it.key) ?: return@forEach
-                removed += it.key
-            }
-        }
-        removed.forEach { map.remove(it) }
-    }
-    @Schedule(delay = 20, period = 20, async = false)
-    fun task0() {
-        waitRemove.removeAll {
-            it.remove()
-            true
+        map.filter { Bukkit.getEntity(it.key) == null }.forEach {
+            map.remove(it.key)
         }
     }
 
+    fun Entity.get(key: String) = getFlag(key)
+
+    fun Entity.getFlag(key: String): Data? {
+        return getDataContainer()[key]
+    }
+
+    fun Entity.updateFlag(key: String, value: Any) {
+        getDataContainer().update(key, value)
+    }
+
+    fun Entity.setFlag(key: String, data: Data) {
+        getDataContainer()[key] = data
+    }
 }

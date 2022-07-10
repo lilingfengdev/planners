@@ -1,7 +1,9 @@
 package com.bh.planners.core.kether
 
+import com.bh.planners.api.EntityAPI.getDataContainer
+import com.bh.planners.api.EntityAPI.getFlag
+import com.bh.planners.api.EntityAPI.setFlag
 import com.bh.planners.api.PlannersAPI.plannersProfile
-import com.bh.planners.api.getFlag
 import com.bh.planners.api.setFlag
 import com.bh.planners.core.pojo.data.Data
 import taboolib.common5.Coerce
@@ -12,6 +14,29 @@ import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 class ActionFlag {
+
+    class DataGet(val action: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Any>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Any> {
+            val future = CompletableFuture<Any>()
+            frame.newFrame(action).run<Any>().thenAccept {
+                val key = it.toString()
+                if (selector != null) {
+                    frame.createTargets(selector).thenAccept {
+                        val entityTarget = it.firstEntityTarget()
+                        if (entityTarget != null) {
+                            future.complete(entityTarget.getFlag(key))
+                        } else {
+                            future.complete(null)
+                        }
+                    }
+                } else {
+                    future.complete(frame.asPlayer()?.getFlag(key))
+                }
+            }
+            return future
+        }
+
+    }
 
     class DataSet(
         val action: ParsedAction<*>,
@@ -25,16 +50,13 @@ class ActionFlag {
 
                     frame.newFrame(time).run<Any>().thenAccept { time ->
                         if (selector != null) {
-                            frame.execPlayer(selector) {
-                                plannersProfile.setFlag(
-                                    key.toString(), Data(value, survivalStamp = Coerce.toLong(time))
-                                )
+                            frame.execEntity(selector) {
+                                setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time)))
                             }
                         } else {
                             val profile = frame.asPlayer()!!.plannersProfile
                             profile.setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time)))
                         }
-
                     }
                 }
             }
@@ -49,14 +71,14 @@ class ActionFlag {
                 val key = it.toString()
                 frame.newFrame(value).run<Any>().thenAccept { value ->
                     if (selector != null) {
-                        frame.execPlayer(selector) {
-                            val dataContainer = plannersProfile.flags
+                        frame.execEntity(selector) {
+                            val dataContainer = getDataContainer()
                             if (dataContainer.containsKey(key)) {
                                 dataContainer.update(key, dataContainer[key]!!.increaseAny(value.toString()))
                             }
                         }
                     } else {
-                        val dataContainer = frame.asPlayer()!!.plannersProfile.flags
+                        val dataContainer = frame.asPlayer()!!.getDataContainer()
                         if (dataContainer.containsKey(key)) {
                             dataContainer.update(key, dataContainer[key]!!.increaseAny(value.toString()))
                         }
@@ -80,13 +102,15 @@ class ActionFlag {
          * 是否存在数据
          * flag [key: action] add [value: action]  <selector>
          *
+         * 取数据 只取第一位是实体的数据
+         * flag get [key: action] <selector:first>
          */
         @KetherParser(["flag", "data"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             val key = it.next(ArgTypes.ACTION)
             try {
                 it.mark()
-                when (it.expects("add", "set")) {
+                when (it.expects("add", "set", "get","to")) {
                     "set", "to" -> {
                         val value = it.next(ArgTypes.ACTION)
                         val timeout = try {
@@ -99,6 +123,8 @@ class ActionFlag {
                         }
                         DataSet(key, value, timeout, it.selectorAction())
                     }
+
+                    "get" -> DataGet(it.next(ArgTypes.ACTION), it.selectorAction())
 
                     "add" -> DataAdd(key, it.next(ArgTypes.ACTION), it.selectorAction())
 
