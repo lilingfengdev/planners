@@ -12,6 +12,7 @@ import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -95,11 +96,31 @@ class ActionAdyeshach {
 
     }
 
+    class AdyeshachEntityFollow(val owner: ParsedAction<*>, val selector: ParsedAction<*>,val option : ParsedAction<*>) : ScriptAction<Void>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+
+            return frame.createTargets(owner).thenAccept {
+                val entityTarget = it.firstLivingEntityTarget() ?: return@thenAccept
+                frame.newFrame(option).run<Any>().thenAccept {
+                    val option = it.toString()
+                    frame.execEntity(selector) {
+                        if (this is AdyeshachEntity) {
+                            EntityFollow.select(entityTarget, this.entity, option)
+                        }
+                    }
+                }
+
+            }
+        }
+
+    }
+
     companion object {
 
 
         /**
          * adyeshach spawn type name tick
+         * adyeshach follow <option: action> [owner:first] [selector:entity]
          */
         @KetherParser(["adyeshach", "ady"], namespace = NAMESPACE)
         fun parser() = scriptParser {
@@ -111,6 +132,17 @@ class ActionAdyeshach {
                         it.next(ArgTypes.ACTION),
                         it.selectorAction()
                     )
+                }
+                case("follow") {
+                    val option = try {
+                        it.mark()
+                        it.expects("option","params")
+                        it.next(ArgTypes.ACTION)
+                    } catch (_ : Throwable) {
+                        it.reset()
+                        ParsedAction(LiteralAction<Long>("EMPTY"))
+                    }
+                    AdyeshachEntityFollow(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION),option)
                 }
             }
 

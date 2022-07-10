@@ -124,7 +124,7 @@ class ActionFlag {
                         DataSet(key, value, timeout, it.selectorAction())
                     }
 
-                    "get" -> DataGet(it.next(ArgTypes.ACTION), it.selectorAction())
+                    "get" -> DataGet(key, it.selectorAction())
 
                     "add" -> DataAdd(key, it.next(ArgTypes.ACTION), it.selectorAction())
 
@@ -132,7 +132,7 @@ class ActionFlag {
                 }
             } catch (_: Throwable) {
                 it.reset()
-                error("error of case!")
+                DataGet(key, it.selectorAction())
             }
         }
 

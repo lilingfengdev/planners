@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.compat
 
-import com.bh.planners.core.feature.attribute.AttributeBridge
+import com.bh.planners.core.kether.compat.attribute.AttributeBridge
 import com.bh.planners.core.kether.*
 import org.bukkit.entity.LivingEntity
 import taboolib.common.util.asList
@@ -13,12 +13,7 @@ import java.util.concurrent.CompletableFuture
 
 class ActionAttribute {
 
-    class AttributeAdd(
-        val source: ParsedAction<*>,
-        val timeout: ParsedAction<*>,
-        val list: ParsedAction<*>,
-        val selector: ParsedAction<*>?
-    ) :
+    class AttributeAdd(val source: ParsedAction<*>, val timeout: ParsedAction<*>, val list: ParsedAction<*>, val selector: ParsedAction<*>?) :
         ScriptAction<Void>() {
 
         fun execute(entity: LivingEntity, source: String, timeout: Long, list: List<String>) {

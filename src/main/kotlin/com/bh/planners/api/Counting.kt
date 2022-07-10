@@ -13,7 +13,7 @@ object Counting {
 
     fun reset(player: Player, session: Session) {
         val get = session.cooldown.get()
-        set(player, session.skill, Coerce.toLong(get) * 1000)
+        set(player, session.skill, Coerce.toLong(get) * 50)
     }
 
     fun hasNext(player: Player, skill: Skill): Boolean {

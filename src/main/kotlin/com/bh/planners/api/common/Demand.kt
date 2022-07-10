@@ -13,7 +13,7 @@ class Demand(val source: String) {
 
     init {
         var args = source.split(" ")
-        if (source[0] != '-') {
+        if (source[0] != '-' && this.args.size >= 4) {
             this.args += args.subList(0, 4).toMutableList()
             namespace = args[0]
             args = args.subList(4,args.size)
@@ -111,11 +111,11 @@ class Demand(val source: String) {
 
     companion object {
 
-        val cache = mutableMapOf<String, com.bh.planners.api.common.Demand>()
+        val cache = mutableMapOf<String, Demand>()
 
-        fun String.toDemand(): com.bh.planners.api.common.Demand {
+        fun String.toDemand(): Demand {
             return cache.computeIfAbsent(this) {
-                com.bh.planners.api.common.Demand(this)
+                Demand(this)
             }
         }
 

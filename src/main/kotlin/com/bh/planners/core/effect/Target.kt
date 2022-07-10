@@ -124,6 +124,9 @@ interface Target {
 
         fun firstTarget() = targets.firstOrNull()
 
+        fun firstLivingEntityTarget() =
+            targets.filterIsInstance<Entity>().filter { it.isLiving }.firstOrNull()?.asLivingEntity
+
         fun firstEntityTarget() = targets.filterIsInstance<Entity>().firstOrNull()?.entity
 
         fun getLocationTarget(index: Int) = targets.filterIsInstance<Location>().getOrNull(index)?.value

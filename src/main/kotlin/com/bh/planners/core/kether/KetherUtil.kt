@@ -189,6 +189,7 @@ fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Targ
 
         when (it) {
             is List<*> -> {
+
                 val list = it.mapNotNull { entry ->
                     if (entry is Entity) {
                         entry.toTarget()
@@ -202,10 +203,13 @@ fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Targ
 
             is Target.Container -> future.complete(it)
 
-            is Entity -> {
-                container.add(it.toTarget())
-                future.complete(container)
+            is Target -> {
+                future.complete(container.apply { add(it) })
             }
+
+            is Entity -> future.complete(container.apply { add(it.toTarget()) })
+
+            is Location -> future.complete(container.apply { add(it.toTarget()) })
 
             else -> {
                 val demand = it.toString().toDemand()

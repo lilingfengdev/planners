@@ -1,4 +1,4 @@
-package com.bh.planners.core.feature.attribute
+package com.bh.planners.core.kether.compat.attribute
 
 import org.bukkit.entity.LivingEntity
 import java.util.*
