@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.*
+import com.bh.planners.util.eval
 import org.bukkit.entity.LivingEntity
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
@@ -14,7 +15,7 @@ class ActionDamage {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(value).run<Any>().thenAccept { damage ->
                 frame.execLivingEntity(selector) {
-                    this.damage(Coerce.toDouble(damage))
+                    this.damage(damage.toString().eval(this.maxHealth))
                     this.noDamageTicks = 0
                 }
             }
@@ -26,7 +27,7 @@ class ActionDamage {
             return frame.newFrame(value).run<Any>().thenAccept { damage ->
                 val asPlayer = frame.asPlayer() ?: return@thenAccept
                 frame.execLivingEntity(selector) {
-                    this.damage(Coerce.toDouble(damage), asPlayer)
+                    this.damage(damage.toString().eval(this.maxHealth), asPlayer)
                     this.noDamageTicks = 0
                 }
             }

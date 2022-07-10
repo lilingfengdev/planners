@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.common.Operator
 import com.bh.planners.core.kether.*
+import com.bh.planners.util.eval
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import taboolib.common5.Coerce
@@ -15,7 +16,8 @@ class ActionHealth {
     class HealthOperation(val mode: Operator, val value: ParsedAction<*>, val selector: ParsedAction<*>?) :
         ScriptAction<Void>() {
 
-        fun execute(entity: LivingEntity, value: Double) {
+        fun execute(entity: LivingEntity, value: String) {
+            val value = value.eval(entity.maxHealth)
             val result = when (mode) {
                 Operator.ADD -> entity.health + value
                 Operator.TAKE -> entity.health - value
@@ -26,12 +28,11 @@ class ActionHealth {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(value).run<Any>().thenAccept {
-                val value = Coerce.toDouble(it)
                 catchRunning {
                     if (selector != null) {
-                        frame.execLivingEntity(selector) { execute(this, value) }
+                        frame.execLivingEntity(selector) { execute(this, it.toString()) }
                     } else {
-                        execute(frame.asPlayer() ?: return@catchRunning, value)
+                        execute(frame.asPlayer() ?: return@catchRunning, it.toString())
                     }
                 }
             }

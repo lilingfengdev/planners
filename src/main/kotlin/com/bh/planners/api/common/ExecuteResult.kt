@@ -36,6 +36,13 @@ enum class ExecuteResult {
             get() = { skill ->
                 sendLang("skill-cast-level-zero", skill.option.name)
             }
+    },
+    CANCELED {
+        override val handler: Player.(Skill) -> Unit
+            get() = {
+
+            }
+
     };
 
     abstract val handler: Player.(Skill) -> Unit

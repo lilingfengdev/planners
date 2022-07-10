@@ -45,7 +45,7 @@ class ActionSilence(
         }
 
         @SubscribeEvent(EventPriority.LOWEST)
-        fun onCastSkill(e: PlayerCastSkillEvent) {
+        fun onCastSkill(e: PlayerCastSkillEvent.Pre) {
             val time = silenceMap[e.player.uniqueId] ?: return
             if (System.currentTimeMillis() > time) {
                 silenceMap.remove(e.player.uniqueId)

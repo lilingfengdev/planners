@@ -82,6 +82,8 @@ object PlannersAPI {
             session.closed = true
             return ExecuteResult.SUCCESS
         }
+        val preEvent = PlayerCastSkillEvent.Pre(player, skill).apply { call() }
+        if (preEvent.isCancelled) return ExecuteResult.CANCELED
 
         if (!Counting.hasNext(player, skill)) return ExecuteResult.COOLING
 
@@ -94,7 +96,7 @@ object PlannersAPI {
         session.cast()
         session.closed = true
 
-        PlayerCastSkillEvent(player, skill).call()
+        PlayerCastSkillEvent.Post(player, skill).call()
         return ExecuteResult.SUCCESS
     }
 
