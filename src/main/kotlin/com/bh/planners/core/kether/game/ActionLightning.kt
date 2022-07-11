@@ -11,22 +11,26 @@ import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
-class ActionLightning(
-    val selector: ParsedAction<*>
-) : ScriptAction<Void>() {
+class ActionLightning(val selector: ParsedAction<*>?) : ScriptAction<Void>() {
+
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.exec(selector) {
-            val loc = when (this) {
-                is Target.Entity -> {
-                    this.entity.location
+        if (selector != null) {
+            frame.exec(selector) {
+                val loc = when (this) {
+                    is Target.Entity -> {
+                        this.entity.location
+                    }
+                    is Target.Location -> {
+                        this.value
+                    }
+                    else -> return@exec
                 }
-                is Target.Location -> {
-                    this.value
-                }
-                else -> return@exec
+                lightning(loc)
             }
-            lightning(loc)
+        } else {
+            lightning(frame.toOriginLocation()?.value ?: return CompletableFuture.completedFuture(null))
         }
+
         return CompletableFuture.completedFuture(null)
     }
 
@@ -42,7 +46,7 @@ class ActionLightning(
          */
         @KetherParser(["lightning"], namespace = NAMESPACE)
         fun parser() = scriptParser {
-            ActionLightning(it.next(ArgTypes.ACTION))
+            ActionLightning(it.selectorAction())
         }
     }
 }
