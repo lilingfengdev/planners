@@ -6,6 +6,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
 import taboolib.common.platform.ProxyParticle
+import taboolib.common.platform.function.info
 import taboolib.common.util.Vector
 import taboolib.module.nms.MinecraftVersion
 import taboolib.platform.util.toBukkitLocation

@@ -58,7 +58,7 @@ class ActionAdyeshach {
             entity.setCustomName(name)
             // 注册销毁任务
             SimpleTimeoutTask.createSimpleTask(tick, true) {
-                entity.destroy()
+                entity.delete()
             }
             return "ady:${entity.uniqueId}"
         }
@@ -72,7 +72,7 @@ class ActionAdyeshach {
                     frame.runAny(timeout) {
                         val tick = Coerce.toLong(this)
                         if (selector != null) {
-                            frame.createTargets(selector).thenAccept {
+                            frame.createContainer(selector).thenAccept {
                                 catchRunning {
                                     val locations = it.targets.filterIsInstance<Target.Location>().map { it.value }
                                     spawn(entityType, locations, name, tick).thenAccept {
@@ -99,7 +99,7 @@ class ActionAdyeshach {
     class AdyeshachEntityFollow(val owner: ParsedAction<*>, val selector: ParsedAction<*>,val option : ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-            return frame.createTargets(owner).thenAccept {
+            return frame.createContainer(owner).thenAccept {
                 val entityTarget = it.firstLivingEntityTarget() ?: return@thenAccept
                 frame.newFrame(option).run<Any>().thenAccept {
                     val option = it.toString()

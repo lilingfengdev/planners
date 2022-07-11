@@ -60,17 +60,20 @@ interface Target {
         val size: Int
             get() = targets.size
 
-        fun add(vararg target: Target) {
+        fun add(vararg target: Target) : Container {
             this.targets += target
+            return this
         }
 
-        fun addAll(targets: List<Target>) {
+        fun addAll(targets: List<Target>) : Container {
             this.targets += targets
+            return this
         }
 
-        fun merge(container: Container) {
-            if (container.targets.isEmpty()) return
+        fun merge(container: Container) : Container {
+            if (container.targets.isEmpty()) return this
             targets += container.targets
+            return this
         }
 
         fun clearAll() {

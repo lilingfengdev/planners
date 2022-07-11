@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.compat
 
 import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.createTargets
+import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import io.lumine.xikage.mythicmobs.MythicMobs
@@ -28,7 +28,7 @@ class ActionMythicMob {
                 frame.newFrame(offsetX).run<Any>().thenAccept { offsetX ->
                     frame.newFrame(offsetY).run<Any>().thenAccept { offsetY ->
                         frame.newFrame(offsetZ).run<Any>().thenAccept { offsetZ ->
-                            frame.createTargets(selector).thenAccept { selector ->
+                            frame.createContainer(selector).thenAccept { selector ->
                                 val mobs = mutableListOf<ActiveMob>()
                                 val mob = Coerce.toString(mob)
                                 val offsetX = Coerce.toDouble(offsetX)

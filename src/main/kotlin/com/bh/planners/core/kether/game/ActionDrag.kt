@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.createTargets
+import com.bh.planners.core.kether.createContainer
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
@@ -39,8 +39,8 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         return frame.newFrame(step).run<Any>().thenAccept {
             val step = Coerce.toDouble(it)
-            frame.createTargets(selector).thenAccept { container ->
-                frame.createTargets(pos).thenAccept {
+            frame.createContainer(selector).thenAccept { container ->
+                frame.createContainer(pos).thenAccept {
                     val pos = it.firstLocationTarget() ?: error("ActionDrag 'pos' empty")
                     container.forEachEntity {
                         this.velocity = next(this.location, pos, step)

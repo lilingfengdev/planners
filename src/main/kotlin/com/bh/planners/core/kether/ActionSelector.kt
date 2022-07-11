@@ -3,7 +3,6 @@ package com.bh.planners.core.kether
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.selector.Fetch.asContainer
 import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
-import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -35,7 +34,7 @@ class ActionSelector {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             val future = CompletableFuture<Void>()
             frame.newFrame(keyAction).run<String>().thenAccept { key ->
-                frame.createTargets(valueAction).thenAccept { container ->
+                frame.createContainer(valueAction).thenAccept { container ->
                     frame.getContext().flags[key] = container.unsafeData()
                     future.complete(null)
                 }

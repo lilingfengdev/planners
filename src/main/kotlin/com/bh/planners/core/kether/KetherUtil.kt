@@ -7,7 +7,6 @@ import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.createContainer
 import com.bh.planners.core.effect.Target.Companion.toTarget
-import com.bh.planners.core.kether.util.Strings
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.util.StringNumber
@@ -18,7 +17,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
-import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -182,7 +180,7 @@ fun ScriptFrame.execPlayer(selector: ParsedAction<*>, call: Player.() -> Unit) {
     }
 }
 
-fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Target.Container> {
+fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Target.Container> {
     val future = CompletableFuture<Target.Container>()
     this.newFrame(selector).run<Any>().thenAccept {
         val container = Target.Container()
@@ -204,12 +202,20 @@ fun ScriptFrame.createTargets(selector: ParsedAction<*>): CompletableFuture<Targ
             is Target.Container -> future.complete(it)
 
             is Target -> {
-                future.complete(container.apply { add(it) })
+                future.complete(container.add(it))
             }
 
-            is Entity -> future.complete(container.apply { add(it.toTarget()) })
+            is Entity -> future.complete(container.add(it.toTarget()))
 
-            is Location -> future.complete(container.apply { add(it.toTarget()) })
+            is Location -> future.complete(container.add(it.toTarget()))
+
+            is UUID -> {
+                val entity = Bukkit.getEntity(it)
+                if (entity != null) {
+                    container.add(entity.toTarget())
+                }
+                future.complete(container)
+            }
 
             else -> {
                 val demand = it.toString().toDemand()

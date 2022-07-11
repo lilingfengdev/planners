@@ -3,6 +3,7 @@ plugins {
     `maven-publish`
     id("io.izzel.taboolib") version "1.40"
     id("org.jetbrains.kotlin.jvm") version "1.5.10"
+//    kotlin("jvm") version "1.0.0"
 }
 
 taboolib {
@@ -42,6 +43,8 @@ repositories {
 }
 
 dependencies {
+
+    compileOnly("public:ModelEngine:2.5.1")
     compileOnly("ink.ptms:nms-all:1.0.0")
     compileOnly("ink.ptms.core:v11800:11800-minimize:api")
     compileOnly("ink.ptms.core:v11800:11800-minimize:mapped")

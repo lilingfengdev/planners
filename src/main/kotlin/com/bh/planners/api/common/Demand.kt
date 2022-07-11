@@ -13,7 +13,7 @@ class Demand(val source: String) {
 
     init {
         var args = source.split(" ")
-        if (source[0] != '-' && this.args.size >= 4) {
+        if (source[0] != '-' && args.size >= 4) {
             this.args += args.subList(0, 4).toMutableList()
             namespace = args[0]
             args = args.subList(4,args.size)
@@ -90,7 +90,7 @@ class Demand(val source: String) {
     }
 
     override fun toString(): String {
-        return "Demand(source='$source', dataMap=$dataMap, args=$args,children=$children)"
+        return "Demand(namespace='$namespace', dataMap=$dataMap, args=$args,children=$children)"
     }
 
     override fun equals(other: Any?): Boolean {

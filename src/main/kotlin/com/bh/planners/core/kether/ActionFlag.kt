@@ -21,7 +21,7 @@ class ActionFlag {
             frame.newFrame(action).run<Any>().thenAccept {
                 val key = it.toString()
                 if (selector != null) {
-                    frame.createTargets(selector).thenAccept {
+                    frame.createContainer(selector).thenAccept {
                         val entityTarget = it.firstEntityTarget()
                         if (entityTarget != null) {
                             future.complete(entityTarget.getFlag(key))

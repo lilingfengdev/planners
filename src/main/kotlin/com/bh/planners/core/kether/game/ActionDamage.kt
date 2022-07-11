@@ -47,7 +47,7 @@ class ActionDamage {
          */
         @KetherParser(["damage"], namespace = NAMESPACE)
         fun parser() = scriptParser {
-            Damage(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+            Damage(it.next(ArgTypes.ACTION), it.selectorAction() ?: error("the lack of 'they' cite target"))
         }
 
         /**
@@ -57,7 +57,7 @@ class ActionDamage {
          */
         @KetherParser(["attack"], namespace = NAMESPACE)
         fun parser2() = scriptParser {
-            Attack(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+            Attack(it.next(ArgTypes.ACTION), it.selectorAction() ?: error("the lack of 'they' cite target"))
         }
 
     }

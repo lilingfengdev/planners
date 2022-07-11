@@ -48,7 +48,7 @@ class ActionTalkEntity(val action: ParsedAction<*>, val selector: ParsedAction<*
         frame.newFrame(action).run<Any>().thenAccept {
             val message = it.toString()
             if (selector != null) {
-                frame.createTargets(selector).thenAccept { container ->
+                frame.createContainer(selector).thenAccept { container ->
                     container.targets.forEach {
                         if (it is Target.Entity) {
                             execute(it.entity, message)
