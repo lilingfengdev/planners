@@ -17,11 +17,13 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
 import taboolib.library.kether.QuestReader
+import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import taboolib.platform.type.BukkitPlayer
 import java.util.*
@@ -148,6 +150,30 @@ fun ScriptFrame.runAny(action: ParsedAction<*>, call: Any.() -> Unit): Completab
     return this.newFrame(action).run<Any>().thenAccept(call)
 }
 
+inline fun <reified T> ScriptFrame.transfer(
+    action: ParsedAction<*>,
+    crossinline call: (T) -> Unit
+): CompletableFuture<Void> {
+
+    return this.newFrame(action).run<Any>().thenAccept {
+
+        if (T::class.java.isEnum) {
+            call(T::class.java.invokeMethod<T>("valueOf", it.toString())!! as T)
+            return@thenAccept
+        }
+
+        val value = when (T::class.java) {
+            String::class.java -> Coerce.toString(it)
+            Int::class.java -> Coerce.toInteger(it)
+            Long::class.java -> Coerce.toLong(it)
+            Boolean::class.java -> Coerce.toBoolean(it)
+            Double::class.java -> Coerce.toDouble(it)
+            else -> it.toString()
+        } as T
+        call(value)
+    }
+}
+
 fun ScriptFrame.execEntity(selector: ParsedAction<*>, call: Entity.() -> Unit) {
     exec(selector) {
         if (this is Target.Entity) {
@@ -244,13 +270,23 @@ fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParse
     return ActionEventParser(resolve)
 }
 
-fun QuestReader.selectorAction(): ParsedAction<*>? {
+fun QuestReader.get(array: Array<String>): ParsedAction<*> {
+    return tryGet(array, null) ?: error("the lack of '$array' cite target")
+}
+
+fun QuestReader.tryGet(array: Array<String>, def: Any? = null): ParsedAction<*>? {
     return try {
         mark()
-        expects("they", "the")
+        expects()
         next(ArgTypes.ACTION)
     } catch (e: Exception) {
         reset()
-        null
+        ParsedAction(LiteralAction<Any>(def))
     }
+}
+
+fun QuestReader.selector(): ParsedAction<*> = get(arrayOf("they", "the"))
+
+fun QuestReader.selectorAction(): ParsedAction<*>? {
+    return tryGet(arrayOf("they", "the"), null)
 }

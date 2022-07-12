@@ -3,9 +3,7 @@ package com.bh.planners.core.kether.game.entity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 
-enum class EntityField(
-    val get: Entity.() -> Any?
-) {
+enum class EntityField(val get: Entity.() -> Any?) {
 
     UUID({ uniqueId }),
 
