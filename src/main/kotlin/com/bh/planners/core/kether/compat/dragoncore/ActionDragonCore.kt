@@ -73,11 +73,12 @@ class ActionDragonCore {
     companion object {
 
         /**
-         * germ animation send [name: token] [selector]
-         * germ animation stop [name: token] [selector]
+         * dragon animation send [name: token] [selector]
+         * dragon animation stop [name: token] [selector]
          *
+         * 音效播放
          * dragon sound name <volume: 1.0> <pitch: 1.0> <loop: false> [selector]
-         * dragon sound xxx volume 1.0 pitch 1.0 loop true [selector]
+         * t: dragon sound xxx volume 1.0 pitch 1.0 loop true [selector]
          *
          */
         @KetherParser(["dragon", "dragoncore"], namespace = NAMESPACE, shared = true)

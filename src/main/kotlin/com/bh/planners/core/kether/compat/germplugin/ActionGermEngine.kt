@@ -103,12 +103,15 @@ class ActionGermEngine {
 
         /**
          * germ animation send [name: token] [selector]
+         *
          * germ animation stop [name: token] [selector]
          *
+         * 音效播放
          * germ sound name <soundtype> <volume> <pitch> <selector>
          *
          * germ sound name soundtype master volume 1.0 pitch 1.0 they "-@self"
          *
+         * 例子播放
          * germ particle [path: action] <selector>
          */
         @KetherParser(["germengine", "germ", "germplugin"], namespace = NAMESPACE, shared = true)
