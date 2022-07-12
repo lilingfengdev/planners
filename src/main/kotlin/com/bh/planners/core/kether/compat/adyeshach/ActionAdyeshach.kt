@@ -58,7 +58,9 @@ class ActionAdyeshach {
             entity.setCustomName(name)
             // 注册销毁任务
             SimpleTimeoutTask.createSimpleTask(tick, true) {
-                entity.delete()
+                if (!entity.isDeleted) {
+                    entity.delete()
+                }
             }
             return "ady:${entity.uniqueId}"
         }
@@ -96,7 +98,11 @@ class ActionAdyeshach {
 
     }
 
-    class AdyeshachEntityFollow(val owner: ParsedAction<*>, val selector: ParsedAction<*>,val option : ParsedAction<*>) : ScriptAction<Void>() {
+    class AdyeshachEntityFollow(
+        val owner: ParsedAction<*>,
+        val selector: ParsedAction<*>,
+        val option: ParsedAction<*>
+    ) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
             return frame.createContainer(owner).thenAccept {
@@ -115,39 +121,49 @@ class ActionAdyeshach {
 
     }
 
+    class AdyeshachEntityRemove(val selector: ParsedAction<*>) : ScriptAction<Void>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.execAdyeshachEntity(selector) {
+                this.entity.delete()
+            }
+            return CompletableFuture.completedFuture(null)
+        }
+    }
+
+
+
     companion object {
 
 
         /**
          * adyeshach spawn type name tick
          * adyeshach follow <option: action> [owner:first] [selector:entity]
+         *
+         * adyeshach remove [selector]
+         *
          */
         @KetherParser(["adyeshach", "ady"], namespace = NAMESPACE)
         fun parser() = scriptParser {
             it.switch {
                 case("spawn") {
-                    ActionEntitySpawn(
-                        it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION),
-                        it.selectorAction()
-                    )
+                    ActionEntitySpawn(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.selectorAction())
                 }
                 case("follow") {
-                    val option = try {
-                        it.mark()
-                        it.expects("option","params")
-                        it.next(ArgTypes.ACTION)
-                    } catch (_ : Throwable) {
-                        it.reset()
-                        ParsedAction(LiteralAction<Long>("EMPTY"))
-                    }
-                    AdyeshachEntityFollow(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION),option)
+                    AdyeshachEntityFollow(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.tryGet(arrayOf("option","params"),"EMPTY")!!)
+                }
+                case("remove") {
+                    AdyeshachEntityRemove(it.selector())
                 }
             }
 
         }
-
+        fun ScriptFrame.execAdyeshachEntity(selector: ParsedAction<*>, call: AdyeshachEntity.() -> Unit) {
+            execEntity(selector) {
+                if (this is AdyeshachEntity) {
+                    call(this)
+                }
+            }
+        }
     }
 
 

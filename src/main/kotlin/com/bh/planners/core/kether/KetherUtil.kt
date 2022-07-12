@@ -277,7 +277,7 @@ fun QuestReader.get(array: Array<String>): ParsedAction<*> {
 fun QuestReader.tryGet(array: Array<String>, def: Any? = null): ParsedAction<*>? {
     return try {
         mark()
-        expects()
+        expects(*array)
         next(ArgTypes.ACTION)
     } catch (e: Exception) {
         reset()
