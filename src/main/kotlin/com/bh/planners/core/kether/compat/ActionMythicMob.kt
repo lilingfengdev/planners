@@ -54,7 +54,7 @@ class ActionMythicMob {
 
         val api by lazy { MythicMobs.inst() }
 
-        @KetherParser(["mm"], namespace = NAMESPACE)
+        @KetherParser(["mm"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
                 case("spawn") {

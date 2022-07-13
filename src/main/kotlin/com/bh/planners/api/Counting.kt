@@ -40,6 +40,7 @@ object Counting {
         baffle.reduce(amount)
     }
 
+
     fun getCache(player: Player) = map.computeIfAbsent(player.name) { mutableSetOf() }
 
 }

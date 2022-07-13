@@ -70,7 +70,7 @@ class ActionGlobalVariable {
          * 所有键 check 匹配关键字
          * global keys [check]
          */
-        @KetherParser(["global"], namespace = NAMESPACE)
+        @KetherParser(["global"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val key = it.next(ArgTypes.ACTION)
             try {

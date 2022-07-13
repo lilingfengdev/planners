@@ -51,7 +51,7 @@ class ActionTitle(
 
     internal object Parser {
 
-        @KetherParser(["title"], namespace = NAMESPACE)
+        @KetherParser(["title"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val title = it.next(ArgTypes.ACTION)
             it.mark()

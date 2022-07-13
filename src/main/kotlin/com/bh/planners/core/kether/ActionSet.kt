@@ -27,7 +27,7 @@ class ActionSet(val action: ParsedAction<*>, val value: ParsedAction<*>) : Scrip
          * set xx to xx
          * set property xx from xx to xx
          */
-        @KetherParser(["set"], namespace = NAMESPACE)
+        @KetherParser(["set"], namespace = NAMESPACE, shared = true)
         fun parser0() = scriptParser {
             val key = it.next(ArgTypes.ACTION)
             val value = try {

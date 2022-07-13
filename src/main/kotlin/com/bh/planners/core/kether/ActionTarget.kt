@@ -49,7 +49,7 @@ class ActionTarget {
             return flags["@Target"]?.asTarget()
         }
 
-        @KetherParser(["target"], namespace = NAMESPACE)
+        @KetherParser(["target"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
                 case("switch") {

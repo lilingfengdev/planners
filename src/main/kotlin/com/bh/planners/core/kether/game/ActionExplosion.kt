@@ -42,7 +42,7 @@ class ActionExplosion(
          * 在指定(目标)坐标处召唤一次爆炸
          * explosion [power] [selector]
          */
-        @KetherParser(["explosion"], namespace = NAMESPACE)
+        @KetherParser(["explosion"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val power = it.next(ArgTypes.ACTION)
             ActionExplosion(power, it.selectorAction())

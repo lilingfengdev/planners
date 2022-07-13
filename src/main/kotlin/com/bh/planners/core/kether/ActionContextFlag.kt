@@ -73,7 +73,7 @@ class ActionContextFlag {
          * 设置数据 并附带存活时间
          * context flag [key: action] to [value: action] <timeout [time: action]>
          */
-        @KetherParser(["context"], namespace = NAMESPACE)
+        @KetherParser(["context"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
                 case("flag") {

@@ -38,7 +38,7 @@ class ActionSilence(
          *  *** 暂时无效 等PlayerCastSkillEvent完善即可
          * silence [seconds] [selector]
          */
-        @KetherParser(["silence"], namespace = NAMESPACE)
+        @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val seconds = it.next(ArgTypes.ACTION)
             ActionSilence(seconds, it.selectorAction())

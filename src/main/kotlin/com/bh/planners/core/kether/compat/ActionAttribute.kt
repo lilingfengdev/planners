@@ -17,7 +17,7 @@ class ActionAttribute {
         ScriptAction<Void>() {
 
         fun execute(entity: LivingEntity, source: String, timeout: Long, list: List<String>) {
-            AttributeBridge.INSTANCE?.addAttributes(source, entity.uniqueId, timeout, list)
+            AttributeBridge.INSTANCE?.addAttributes(source, entity.uniqueId, timeout * 50, list)
         }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
@@ -86,7 +86,7 @@ class ActionAttribute {
          * attribute update [selector]
          * test: attribute update they  "-@self"
          */
-        @KetherParser(["attribute"], namespace = NAMESPACE)
+        @KetherParser(["attribute"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
                 case("add", "+=") {

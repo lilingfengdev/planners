@@ -29,7 +29,7 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
         /**
          * drag step selector1 selector2(1)
          */
-        @KetherParser(["drag"], namespace = NAMESPACE)
+        @KetherParser(["drag"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             ActionDrag(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
         }

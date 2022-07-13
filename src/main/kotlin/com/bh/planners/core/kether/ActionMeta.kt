@@ -26,7 +26,7 @@ class ActionMeta {
          *
          * meta origin
          */
-        @KetherParser(["meta"], namespace = NAMESPACE)
+        @KetherParser(["meta"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
 

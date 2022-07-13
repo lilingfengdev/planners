@@ -16,21 +16,19 @@ class ActionSkill {
     class CooldownOperator(val operator: Operator, val amount: ParsedAction<*>, val target: ParsedAction<*>?) :
         ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(amount).run<Any>().thenAccept { amount ->
+
+            frame.transfer<Long>(amount) { amount ->
                 if (target != null) {
-                    frame.newFrame(target).run<Any>().thenAccept { s ->
-                        val skill = PlannersAPI.getSkill(s.toString()) ?: return@thenAccept
-                        execute(frame.asPlayer() ?: return@thenAccept, skill, operator, Coerce.toLong(amount))
+                    frame.transfer<String>(target) {
+                        val skill = PlannersAPI.getSkill(it) ?: return@transfer
+                        execute(frame.asPlayer() ?: return@transfer, skill, operator, amount * 50)
                     }
                 } else {
-                    execute(
-                        frame.asPlayer() ?: return@thenAccept,
-                        frame.skill().instance,
-                        operator,
-                        Coerce.toLong(amount)
-                    )
+                    execute(frame.asPlayer() ?: return@transfer, frame.skill().instance, operator, amount * 50)
                 }
             }
+
+            return CompletableFuture.completedFuture(null)
         }
     }
 
@@ -48,7 +46,7 @@ class ActionSkill {
          * skill cooldown set 10 [of ""]
          *
          */
-        @KetherParser(["skill"], namespace = NAMESPACE)
+        @KetherParser(["skill"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
                 case("cooldown") {
@@ -58,16 +56,7 @@ class ActionSkill {
                         "set" -> Operator.SET
                         else -> error("error of case")
                     }
-                    val amount = it.next(ArgTypes.ACTION)
-                    val of = try {
-                        mark()
-                        expects("of", "the")
-                        it.next(ArgTypes.ACTION)
-                    } catch (_: Exception) {
-                        reset()
-                        null
-                    }
-                    CooldownOperator(operator, amount, of)
+                    CooldownOperator(operator, it.next(ArgTypes.ACTION), it.tryGet(arrayOf("of", "the")))
                 }
 
             }
@@ -78,7 +67,7 @@ class ActionSkill {
             when (operator) {
                 Operator.ADD -> Counting.increase(player, skill, amount)
                 Operator.TAKE -> Counting.reduce(player, skill, amount)
-                Operator.SET -> {}
+                Operator.SET -> Counting.set(player, skill, amount)
             }
         }
 

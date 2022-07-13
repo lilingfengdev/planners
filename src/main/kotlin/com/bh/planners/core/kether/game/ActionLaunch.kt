@@ -54,7 +54,7 @@ class ActionLaunch(
          * launch -2 0.5 0 "-@self"  -  使自己向后跳跃
          * launch 2 0.5 0 "-@self"   -  使自己向前跳跃
          */
-        @KetherParser(["launch"], namespace = NAMESPACE)
+        @KetherParser(["launch"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val x = it.next(ArgTypes.ACTION)
             val y = it.next(ArgTypes.ACTION)

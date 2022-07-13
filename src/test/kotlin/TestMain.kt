@@ -6,15 +6,19 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val demand = Demand("REDSTONE 0 0.1 0 -color 255,0,0 -posY \\-1.5 -start 0 -angle 540 -period 1 -slope 0.004 -step 12 -radius 1.3 -speed 0.0 -count 1 -@self")
-        println(demand)
+        print(exec<Long>(123)::class.java)
     }
 
-    class TestTarget : Target {
-        override fun toLocal(): String {
-            return "test"
-        }
-
+    inline fun <reified T> exec(it : Any) : T {
+        val value = when (T::class) {
+            String::class -> it.toString()
+            Int::class -> it.toString().toInt()
+            Long::class -> it.toString().toLong()
+            Boolean::class -> it.toString().toBoolean()
+            Double::class -> it.toString().toDouble()
+            else -> it.toString()
+        } as T
+        return value
     }
 
 }

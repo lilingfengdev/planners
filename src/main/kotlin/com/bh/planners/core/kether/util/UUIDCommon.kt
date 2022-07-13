@@ -19,7 +19,7 @@ class UUIDCommon {
 
     companion object {
 
-        @KetherParser(["uuid"], namespace = NAMESPACE)
+        @KetherParser(["uuid"], namespace = NAMESPACE, shared = true)
         fun parser2() = scriptParser { Random() }
     }
 

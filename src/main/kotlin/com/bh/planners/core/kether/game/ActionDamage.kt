@@ -45,7 +45,7 @@ class ActionDamage {
          * damage [damage] [selector]
          * damage 10.0 "-@aline 10"
          */
-        @KetherParser(["damage"], namespace = NAMESPACE)
+        @KetherParser(["damage"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             Damage(it.next(ArgTypes.ACTION), it.selectorAction() ?: error("the lack of 'they' cite target"))
         }
@@ -55,7 +55,7 @@ class ActionDamage {
          * attack [damage] [selector]
          * attack 10.0 "-@aline 10"
          */
-        @KetherParser(["attack"], namespace = NAMESPACE)
+        @KetherParser(["attack"], namespace = NAMESPACE, shared = true)
         fun parser2() = scriptParser {
             Attack(it.next(ArgTypes.ACTION), it.selectorAction() ?: error("the lack of 'they' cite target"))
         }

@@ -55,7 +55,7 @@ class ActionBalance {
          * balance get/look
          * balance
          */
-        @KetherParser(["balance"])
+        @KetherParser(["balance"], shared = true)
         fun parser() = scriptParser {
             it.switch {
                 case("has") {

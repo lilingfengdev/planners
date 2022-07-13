@@ -18,7 +18,7 @@ class ActionEvent {
          * event cancel [to [false/true]]
          *
          */
-        @KetherParser(["event"], namespace = NAMESPACE)
+        @KetherParser(["event"], namespace = NAMESPACE, shared = true)
         fun <T> parser() = scriptParser {
             val strings = ActionEventLoader.actions.keys.flatMap { it.toList() }
             val expects = it.expects(*strings.toTypedArray())

@@ -48,7 +48,7 @@ class ActionTeleport(
          *
          * teleport [location&entity] <the "selector">
          */
-        @KetherParser(["teleport", "tp"])
+        @KetherParser(["teleport", "tp"], shared = true)
         fun parser() = scriptParser {
             val parsedAction = it.next(ArgTypes.ACTION)
             ActionTeleport(parsedAction, it.selectorAction())

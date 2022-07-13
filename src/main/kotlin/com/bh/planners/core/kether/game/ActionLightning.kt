@@ -44,7 +44,7 @@ class ActionLightning(val selector: ParsedAction<*>?) : ScriptAction<Void>() {
          * 在指定(目标)坐标处召唤一条无伤闪电
          * lightning [selector]
          */
-        @KetherParser(["lightning"], namespace = NAMESPACE)
+        @KetherParser(["lightning"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             ActionLightning(it.selectorAction())
         }

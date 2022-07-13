@@ -60,7 +60,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
 
     internal object Parser {
 
-        @KetherParser(["command"], namespace = NAMESPACE)
+        @KetherParser(["command"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val command = it.next(ArgTypes.ACTION)
             it.mark()

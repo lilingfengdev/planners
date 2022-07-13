@@ -68,7 +68,10 @@ object TimerRegistry {
                 timer.onStart(this, template, event)
             }
         } catch (e: Throwable) {
+            e.printStackTrace()
             e.printKetherErrorMessage()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

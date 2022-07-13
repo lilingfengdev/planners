@@ -58,7 +58,7 @@ class ActionVelocity(
          * velocity [mode] [x] [y] [z] [selector]
          * velocity add 1 1 0 "-@self"
          */
-        @KetherParser(["velocity"], namespace = NAMESPACE)
+        @KetherParser(["velocity"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val mode = when (it.expects("add", "subtract", "sub", "minus", "multiply", "mul", "div", "divide", "set")) {
                 "add" -> Mode.ADD

@@ -17,6 +17,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.info
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
@@ -131,18 +132,8 @@ fun Location.toLocal(): String {
 }
 
 fun ScriptFrame.exec(selector: ParsedAction<*>, call: Target.() -> Unit) {
-    this.newFrame(selector).run<Any>().thenAccept {
-        if (it is Target) {
-            call(it)
-        } else if (it is Target.Container) {
-            it.targets.forEach(call)
-        } else {
-            val demand = it.toString().toDemand()
-            demand.createContainer(toOriginLocation(), getSession()).thenAccept {
-                it.targets.forEach(call)
-            }
-
-        }
+    createContainer(selector).thenAccept {
+        it.targets.forEach(call)
     }
 }
 
@@ -162,15 +153,17 @@ inline fun <reified T> ScriptFrame.transfer(
             return@thenAccept
         }
 
-        val value = when (T::class.java) {
-            String::class.java -> Coerce.toString(it)
-            Int::class.java -> Coerce.toInteger(it)
-            Long::class.java -> Coerce.toLong(it)
-            Boolean::class.java -> Coerce.toBoolean(it)
-            Double::class.java -> Coerce.toDouble(it)
-            else -> it.toString()
-        } as T
-        call(value)
+        catchRunning {
+            val value = when (T::class) {
+                String::class -> Coerce.toString(it)
+                Int::class -> Coerce.toInteger(it)
+                Long::class -> Coerce.toLong(it)
+                Boolean::class -> Coerce.toBoolean(it)
+                Double::class -> Coerce.toDouble(it)
+                else -> it.toString()
+            } as T
+            call(value)
+        }
     }
 }
 
@@ -281,7 +274,9 @@ fun QuestReader.tryGet(array: Array<String>, def: Any? = null): ParsedAction<*>?
         next(ArgTypes.ACTION)
     } catch (e: Exception) {
         reset()
-        ParsedAction(LiteralAction<Any>(def))
+        if (def == null) {
+            null
+        } else ParsedAction(LiteralAction<Any>(def))
     }
 }
 

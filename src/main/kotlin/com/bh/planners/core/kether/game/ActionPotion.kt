@@ -104,7 +104,7 @@ class ActionPotion {
          * potion clear <they selector>
          * potion remove SPEED <they selector>
          */
-        @KetherParser(["potion"], namespace = NAMESPACE)
+        @KetherParser(["potion"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
                 case("give") {

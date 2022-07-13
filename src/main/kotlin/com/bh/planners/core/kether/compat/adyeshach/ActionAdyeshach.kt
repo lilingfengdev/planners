@@ -142,7 +142,7 @@ class ActionAdyeshach {
          * adyeshach remove [selector]
          *
          */
-        @KetherParser(["adyeshach", "ady"], namespace = NAMESPACE)
+        @KetherParser(["adyeshach", "ady"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
                 case("spawn") {

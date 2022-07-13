@@ -28,7 +28,7 @@ class Strings {
     }
     companion object {
 
-        @KetherParser(["contain"], namespace = NAMESPACE)
+        @KetherParser(["contain"], namespace = NAMESPACE, shared = true)
         fun parser1() = scriptParser {
             Contain(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
         }

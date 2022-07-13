@@ -57,7 +57,7 @@ class ActionLocation(
          * 声明坐标 x y z <and yaw pitch>
          * location 10 20 10 and 0 0
          */
-        @KetherParser(["loc", "location"], namespace = NAMESPACE)
+        @KetherParser(["loc", "location"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val world = it.next(ArgTypes.ACTION)
             val x = it.next(ArgTypes.ACTION)

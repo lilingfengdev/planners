@@ -43,7 +43,7 @@ class ActionSound(val sound: String, val volume: Float, val pitch: Float, val se
         /**
          * sound block_stone_break by 1 1 <the selector>
          */
-        @KetherParser(["sound"], namespace = NAMESPACE)
+        @KetherParser(["sound"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val sound = it.nextToken()
             var volume = 1.0f

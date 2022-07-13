@@ -49,7 +49,7 @@ class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: 
          * mana take 20 "-@self"
          * mana set 114514 "-@self"
          */
-        @KetherParser(["mana"], namespace = NAMESPACE)
+        @KetherParser(["mana"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
 
             it.switch {

@@ -115,7 +115,7 @@ class ActionProfile {
          * profile flag [key : action]
          *
          */
-        @KetherParser(["profile"], namespace = NAMESPACE)
+        @KetherParser(["profile"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
                 case("mana") {

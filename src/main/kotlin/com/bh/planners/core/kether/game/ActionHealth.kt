@@ -48,7 +48,7 @@ class ActionHealth {
          * health take 10 <they "-@range 3">
          * health set 10 <they "-@range 3">
          */
-        @KetherParser(["health"], namespace = NAMESPACE)
+        @KetherParser(["health"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val operator = when (it.nextToken()) {
                 "add" -> Operator.ADD

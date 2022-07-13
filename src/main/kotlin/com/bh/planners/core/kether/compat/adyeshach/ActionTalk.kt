@@ -71,7 +71,7 @@ class ActionTalk(val action: ParsedAction<*>, val selector: ParsedAction<*>?) : 
         /**
          * talk [message: action]  <selector>
          */
-        @KetherParser(["talk"], namespace = NAMESPACE)
+        @KetherParser(["talk"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             ActionTalk(it.next(ArgTypes.ACTION), it.selectorAction())
         }

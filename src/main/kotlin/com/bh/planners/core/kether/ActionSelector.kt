@@ -79,7 +79,7 @@ class ActionSelector {
          * selector [key]
          * selector [key] size
          */
-        @KetherParser(["selector"], namespace = NAMESPACE)
+        @KetherParser(["selector"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val key = it.next(ArgTypes.ACTION)
             try {

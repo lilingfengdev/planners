@@ -44,7 +44,7 @@ class ActionLazyVariable {
          * lazy reload [var]
          * lazy reload abc
          */
-        @KetherParser(["lazy"], namespace = NAMESPACE)
+        @KetherParser(["lazy"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
                 case("get") {

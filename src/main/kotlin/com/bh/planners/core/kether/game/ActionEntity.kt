@@ -17,7 +17,7 @@ class ActionEntity {
          * entity health [entity : action]
          * entity spawn type name health tick 返回 [ UUID ]
          */
-        @KetherParser(["entity"], namespace = NAMESPACE)
+        @KetherParser(["entity"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             it.switch {
 

@@ -26,7 +26,7 @@ class ActionTell(val message: ParsedAction<*>, val selector: ParsedAction<*>?) :
          * 给selector内玩家发送message消息
          * <tell/send/message> [message] [selector]
          */
-        @KetherParser(["tell", "send", "message"], namespace = NAMESPACE)
+        @KetherParser(["tell", "send", "message"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             ActionTell(it.next(ArgTypes.ACTION), it.selectorAction())
         }

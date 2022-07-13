@@ -105,7 +105,7 @@ class ActionFlag {
          * 取数据 只取第一位是实体的数据
          * flag get [key: action] <selector:first>
          */
-        @KetherParser(["flag", "data"], namespace = NAMESPACE)
+        @KetherParser(["flag", "data"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val key = it.next(ArgTypes.ACTION)
             try {

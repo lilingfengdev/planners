@@ -31,7 +31,7 @@ class ActionActionBar(val message: ParsedAction<*>, val selector: ParsedAction<*
 
     internal object Parser {
 
-        @KetherParser(["actionbar"], namespace = NAMESPACE)
+        @KetherParser(["actionbar"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             ActionActionBar(it.next(ArgTypes.ACTION), it.selectorAction())
         }
