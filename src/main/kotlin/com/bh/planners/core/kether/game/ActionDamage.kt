@@ -27,8 +27,10 @@ class ActionDamage {
             return frame.newFrame(value).run<Any>().thenAccept { damage ->
                 val asPlayer = frame.asPlayer() ?: return@thenAccept
                 frame.execLivingEntity(selector) {
-                    this.damage(damage.toString().eval(this.maxHealth), asPlayer)
-                    this.noDamageTicks = 0
+                    catchRunning {
+                        this.damage(damage.toString().eval(this.maxHealth), asPlayer)
+                        this.noDamageTicks = 0
+                    }
                 }
             }
         }
@@ -47,7 +49,7 @@ class ActionDamage {
          */
         @KetherParser(["damage"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            Damage(it.next(ArgTypes.ACTION), it.selectorAction() ?: error("the lack of 'they' cite target"))
+            Damage(it.next(ArgTypes.ACTION), it.selector())
         }
 
         /**
@@ -57,7 +59,7 @@ class ActionDamage {
          */
         @KetherParser(["attack"], namespace = NAMESPACE, shared = true)
         fun parser2() = scriptParser {
-            Attack(it.next(ArgTypes.ACTION), it.selectorAction() ?: error("the lack of 'they' cite target"))
+            Attack(it.next(ArgTypes.ACTION), it.selector())
         }
 
     }

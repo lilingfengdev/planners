@@ -45,7 +45,7 @@ class ActionMeta {
                 }
 
                 case("executor") {
-                    when (expects("name", "uuid", "loc", "location","mana","max-mana")) {
+                    when (expects("name", "uuid", "loc", "location", "mana", "max-mana")) {
                         "name" -> actionNow { executor().name }
                         "uuid" -> actionNow { asPlayer()!!.uniqueId.toString() }
                         "loc", "location" -> actionNow { asPlayer()!!.location.toLocal() }
@@ -57,8 +57,8 @@ class ActionMeta {
                 case("origin") {
                     try {
                         mark()
-                        expects("to","set","=")
-                        ActionMetaOrigin.Set(it.next(ArgTypes.ACTION))
+                        expects("to", "set", "=")
+                        ActionMetaOrigin.Set(selector())
                     } catch (e: Throwable) {
                         reset()
                         ActionMetaOrigin.Get()
