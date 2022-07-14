@@ -76,9 +76,9 @@ fun ScriptFrame.toTarget(): Target? {
 }
 
 fun ScriptFrame.toOriginLocation(): Target.Location? {
-    val optional = rootVariables().get<Location>("@Origin")
+    val optional = rootVariables().get<Target.Location>("@Origin")
     if (optional.isPresent) {
-        return optional.get().toTarget()
+        return optional.get()
     }
     return toTarget() as Target.Location
 }
