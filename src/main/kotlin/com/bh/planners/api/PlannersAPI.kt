@@ -11,6 +11,7 @@ import com.bh.planners.core.pojo.*
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
+import com.google.gson.Gson
 import org.bukkit.entity.Player
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
@@ -21,6 +22,8 @@ import taboolib.module.kether.printKetherErrorMessage
 import java.util.*
 
 object PlannersAPI {
+
+    val gson = Gson()
 
     val routers = mutableListOf<Router>()
 

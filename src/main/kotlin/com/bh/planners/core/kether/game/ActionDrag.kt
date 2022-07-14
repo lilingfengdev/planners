@@ -2,6 +2,8 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.createContainer
+import com.bh.planners.core.kether.selector
+import com.bh.planners.core.kether.toOriginLocation
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
@@ -13,7 +15,7 @@ import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
-class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val pos: ParsedAction<*>) :
+class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val pos: ParsedAction<*>?) :
     ScriptAction<Void>() {
 
 
@@ -31,7 +33,7 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
          */
         @KetherParser(["drag"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionDrag(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION))
+            ActionDrag(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.selector())
         }
 
     }
@@ -40,12 +42,19 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
         return frame.newFrame(step).run<Any>().thenAccept {
             val step = Coerce.toDouble(it)
             frame.createContainer(selector).thenAccept { container ->
-                frame.createContainer(pos).thenAccept {
-                    val pos = it.firstLocationTarget() ?: error("ActionDrag 'pos' empty")
+                if (pos != null) {
+                    frame.createContainer(pos).thenAccept {
+                        val pos = it.firstLocationTarget() ?: error("ActionDrag 'pos' empty")
+                        container.forEachEntity {
+                            this.velocity = next(this.location, pos, step)
+                        }
+                    }
+                } else {
                     container.forEachEntity {
-                        this.velocity = next(this.location, pos, step)
+                        this.velocity = next(this.location, frame.toOriginLocation()!!.value, step)
                     }
                 }
+
             }
         }
     }

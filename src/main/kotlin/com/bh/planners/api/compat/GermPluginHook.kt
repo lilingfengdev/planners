@@ -1,6 +1,8 @@
 package com.bh.planners.api.compat
 
 import com.bh.planners.api.PlannersAPI
+import com.germ.germplugin.api.GermPacketAPI
+import com.germ.germplugin.api.GermSlotAPI
 import com.germ.germplugin.api.event.GermDeleteSrcEvent
 import com.germ.germplugin.api.event.GermKeyDownEvent
 import taboolib.common.platform.event.OptionalEvent
@@ -14,5 +16,6 @@ object GermPluginHook {
         val name = e.keyType.name
         PlannersAPI.callKeyByGroup(e.player,name)
     }
+
 
 }

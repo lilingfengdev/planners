@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.catchRunning
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.selectorAction
 import org.bukkit.Sound
@@ -32,7 +33,7 @@ class ActionSound(val sound: String, val volume: Float, val pitch: Float, val se
         if (sound.startsWith("resource:")) {
             player.playSound(player.location, sound.substring("resource:".length), volume, pitch)
         } else {
-            kotlin.runCatching {
+            catchRunning {
                 player.playSound(player.location, Sound.valueOf(sound.replace('.', '_').uppercase()), volume, pitch)
             }
         }
