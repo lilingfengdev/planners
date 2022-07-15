@@ -3,14 +3,9 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.core.kether.*
 import com.google.gson.JsonObject
-import io.lumine.xikage.mythicmobs.MythicMobs
-import io.lumine.xikage.mythicmobs.adapters.AbstractEntity
-import io.lumine.xikage.mythicmobs.skills.SkillMetadata
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
-import org.bukkit.advancement.Advancement
 import org.bukkit.entity.Player
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -118,7 +113,7 @@ class ActionToast(
 
 
     fun execute(player: Player, material: String, message: String, data: String, frame: String) {
-        val id = NamespacedKey(MythicMobs.inst(), "temp-" + UUID.randomUUID().toString())
+        val id = NamespacedKey(BukkitPlugin.getInstance(), "temp-" + UUID.randomUUID().toString())
         Bukkit.getUnsafe().loadAdvancement(id, create(material, message, data, frame).createJSON())
         val advancement = Bukkit.getAdvancement(id)
         val progress = player.getAdvancementProgress(advancement!!)
