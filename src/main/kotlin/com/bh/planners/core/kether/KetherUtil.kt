@@ -141,7 +141,7 @@ fun ScriptFrame.runAny(action: ParsedAction<*>, call: Any.() -> Unit): Completab
     return this.newFrame(action).run<Any>().thenAccept(call)
 }
 
-inline fun <reified T> ScriptFrame.transfer(
+inline fun <reified T> ScriptFrame.runTransfer(
     action: ParsedAction<*>,
     crossinline call: (T) -> Unit
 ): CompletableFuture<Void> {
@@ -237,9 +237,11 @@ fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Ta
             }
 
             else -> {
-                val demand = it.toString().toDemand()
-                Selector.check(toOriginLocation(), getContext().apply { }, demand, container).thenAccept {
-                    future.complete(container)
+                catchRunning {
+                    val demand = it.toString().toDemand()
+                    Selector.check(toOriginLocation(), getContext(), demand, container).thenAccept {
+                        future.complete(container)
+                    }
                 }
             }
         }

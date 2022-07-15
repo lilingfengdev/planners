@@ -2,11 +2,14 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.*
 import com.bh.planners.util.eval
+import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
+import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
+import taboolib.platform.BukkitPlugin
 import java.util.concurrent.CompletableFuture
 
 class ActionDamage {
@@ -28,7 +31,9 @@ class ActionDamage {
                 val asPlayer = frame.asPlayer() ?: return@thenAccept
                 frame.execLivingEntity(selector) {
                     catchRunning {
+                        this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
                         this.damage(damage.toString().eval(this.maxHealth), asPlayer)
+                        this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
                         this.noDamageTicks = 0
                     }
                 }

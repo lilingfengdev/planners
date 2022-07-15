@@ -53,10 +53,10 @@ class ActionDragonCore {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-            frame.transfer<String>(name) { name ->
-                frame.transfer<Float>(volume) { volume ->
-                    frame.transfer<Float>(pitch) { pitch ->
-                        frame.transfer<Boolean>(loop) { loop ->
+            frame.runTransfer<String>(name) { name ->
+                frame.runTransfer<Float>(volume) { volume ->
+                    frame.runTransfer<Float>(pitch) { pitch ->
+                        frame.runTransfer<Boolean>(loop) { loop ->
                             frame.execPlayer(selector) {
                                 PacketSender.sendPlaySound(player, name, volume, pitch, loop, 0f, 0f, 0f)
                             }

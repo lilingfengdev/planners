@@ -48,7 +48,7 @@ action: |-
     for i in range 1 to 8 then {
       selector t0 to "-@range 4,4,4 -@their"
       if check selector t0 size >= 1 then {
-        attack &damageEval "-@fetch t0"
+        attack &damageEval they "-@fetch t0"
         exit success
       }
       sleep 20

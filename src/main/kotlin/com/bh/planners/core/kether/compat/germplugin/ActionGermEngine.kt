@@ -50,10 +50,10 @@ class ActionGermEngine {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-            frame.transfer<String>(name) { name ->
-                frame.transfer<SoundType>(type) { type ->
-                    frame.transfer<Float>(volume) { volume ->
-                        frame.transfer<Float>(pitch) { pitch ->
+            frame.runTransfer<String>(name) { name ->
+                frame.runTransfer<SoundType>(type) { type ->
+                    frame.runTransfer<Float>(volume) { volume ->
+                        frame.runTransfer<Float>(pitch) { pitch ->
                             frame.execLocation(selector) {
                                 GermPacketAPI.playSound(this, name, type, 0, volume, pitch)
                             }
@@ -81,7 +81,7 @@ class ActionGermEngine {
         override fun run(frame: ScriptFrame): CompletableFuture<UUID> {
             val future = CompletableFuture<UUID>()
             val randomUUID = UUID.randomUUID()
-            frame.transfer<String>(path) {
+            frame.runTransfer<String>(path) {
                 val effectParticle = GermEffectParticle(randomUUID.toString())
                 effectParticle.path = it
                 if (selector != null) {

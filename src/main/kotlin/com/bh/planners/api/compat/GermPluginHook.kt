@@ -7,6 +7,7 @@ import com.germ.germplugin.api.event.GermDeleteSrcEvent
 import com.germ.germplugin.api.event.GermKeyDownEvent
 import taboolib.common.platform.event.OptionalEvent
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 
 object GermPluginHook {
 
@@ -14,6 +15,7 @@ object GermPluginHook {
     fun e(ope: OptionalEvent) {
         val e = ope.get<GermKeyDownEvent>()
         val name = e.keyType.name
+        info("key down $name")
         PlannersAPI.callKeyByGroup(e.player,name)
     }
 

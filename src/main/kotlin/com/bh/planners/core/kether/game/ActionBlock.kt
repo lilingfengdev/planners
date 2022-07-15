@@ -2,10 +2,7 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.common.SimpleTimeoutTask
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.execLocation
-import com.bh.planners.core.kether.selectorAction
-import com.bh.planners.core.kether.toOriginLocation
+import com.bh.planners.core.kether.*
 import org.bukkit.Location
 import org.bukkit.Material
 import taboolib.common5.Coerce
@@ -32,16 +29,13 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
     override fun run(frame: ScriptFrame): CompletableFuture<List<Target>> {
 
         val future = CompletableFuture<List<Target>>()
-        frame.newFrame(material).run<Any>().thenAccept {
-            val material = Coerce.toEnum(it.toString().uppercase(), Material::class.java)
-            frame.newFrame(timeout).run<Any>().thenAccept {
-                val ticks = Coerce.toLong(it)
+        frame.runTransfer<Material>(material) { material ->
+            frame.runTransfer<Long>(timeout) { timeout ->
                 if (selector != null) {
-                    frame.execLocation(selector) { execute(this, material, ticks) }
+                    frame.execLocation(selector) { execute(this, material, timeout * 50) }
                 } else {
-                    execute(frame.toOriginLocation()!!.value, material, ticks)
+                    execute(frame.toOriginLocation()!!.value, material, timeout * 50)
                 }
-
             }
         }
 

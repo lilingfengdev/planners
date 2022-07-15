@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.*
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -33,21 +34,21 @@ class ActionPotion {
         }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            frame.newFrame(name).run<Any>().thenApply { name ->
-                frame.newFrame(duration).run<Any>().thenApply {
-                    val duration = Coerce.toInteger(it)
-                    frame.newFrame(amplifier).run<Any>().thenApplyAsync({
-                        val amplifier = Coerce.toInteger(it)
-                        val effectType = PotionEffectType.getByName(name.toString().uppercase(Locale.getDefault()))
+            frame.runTransfer<String>(name) { name ->
+                frame.runTransfer<Int>(duration) { duration ->
+                    submit {
+                        frame.runTransfer<Int>(amplifier) { amplifier ->
 
-                        if (selector != null) {
-                            frame.execPlayer(selector) { execute(this, effectType, duration, amplifier) }
-                        } else {
-                            val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
-                            execute(viewer, effectType, duration, amplifier)
+                            val effectType = PotionEffectType.getByName(name.uppercase(Locale.getDefault()))
+
+                            if (selector != null) {
+                                frame.execPlayer(selector) { execute(this, effectType, duration, amplifier) }
+                            } else {
+                                val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
+                                execute(viewer, effectType, duration, amplifier)
+                            }
                         }
-
-                    }, frame.context().executor)
+                    }
                 }
             }
             return CompletableFuture.completedFuture(null)

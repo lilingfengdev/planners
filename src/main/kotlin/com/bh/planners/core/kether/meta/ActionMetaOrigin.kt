@@ -18,12 +18,17 @@ class ActionMetaOrigin {
     class Set(val action: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
+            val future = CompletableFuture<Void>()
+
             frame.createContainer(action).thenAccept {
-                val locationTarget = it.firstLocationTarget()
-                frame.rootVariables()["@Origin"] = locationTarget
+                val locationTarget = it.firstTarget()
+                if (locationTarget != null) {
+                    frame.rootVariables()["@Origin"] = locationTarget
+                }
+                future.complete(null)
             }
 
-            return CompletableFuture.completedFuture(null)
+            return future
         }
 
     }

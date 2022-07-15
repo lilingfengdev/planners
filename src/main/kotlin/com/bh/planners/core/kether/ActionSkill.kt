@@ -17,14 +17,14 @@ class ActionSkill {
         ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-            frame.transfer<Long>(amount) { amount ->
+            frame.runTransfer<Long>(amount) { amount ->
                 if (target != null) {
-                    frame.transfer<String>(target) {
-                        val skill = PlannersAPI.getSkill(it) ?: return@transfer
-                        execute(frame.asPlayer() ?: return@transfer, skill, operator, amount * 50)
+                    frame.runTransfer<String>(target) {
+                        val skill = PlannersAPI.getSkill(it) ?: return@runTransfer
+                        execute(frame.asPlayer() ?: return@runTransfer, skill, operator, amount * 50)
                     }
                 } else {
-                    execute(frame.asPlayer() ?: return@transfer, frame.skill().instance, operator, amount * 50)
+                    execute(frame.asPlayer() ?: return@runTransfer, frame.skill().instance, operator, amount * 50)
                 }
             }
 
