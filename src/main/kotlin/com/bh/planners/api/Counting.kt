@@ -31,7 +31,7 @@ object Counting {
 
     fun set(player: Player, skill: Skill, amount: Long) {
         val baffles = getCache(player)
-        baffles.removeIf { it.next }
+        baffles.removeIf { it.next || it.name == skill.key }
         baffles += Baffle(skill.key, amount)
     }
 

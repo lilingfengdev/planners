@@ -17,6 +17,9 @@ class Level(val algorithm: Algorithm, level: Int, experience: Int) {
     var level = level
         private set
 
+    val top: Int
+        get() = algorithm.getExp(level).getNow(Int.MAX_VALUE)
+
     fun setLevel(value: Int): CompletableFuture<Void> {
         level = value
         correct()

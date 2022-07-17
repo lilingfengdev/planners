@@ -8,6 +8,8 @@ class PlayerCastSkillEvent {
 
     class Pre(val player: Player, val skill: Skill) : BukkitProxyEvent()
 
+    class Record(val player: Player, val skill: Skill) : BukkitProxyEvent()
+
     class Post(val player: Player, val skill: Skill) : BukkitProxyEvent()
 
 }

@@ -7,9 +7,11 @@ import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.createContainer
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.kether.game.ActionProjectile
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.util.StringNumber
+import com.google.common.base.Enums
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -141,6 +143,12 @@ fun ScriptFrame.runAny(action: ParsedAction<*>, call: Any.() -> Unit): Completab
     return this.newFrame(action).run<Any>().thenAccept(call)
 }
 
+inline fun <reified T> getEnum(value: String): T {
+    val declaredMethod = T::class.java.getDeclaredMethod("valueOf", String::class.java)
+    declaredMethod.isAccessible = true
+    return declaredMethod.invoke(null, value) as T
+}
+
 inline fun <reified T> ScriptFrame.runTransfer(
     action: ParsedAction<*>,
     crossinline call: (T) -> Unit
@@ -149,7 +157,9 @@ inline fun <reified T> ScriptFrame.runTransfer(
     return this.newFrame(action).run<Any>().thenAccept {
 
         if (T::class.java.isEnum) {
-            call(T::class.java.invokeMethod<T>("valueOf", it.toString())!! as T)
+            catchRunning {
+                call(getEnum(it.toString().trim().uppercase()))
+            }
             return@thenAccept
         }
 

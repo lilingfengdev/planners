@@ -8,6 +8,7 @@ import com.bh.planners.core.effect.EffectOption
 import com.bh.planners.core.effect.EffectSpawner
 import com.bh.planners.core.effect.EffectSpawner.Companion.sendParticle
 import com.bh.planners.core.effect.common.Sphere
+import com.bh.planners.core.pojo.Context
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Particle
@@ -84,9 +85,6 @@ object PlannersCommand {
     @CommandBody
     val test = subCommand {
         execute<Player> { sender, context, argument ->
-            val spawner = EffectSpawner(EffectOption("END_ROD"))
-            val vector = sender.location.direction
-
         }
     }
 

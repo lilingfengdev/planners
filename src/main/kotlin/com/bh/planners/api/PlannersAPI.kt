@@ -96,6 +96,7 @@ object PlannersAPI {
 
         Counting.reset(player, session)
         takeMana(Coerce.toDouble(session.mpCost.get()))
+        PlayerCastSkillEvent.Record(player, skill).call()
         session.cast()
         session.closed = true
 
