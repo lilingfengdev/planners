@@ -19,6 +19,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.EquipmentSlot
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
@@ -100,6 +101,15 @@ object BukkitGrid {
             return getSkillByGrid(profile, grid)
         }
         return null
+    }
+
+    @SubscribeEvent
+    fun e(e: PlayerSwapHandItemsEvent) {
+        val heldItemSlot = e.player.inventory.heldItemSlot
+        if (grids.firstOrNull { it.slot == heldItemSlot } != null) {
+            e.isCancelled = true
+        }
+
     }
 
     @SubscribeEvent

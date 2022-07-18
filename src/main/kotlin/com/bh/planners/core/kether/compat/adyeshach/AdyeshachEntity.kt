@@ -1,18 +1,18 @@
 package com.bh.planners.core.kether.compat.adyeshach
 
+import ink.ptms.adyeshach.api.nms.NMS
 import ink.ptms.adyeshach.common.entity.EntityInstance
-import org.bukkit.Bukkit
-import org.bukkit.EntityEffect
-import org.bukkit.Location
-import org.bukkit.Server
-import org.bukkit.World
+import org.bukkit.*
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeInstance
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.PistonMoveReaction
-import org.bukkit.entity.Entity
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.Pose
+import org.bukkit.entity.*
+import org.bukkit.entity.memory.MemoryKey
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.inventory.EntityEquipment
 import org.bukkit.metadata.MetadataValue
 import org.bukkit.permissions.PermissibleBase
 import org.bukkit.permissions.Permission
@@ -20,12 +20,20 @@ import org.bukkit.permissions.PermissionAttachment
 import org.bukkit.permissions.PermissionAttachmentInfo
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.plugin.Plugin
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.BoundingBox
+import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 import taboolib.platform.BukkitPlugin
 import java.util.*
 
-class AdyeshachEntity(val entity: EntityInstance) : Entity {
+class AdyeshachEntity(val entity: EntityInstance) : LivingEntity {
+
+    override fun getAttribute(p0: Attribute): AttributeInstance? {
+        return null
+    }
+
     override fun setMetadata(p0: String, p1: MetadataValue) {
         entity.setMetadata(p0, p1)
     }
@@ -142,7 +150,8 @@ class AdyeshachEntity(val entity: EntityInstance) : Entity {
     }
 
     override fun setVelocity(p0: Vector) {
-        return entity.sendVelocity(ink.ptms.adyeshach.taboolib.common.util.Vector(p0.x, p0.y, p0.z))
+        val location = location.clone().add(p0)
+        teleport(location)
     }
 
     override fun getVelocity(): Vector {
@@ -368,35 +377,35 @@ class AdyeshachEntity(val entity: EntityInstance) : Entity {
     }
 
     override fun hasGravity(): Boolean {
-        TODO("Not yet implemented")
+        return !entity.isNoGravity()
     }
 
     override fun setGravity(p0: Boolean) {
-        TODO("Not yet implemented")
+        entity.setNoGravity(!p0)
     }
 
     override fun getPortalCooldown(): Int {
-        TODO("Not yet implemented")
+        return 0
     }
 
     override fun setPortalCooldown(p0: Int) {
-        TODO("Not yet implemented")
+
     }
 
     override fun getScoreboardTags(): MutableSet<String> {
-        TODO("Not yet implemented")
+        return mutableSetOf()
     }
 
     override fun addScoreboardTag(p0: String): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
     override fun removeScoreboardTag(p0: String): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
     override fun getPistonMoveReaction(): PistonMoveReaction {
-        TODO("Not yet implemented")
+        return PistonMoveReaction.MOVE
     }
 
     override fun getFacing(): BlockFace {
@@ -405,6 +414,279 @@ class AdyeshachEntity(val entity: EntityInstance) : Entity {
 
     override fun getPose(): Pose {
         return Pose.STANDING
+    }
+
+    override fun damage(p0: Double) {
+
+    }
+
+    override fun damage(p0: Double, p1: Entity?) {
+
+    }
+
+    override fun getHealth(): Double {
+        return 1.0
+    }
+
+    override fun setHealth(p0: Double) {
+
+    }
+
+    override fun getAbsorptionAmount(): Double {
+        return 0.0
+    }
+
+    override fun setAbsorptionAmount(p0: Double) {
+
+    }
+
+    override fun getMaxHealth(): Double {
+        return 1.0
+    }
+
+    override fun setMaxHealth(p0: Double) {
+    }
+
+    override fun resetMaxHealth() {
+    }
+
+    override fun <T : Projectile?> launchProjectile(p0: Class<out T>): T {
+        return p0.newInstance()
+    }
+
+    override fun <T : Projectile?> launchProjectile(p0: Class<out T>, p1: Vector?): T {
+        return p0.newInstance()
+    }
+
+    override fun getEyeHeight(): Double {
+        return entity.entityType.entitySize.height
+    }
+
+    override fun getEyeHeight(p0: Boolean): Double {
+        return entity.entityType.entitySize.height
+    }
+
+    override fun getEyeLocation(): Location {
+        return entity.getLocation()
+    }
+
+    override fun getLineOfSight(p0: MutableSet<Material>?, p1: Int): MutableList<Block> {
+        return mutableListOf()
+    }
+
+    override fun getTargetBlock(p0: MutableSet<Material>?, p1: Int): Block {
+        return entity.getLocation().block
+    }
+
+    override fun getLastTwoTargetBlocks(p0: MutableSet<Material>?, p1: Int): MutableList<Block> {
+        return mutableListOf()
+    }
+
+    override fun getTargetBlockExact(p0: Int): Block? {
+        return null
+    }
+
+    override fun getTargetBlockExact(p0: Int, p1: FluidCollisionMode): Block? {
+        return null
+    }
+
+    override fun rayTraceBlocks(p0: Double): RayTraceResult? {
+        return null
+    }
+
+    override fun rayTraceBlocks(p0: Double, p1: FluidCollisionMode): RayTraceResult? {
+        return null
+    }
+
+    override fun getRemainingAir(): Int {
+        return 0
+    }
+
+    override fun setRemainingAir(p0: Int) {
+
+    }
+
+    override fun getMaximumAir(): Int {
+        return 0
+    }
+
+    override fun setMaximumAir(p0: Int) {
+
+    }
+
+    override fun getArrowCooldown(): Int {
+        return 0
+    }
+
+    override fun setArrowCooldown(p0: Int) {
+
+    }
+
+    override fun getArrowsInBody(): Int {
+        return 0
+    }
+
+    override fun setArrowsInBody(p0: Int) {
+
+    }
+
+    override fun getMaximumNoDamageTicks(): Int {
+        return 0
+    }
+
+    override fun setMaximumNoDamageTicks(p0: Int) {
+
+    }
+
+    override fun getLastDamage(): Double {
+        return 0.0
+    }
+
+    override fun setLastDamage(p0: Double) {
+    }
+
+    override fun getNoDamageTicks(): Int {
+        return 0
+    }
+
+    override fun setNoDamageTicks(p0: Int) {
+    }
+
+    override fun getKiller(): Player? {
+        return null
+    }
+
+    override fun addPotionEffect(p0: PotionEffect): Boolean {
+        return false
+    }
+
+    override fun addPotionEffect(p0: PotionEffect, p1: Boolean): Boolean {
+        return false
+    }
+
+    override fun addPotionEffects(p0: MutableCollection<PotionEffect>): Boolean {
+        return false
+    }
+
+    override fun hasPotionEffect(p0: PotionEffectType): Boolean {
+        return false
+    }
+
+    override fun getPotionEffect(p0: PotionEffectType): PotionEffect? {
+        return null
+    }
+
+    override fun removePotionEffect(p0: PotionEffectType) {
+
+    }
+
+    override fun getActivePotionEffects(): MutableCollection<PotionEffect> {
+        return mutableListOf()
+    }
+
+    override fun hasLineOfSight(p0: Entity): Boolean {
+        return false
+    }
+
+    override fun getRemoveWhenFarAway(): Boolean {
+        return false
+    }
+
+    override fun setRemoveWhenFarAway(p0: Boolean) {
+    }
+
+    override fun getEquipment(): EntityEquipment? {
+        return null
+    }
+
+    override fun setCanPickupItems(p0: Boolean) {
+    }
+
+    override fun getCanPickupItems(): Boolean {
+        return false
+    }
+
+    override fun isLeashed(): Boolean {
+        return false
+    }
+
+    override fun getLeashHolder(): Entity {
+        error("Entity not leashed")
+    }
+
+    override fun setLeashHolder(p0: Entity?): Boolean {
+        return false
+    }
+
+    override fun isGliding(): Boolean {
+        return false
+    }
+
+    override fun setGliding(p0: Boolean) {
+    }
+
+    override fun isSwimming(): Boolean {
+        return false
+    }
+
+    override fun setSwimming(p0: Boolean) {
+    }
+
+    override fun isRiptiding(): Boolean {
+        return false
+    }
+
+    override fun isSleeping(): Boolean {
+        return false
+    }
+
+    override fun isClimbing(): Boolean {
+        return false
+    }
+
+    override fun setAI(p0: Boolean) {
+    }
+
+    override fun hasAI(): Boolean {
+        return false
+    }
+
+    override fun attack(p0: Entity) {
+    }
+
+    override fun swingMainHand() {
+    }
+
+    override fun swingOffHand() {
+    }
+
+    override fun setCollidable(p0: Boolean) {
+    }
+
+    override fun isCollidable(): Boolean {
+        return false
+    }
+
+    override fun getCollidableExemptions(): MutableSet<UUID> {
+        return mutableSetOf()
+    }
+
+    override fun <T : Any?> getMemory(p0: MemoryKey<T>): T? {
+        return null
+    }
+
+    override fun <T : Any?> setMemory(p0: MemoryKey<T>, p1: T?) {
+    }
+
+    override fun getCategory(): EntityCategory {
+        return EntityCategory.NONE
+    }
+
+    override fun setInvisible(p0: Boolean) {
+    }
+
+    override fun isInvisible(): Boolean {
+        return true
     }
 
 }

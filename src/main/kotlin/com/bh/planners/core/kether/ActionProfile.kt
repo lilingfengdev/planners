@@ -64,7 +64,7 @@ class ActionProfile {
                 frame.newFrame(value).run<Any>().thenAccept { value ->
                     val profile = frame.asPlayer()!!.plannersProfile
                     frame.newFrame(time).run<Any>().thenAccept { time ->
-                        profile.setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time)))
+                        profile.setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time) * 50))
                     }
                 }
             }

@@ -5,13 +5,10 @@ import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.effect.Target.Companion.createContainer
 import com.bh.planners.core.effect.Target.Companion.toTarget
-import com.bh.planners.core.kether.game.ActionProjectile
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.util.StringNumber
-import com.google.common.base.Enums
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -19,8 +16,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
-import taboolib.common.platform.function.info
-import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -158,7 +153,7 @@ inline fun <reified T> ScriptFrame.runTransfer(
 
         if (T::class.java.isEnum) {
             catchRunning {
-                call(getEnum(it.toString().trim().uppercase()))
+                call(getEnum(it.toString().trim().uppercase().replace(".", "_")))
             }
             return@thenAccept
         }

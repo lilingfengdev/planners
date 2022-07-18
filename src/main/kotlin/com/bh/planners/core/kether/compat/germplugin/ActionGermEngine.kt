@@ -4,6 +4,8 @@ import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.compat.adyeshach.AdyeshachEntity
 import com.germ.germplugin.api.GermPacketAPI
+import com.germ.germplugin.api.GermSrcManager
+import com.germ.germplugin.api.RootType
 import com.germ.germplugin.api.SoundType
 import com.germ.germplugin.api.dynamic.effect.GermEffectParticle
 import ink.ptms.adyeshach.common.entity.EntityInstance
@@ -82,8 +84,12 @@ class ActionGermEngine {
             val future = CompletableFuture<UUID>()
             val randomUUID = UUID.randomUUID()
             frame.runTransfer<String>(path) {
-                val effectParticle = GermEffectParticle(randomUUID.toString())
-                effectParticle.path = it
+
+                val effectParticle = GermEffectParticle.getGermEffectPart(
+                    randomUUID.toString(),
+                    GermSrcManager.getGermSrcManager().getSrc(it, RootType.EFFECT)
+                )
+                        as GermEffectParticle
                 if (selector != null) {
                     frame.createContainer(selector).thenAccept {
                         it.targets.forEach { execute(it, effectParticle) }
@@ -122,9 +128,11 @@ class ActionGermEngine {
                         "send" -> {
                             ActionAnimation(it.nextToken(), false, it.selector())
                         }
+
                         "stop" -> {
                             ActionAnimation(it.nextToken(), true, it.selector())
                         }
+
                         else -> error("out of case")
                     }
                 }
@@ -138,7 +146,7 @@ class ActionGermEngine {
                     )
                 }
                 case("snowstom") {
-                    ActionParticle(it.next(ArgTypes.ACTION),it.selectorAction())
+                    ActionParticle(it.next(ArgTypes.ACTION), it.selectorAction())
                 }
             }
         }

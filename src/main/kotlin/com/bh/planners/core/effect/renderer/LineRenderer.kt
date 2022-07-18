@@ -65,7 +65,7 @@ class LineRenderer(
                         currentTime += option.period
                         if (this.distance(this@forEachEntity.nearestLocation) < 1.0 && context is Session) {
                             task.cancel()
-                            context.callEvent(option.onCapture ?: return@callPlay, CaptureEntity(this@forEachEntity))
+                            context.callEvent(option.onCapture ?: return@callPlay, event = CaptureEntity(this@forEachEntity))
                         }
                     }
                 }
@@ -81,7 +81,7 @@ class LineRenderer(
                             val entityAt = this.entityAt().apply { remove(property) }
                             context.callEvent(
                                 option.onCapture ?: return@forEachLocation,
-                                CaptureEntity(entityAt.first())
+                                event = CaptureEntity(entityAt.first())
                             )
                         }
                     } else {
@@ -95,7 +95,7 @@ class LineRenderer(
                                     task.cancel()
                                     (context as Session).callEvent(
                                         option.onCapture ?: return@callPlay,
-                                        CaptureEntity(entityAt.first())
+                                        event = CaptureEntity(entityAt.first())
                                     )
                                 }
                             }
