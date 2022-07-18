@@ -13,6 +13,7 @@ import ink.ptms.adyeshach.common.entity.manager.Manager
 import ink.ptms.adyeshach.common.script.ScriptHandler.getEntities
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -68,7 +69,7 @@ class ActionGermEngine {
         }
     }
 
-    class ActionParticle(val path: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<UUID>() {
+    class ActionParticle(val name: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<UUID>() {
 
         fun execute(target: Target, effect: GermEffectParticle) {
             Bukkit.getOnlinePlayers().forEach {
@@ -83,13 +84,13 @@ class ActionGermEngine {
         override fun run(frame: ScriptFrame): CompletableFuture<UUID> {
             val future = CompletableFuture<UUID>()
             val randomUUID = UUID.randomUUID()
-            frame.runTransfer<String>(path) {
-
+            frame.runTransfer<String>(name) { name ->
+                info("germ effect $name")
                 val effectParticle = GermEffectParticle.getGermEffectPart(
                     randomUUID.toString(),
-                    GermSrcManager.getGermSrcManager().getSrc(it, RootType.EFFECT)
-                )
-                        as GermEffectParticle
+                    GermSrcManager.getGermSrcManager().getSrc(name, RootType.EFFECT)
+                ) as GermEffectParticle
+
                 if (selector != null) {
                     frame.createContainer(selector).thenAccept {
                         it.targets.forEach { execute(it, effectParticle) }
@@ -118,7 +119,7 @@ class ActionGermEngine {
          * germ sound name type master volume 1.0 pitch 1.0 they "-@self"
          *
          * 例子播放
-         * germ particle [path: action] <selector>
+         * germ particle [name: action] <selector>
          */
         @KetherParser(["germengine", "germ", "germplugin"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

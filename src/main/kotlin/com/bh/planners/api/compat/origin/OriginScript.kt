@@ -17,8 +17,7 @@ object OriginScript {
     @Awake(LifeCycle.ACTIVE)
     fun setup() {
         if (!isEnable) return
-        Script.staticClasses["pl"] = Hook
-        Script.staticClasses["planners"] = Hook
+        Script.registerStaticClass("planners", Hook)
     }
 
 
