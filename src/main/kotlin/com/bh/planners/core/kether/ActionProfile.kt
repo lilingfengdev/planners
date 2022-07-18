@@ -185,16 +185,7 @@ class ActionProfile {
                         mark()
                         when (expects("add", "set", "get", "to", "has")) {
                             "set", "to" -> {
-                                val value = it.next(ArgTypes.ACTION)
-                                val timeout = try {
-                                    mark()
-                                    expects("timeout")
-                                    it.next(ArgTypes.ACTION)
-                                } catch (_: Throwable) {
-                                    reset()
-                                    ParsedAction(LiteralAction<Long>(-1L))
-                                }
-                                DataSet(key, value, timeout)
+                                DataSet(key, it.next(ArgTypes.ACTION), it.tryGet(arrayOf("timeout"), -1L)!!)
                             }
 
                             "get" -> DataGet(key)

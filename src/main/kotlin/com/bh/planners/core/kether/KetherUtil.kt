@@ -165,6 +165,7 @@ inline fun <reified T> ScriptFrame.runTransfer(
                 Long::class -> Coerce.toLong(it)
                 Boolean::class -> Coerce.toBoolean(it)
                 Double::class -> Coerce.toDouble(it)
+                Float::class -> Coerce.toFloat(it)
                 else -> it.toString()
             } as T
             call(value)
@@ -271,7 +272,7 @@ fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParse
 }
 
 fun QuestReader.get(array: Array<String>): ParsedAction<*> {
-    return tryGet(array, null) ?: error("the lack of '$array' cite target")
+    return tryGet(array, null) ?: error("the lack of '${array.map { it }}' cite target")
 }
 
 fun QuestReader.tryGet(array: Array<String>, def: Any? = null): ParsedAction<*>? {

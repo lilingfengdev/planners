@@ -113,9 +113,9 @@ class ActionGermEngine {
          * germ animation stop [name: token] [selector]
          *
          * 音效播放
-         * germ sound name <soundtype> <volume> <pitch> <selector>
+         * germ sound name <type: action(master)> <volume: action(1)> <pitch: action(1)> <selector>
          *
-         * germ sound name soundtype master volume 1.0 pitch 1.0 they "-@self"
+         * germ sound name type master volume 1.0 pitch 1.0 they "-@self"
          *
          * 例子播放
          * germ particle [path: action] <selector>
@@ -140,8 +140,8 @@ class ActionGermEngine {
                     ActionSound(
                         it.next(ArgTypes.ACTION),
                         it.tryGet(arrayOf("soundtype", "type"), "MASTER")!!,
-                        it.tryGet(arrayOf("volume"), 1.0f)!!,
-                        it.tryGet(arrayOf("pitch"), 1.0f)!!,
+                        it.tryGet(arrayOf("volume"), 1)!!,
+                        it.tryGet(arrayOf("pitch"), 1)!!,
                         it.selector()
                     )
                 }

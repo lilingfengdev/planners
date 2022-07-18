@@ -1,5 +1,7 @@
 package com.bh.planners.api.common
 
+import java.util.Collections
+
 /**
  * @author bkm016
  * @since 2020/11/22 2:51 下午
@@ -16,7 +18,7 @@ class Demand(val source: String) {
         if (source[0] != '-' && args.size >= 4) {
             this.args += args.subList(0, 4).toMutableList()
             namespace = args[0]
-            args = args.subList(4,args.size)
+            args = args.subList(4, args.size)
         } else {
             namespace = "EMPTY"
         }
@@ -111,12 +113,10 @@ class Demand(val source: String) {
 
     companion object {
 
-        val cache = mutableMapOf<String, Demand>()
+        val cache = Collections.synchronizedMap(mutableMapOf<String, Demand>())
 
         fun String.toDemand(): Demand {
-            return cache.computeIfAbsent(this) {
-                Demand(this)
-            }
+            return cache.computeIfAbsent(this) { Demand(this) }
         }
 
     }
