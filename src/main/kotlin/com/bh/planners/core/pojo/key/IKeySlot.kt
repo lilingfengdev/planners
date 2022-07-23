@@ -8,6 +8,8 @@ interface IKeySlot {
 
     val group: String
 
+    val groups: List<Int>
+
     val sort: Long
 
     val description: List<String>

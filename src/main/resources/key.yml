@@ -20,3 +20,7 @@ def4:
   name: '格子 5'
   group: 'minecraft 5'
   sort: 5
+
+def5:
+  name: '连招 A'
+  groups: [ 44 , 45 ]

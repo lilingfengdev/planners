@@ -11,11 +11,14 @@ import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.Configuration
 
-class KeySlot(config: ConfigurationSection) : IKeySlot {
+class KeySlot(val config: ConfigurationSection) : IKeySlot {
 
     override val key = config.name
 
     override val group = config.getString("group", key)!!
+
+    override val groups: List<Int>
+        get() = config.getIntegerList("groups")
 
     override val name = config.getString("name", key)!!
 

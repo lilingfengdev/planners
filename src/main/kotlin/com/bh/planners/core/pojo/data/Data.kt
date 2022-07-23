@@ -16,6 +16,10 @@ open class Data(
     var survivalStamp: Long = 0L
 ) {
 
+    init {
+        survivalStamp = survivalStamp.coerceAtLeast(-1)
+    }
+
     var changed = false
 
     val isClosed: Boolean

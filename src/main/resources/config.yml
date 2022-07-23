@@ -11,6 +11,9 @@ options:
   scope-threshold: [ 1.0,1.0,1.0 ]
   auto-save-flag-period: 60000
   level-cover: true
+  presskey-patch:
+    timeout: 1000
+    type: disorderly
   grid-air:
     material: WHEAT_SEEDS
     name: '空技能'

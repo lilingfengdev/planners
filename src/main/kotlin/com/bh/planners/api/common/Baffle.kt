@@ -2,19 +2,21 @@ package com.bh.planners.api.common
 
 import kotlin.math.max
 
-class Baffle(val name: String, var millis: Long) {
+open class Baffle(val name: Any, var millis: Long) {
 
     var mark = System.currentTimeMillis()
 
-    val nestMillis: Long
-        get() = mark + millis
+    val nestMillis = mark + millis
 
     // 当前时间 大于 结束时间
     val next: Boolean
         get() = countdown == 0L
 
+    private val currentTimeMillis : Long
+        get() = System.currentTimeMillis()
+
     val countdown: Long
-        get() = max(nestMillis - System.currentTimeMillis(), 0)
+        get() = max(nestMillis - currentTimeMillis, 0)
 
     fun reset() {
         this.mark > 0L
