@@ -78,10 +78,10 @@ open class CircleRenderer(target: Target, future: CompletableFuture<Target.Conta
             rotateAroundAxisZ(vector, this.option.rotateZ)
         }
         if (this.option.rotateX != 0.0) {
-            rotateAroundAxisZ(vector, this.option.rotateX)
+            rotateAroundAxisX(vector, this.option.rotateX)
         }
         if (this.option.rotateY != 0.0) {
-            rotateAroundAxisZ(vector, this.option.rotateY)
+            rotateAroundAxisY(vector, this.option.rotateY)
         }
     }
 
