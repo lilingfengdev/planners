@@ -30,7 +30,7 @@ class ActionMathPow(val action: ParsedAction<*>, val value2: ParsedAction<*>) : 
          */
         @KetherParser(["pow"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionMathSin(it.next(ArgTypes.ACTION))
+            ActionMathPow(it.next(ArgTypes.ACTION),it.next(ArgTypes.ACTION))
         }
     }
 

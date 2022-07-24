@@ -13,7 +13,7 @@ import java.util.LinkedList
 
 object Loader {
 
-    const val CHANNEL_NAME = "presskeypatch:press_key_input"
+    const val CHANNEL_NAME = "planners:key_input"
 
     val packets = LinkedList<Packet>()
 

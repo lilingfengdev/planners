@@ -19,10 +19,10 @@ object LevelCover {
     @SubscribeEvent
     fun e(e: PlayerExpChangeEvent) {
         if (isEnable) {
-            e.amount = 0
             if (e.player.plannersProfileIsLoaded && e.player.hasJob) {
                 e.player.plannersProfile.addExperience(e.amount)
             }
+            e.amount = 0
         }
 
     }
