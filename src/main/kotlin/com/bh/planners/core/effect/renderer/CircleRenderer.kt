@@ -23,10 +23,10 @@ open class CircleRenderer(target: Target, future: CompletableFuture<Target.Conta
         get() = Coerce.toDouble(this.demand.get(listOf("rx", "rotateX", "0")))
 
     val EffectOption.rotateY: Double
-        get() = Coerce.toDouble(this.demand.get(listOf("rx", "rotateX", "0")))
+        get() = Coerce.toDouble(this.demand.get(listOf("rx", "rotateY", "0")))
 
     val EffectOption.rotateZ: Double
-        get() = Coerce.toDouble(this.demand.get(listOf("rx", "rotateX", "0")))
+        get() = Coerce.toDouble(this.demand.get(listOf("rx", "rotateZ", "0")))
 
     // 粒子渲染周期间隔
     val EffectOption.period: Long

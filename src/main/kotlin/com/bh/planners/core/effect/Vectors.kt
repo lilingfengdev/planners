@@ -158,3 +158,32 @@ fun rotateAroundNonUnitAxis(
     val zPrime = z2 * dotProduct * (1.0 - cosTheta) + z * cosTheta + (-y2 * x + x2 * y) * sinTheta
     return vector.setX(xPrime).setY(yPrime).setZ(zPrime)
 }
+
+
+
+fun rotateAroundX(vector: Vector,angle: Double): Vector {
+    if (angle == 0.0) return vector
+    val angleCos = Math.cos(angle)
+    val angleSin = Math.sin(angle)
+    val y: Double = angleCos * vector.getY() - angleSin * vector.getZ()
+    val z: Double = angleSin * vector.getY() + angleCos * vector.getZ()
+    return vector.setY(y).setZ(z)
+}
+
+fun rotateAroundY(vector: Vector,angle: Double): Vector {
+    if (angle == 0.0) return vector
+    val angleCos = Math.cos(angle)
+    val angleSin = Math.sin(angle)
+    val x: Double = angleCos * vector.getX() + angleSin * vector.getZ()
+    val z: Double = -angleSin * vector.getX() + angleCos * vector.getZ()
+    return vector.setX(x).setZ(z)
+}
+
+fun rotateAroundZ(vector: Vector,angle: Double): Vector {
+    if (angle == 0.0) return vector
+    val angleCos = Math.cos(angle)
+    val angleSin = Math.sin(angle)
+    val x: Double = angleCos * vector.getX() - angleSin * vector.getY()
+    val y: Double = angleSin * vector.getX() + angleCos * vector.getY()
+    return vector.setX(x).setY(y)
+}

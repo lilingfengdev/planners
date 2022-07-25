@@ -3,17 +3,16 @@ package com.bh.planners.core.kether.game.entity
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.inline.CaptureEntity
 import com.bh.planners.core.effect.inline.InlineEvent.Companion.callEvent
+import com.bh.planners.core.effect.rotateAroundX
+import com.bh.planners.core.effect.rotateAroundY
+import com.bh.planners.core.effect.rotateAroundZ
 import com.bh.planners.core.kether.*
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
-import org.bukkit.entity.Arrow
-import org.bukkit.entity.Entity
-import org.bukkit.entity.Fireball
-import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Projectile
-import org.bukkit.entity.Snowball
+import org.bukkit.entity.*
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.metadata.FixedMetadataValue
+import org.bukkit.util.Vector
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ArgTypes
@@ -31,8 +30,11 @@ class ActionProjectile {
         val action: ParsedAction<*>,
         val name: ParsedAction<*>,
         val step: ParsedAction<*>,
+        val rotateX: ParsedAction<*>,
+        val rotateY: ParsedAction<*>,
+        val rotateZ: ParsedAction<*>,
         val event: ParsedAction<*>,
-        val selector: ParsedAction<*>?
+        val selector: ParsedAction<*>?,
     ) :
         ScriptAction<List<Entity>>() {
 
@@ -42,7 +44,10 @@ class ActionProjectile {
             owners: List<LivingEntity>,
             type: Type,
             step: Double,
-            event: String
+            event: String,
+            rotateX: Double,
+            rotateY: Double,
+            rotateZ: Double,
         ): List<Projectile> {
             val listOf = mutableListOf<Projectile>()
             owners.forEach {
@@ -55,7 +60,14 @@ class ActionProjectile {
 
                 projectile.customName = name
                 projectile.isCustomNameVisible = false
-                projectile.velocity = projectile.velocity.multiply(step);
+                val velocity = projectile.velocity
+
+                // 处理向量旋转
+                rotateAroundX(velocity,rotateX)
+                rotateAroundY(velocity,rotateY)
+                rotateAroundZ(velocity,rotateZ)
+
+                projectile.velocity = velocity.multiply(step);
                 listOf += projectile
             }
             return listOf
@@ -67,31 +79,30 @@ class ActionProjectile {
             frame.runTransfer<Type>(action) { type ->
                 frame.runTransfer<String>(name) { name ->
                     frame.runTransfer<Double>(step) { step ->
-                        frame.runTransfer<String>(event) { event ->
-                            val context = frame.getContext()
-                            if (selector != null) {
-                                frame.createContainer(selector).thenAccept {
-                                    val entities = it.targets.filterIsInstance<Target.Entity>().filter { it.isLiving }
-                                        .map { it.entity } as List<LivingEntity>
-                                    submit { future.complete(execute(context, name, entities, type, step, event)) }
-                                }
-                            } else {
-                                val player = frame.asPlayer()
-                                if (player != null) {
-                                    submit {
-                                        future.complete(
-                                            execute(
-                                                context,
-                                                name,
-                                                listOf(player),
-                                                type,
-                                                step,
-                                                event
-                                            )
-                                        )
+                        frame.runTransfer<Double>(rotateX) {rotateX ->
+                            frame.runTransfer<Double>(rotateY){rotateY ->
+                                frame.runTransfer<Double>(rotateZ) { rotateZ ->
+                                    frame.runTransfer<String>(event) { event ->
+                                        val context = frame.getContext()
+                                        if (selector != null) {
+                                            frame.createContainer(selector).thenAccept {
+                                                val entities = it.targets.filterIsInstance<Target.Entity>().filter { it.isLiving }
+                                                    .map { it.entity } as List<LivingEntity>
+                                                submit { future.complete(execute(context, name, entities, type, step, event,rotateX,rotateY,rotateZ)) }
+                                            }
+                                        } else {
+                                            val player = frame.asPlayer()
+                                            if (player != null) {
+                                                submit {
+                                                    future.complete(
+                                                        execute(context, name, listOf(player), type, step, event,rotateX,rotateY,rotateZ)
+                                                    )
+                                                }
+                                            } else {
+                                                future.complete(null)
+                                            }
+                                        }
                                     }
-                                } else {
-                                    future.complete(null)
                                 }
                             }
                         }
@@ -105,6 +116,7 @@ class ActionProjectile {
             return future
         }
 
+
     }
 
     enum class Type(val clazz: Class<out Projectile>) {
@@ -117,7 +129,7 @@ class ActionProjectile {
     companion object {
 
         /**
-         * projectile type name <step: action(0.4)> <event,e: action> <selector>
+         * projectile type name <step: action(0.4)> <rotateX: action(0.0)>  <rotateY: action(0.0)>  <rotateZ: action(0.0)> <oncapture: block> <selector>
          */
         @KetherParser(["projectile"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
@@ -125,7 +137,10 @@ class ActionProjectile {
                 it.next(ArgTypes.ACTION),
                 it.next(ArgTypes.ACTION),
                 it.tryGet(arrayOf("step"), 0.4)!!,
-                it.tryGet(arrayOf("event", "e"), "none")!!,
+                it.tryGet(arrayOf("rotateX"),0.0)!!,
+                it.tryGet(arrayOf("rotateY"),0.0)!!,
+                it.tryGet(arrayOf("rotateZ"),0.0)!!,
+                it.tryGet(arrayOf("oncapture"), "none")!!,
                 it.selectorAction()
             )
         }
@@ -139,7 +154,7 @@ class ActionProjectile {
                 val event = e.entity.getMetadata("event").getOrNull(0)?.asString() ?: return
                 context.callEvent(event, owner, CaptureEntity(e.hitEntity!!))
             }
-
+            e.entity.remove()
 
         }
 

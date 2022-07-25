@@ -9,9 +9,7 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val baffle = Baffle("aaa", 3000)
-        println(baffle.countdown)
-        println(baffle.next)
+        Demand("-args \\-10")
 
     }
 
