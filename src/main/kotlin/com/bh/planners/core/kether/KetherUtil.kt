@@ -33,11 +33,11 @@ val namespaces = listOf(NAMESPACE, "kether")
 
 
 fun ScriptFrame.getContext(): Context {
-    return rootVariables().get<Context>("@Session").orElse(null) ?: error("Error running environment !")
+    return rootVariables().get<Context>("@Context").orElse(null) ?: error("Error running environment !")
 }
 
 fun ScriptFrame.getSession(): Session {
-    return rootVariables().get<Session>("@Session").orElse(null) ?: error("Error running environment !")
+    return rootVariables().get<Session>("@Context").orElse(null) ?: error("Error running environment !")
 }
 
 fun ScriptFrame.executor(): ProxyCommandSender {

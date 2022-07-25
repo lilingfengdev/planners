@@ -65,7 +65,7 @@ object BukkitGrid {
         return try {
             KetherFunction.parse(gridActionbarValue, sender = adaptPlayer(player), namespace = namespaces) {
                 rootFrame().rootVariables()["@Skill"] = skill
-                rootFrame().rootVariables()["@Session"] = Context.Impl(sender!!, skill.instance)
+                rootFrame().rootVariables()["@Context"] = Context.Impl(sender!!, skill.instance)
             }
         } catch (e: Throwable) {
             e.printKetherErrorMessage()

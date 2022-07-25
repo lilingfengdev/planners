@@ -13,7 +13,7 @@ class CaptureEntity(val entity: Entity) : InlineEvent {
         get() = "onCapture"
 
     override fun inject(context: ScriptContext) {
-        val session = context.rootFrame().rootVariables().get<Session>("@Session").orElse(null) ?: return
+        val session = context.rootFrame().rootVariables().get<Session>("@Context").orElse(null) ?: return
         val asPlayer = session.asPlayer
         context.rootFrame().rootVariables()["@Target"] = entity.toTarget()
         context.rootFrame().rootVariables()["@entity"] = entity

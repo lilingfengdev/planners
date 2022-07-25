@@ -102,7 +102,7 @@ object Assembly {
             return try {
 
                 KetherShell.eval(expression, sender = adaptPlayer(profile.player), namespace = namespaces) {
-                    rootFrame().variables()["@Session"] = Context.Impl0(sender!!)
+                    rootFrame().variables()["@Context"] = Context.Impl0(sender!!)
                     rootFrame().variables()["value"] = value
                 }.thenApply { Coerce.toInteger(it) }.get()
 

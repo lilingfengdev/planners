@@ -29,7 +29,7 @@ interface InlineEvent {
         fun Session.run(event: InlineEvent,owner: LivingEntity, eventProcessor: Skill.EventProcessor) {
             try {
                 KetherShell.eval(eventProcessor.action, sender = executor, namespace = namespaces) {
-                    rootFrame().variables()["@Session"] = this@run
+                    rootFrame().variables()["@Context"] = this@run
                     rootFrame().variables()["@Skill"] = playerSkill
                     rootFrame().variables()["@Owner"] = owner
                     variables.forEach {

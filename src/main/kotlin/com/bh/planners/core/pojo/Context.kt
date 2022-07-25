@@ -29,7 +29,7 @@ abstract class Context(val executor: ProxyCommandSender) {
         return LazyGetter {
             try {
                 KetherShell.eval(variable.expression, namespace = namespaces, sender = executor) {
-                    rootFrame().variables()["@Session"] = this@Context
+                    rootFrame().variables()["@Context"] = this@Context
                 }.get()
             } catch (e: Throwable) {
                 e.printKetherErrorMessage()
@@ -51,7 +51,7 @@ abstract class Context(val executor: ProxyCommandSender) {
             return LazyGetter {
                 try {
                     KetherShell.eval(variable.expression, namespace = namespaces, sender = executor) {
-                        rootFrame().variables()["@Session"] = this@Impl
+                        rootFrame().variables()["@Context"] = this@Impl
                         rootFrame().variables()["@Skill"] = playerSkill
                         variables.filter { it.key != variable.key }.forEach {
                             rootFrame().variables()[it.key] = it.value

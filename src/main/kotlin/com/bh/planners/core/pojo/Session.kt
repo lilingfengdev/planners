@@ -27,7 +27,7 @@ open class Session(executor: ProxyCommandSender, skill: Skill) : Context.Impl(ex
     private fun run() {
         try {
             KetherShell.eval(skill.action, sender = executor, namespace = namespaces) {
-                rootFrame().variables()["@Session"] = this@Session
+                rootFrame().variables()["@Context"] = this@Session
                 rootFrame().variables()["@Skill"] = playerSkill
                 variables.forEach {
                     rootFrame().variables()[it.key] = it.value
