@@ -10,6 +10,10 @@ enum class EntityField(val get: Entity.() -> Any?) {
 
     NAME({ name }),
 
+    TYPE({ type.name }),
+
+    HEIGHT({ height }),
+
     LOCATION({ location }),
 
     MOVE_SPEED({ (this as? LivingEntity)?.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.value }),
