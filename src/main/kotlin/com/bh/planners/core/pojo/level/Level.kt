@@ -64,6 +64,10 @@ class Level(val algorithm: Algorithm, level: Int, experience: Int) {
             } else {
                 level = lvl
                 experience = exp
+                // 修正
+                if (experience <= 0) {
+                    addExperience(experience)
+                }
             }
             future.complete(null)
         }

@@ -13,6 +13,7 @@ class ActionEntityFieldGet(val field: EntityField, val selector: ParsedAction<*>
         frame.createContainer(selector).thenAccept {
             val entityTarget = it.firstEntityTarget()
             if (entityTarget != null) {
+                entityTarget?.passenger
                 future.complete(field.get(entityTarget))
             } else future.complete(null)
         }

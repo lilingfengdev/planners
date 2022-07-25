@@ -16,6 +16,8 @@ enum class EntityField(val get: Entity.() -> Any?) {
 
     HEALTH({ (this as? LivingEntity)?.health }),
 
+    VEHICLE({ this.vehicle }),
+
     MAX_HEALTH({ (this as? LivingEntity)?.maxHealth });
 
 
