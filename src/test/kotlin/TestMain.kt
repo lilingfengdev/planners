@@ -1,7 +1,4 @@
-import com.bh.planners.api.common.Baffle
-import com.bh.planners.api.common.Demand
-import com.bh.planners.core.effect.Target
-import com.bh.planners.util.generatorId
+
 
 object TestMain {
 
@@ -9,7 +6,8 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        Demand("-args \\-10")
+        val demand = Demand("-args /-10")
+        println(demand)
 
     }
 

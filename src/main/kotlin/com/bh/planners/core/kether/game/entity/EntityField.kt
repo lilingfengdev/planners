@@ -12,6 +12,10 @@ enum class EntityField(val get: Entity.() -> Any?) {
 
     TYPE({ type.name }),
 
+    YAW({ location.yaw }),
+
+    PITCH({ location.pitch }),
+
     HEIGHT({ height }),
 
     LOCATION({ location }),

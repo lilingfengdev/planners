@@ -85,7 +85,6 @@ class ActionGermEngine {
             val future = CompletableFuture<UUID>()
             val randomUUID = UUID.randomUUID()
             frame.runTransfer<String>(name) { name ->
-                info("germ effect $name")
                 val effectParticle = GermEffectParticle.getGermEffectPart(
                     randomUUID.toString(),
                     GermSrcManager.getGermSrcManager().getSrc(name, RootType.EFFECT)
