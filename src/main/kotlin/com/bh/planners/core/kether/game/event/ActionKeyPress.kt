@@ -10,7 +10,7 @@ import taboolib.module.kether.ScriptFrame
 import java.util.concurrent.CompletableFuture
 
 /**
- * on key press
+ * on keypress
  */
 class ActionKeyPress(
     val key: ParsedAction<*>, val timeout: ParsedAction<*>, val selector: ParsedAction<*>?, val then: ParsedAction<*>

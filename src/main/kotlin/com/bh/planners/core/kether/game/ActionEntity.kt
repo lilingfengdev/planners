@@ -15,7 +15,7 @@ class ActionEntity {
          * entity of [uuid: action]
          * entity loc [entity : action]
          * entity health [entity : action]
-         * entity spawn type name health tick 返回 [ UUID ]
+         * entity spawn type name health tick
          */
         @KetherParser(["entity"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

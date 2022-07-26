@@ -9,6 +9,7 @@ import com.bh.planners.util.entityAt
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
+import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import java.util.concurrent.CompletableFuture
 import kotlin.math.floor
@@ -25,13 +26,17 @@ object Visual : Selector {
 
     override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
         val range = Coerce.toDouble(args)
-        target?.ifLocation {
-            container.addAll(getTargetLocation(this.value, this.value.direction, range).map { it.toTarget() })
+        val future = CompletableFuture<Void>()
+        submit {
+            target?.ifLocation {
+                container.addAll(getTargetLocation(this.value, this.value.direction, range).map { it.toTarget() })
+            }
+            target?.ifEntity {
+                container.addAll(getTargetLocation(value, value.direction, range).map { it.toTarget() })
+            }
+            future.complete(null)
         }
-        target?.ifEntity {
-            container.addAll(getTargetLocation(value, value.direction, range).map { it.toTarget() })
-        }
-        return CompletableFuture.completedFuture(null)
+        return future
     }
 
 

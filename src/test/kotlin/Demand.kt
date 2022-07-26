@@ -29,7 +29,7 @@ class Demand(val source: String) {
                         put(s.substring(1), "")
                     }
 
-                    args[index + 1].startsWith("\\-") || args[index + 1].startsWith("/-") -> {
+                    args[index + 1].startsWith("\\-") || args[index + 1].startsWith("/") -> {
                         put(s.substring(1), args[index + 1].substring(1))
                         skipIndex += index + 1
                     }

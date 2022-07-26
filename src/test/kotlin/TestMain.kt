@@ -6,7 +6,7 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val demand = Demand("-args /-10")
+        val demand = Demand("-args /10")
         println(demand)
 
     }

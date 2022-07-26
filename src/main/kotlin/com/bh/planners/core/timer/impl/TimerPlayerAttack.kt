@@ -37,6 +37,7 @@ object TimerPlayerAttack : AbstractTimer<EntityDamageByEntityEvent>() {
         context.rootFrame().variables()["entity"] = e.entity.name
         context.rootFrame().variables()["cause"] = e.cause
         context.rootFrame().variables()["damage"] = e.damage
+        context.rootFrame().variables()["finalDamage"] = e.finalDamage
     }
 
 }

@@ -24,7 +24,7 @@ class ActionEventDamage(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Double> {
             val event = frame.event()
             if (event is EntityDamageEvent) {
-                return CompletableFuture.completedFuture(event.damage)
+                return CompletableFuture.completedFuture(event.finalDamage)
             }
             error("Error running environment !")
         }
@@ -72,7 +72,7 @@ class ActionEventDamage(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
         fun parser() = eventParser {
 
             try {
-                when (it.expects("add", "+=", "take", "-=", "set", "=", "to")) {
+                when (it.expects("add", "+=", "take", "-=", "set", "=", "to","finalDamage","finaldamage")) {
                     "add", "+=" -> ActionEventDamageOperator(it.next(ArgTypes.ACTION), Operator.ADD)
                     "take", "-=" -> ActionEventDamageOperator(it.next(ArgTypes.ACTION), Operator.TAKE)
                     "set", "=" -> ActionEventDamageOperator(it.next(ArgTypes.ACTION), Operator.SET)

@@ -16,10 +16,10 @@ class CaptureEntity(val entity: Entity) : InlineEvent {
         val session = context.rootFrame().rootVariables().get<Session>("@Context").orElse(null) ?: return
         val asPlayer = session.asPlayer
         context.rootFrame().rootVariables()["@Target"] = entity.toTarget()
-        context.rootFrame().rootVariables()["@entity"] = entity
-        context.rootFrame().rootVariables()["@entityId"] = entity.entityId
-        context.rootFrame().rootVariables()["@entityUniqueId"] = entity.uniqueId
-        context.rootFrame().rootVariables()["@isThis"] = entity == asPlayer
+        context.rootFrame().rootVariables()["entity"] = entity
+        context.rootFrame().rootVariables()["entityId"] = entity.entityId
+        context.rootFrame().rootVariables()["entityUniqueId"] = entity.uniqueId
+        context.rootFrame().rootVariables()["isThis"] = entity == asPlayer
     }
 
 }
