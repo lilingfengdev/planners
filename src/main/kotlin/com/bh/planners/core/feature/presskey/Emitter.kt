@@ -91,6 +91,16 @@ object Emitter {
         tryCall(e.player)
     }
 
+    @SubscribeEvent
+    fun e0(e: PressKeyEvents.Get) {
+        val prefix = if (e.packet.action == 0) {
+            "pressed"
+        } else if (e.packet.action == 1) {
+            "released"
+        } else return
+        PlannersAPI.callKeyByGroup(e.player, "$prefix ${e.packet.key}")
+    }
+
     @SubscribeEvent(ignoreCancelled = true)
     fun e0(e: KeyDownEvent) {
         getUsableSubscribers(e.player, e.key).forEach {

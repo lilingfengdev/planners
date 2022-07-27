@@ -8,13 +8,14 @@ __option__:
     base: 10
 action: |-
   
-  selector g0 to "-@range 10" 
-  for target in selector g0 list then {
-    attack flag 被击血印 they &target &target
-    flag 被击血印 to 0 timeout 20 they &target
-    profile flag &target to 0 timeout 20 
-  }
-    
+  projectile arrow "def0" oncapture e0
+  
+
+events:
+  e0:
+    async: true
+    action: |-
+      tell &@Target
 
   
 
