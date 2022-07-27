@@ -1,10 +1,18 @@
 package com.bh.planners.core.kether.event
 
+import ac.github.oa.api.event.entity.OriginCustomDamageEvent
 import com.bh.planners.api.common.Operator
+import com.bh.planners.api.event.proxy.ProxyDamageEvent
 import com.bh.planners.core.kether.ActionEvent.Companion.event
 import com.bh.planners.core.kether.eventParser
+import com.bh.planners.core.kether.runTransfer
+import org.bukkit.Bukkit
 import org.bukkit.event.Cancellable
+import org.bukkit.event.EventPriority
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
+import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -23,8 +31,8 @@ class ActionEventDamage(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Double> {
             val event = frame.event()
-            if (event is EntityDamageEvent) {
-                return CompletableFuture.completedFuture(event.finalDamage)
+            if (event is ProxyDamageEvent) {
+                return CompletableFuture.completedFuture(event.damage)
             }
             error("Error running environment !")
         }
@@ -35,16 +43,18 @@ class ActionEventDamage(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             val event = frame.event()
-            if (event is EntityDamageEvent) {
-                return frame.newFrame(action).run<Any>().thenAccept {
+            val future = CompletableFuture<Void>()
+            if (event is ProxyDamageEvent) {
+                frame.runTransfer<Double>(action) { value ->
                     when (operator) {
-                        Operator.ADD -> event.damage += Coerce.toDouble(it)
-                        Operator.SET -> event.damage = Coerce.toDouble(it)
-                        Operator.TAKE -> event.damage -= Coerce.toDouble(it)
+                        Operator.ADD -> event.damage += value
+                        Operator.SET -> event.damage = value
+                        Operator.TAKE -> event.damage -= value
                     }
+                    future.complete(null)
                 }
             }
-            return CompletableFuture.completedFuture(null)
+            return future
         }
 
     }
@@ -72,13 +82,15 @@ class ActionEventDamage(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
         fun parser() = eventParser {
 
             try {
-                when (it.expects("add", "+=", "take", "-=", "set", "=", "to","finalDamage","finaldamage")) {
+                it.mark()
+                when (it.expects("add", "+=", "take", "-=", "set", "=", "to", "finalDamage", "finaldamage")) {
                     "add", "+=" -> ActionEventDamageOperator(it.next(ArgTypes.ACTION), Operator.ADD)
                     "take", "-=" -> ActionEventDamageOperator(it.next(ArgTypes.ACTION), Operator.TAKE)
                     "set", "=" -> ActionEventDamageOperator(it.next(ArgTypes.ACTION), Operator.SET)
                     else -> error("error")
                 }
             } catch (_: Exception) {
+                it.reset()
                 ActionEventDamageGet()
             }
 
