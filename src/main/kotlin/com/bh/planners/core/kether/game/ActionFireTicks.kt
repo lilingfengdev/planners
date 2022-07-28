@@ -11,10 +11,7 @@ import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
-class ActionFireTicks(
-    val ticks: ParsedAction<*>,
-    val selector: ParsedAction<*>?
-) : ScriptAction<Void>() {
+class ActionFireTicks(val ticks: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
@@ -37,7 +34,7 @@ class ActionFireTicks(
         @KetherParser(["fireTicks"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val power = it.next(ArgTypes.ACTION)
-            ActionExplosion(power, it.selectorAction())
+            ActionFireTicks(power, it.selectorAction())
         }
     }
 }

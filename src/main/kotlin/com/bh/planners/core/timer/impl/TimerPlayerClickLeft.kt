@@ -3,6 +3,7 @@ package com.bh.planners.core.timer.impl
 import com.bh.planners.core.timer.AbstractTimer
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
 
@@ -15,7 +16,7 @@ object TimerPlayerClickLeft : AbstractTimer<PlayerInteractEvent>() {
 
     override fun check(e: PlayerInteractEvent): ProxyCommandSender? {
 
-        if (e.action == Action.LEFT_CLICK_AIR || e.action == Action.LEFT_CLICK_BLOCK) {
+        if (e.action == Action.LEFT_CLICK_AIR || e.action == Action.LEFT_CLICK_BLOCK && e.hand == EquipmentSlot.HAND) {
             return adaptPlayer(e.player)
         }
         return null

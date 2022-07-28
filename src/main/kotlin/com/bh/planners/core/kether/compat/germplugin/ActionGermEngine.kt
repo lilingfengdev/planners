@@ -14,6 +14,7 @@ import ink.ptms.adyeshach.common.script.ScriptHandler.getEntities
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import taboolib.common.platform.function.info
+import taboolib.common.util.random
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -83,12 +84,16 @@ class ActionGermEngine {
 
         override fun run(frame: ScriptFrame): CompletableFuture<UUID> {
             val future = CompletableFuture<UUID>()
-            val randomUUID = UUID.randomUUID()
+            val id = random(0.0, 1.0).toString().substring(2)
             frame.runTransfer<String>(name) { name ->
+                info("id $id name $name")
                 val effectParticle = GermEffectParticle.getGermEffectPart(
-                    randomUUID.toString(),
+                    id,
                     GermSrcManager.getGermSrcManager().getSrc(name, RootType.EFFECT)
-                ) as GermEffectParticle
+                )
+                // 拿到bean后输出
+                info("bean $effectParticle")
+                effectParticle as GermEffectParticle
 
                 if (selector != null) {
                     frame.createContainer(selector).thenAccept {

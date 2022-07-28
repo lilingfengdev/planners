@@ -6,9 +6,8 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val demand = Demand("-args /10")
-        println(demand)
-
+        println("name" + '\t' + "Komorebi");
+        println("ageaa" + '\t' + "13333");
     }
 
 

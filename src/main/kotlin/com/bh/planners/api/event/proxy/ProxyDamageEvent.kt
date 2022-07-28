@@ -39,7 +39,7 @@ class ProxyDamageEvent(
         )
         fun e(ope: OptionalEvent) {
             val e = ope.get<EntityDamageEvent>()
-            if (e.priorityEnum == PriorityEnum.PRE) {
+            if (e.priorityEnum == PriorityEnum.POST) {
                 val memory = e.damageMemory
                 val damageEvent = ProxyDamageEvent(memory.attacker, memory.injured, memory.event.cause, memory.damage)
                 damageEvent.call()
