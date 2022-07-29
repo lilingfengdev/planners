@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether.game
 
+import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.core.kether.*
 import com.bh.planners.core.pojo.Session
@@ -41,10 +42,10 @@ class ActionSkillCast {
                     val level = Coerce.toInteger(it)
                     if (selector != null) {
                         frame.execPlayer(selector) {
-                            ContextImpl(adaptPlayer(this), skill, level).apply {  }.cast()
+                            ContextAPI.create(this, skill, level)?.cast()
                         }
                     } else {
-                        ContextImpl(adaptPlayer(frame.asPlayer() ?: return@thenAccept), skill, level).cast()
+                        ContextAPI.create(frame.asPlayer() ?: return@thenAccept, skill, level)?.cast()
                     }
                 }
             }

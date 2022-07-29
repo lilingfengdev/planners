@@ -2,6 +2,7 @@ package com.bh.planners.api
 
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.core.kether.game.ActionSkillCast
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.player.PlayerJob
@@ -16,11 +17,16 @@ object ContextAPI {
         return adaptPlayer(player)
     }
 
-    fun cast(player: Player, skill: String, level: Int) {
+    fun create(player: Player, skill: String, level: Int): Context.Impl1? {
+        val instance = PlannersAPI.getSkill(skill) ?: error("Skill '$skill' not found")
+        return create(player, instance, level)
+    }
+
+    fun create(player: Player, skill: Skill, level: Int): Context.Impl1? {
         if (player.plannersProfileIsLoaded) {
-            val instance = PlannersAPI.getSkill(skill)!!
-            ActionSkillCast.ContextImpl(createProxy(player), instance, level).cast()
+            return Context.Impl1(createProxy(player), skill, level)
         }
+        return null
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.bh.planners.command
 
+import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.hasJob
@@ -72,11 +73,7 @@ object PlannersSkillCommand {
                 dynamic("level") {
                     execute<ProxyCommandSender> { sender, context, argument ->
                         val player = Bukkit.getPlayerExact(context.argument(-2))!!
-                        val skill = PlannersAPI.getSkill(Coerce.toString(context.argument(-1)))
-                            ?: error("Skill '${context.argument(-1)}' not found")
-
-                        val level = Coerce.toInteger(argument)
-                        ActionSkillCast.ContextImpl(adaptPlayer(player), skill, level).cast()
+                        ContextAPI.create(player, context.argument(-1), Coerce.toInteger(argument))?.cast()
                     }
                 }
 

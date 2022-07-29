@@ -39,11 +39,16 @@ abstract class Context(val executor: ProxyCommandSender) {
 
     open class Impl0(executor: ProxyCommandSender) : Context(executor)
 
+    open class Impl1(executor: ProxyCommandSender, skill: Skill, val level: Int) : Session(executor, skill) {
+
+        override val playerSkill = PlayerJob.Skill(-1, skill.key, level, null)
+
+    }
+
     open class Impl(executor: ProxyCommandSender, val skill: Skill) : Context(executor) {
 
         open val playerSkill: PlayerJob.Skill
             get() = profile.getSkill(skill.key)!!
-
 
         val variables = skill.option.variables.associate { it.key to toLazyVariable(it) }
 
