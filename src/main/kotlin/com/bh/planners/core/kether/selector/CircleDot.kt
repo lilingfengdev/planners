@@ -10,7 +10,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- * -@c-dot radius,y,angle
+ * -@c-dot radius,y,angle,keepVisual(false)
  * -@c-dot 2,
  */
 object CircleDot : Selector {
@@ -27,10 +27,16 @@ object CircleDot : Selector {
         val radius = Coerce.toDouble(split[0])
         val y = Coerce.toDouble(split.getOrElse(1) { "0" })
         val angle = Coerce.toDouble(split.getOrElse(2) { "0" })
+        val isKeepVisual = Coerce.toBoolean(split.getOrElse(3) { "false" })
         val radians = Math.toRadians(angle)
         val x: Double = radius * cos(radians)
         val z: Double = radius * sin(radians)
-        container.add(coordinate.newLocation(x, y, z).toTarget())
+        val newLocation = coordinate.newLocation(x, y, z)
+        if (isKeepVisual) {
+            newLocation.pitch = location.value.pitch
+            newLocation.yaw = location.value.yaw
+        }
+        container.add(newLocation.toTarget())
         return CompletableFuture.completedFuture(null)
     }
 }

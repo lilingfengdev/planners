@@ -5,7 +5,7 @@ import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.*
 import java.util.UUID
 
-class ActionDragonLoader {
+object ActionDragonLoader {
 
     /**
      * dragon animation send [name: token] [selector]
