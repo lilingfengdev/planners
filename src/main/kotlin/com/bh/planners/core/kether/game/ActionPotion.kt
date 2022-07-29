@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.*
 import org.bukkit.Bukkit
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -29,8 +30,8 @@ class ActionPotion {
         val selector: ParsedAction<*>?
     ) : ScriptAction<Void>() {
 
-        fun execute(player: Player, effectType: PotionEffectType?, duration: Int, amplifier: Int) {
-            player.addPotionEffect(PotionEffect(effectType ?: return, duration, amplifier))
+        fun execute(entity: LivingEntity, effectType: PotionEffectType?, duration: Int, amplifier: Int) {
+            entity.addPotionEffect(PotionEffect(effectType ?: return, duration, amplifier))
         }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
@@ -42,7 +43,7 @@ class ActionPotion {
                             val effectType = PotionEffectType.getByName(name.uppercase(Locale.getDefault()))
 
                             if (selector != null) {
-                                frame.execPlayer(selector) { execute(this, effectType, duration, amplifier) }
+                                frame.execLivingEntity(selector) { execute(this, effectType, duration, amplifier) }
                             } else {
                                 val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
                                 execute(viewer, effectType, duration, amplifier)
