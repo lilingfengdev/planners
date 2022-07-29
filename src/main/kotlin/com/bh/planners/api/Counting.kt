@@ -1,6 +1,7 @@
 package com.bh.planners.api
 
 import com.bh.planners.api.common.Baffle
+import com.bh.planners.api.event.PlayerSkillCooldownEvent
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
 import org.bukkit.entity.Player
@@ -26,18 +27,24 @@ object Counting {
 
     fun increase(player: Player, skill: Skill, amount: Long) {
         val baffle = getCache(player).firstOrNull { it.name == skill.key } ?: return
-        baffle.increase(amount)
+        val event = PlayerSkillCooldownEvent.Increase(player, skill, amount).apply { call() }
+        if (event.isCancelled) return
+        baffle.increase(event.amount)
     }
 
     fun set(player: Player, skill: Skill, amount: Long) {
         val baffles = getCache(player)
         baffles.removeIf { it.next || it.name == skill.key }
-        baffles += Baffle(skill.key, amount)
+        val event = PlayerSkillCooldownEvent.Set(player, skill, amount).apply { call() }
+        if (event.isCancelled) return
+        baffles += Baffle(skill.key, event.amount)
     }
 
     fun reduce(player: Player, skill: Skill, amount: Long) {
         val baffle = getCache(player).firstOrNull { it.name == skill.key } ?: return
-        baffle.reduce(amount)
+        val event = PlayerSkillCooldownEvent.Reduce(player, skill, amount).apply { call() }
+        if (event.isCancelled) return
+        baffle.reduce(event.amount)
     }
 
 
