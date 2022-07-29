@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether.game
 
+import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.*
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -18,7 +19,8 @@ class ActionTeleport(
         return frame.newFrame(action).run<Any>().thenAccept {
             if (selector != null) {
                 frame.execEntity(selector) {
-                    execute(this, it) }
+                    execute(this, it)
+                }
             } else {
                 execute(frame.asPlayer() ?: return@thenAccept, it)
             }
@@ -28,12 +30,26 @@ class ActionTeleport(
     }
 
     fun execute(entity: Entity, it: Any) {
-        if (it is Entity) {
-            entity.teleport(it)
-        } else if (it is Location) {
-            entity.teleport(it)
-        } else if (it is String) {
-            entity.teleport(it.toString().toLocation())
+        when (it) {
+            is Entity -> {
+                entity.teleport(it)
+            }
+
+            is Location -> {
+                entity.teleport(it)
+            }
+
+            is Target.Container -> {
+                entity.teleport(it.firstLocationTarget() ?: return)
+            }
+
+            is Target.Location -> {
+                entity.teleport(it.value)
+            }
+
+            is String -> {
+                entity.teleport(it.toString().toLocation())
+            }
         }
     }
 
