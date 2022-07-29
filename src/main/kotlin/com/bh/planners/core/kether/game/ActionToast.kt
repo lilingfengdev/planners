@@ -111,14 +111,16 @@ class ActionToast(
         return builder
     }
 
-
     fun execute(player: Player, material: String, message: String, data: String, frame: String) {
         val id = NamespacedKey(BukkitPlugin.getInstance(), "temp-" + UUID.randomUUID().toString())
         Bukkit.getUnsafe().loadAdvancement(id, create(material, message, data, frame).createJSON())
         val advancement = Bukkit.getAdvancement(id)
         val progress = player.getAdvancementProgress(advancement!!)
-        if (!progress.isDone) {
-            progress.remainingCriteria.forEach { progress.awardCriteria(it) }
+
+        submit {
+            if (!progress.isDone) {
+                progress.remainingCriteria.forEach { progress.awardCriteria(it) }
+            }
         }
         submit(delay = 20) {
             if (progress.isDone) {
