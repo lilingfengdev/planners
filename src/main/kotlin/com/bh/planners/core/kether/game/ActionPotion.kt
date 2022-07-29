@@ -58,9 +58,9 @@ class ActionPotion {
 
     class Remove(val name: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
-        fun execute(player: Player, effectType: PotionEffectType?) {
+        fun execute(entity: LivingEntity, effectType: PotionEffectType?) {
             if (effectType != null) {
-                player.removePotionEffect(effectType)
+                entity.removePotionEffect(effectType)
             }
         }
 
@@ -69,7 +69,7 @@ class ActionPotion {
                 val effectType = PotionEffectType.getByName(name.toString().uppercase(Locale.getDefault()))
 
                 if (selector != null) {
-                    frame.execPlayer(selector) { execute(this, effectType) }
+                    frame.execLivingEntity(selector) { execute(this, effectType) }
                 } else {
                     val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
                     execute(viewer, effectType)
@@ -82,14 +82,14 @@ class ActionPotion {
 
     class Clear(val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
-        fun execute(player: Player) {
-            player.activePotionEffects.toList().forEach { player.removePotionEffect(it.type) }
+        fun execute(entity: LivingEntity) {
+            entity.activePotionEffects.toList().forEach { entity.removePotionEffect(it.type) }
         }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             submit {
                 if (selector != null) {
-                    frame.execPlayer(selector) { execute(this) }
+                    frame.execLivingEntity(selector) { execute(this) }
                 } else {
                     val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
                     execute(viewer)
