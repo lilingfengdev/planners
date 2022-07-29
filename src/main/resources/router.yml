@@ -1,5 +1,5 @@
-warrior:
-  name: '战士'
+default:
+  name: 'default'
   counter: def0
   regain-mana-eval: math profile level * 0.5
   icon:
@@ -10,13 +10,10 @@ warrior:
       - ' &7攻击力: 3'
       - ' &7防御力: 2'
       - ' &7移动速度: 2'
-  start: job_def0 #
+  start: normal
   routes:
-    job_def0:
+    normal:
       target:
-        - key: job_def1
-          condition:
-            - $: 1
-              if: balance has 100
-              consume: balance take 100
-              placeholder: '金币未满足100({{ balance get }})'
+        - key: 战士
+        - key: 游猎
+        - key: 魔导

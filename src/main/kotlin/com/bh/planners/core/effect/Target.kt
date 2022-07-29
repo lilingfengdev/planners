@@ -60,18 +60,34 @@ interface Target {
         val size: Int
             get() = targets.size
 
-        fun add(vararg target: Target) : Container {
+        val isEmpty: Boolean
+            get() = size == 0
+
+        val isNotEmpty: Boolean
+            get() = !isEmpty
+
+        fun add(vararg target: Target): Container {
             this.targets += target
             return this
         }
 
-        fun addAll(targets: List<Target>) : Container {
+        fun addAll(targets: List<Target>): Container {
             this.targets += targets
             return this
         }
 
-        fun merge(container: Container) : Container {
-            if (container.targets.isEmpty()) return this
+        fun has(target: Target): Boolean {
+            return target in targets
+        }
+
+        fun unmerge(container: Container): Container {
+            if (container.isEmpty) return this
+            removeIf { container.has(this) }
+            return this
+        }
+
+        fun merge(container: Container): Container {
+            if (container.isEmpty) return this
             targets += container.targets
             return this
         }

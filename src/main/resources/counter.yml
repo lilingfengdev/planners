@@ -3,10 +3,16 @@ def0:
   min: 1
   max: 100
   experience: |
-    if check &level <= 15 then {
-      math &level * 2 + 7
+    if check &level <= 10 then {
+      math &level * 200
+    } else if check &level <= 20 then {
+      math &level * 600
     } else if check &level <= 30 then {
-      math &level * 5 - 38
+      math &level * 900
+    } else if check &level <= 40 then {
+      math &level * 1200
+    } else if check &level <= 50 then {
+      math &level * 16000
     } else {
-      math &level * 9 - 158
+      math &level * 3000
     }

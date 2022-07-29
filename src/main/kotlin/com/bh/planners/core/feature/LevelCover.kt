@@ -5,10 +5,13 @@ import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.addExperience
 import com.bh.planners.api.event.PlayerGetExperienceEvent
+import com.bh.planners.api.event.PlayerInitializeEvent
+import com.bh.planners.api.event.PlayerSelectedJobEvent
 import com.bh.planners.api.hasJob
 import com.bh.planners.core.pojo.level.Level
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerExpChangeEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import taboolib.common.platform.event.SubscribeEvent
 
 object LevelCover {
@@ -21,6 +24,7 @@ object LevelCover {
         if (isEnable) {
             if (e.player.plannersProfileIsLoaded && e.player.hasJob) {
                 e.player.plannersProfile.addExperience(e.amount)
+                update(e.player)
             }
             e.amount = 0
         }
@@ -30,10 +34,30 @@ object LevelCover {
     @SubscribeEvent(ignoreCancelled = true)
     fun e(e: PlayerGetExperienceEvent) {
         if (isEnable) {
-            update(e.player, e.player.plannersProfile.job!!.counter)
+            update(e.player)
         }
     }
 
+    @SubscribeEvent
+    fun e(e: PlayerInitializeEvent) {
+        if (isEnable) {
+            update(e.player)
+        }
+    }
+
+    @SubscribeEvent
+    fun e(e: PlayerSelectedJobEvent) {
+        if (isEnable) {
+            update(e.profile.player)
+        }
+    }
+
+    fun update(player: Player) {
+        if (player.plannersProfileIsLoaded && player.hasJob) {
+            update(player, player.plannersProfile.job?.counter!!)
+        }
+
+    }
 
     fun update(player: Player, level: Level) {
 
@@ -41,7 +65,7 @@ object LevelCover {
         if (level.top == Int.MAX_VALUE) {
             player.exp = 1f
         } else {
-            player.exp = level.experience.toFloat() / level.top.coerceAtLeast(0)
+            player.exp = (level.experience.toFloat() / level.top).coerceAtLeast(0f).coerceAtMost(1f)
         }
     }
 

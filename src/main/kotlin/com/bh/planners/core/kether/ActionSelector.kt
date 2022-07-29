@@ -62,34 +62,73 @@ class ActionSelector {
         }
     }
 
+    class ActionTargetContainerUnmerge(val key: ParsedAction<*>, val value: ParsedAction<*>) :
+        ScriptAction<Target.Container>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
+            val future = CompletableFuture<Target.Container>()
+            frame.runTransfer<String>(key) { key ->
+                frame.createContainer(value).thenAccept { container ->
+                    future.complete(frame.getContext().flags.get(key)?.asContainer()?.unmerge(container))
+                }
+            }
+            return future
+        }
+    }
+
+    class ActionTargetContainerMerge(val key: ParsedAction<*>, val value: ParsedAction<*>) :
+        ScriptAction<Target.Container>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
+            val future = CompletableFuture<Target.Container>()
+            frame.runTransfer<String>(key) { key ->
+                frame.createContainer(value).thenAccept { container ->
+                    future.complete(frame.getContext().flags.get(key)?.asContainer()?.merge(container))
+                }
+            }
+            return future
+        }
+    }
+
     companion object {
 
         /**
          * 缓存目标容器
-         * selector [key] to [selector]
+         * selector [key: action] to [selector]
          * selector g0 to "-@range 10 10 10"
          *
          * 删除
-         * selector [key] remove
+         * selector [key: action] remove
          *
          * 列表
-         * selector [key] list
+         * selector [key: action] list
          *
          * 取
-         * selector [key]
-         * selector [key] size
+         * selector [key: action]
+         * selector [key: action] size
+         *
+         * 合并
+         * selector [key: action] merge they ""
+         *
+         * 拆除
+         * selector [key: action] unmerge they ""
+         *
          */
         @KetherParser(["selector"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val key = it.next(ArgTypes.ACTION)
             try {
                 it.mark()
-                when (it.expects("to", "set", "remove", "size", "list")) {
-                    "to", "set" -> ActionTargetContainerSet(key, it.next(ArgTypes.ACTION))
+                when (it.expects("to", "set", "remove", "size", "list", "merge", "unmerge")) {
+
+                    "to", "set" -> {
+                        ActionTargetContainerSet(key, it.next(ArgTypes.ACTION))
+                    }
+
                     "remove" -> ActionTargetContainerRemove(key)
                     "size" -> ActionTargetContainerGetSize(key)
                     "list" -> ActionTargetContainerList(key)
                     "get" -> ActionTargetContainerGet(key)
+                    "merge" -> ActionTargetContainerMerge(key, it.selectorAction()!!)
+                    "unmerge" -> ActionTargetContainerUnmerge(key, it.selectorAction()!!)
                     else -> error("error of case!")
                 }
             } catch (_: Exception) {

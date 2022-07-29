@@ -8,16 +8,21 @@ import com.germ.germplugin.api.GermSrcManager
 import com.germ.germplugin.api.RootType
 import com.germ.germplugin.api.SoundType
 import com.germ.germplugin.api.dynamic.effect.GermEffectParticle
+import com.germ.germplugin.api.event.GermSrcPreReloadEvent
+import com.germ.germplugin.api.event.GermSrcReloadEvent
 import ink.ptms.adyeshach.common.entity.EntityInstance
 import ink.ptms.adyeshach.common.entity.manager.Manager
 import ink.ptms.adyeshach.common.script.ScriptHandler.getEntities
 import org.bukkit.Bukkit
+import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Entity
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.info
 import taboolib.common.util.random
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
+import java.util.Collections
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
@@ -70,7 +75,34 @@ class ActionGermEngine {
         }
     }
 
-    class ActionParticle(val name: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<UUID>() {
+    class ActionParticle(val name: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
+
+        companion object {
+
+            private val cache = Collections.synchronizedMap(mutableMapOf<String, ConfigurationSection>())
+
+
+            private fun get(name: String): ConfigurationSection? {
+                return cache.computeIfAbsent(name) {
+                    val split = name.split(":")
+                    GermSrcManager.getGermSrcManager().getSrc(split[0], RootType.EFFECT)
+                        ?.getConfigurationSection(split[1])
+                }
+            }
+
+            private fun create(name: String): GermEffectParticle {
+                return GermEffectParticle.getGermEffectPart(
+                    UUID.randomUUID().toString(),
+                    get(name) ?: error("GermPlugin effect '$name' not found.")
+                ) as GermEffectParticle
+            }
+
+            @SubscribeEvent
+            private fun e(e: GermSrcReloadEvent) {
+                cache.clear()
+            }
+
+        }
 
         fun execute(target: Target, effect: GermEffectParticle) {
             Bukkit.getOnlinePlayers().forEach {
@@ -82,19 +114,9 @@ class ActionGermEngine {
             }
         }
 
-        override fun run(frame: ScriptFrame): CompletableFuture<UUID> {
-            val future = CompletableFuture<UUID>()
-            val id = random(0.0, 1.0).toString().substring(2)
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.runTransfer<String>(name) { name ->
-                info("id $id name $name")
-                val effectParticle = GermEffectParticle.getGermEffectPart(
-                    id,
-                    GermSrcManager.getGermSrcManager().getSrc(name, RootType.EFFECT)
-                )
-                // 拿到bean后输出
-                info("bean $effectParticle")
-                effectParticle as GermEffectParticle
-
+                val effectParticle = create(name)
                 if (selector != null) {
                     frame.createContainer(selector).thenAccept {
                         it.targets.forEach { execute(it, effectParticle) }
@@ -103,8 +125,7 @@ class ActionGermEngine {
                     execute(frame.toOriginLocation()!!, effectParticle)
                 }
             }
-
-            return future
+            return CompletableFuture.completedFuture(null)
         }
 
 
@@ -123,7 +144,7 @@ class ActionGermEngine {
          * germ sound name type master volume 1.0 pitch 1.0 they "-@self"
          *
          * 例子播放
-         * germ particle [name: action] <selector>
+         * germ effect [name: action] <selector>
          */
         @KetherParser(["germengine", "germ", "germplugin"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
@@ -150,7 +171,7 @@ class ActionGermEngine {
                         it.selector()
                     )
                 }
-                case("snowstom") {
+                case("effect") {
                     ActionParticle(it.next(ArgTypes.ACTION), it.selectorAction())
                 }
             }

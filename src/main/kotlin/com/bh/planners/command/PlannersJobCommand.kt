@@ -136,7 +136,7 @@ object PlannersJobCommand {
             execute<ProxyCommandSender> { sender, _, argument ->
                 val playerExact = Bukkit.getPlayerExact(argument)!!
                 if (!playerExact.hasJob) {
-                    sender.sendLang("console-player-job-not-exists", playerExact.plannersProfile.job!!.name)
+                    sender.sendLang("console-player-job-not-exists")
                     return@execute
                 }
                 playerExact.plannersProfile.reset()

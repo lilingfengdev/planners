@@ -5,6 +5,7 @@ import com.bh.planners.util.eval
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.metadata.FixedMetadataValue
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
@@ -17,32 +18,40 @@ class ActionDamage {
 
     class Damage(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(value).run<Any>().thenAccept { damage ->
-                submit {
-                    frame.execLivingEntity(selector) {
-                        this.damage(damage.toString().eval(this.maxHealth))
-                        this.noDamageTicks = 0
+
+            frame.runTransfer<String>(value) { damage ->
+                frame.createContainer(selector).thenAccept { container ->
+                    submit {
+                        container.forEachLivingEntity {
+                            this.noDamageTicks = 0
+                            this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
+                            this.damage(damage.eval(this.maxHealth))
+                            this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
+                        }
                     }
                 }
             }
+
+            return CompletableFuture.completedFuture(null)
         }
     }
 
     class Attack(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(value).run<Any>().thenAccept { damage ->
-                val asPlayer = frame.asPlayer() ?: return@thenAccept
-                submit {
-                    frame.execLivingEntity(selector) {
-                        catchRunning {
-                            this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
-                            this.damage(damage.toString().eval(this.maxHealth), asPlayer)
-                            this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
+            val asPlayer = frame.asPlayer() ?: return CompletableFuture.completedFuture(null)
+            frame.runTransfer<String>(value) { damage ->
+                frame.createContainer(selector).thenAccept { container ->
+                    submit {
+                        container.forEachLivingEntity {
                             this.noDamageTicks = 0
+                            this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
+                            this.damage(damage.eval(this.maxHealth), asPlayer)
+                            this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
                         }
                     }
                 }
             }
+            return CompletableFuture.completedFuture(null)
         }
     }
 
@@ -51,7 +60,7 @@ class ActionDamage {
         /**
          * 对selector目标造成伤害
          * damage [damage] [selector]
-         * damage 10.0 "-@aline 10"
+         * damage 10.0 they "-@aline 10"
          */
         @KetherParser(["damage"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
@@ -61,7 +70,7 @@ class ActionDamage {
         /**
          * 对selector目标攻击,
          * attack [damage] [selector]
-         * attack 10.0 "-@aline 10"
+         * attack 10.0 they "-@aline 10"
          */
         @KetherParser(["attack"], namespace = NAMESPACE, shared = true)
         fun parser2() = scriptParser {

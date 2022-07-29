@@ -46,7 +46,7 @@ class ActionLightning(val selector: ParsedAction<*>?) : ScriptAction<Void>() {
          */
         @KetherParser(["lightning"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionLightning(it.selectorAction())
+            ActionLightning(it.selector())
         }
     }
 }

@@ -14,7 +14,8 @@ class ActionSet(val action: ParsedAction<*>, val value: ParsedAction<*>) : Scrip
         val future = CompletableFuture<Void>()
         frame.newFrame(action).run<Any>().thenAccept { key ->
             frame.newFrame(value).run<Any>().thenAccept {
-                frame.rootVariables()[key.toString()] = it
+                frame.variables()[key.toString()] = it
+//                frame.rootVariables()[key.toString()] = it
                 future.complete(null)
             }
         }
