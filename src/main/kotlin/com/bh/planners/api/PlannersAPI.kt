@@ -79,24 +79,26 @@ object PlannersAPI {
 
         if (!hasCast(skill)) return ExecuteResult.LEVEL_ZERO
 
+        val session = ContextAPI.createSession(player, skill)
+        // 不计入任何标记
         if (!mark) {
-            val session = Session(adaptPlayer(player), skill)
             session.cast()
             session.closed = true
             return ExecuteResult.SUCCESS
         }
+
         val preEvent = PlayerCastSkillEvent.Pre(player, skill).apply { call() }
         if (preEvent.isCancelled) return ExecuteResult.CANCELED
 
         if (!Counting.hasNext(player, skill)) return ExecuteResult.COOLING
 
-        val session = Session(adaptPlayer(player), skill)
         val mana = Coerce.toDouble(session.mpCost.get())
         if (toCurrentMana() < mana) return ExecuteResult.MANA_NOT_ENOUGH
 
         Counting.reset(player, session)
-        takeMana(Coerce.toDouble(session.mpCost.get()))
+        takeMana(mana)
         PlayerCastSkillEvent.Record(player, skill).call()
+
         session.cast()
         session.closed = true
 
