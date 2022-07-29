@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether.compat.dragoncore
 
+import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.*
 import eos.moe.dragoncore.network.PacketSender
 import org.bukkit.Bukkit
@@ -23,9 +24,11 @@ class ActionDragonEffect(
                 frame.runTransfer<Int>(time) { time ->
                     val id = UUID.randomUUID().toString()
                     if (selector != null) {
-                        frame.execEntity(selector) { execute(id, scheme, rotation, time, this) }
+                        frame.exec(selector) {
+                            execute(id, scheme, rotation, time, this)
+                        }
                     } else {
-                        execute(id, scheme, rotation, time, frame.asPlayer() ?: return@runTransfer)
+                        execute(id, scheme, rotation, time, frame.toOriginLocation() ?: return@runTransfer)
                     }
                 }
             }
@@ -34,10 +37,22 @@ class ActionDragonEffect(
         return CompletableFuture.completedFuture(null)
     }
 
-    fun execute(id: String, scheme: String, rotation: String, time: Int, target: Entity) {
-        val entityId = target.uniqueId.toString()
+    fun execute(id: String, scheme: String, rotation: String, time: Int, target: Target) {
+
+        val value = when (target) {
+            is Target.Entity -> {
+                target.entity.uniqueId.toString()
+            }
+
+            is Target.Location -> {
+                target.value.toLocal()
+            }
+
+            else -> return
+        }
+
         Bukkit.getOnlinePlayers().forEach {
-            PacketSender.addParticle(it, scheme, id, entityId, rotation, time)
+            PacketSender.addParticle(it, scheme, id, value, rotation, time)
         }
     }
 
