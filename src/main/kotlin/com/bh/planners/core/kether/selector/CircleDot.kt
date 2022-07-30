@@ -27,7 +27,7 @@ object CircleDot : Selector {
         val radius = Coerce.toDouble(split[0])
         val y = Coerce.toDouble(split.getOrElse(1) { "0" })
         val angle = Coerce.toDouble(split.getOrElse(2) { "0" })
-        val isKeepVisual = Coerce.toBoolean(split.getOrElse(3) { "false" })
+        val isKeepVisual = Coerce.toBoolean(split.getOrElse(3) { "true" })
         val radians = Math.toRadians(angle)
         val x: Double = radius * cos(radians)
         val z: Double = radius * sin(radians)
