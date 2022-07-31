@@ -51,11 +51,11 @@ class ActionFlag {
                     frame.newFrame(time).run<Any>().thenAccept { time ->
                         if (selector != null) {
                             frame.execEntity(selector) {
-                                setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time)))
+                                setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time) * 50))
                             }
                         } else {
                             val profile = frame.asPlayer()!!.plannersProfile
-                            profile.setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time)))
+                            profile.setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time) * 50))
                         }
                     }
                 }
