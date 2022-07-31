@@ -90,9 +90,13 @@ class ActionToast(
                 frame.runTransfer<String>(data) { data ->
                     frame.runTransfer<String>(this.frame) { f ->
                         if (selector != null) {
-                            frame.execPlayer(selector) { execute(this, material, message, data, f) }
+                            frame.createContainer(selector).thenAccept {
+                                submit {
+                                    it.forEachPlayer { execute(this, material, message, data, f) }
+                                }
+                            }
                         } else {
-                            execute(frame.asPlayer() ?: return@runTransfer, material, message, data, f)
+                            submit { execute(frame.asPlayer() ?: return@submit, material, message, data, f) }
                         }
                     }
                 }
@@ -117,10 +121,8 @@ class ActionToast(
         val advancement = Bukkit.getAdvancement(id)
         val progress = player.getAdvancementProgress(advancement!!)
 
-        submit {
-            if (!progress.isDone) {
-                progress.remainingCriteria.forEach { progress.awardCriteria(it) }
-            }
+        if (!progress.isDone) {
+            progress.remainingCriteria.forEach { progress.awardCriteria(it) }
         }
         submit(delay = 20) {
             if (progress.isDone) {
