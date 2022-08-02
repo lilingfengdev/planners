@@ -6,6 +6,6 @@ abstract class Effect {
 
     abstract val name: String
 
-    abstract fun sendTo(target: com.bh.planners.core.effect.Target?, option: com.bh.planners.core.effect.EffectOption, context: Context)
+    abstract fun sendTo(target: Target?, option: EffectOption, context: Context)
 
 }

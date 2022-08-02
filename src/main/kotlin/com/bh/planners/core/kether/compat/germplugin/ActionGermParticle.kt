@@ -3,9 +3,11 @@ package com.bh.planners.core.kether.compat.germplugin
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.runTransfer0
+import com.bh.planners.core.kether.target
 import com.bh.planners.core.kether.toOriginLocation
 import com.germ.germplugin.api.GermSrcManager
 import com.germ.germplugin.api.RootType
+import com.germ.germplugin.api.dynamic.effect.GermEffectPart
 import com.germ.germplugin.api.dynamic.effect.GermEffectParticle
 import com.germ.germplugin.api.event.GermSrcReloadEvent
 import org.bukkit.Bukkit
@@ -32,11 +34,11 @@ class ActionGermParticle(val name: ParsedAction<*>, val selector: ParsedAction<*
             }
         }
 
-        private fun create(name: String): GermEffectParticle {
+        private fun create(name: String): GermEffectPart<*> {
             return GermEffectParticle.getGermEffectPart(
                 UUID.randomUUID().toString(),
                 get(name) ?: error("GermPlugin effect '$name' not found.")
-            ) as GermEffectParticle
+            )
         }
 
         @SubscribeEvent
@@ -46,7 +48,7 @@ class ActionGermParticle(val name: ParsedAction<*>, val selector: ParsedAction<*
 
     }
 
-    fun execute(target: Target, effect: GermEffectParticle) {
+    fun execute(target: Target, effect: GermEffectPart<*>) {
         Bukkit.getOnlinePlayers().forEach {
             if (target is Target.Entity) {
                 effect.spawnToEntity(it, target.entity)
@@ -64,7 +66,7 @@ class ActionGermParticle(val name: ParsedAction<*>, val selector: ParsedAction<*
                     it.targets.forEach { execute(it, effectParticle) }
                 }
             } else {
-                execute(frame.toOriginLocation()!!, effectParticle)
+                execute(frame.target(), effectParticle)
             }
         }
         return CompletableFuture.completedFuture(null)
