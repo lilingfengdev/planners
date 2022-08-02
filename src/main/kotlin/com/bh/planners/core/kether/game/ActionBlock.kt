@@ -5,6 +5,9 @@ import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.*
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.Block
+import taboolib.common.platform.function.info
+import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -18,28 +21,39 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
     ScriptAction<List<Target>>() {
 
     fun execute(location: Location, material: Material, ticks: Long) {
-        val oldMaterial = location.block.type
-        location.block.type = material
-        // 销毁
-        SimpleTimeoutTask.createSimpleTask(ticks, async = false) {
-            location.block.type = oldMaterial
-        }
+        SimpleTimeoutTask.register(BlockSimpleTask(location, material, ticks))
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<Target>> {
 
-        val future = CompletableFuture<List<Target>>()
-        frame.runTransfer<Material>(material) { material ->
-            frame.runTransfer<Long>(timeout) { timeout ->
+        frame.runTransfer0<Material>(material) { material ->
+            frame.runTransfer0<Long>(timeout) { timeout ->
                 if (selector != null) {
-                    frame.execLocation(selector) { execute(this, material, timeout * 50) }
+                    frame.createContainer(selector).thenAccept {
+                        submit { it.forEachLocation { execute(this, material, timeout) } }
+                    }
                 } else {
-                    execute(frame.toOriginLocation()!!.value, material, timeout * 50)
+                    submit {
+                        execute(frame.toOriginLocation()!!.value, material, timeout)
+                    }
                 }
             }
         }
 
-        return future
+        return CompletableFuture.completedFuture(null)
+    }
+
+    class BlockSimpleTask(val location: Location, val to: Material, tick: Long) : SimpleTimeoutTask(tick) {
+
+        val mark = location.block.type
+
+        override val closed: () -> Unit
+            get() = { location.block.type = mark }
+
+        init {
+            location.block.type = to
+        }
+
     }
 
     companion object {
@@ -47,7 +61,7 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
 
         /**
          * block material timeout(tick) <selector>
-         * block STONE 6000 they "-@self"
+         * block STONE 60 they "-@self"
          */
         @KetherParser(["block"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

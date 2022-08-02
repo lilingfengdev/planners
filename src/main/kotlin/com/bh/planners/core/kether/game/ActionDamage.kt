@@ -19,7 +19,7 @@ class ActionDamage {
     class Damage(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-            frame.runTransfer<String>(value) { damage ->
+            frame.runTransfer0<String>(value) { damage ->
                 frame.createContainer(selector).thenAccept { container ->
                     submit {
                         container.forEachLivingEntity {
@@ -39,7 +39,7 @@ class ActionDamage {
     class Attack(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             val asPlayer = frame.asPlayer() ?: return CompletableFuture.completedFuture(null)
-            frame.runTransfer<String>(value) { damage ->
+            frame.runTransfer0<String>(value) { damage ->
                 frame.createContainer(selector).thenAccept { container ->
                     submit {
                         container.forEachLivingEntity {

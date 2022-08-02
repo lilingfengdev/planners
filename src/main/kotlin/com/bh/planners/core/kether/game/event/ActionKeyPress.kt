@@ -17,8 +17,8 @@ class ActionKeyPress(
 ) : ScriptAction<Void>() {
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-        frame.runTransfer<Int>(key) { key ->
-            frame.runTransfer<Long>(timeout) { timeout ->
+        frame.runTransfer0<Int>(key) { key ->
+            frame.runTransfer0<Long>(timeout) { timeout ->
                 if (selector != null) {
                     frame.execPlayer(selector) {
                         Emitter.registerSubscribers(this, key, timeout * 50).thenAccept {
@@ -28,7 +28,7 @@ class ActionKeyPress(
                         }
                     }
                 } else {
-                    Emitter.registerSubscribers(frame.asPlayer() ?: return@runTransfer, key, timeout * 50).thenAccept {
+                    Emitter.registerSubscribers(frame.asPlayer() ?: return@runTransfer0, key, timeout * 50).thenAccept {
                         if (!frame.isDone) {
                             process(frame.asPlayer()!!, frame)
                         }

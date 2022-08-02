@@ -64,20 +64,23 @@ fun ScriptFrame.getSkill(): PlayerJob.Skill {
     return rootVariables().get<PlayerJob.Skill>("@Skill").orElse(null) ?: error("Error running environment !")
 }
 
-fun ScriptFrame.toTarget(): Target? {
-    val executor = executor()
-    if (executor is BukkitPlayer) {
-        return executor.player.toTarget()
-    }
-    return Any().toLocation().toTarget()
-}
+fun ScriptFrame.target(): Target {
 
-fun ScriptFrame.toOriginLocation(): Target.Location? {
     val optional = rootVariables().get<Target.Location>("@Origin")
     if (optional.isPresent) {
         return optional.get()
     }
-    return toTarget() as Target.Location
+
+    val executor = executor()
+    if (executor is BukkitPlayer) {
+        return executor.player.toTarget()
+    }
+
+    return Any().toLocation().toTarget()
+}
+
+fun ScriptFrame.toOriginLocation(): Target.Location {
+    return target() as Target.Location
 }
 
 fun ScriptFrame.rootVariables(): QuestContext.VarTable {
@@ -144,16 +147,15 @@ inline fun <reified T> getEnum(value: String): T {
     return declaredMethod.invoke(null, value) as T
 }
 
-inline fun <reified T> ScriptFrame.runTransfer(
-    action: ParsedAction<*>,
-    crossinline call: (T) -> Unit
-): CompletableFuture<Void> {
 
-    return this.newFrame(action).run<Any>().thenAccept {
+inline fun <reified T> ScriptFrame.runTransfer(action: ParsedAction<*>): CompletableFuture<T> {
+
+    val future = CompletableFuture<T>()
+    this.newFrame(action).run<Any>().thenAccept {
 
         if (T::class.java.isEnum) {
             catchRunning {
-                call(getEnum(it.toString().trim().uppercase().replace(".", "_")))
+                future.complete(getEnum<T>(it.toString().trim().uppercase().replace(".", "_")))
             }
             return@thenAccept
         }
@@ -168,9 +170,14 @@ inline fun <reified T> ScriptFrame.runTransfer(
                 Float::class -> Coerce.toFloat(it)
                 else -> it.toString()
             } as T
-            call(value)
+            future.complete(value)
         }
     }
+    return future
+}
+
+inline fun <reified T> ScriptFrame.runTransfer0(action: ParsedAction<*>, crossinline call: (T) -> Unit) {
+    runTransfer<T>(action).thenAccept { call(it) }
 }
 
 fun ScriptFrame.execEntity(selector: ParsedAction<*>, call: Entity.() -> Unit) {
@@ -275,7 +282,7 @@ fun QuestReader.get(array: Array<String>): ParsedAction<*> {
     return tryGet(array, null) ?: error("the lack of '${array.map { it }}' cite target")
 }
 
-fun QuestReader.tryGet(array: Array<String>, def: Any? = null): ParsedAction<*>? {
+fun QuestReader.tryGet(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
     return try {
         mark()
         expects(*array)

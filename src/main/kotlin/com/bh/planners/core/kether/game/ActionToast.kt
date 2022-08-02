@@ -85,10 +85,10 @@ class ActionToast(
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.runTransfer<String>(material) { material ->
-            frame.runTransfer<String>(message) { message ->
-                frame.runTransfer<String>(data) { data ->
-                    frame.runTransfer<String>(this.frame) { f ->
+        frame.runTransfer0<String>(material) { material ->
+            frame.runTransfer0<String>(message) { message ->
+                frame.runTransfer0<String>(data) { data ->
+                    frame.runTransfer0<String>(this.frame) { f ->
                         if (selector != null) {
                             frame.createContainer(selector).thenAccept {
                                 submit {

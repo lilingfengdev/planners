@@ -15,7 +15,7 @@ class ActionFireTicks(val ticks: ParsedAction<*>, val selector: ParsedAction<*>?
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-        frame.runTransfer<Int>(ticks) { ticks ->
+        frame.runTransfer0<Int>(ticks) { ticks ->
             if (selector != null) {
                 frame.execEntity(selector) { fireTicks = ticks }
             } else {

@@ -11,6 +11,7 @@ import org.bukkit.util.Vector
  * @return [Vector]
  */
 fun rotateAroundAxisX(v: Vector, angle: Double): Vector? {
+    if (angle == 0.0) return v
     var angle = angle
     angle = Math.toRadians(angle)
     val cos = Math.cos(angle)
@@ -28,6 +29,7 @@ fun rotateAroundAxisX(v: Vector, angle: Double): Vector? {
  * @return [Vector]
  */
 fun rotateAroundAxisY(v: Vector, angle: Double): Vector {
+    if (angle == 0.0) return v
     var angle = angle
     angle = -angle
     angle = Math.toRadians(angle)
@@ -46,6 +48,7 @@ fun rotateAroundAxisY(v: Vector, angle: Double): Vector {
  * @return [Vector]
  */
 fun rotateAroundAxisZ(v: Vector, angle: Double): Vector {
+    if (angle == 0.0) return v
     var angle = angle
     angle = Math.toRadians(angle)
     val cos = Math.cos(angle)

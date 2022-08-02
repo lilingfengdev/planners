@@ -2,7 +2,7 @@ package com.bh.planners.core.kether.compat.germplugin
 
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.createContainer
-import com.bh.planners.core.kether.runTransfer
+import com.bh.planners.core.kether.runTransfer0
 import com.bh.planners.core.kether.toOriginLocation
 import com.germ.germplugin.api.GermSrcManager
 import com.germ.germplugin.api.RootType
@@ -57,7 +57,7 @@ class ActionGermParticle(val name: ParsedAction<*>, val selector: ParsedAction<*
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.runTransfer<String>(name) { name ->
+        frame.runTransfer0<String>(name) { name ->
             val effectParticle = create(name)
             if (selector != null) {
                 frame.createContainer(selector).thenAccept {

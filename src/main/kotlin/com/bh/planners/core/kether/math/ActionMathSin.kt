@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.math
 
 import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.runTransfer
+import com.bh.planners.core.kether.runTransfer0
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.KetherParser
@@ -14,7 +14,7 @@ import kotlin.math.sin
 class ActionMathSin(val action: ParsedAction<*>) : ScriptAction<Any>() {
     override fun run(frame: ScriptFrame): CompletableFuture<Any> {
         val future = CompletableFuture<Any>()
-        frame.runTransfer<Double>(action) {
+        frame.runTransfer0<Double>(action) {
             future.complete(sin(it))
         }
         return future

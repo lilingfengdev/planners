@@ -1,19 +1,28 @@
 package com.bh.planners.core.effect
 
-import com.bh.planners.api.common.Demand
 import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.google.common.base.Enums
-import ink.ptms.adyeshach.common.bukkit.data.DataWatcher.DataVillagerData.toInt
 import taboolib.common.platform.ProxyParticle
-import taboolib.common.platform.function.info
 import taboolib.common.util.Vector
 import taboolib.common5.Coerce
 import java.awt.Color
+import java.util.Collections
 
 /**
  * by Chemdah
  */
 open class EffectOption(text: String) {
+
+
+    companion object {
+
+        private val cache = Collections.synchronizedMap(mutableMapOf<String, EffectOption>())
+
+        fun get(text: String): EffectOption {
+            return cache.computeIfAbsent(text) { EffectOption(text) }
+        }
+
+    }
 
     val demand = text.toDemand()
     val particle = Enums.getIfPresent(ProxyParticle::class.java, demand.namespace.uppercase()).or(ProxyParticle.FLAME)!!
@@ -53,5 +62,6 @@ open class EffectOption(text: String) {
             )
         }
     }
+
 
 }

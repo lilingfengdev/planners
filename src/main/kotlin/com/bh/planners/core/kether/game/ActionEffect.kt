@@ -24,7 +24,7 @@ object ActionEffect {
                     val context = frame.getContext()
                     future.complete(null)
                     submit(async = true) {
-                        val effectOption = EffectOption(it.toString())
+                        val effectOption = EffectOption.get(it.toString())
                         effect.sendTo(frame.toOriginLocation(), effectOption, context)
                     }
                 } catch (e: Exception) {

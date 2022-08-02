@@ -9,9 +9,9 @@ import java.util.Collections
 class Demand(val source: String) {
 
     val namespace: String
-    val dataMap = LinkedHashMap<String, MutableList<String>>()
-    val children = LinkedHashMap<String, Demand>()
-    val args = mutableListOf<String>()
+    val dataMap = Collections.synchronizedMap(LinkedHashMap<String, MutableList<String>>())
+    val children = Collections.synchronizedMap(LinkedHashMap<String, Demand>())
+    val args = Collections.synchronizedList(mutableListOf<String>())
 
     init {
         var args = source.split(" ")
@@ -25,18 +25,13 @@ class Demand(val source: String) {
         val skipIndex = arrayListOf<Int>()
         args.forEachIndexed { index, s ->
             if (index in skipIndex || s.isEmpty()) return@forEachIndexed
-            if (s[0] == '-') {
+            if (s[0] == ':') {
                 when {
                     index + 1 >= args.size -> {
                         put(s.substring(1), "")
                     }
 
-                    args[index + 1].startsWith("\\-") || args[index + 1].startsWith("/-") -> {
-                        put(s.substring(1), args[index + 1].substring(1))
-                        skipIndex += index + 1
-                    }
-
-                    args[index + 1][0] != '-' -> {
+                    args[index + 1][0] != ':' -> {
                         put(s.substring(1), args[index + 1])
                         skipIndex += index + 1
                     }

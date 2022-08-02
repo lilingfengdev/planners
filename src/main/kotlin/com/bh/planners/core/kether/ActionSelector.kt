@@ -66,7 +66,7 @@ class ActionSelector {
         ScriptAction<Target.Container>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
             val future = CompletableFuture<Target.Container>()
-            frame.runTransfer<String>(key) { key ->
+            frame.runTransfer0<String>(key) { key ->
                 frame.createContainer(value).thenAccept { container ->
                     future.complete(frame.getContext().flags.get(key)?.asContainer()?.unmerge(container))
                 }
@@ -79,7 +79,7 @@ class ActionSelector {
         ScriptAction<Target.Container>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
             val future = CompletableFuture<Target.Container>()
-            frame.runTransfer<String>(key) { key ->
+            frame.runTransfer0<String>(key) { key ->
                 frame.createContainer(value).thenAccept { container ->
                     future.complete(frame.getContext().flags.get(key)?.asContainer()?.merge(container))
                 }

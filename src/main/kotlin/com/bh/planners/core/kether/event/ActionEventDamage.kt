@@ -5,7 +5,7 @@ import com.bh.planners.api.common.Operator
 import com.bh.planners.api.event.proxy.ProxyDamageEvent
 import com.bh.planners.core.kether.ActionEvent.Companion.event
 import com.bh.planners.core.kether.eventParser
-import com.bh.planners.core.kether.runTransfer
+import com.bh.planners.core.kether.runTransfer0
 import org.bukkit.Bukkit
 import org.bukkit.event.Cancellable
 import org.bukkit.event.EventPriority
@@ -45,7 +45,7 @@ class ActionEventDamage(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
             val event = frame.event()
             val future = CompletableFuture<Void>()
             if (event is ProxyDamageEvent) {
-                frame.runTransfer<Double>(action) { value ->
+                frame.runTransfer0<Double>(action) { value ->
                     when (operator) {
                         Operator.ADD -> event.damage += value
                         Operator.SET -> event.damage = value
