@@ -54,7 +54,7 @@ object EffectArc : Effect() {
         val effectSpawner = EffectSpawner(option)
         option.createContainer(target, context).thenAccept { container ->
             val spread = option.spread
-            val angle = option.angle
+            val angle = option.angle + option.startAngle
             val radius = option.radius
             val step = option.step
             val slope = option.slope
