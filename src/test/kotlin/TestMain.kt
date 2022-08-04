@@ -1,4 +1,4 @@
-
+import com.bh.planners.api.common.Demand
 
 object TestMain {
 
@@ -6,8 +6,8 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        println("name" + '\t' + "Komorebi");
-        println("ageaa" + '\t' + "13333");
+        val demand = Demand(":@range 3 :their @amount 3")
+        println(demand)
     }
 
 

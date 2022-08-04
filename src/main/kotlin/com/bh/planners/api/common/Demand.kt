@@ -15,7 +15,7 @@ class Demand(val source: String) {
 
     init {
         var args = source.split(" ")
-        if (source[0] != '-' && args.size >= 4) {
+        if (source[0] != ':' && args.size >= 4) {
             this.args += args.subList(0, 4).toMutableList()
             namespace = args[0]
             args = args.subList(4, args.size)
