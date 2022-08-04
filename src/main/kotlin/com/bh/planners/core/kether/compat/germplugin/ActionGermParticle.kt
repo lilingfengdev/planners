@@ -29,8 +29,7 @@ class ActionGermParticle(val name: ParsedAction<*>, val selector: ParsedAction<*
         private fun get(name: String): ConfigurationSection? {
             return cache.computeIfAbsent(name) {
                 val split = name.split(":")
-                GermSrcManager.getGermSrcManager().getSrc(split[0], RootType.EFFECT)
-                    ?.getConfigurationSection(split[1])
+                GermSrcManager.getGermSrcManager().getSrc(split[0], RootType.EFFECT)?.getConfigurationSection(split[1])
             }
         }
 

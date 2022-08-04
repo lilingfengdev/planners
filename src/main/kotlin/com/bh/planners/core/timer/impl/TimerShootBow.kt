@@ -20,11 +20,15 @@ object TimerShootBow : AbstractTimer<EntityShootBowEvent>() {
     }
 
     /**
+     * arrow 箭
+     * bow 弓
      * force 拉弓力度
      * shooter 拉弓者
      */
     override fun onStart(context: ScriptContext, template: Template, e: EntityShootBowEvent) {
         super.onStart(context, template, e)
+        context.rootFrame().variables()["arrow"] = e.projectile
+        context.rootFrame().variables()["bow"] = e.bow
         context.rootFrame().variables()["force"] = e.force
         context.rootFrame().variables()["shooter"] = e.entity.name
     }
