@@ -54,7 +54,7 @@ object EffectArc : Effect() {
         val effectSpawner = EffectSpawner(option)
         option.createContainer(target, context).thenAccept { container ->
             val spread = option.spread
-            val angle = option.angle + option.startAngle
+            val angle = option.angle
             val radius = option.radius
             val step = option.step
             val slope = option.slope
@@ -62,14 +62,14 @@ object EffectArc : Effect() {
                 val coordinate = PlayerFrontCoordinate(this)
                 val locations = mutableListOf<Location>()
 
-                var i = option.startAngle
+                var i = 0.0
 
                 while (if (angle <= -1) i > angle else i < angle) {
-                    val radians = Math.toRadians(i)
+                    val radians = Math.toRadians(i + option.startAngle)
                     val vector = Vector()
-                    vector.x = (radius + abs(i - option.startAngle) / step * spread) * cos(radians)
-                    vector.z = (radius + abs(i - option.startAngle) / step * spread) * sin(radians)
-                    vector.y = abs(i - option.startAngle) / step * slope
+                    vector.x = (radius + abs(i) / step * spread) * cos(radians)
+                    vector.z = (radius + abs(i) / step * spread) * sin(radians)
+                    vector.y = abs(i) / step * slope
                     rotateAxisVector(option, vector)
                     locations += coordinate.newLocation(vector.x, vector.y, vector.z)
                     if (angle <= -1) {
