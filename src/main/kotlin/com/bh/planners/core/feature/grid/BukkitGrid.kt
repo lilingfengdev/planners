@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.PlayerInventory
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
@@ -128,7 +129,7 @@ object BukkitGrid {
 
     @SubscribeEvent
     fun e(e: InventoryClickEvent) {
-        if (grids.firstOrNull { it.slot == e.slot } != null) {
+        if (e.inventory is PlayerInventory && grids.firstOrNull { it.slot == e.slot } != null) {
             e.isCancelled = true
         }
     }

@@ -7,7 +7,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.module.kether.ScriptContext
 
-class TimerPlayerJobLevelUp : AbstractTimer<PlayerLevelChangeEvent>() {
+object TimerPlayerJobLevelUp : AbstractTimer<PlayerLevelChangeEvent>() {
     override val name: String
         get() = "player job level up"
     override val eventClazz: Class<PlayerLevelChangeEvent>

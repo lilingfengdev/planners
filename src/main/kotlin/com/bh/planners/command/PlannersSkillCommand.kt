@@ -3,6 +3,7 @@ package com.bh.planners.command
 import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.bind
 import com.bh.planners.api.hasJob
 import com.bh.planners.core.kether.game.ActionSkillCast
 import com.bh.planners.core.ui.Faceplate
@@ -74,6 +75,30 @@ object PlannersSkillCommand {
                     execute<ProxyCommandSender> { sender, context, argument ->
                         val player = Bukkit.getPlayerExact(context.argument(-2))!!
                         ContextAPI.create(player, context.argument(-1), Coerce.toInteger(argument))?.cast()
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    @CommandBody
+    val bind = subCommand {
+        dynamic("player") {
+            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+            dynamic("skill") {
+                suggestion<ProxyCommandSender> { sender, context ->
+                    PlannersAPI.skills.map { it.key }
+                }
+                dynamic("slot") {
+                    suggestion<ProxyCommandSender> { sender, context ->
+                        PlannersAPI.keySlots.map { it.key }
+                    }
+                    execute<ProxyCommandSender> { sender, context, argument ->
+                        val player = Bukkit.getPlayerExact(context.argument(-2))!!
+                        val skill = player.plannersProfile.getSkill(context.argument(-1))!!
+                        player.plannersProfile.bind(skill, PlannersAPI.keySlots.firstOrNull { it.key == argument }!!)
                     }
                 }
 

@@ -6,6 +6,7 @@ import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.addExperience
 import com.bh.planners.api.event.PlayerGetExperienceEvent
 import com.bh.planners.api.event.PlayerInitializeEvent
+import com.bh.planners.api.event.PlayerLevelChangeEvent
 import com.bh.planners.api.event.PlayerSelectedJobEvent
 import com.bh.planners.api.hasJob
 import com.bh.planners.core.pojo.level.Level
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerExpChangeEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common5.Coerce
 
 object LevelCover {
 
@@ -21,14 +23,19 @@ object LevelCover {
 
     @SubscribeEvent
     fun e(e: PlayerExpChangeEvent) {
-        if (isEnable) {
+        if (isEnable && e.amount > 0) {
             if (e.player.plannersProfileIsLoaded && e.player.hasJob) {
                 e.player.plannersProfile.addExperience(e.amount)
-                update(e.player)
             }
             e.amount = 0
         }
+    }
 
+    @SubscribeEvent
+    fun e(e: PlayerLevelChangeEvent) {
+        if (isEnable) {
+            update(e.player)
+        }
     }
 
     @SubscribeEvent(ignoreCancelled = true)
@@ -65,7 +72,7 @@ object LevelCover {
         if (level.top == Int.MAX_VALUE) {
             player.exp = 1f
         } else {
-            player.exp = (level.experience.toFloat() / level.top).coerceAtLeast(0f).coerceAtMost(1f)
+            player.exp = Coerce.toFloat(level.experience) / Coerce.toFloat(level.top)
         }
     }
 

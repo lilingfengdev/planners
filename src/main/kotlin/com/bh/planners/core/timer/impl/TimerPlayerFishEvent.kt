@@ -7,7 +7,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.module.kether.ScriptContext
 
-class TimerPlayerFishEvent : AbstractTimer<PlayerFishEvent>() {
+object TimerPlayerFishEvent : AbstractTimer<PlayerFishEvent>() {
     override val name: String
         get() = "player fish"
     override val eventClazz: Class<PlayerFishEvent>

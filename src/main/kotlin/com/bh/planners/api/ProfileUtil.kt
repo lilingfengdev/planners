@@ -150,7 +150,7 @@ fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {
         Storage.INSTANCE.updateSkill(this, skill)
     } else {
         // 解绑同快捷键技能
-        val orNull = this.getSkills().filter { it.key != skill.key && it.keySlot == iKeySlot }.firstOrNull()
+        val orNull = this.getSkills().firstOrNull { it.key != skill.key && it.keySlot == iKeySlot }
         if (orNull != null) {
             bind(orNull, iKeySlot)
         }

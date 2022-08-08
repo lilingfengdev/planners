@@ -9,7 +9,6 @@ import kotlin.math.max
 
 class OriginAttributeBridge : AttributeBridge {
 
-
     override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>) {
         addAttributes(UUID.randomUUID().toString(), uuid, timeout, reads)
     }
