@@ -5,6 +5,9 @@ import ac.github.oa.api.event.entity.OriginCustomDamageEvent
 import ac.github.oa.internal.base.enums.PriorityEnum
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
+import org.bukkit.entity.Projectile
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import taboolib.common.platform.event.EventPriority
@@ -50,5 +53,14 @@ class ProxyDamageEvent(
         }
 
     }
+
+    fun getPlayer(entity: Entity) : Player? {
+        if (entity is Projectile) {
+            return entity.shooter as? Player ?: return null
+        }
+        return null
+    }
+
+
 
 }

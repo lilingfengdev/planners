@@ -12,5 +12,5 @@ import org.bukkit.Location
  */
 interface ParticleSpawner {
 
-    fun spawn(location: Location)
+    fun spawn(location:  Location)
 }

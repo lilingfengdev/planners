@@ -20,14 +20,7 @@ object TimerPlayerAttack : AbstractTimer<ProxyDamageEvent>() {
         get() = ProxyDamageEvent::class.java
 
     override fun check(e: ProxyDamageEvent): ProxyCommandSender? {
-
-        var damager = e.damager
-        if (damager is Projectile) {
-            damager = damager.shooter as? LivingEntity ?: return null
-        }
-
-        val player = damager as? Player ?: return null
-        return adaptPlayer(player)
+        return adaptPlayer(e.getPlayer(e.damager) ?: return null)
     }
 
     /**

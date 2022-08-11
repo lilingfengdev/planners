@@ -67,7 +67,7 @@ object LevelCover {
     }
 
     fun update(player: Player, level: Level) {
-
+        player.sendMessage()
         player.level = level.level
         if (level.top == Int.MAX_VALUE) {
             player.exp = 1f
