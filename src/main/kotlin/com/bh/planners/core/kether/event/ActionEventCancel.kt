@@ -2,7 +2,10 @@ package com.bh.planners.core.kether.event
 
 import com.bh.planners.core.kether.ActionEvent.Companion.event
 import com.bh.planners.core.kether.eventParser
+import com.bh.planners.core.kether.runTransfer
+import org.bukkit.Bukkit
 import org.bukkit.event.Cancellable
+import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -15,17 +18,20 @@ import java.util.concurrent.CompletableFuture
  * 事件取消
  * event cancel [to [false/true]]
  */
-class ActionEventCancel(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
+class ActionEventCancel(val action: ParsedAction<*>) : ScriptAction<Void>() {
 
-    override fun run(frame: ScriptFrame): CompletableFuture<Boolean> {
+    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         val event = frame.event()
+        val future = CompletableFuture<Void>()
         if (event is Cancellable) {
-            return frame.newFrame(action).run<Any>().thenApply {
-                event.isCancelled = Coerce.toBoolean(it)
-                event.isCancelled
+            frame.runTransfer<Boolean>(action).thenAccept { value ->
+                event.isCancelled = value
+                future.complete(null)
             }
+        } else {
+            future.complete(null)
         }
-        return CompletableFuture.completedFuture(false)
+        return future
     }
 
     companion object {

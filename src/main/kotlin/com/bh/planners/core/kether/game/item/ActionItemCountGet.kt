@@ -31,6 +31,8 @@ class ActionItemCountGet(
                         val entityTarget = it.firstLivingEntityTarget()
                         if (entityTarget != null) {
                             future.complete(get(slot.getItem(entityTarget), keyword))
+                        } else {
+                            future.complete(null)
                         }
                     }
                 } else {

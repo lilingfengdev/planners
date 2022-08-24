@@ -3,6 +3,7 @@ package com.bh.planners.core.timer
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.event.EventPriority
 import taboolib.module.kether.ScriptContext
 
 interface Timer<E : Event> {
@@ -11,6 +12,9 @@ interface Timer<E : Event> {
 
     val ignoreCancelled : Boolean
         get() = false
+
+    val priority : EventPriority
+        get() = EventPriority.MONITOR
 
     val eventClazz: Class<E>
 

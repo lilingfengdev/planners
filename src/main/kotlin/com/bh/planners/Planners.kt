@@ -15,5 +15,6 @@ object Planners : Plugin() {
 
     override fun onEnable() {
         Metrics(15573, BukkitPlugin.getInstance().description.version, Platform.BUKKIT)
+        BukkitPlugin.getInstance().description.version
     }
 }

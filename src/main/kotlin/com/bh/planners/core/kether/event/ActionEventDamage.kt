@@ -47,9 +47,9 @@ class ActionEventDamage(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
             if (event is ProxyDamageEvent) {
                 frame.runTransfer0<Double>(action) { value ->
                     when (operator) {
-                        Operator.ADD -> event.damage += value
+                        Operator.ADD -> event.addDamage(value)
                         Operator.SET -> event.damage = value
-                        Operator.TAKE -> event.damage -= value
+                        Operator.TAKE -> event.addDamage(-value)
                     }
                     future.complete(null)
                 }

@@ -41,8 +41,17 @@ object ItemOperator {
                         it.next(ArgTypes.ACTION),
                         it.selectorAction()
                     )
+
                     else -> error("error of case!")
                 }
+            }
+
+            case("name", "display") {
+                ActionItemName(it.next(ArgTypes.ACTION), it.selectorAction())
+            }
+
+            case("lore") {
+                ActionItemLore(it.next(ArgTypes.ACTION), it.selectorAction())
             }
         }
     }

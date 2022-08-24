@@ -27,9 +27,10 @@ object Counting {
 
     fun increase(player: Player, skill: Skill, amount: Long) {
         val baffle = getCache(player).firstOrNull { it.name == skill.key } ?: return
-        val event = PlayerSkillCooldownEvent.Increase(player, skill, amount).apply { call() }
+        val event = PlayerSkillCooldownEvent.Increase.Pre(player, skill, amount).apply { call() }
         if (event.isCancelled) return
         baffle.increase(event.amount)
+        PlayerSkillCooldownEvent.Increase.Post(player, skill, amount).call()
     }
 
     fun set(player: Player, skill: Skill, amount: Long) {
@@ -42,9 +43,10 @@ object Counting {
 
     fun reduce(player: Player, skill: Skill, amount: Long) {
         val baffle = getCache(player).firstOrNull { it.name == skill.key } ?: return
-        val event = PlayerSkillCooldownEvent.Reduce(player, skill, amount).apply { call() }
+        val event = PlayerSkillCooldownEvent.Reduce.Pre(player, skill, amount).apply { call() }
         if (event.isCancelled) return
         baffle.reduce(event.amount)
+        PlayerSkillCooldownEvent.Reduce.Post(player, skill, amount).call()
     }
 
 

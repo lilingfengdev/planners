@@ -9,7 +9,9 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.info
 import taboolib.module.kether.ScriptContext
 import taboolib.platform.type.BukkitProxyEvent
 
@@ -18,6 +20,9 @@ object TimerPlayerAttack : AbstractTimer<ProxyDamageEvent>() {
         get() = "player attack"
     override val eventClazz: Class<ProxyDamageEvent>
         get() = ProxyDamageEvent::class.java
+
+    override val priority: EventPriority
+        get() = EventPriority.LOWEST
 
     override fun check(e: ProxyDamageEvent): ProxyCommandSender? {
         return adaptPlayer(e.getPlayer(e.damager) ?: return null)

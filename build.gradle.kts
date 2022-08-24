@@ -25,7 +25,7 @@ taboolib {
     install("expansion-command-helper")
     install("platform-bukkit")
     classifier = null
-    version = "6.0.9-20"
+    version = "6.0.9-58"
     description {
         dependencies {
             name("PlaceholderAPI").optional(true)

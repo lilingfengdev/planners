@@ -37,7 +37,7 @@ object TimerRegistry {
 
     fun <E : Event> Timer<E>.register() {
         triggers[name] = this
-        registerBukkitListener(eventClazz, EventPriority.MONITOR, ignoreCancelled) { e ->
+        registerBukkitListener(eventClazz, this.priority, ignoreCancelled) { e ->
             val checkPlayer = this@register.check(e) ?: return@registerBukkitListener
             callTimer(this@register, checkPlayer, e)
         }

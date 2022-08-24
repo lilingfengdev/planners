@@ -9,6 +9,7 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.info
 import taboolib.module.kether.ScriptContext
 
 object TimerPlayerKilled : AbstractTimer<ProxyDamageEvent>() {
@@ -21,6 +22,7 @@ object TimerPlayerKilled : AbstractTimer<ProxyDamageEvent>() {
     override fun check(e: ProxyDamageEvent): ProxyCommandSender? {
         val player = e.getPlayer(e.damager) ?: return null
         val entity = e.entity as? LivingEntity ?: return null
+        info("health ${entity.health} damage ${e.damage} result ${entity.health - e.damage}")
         if (entity.health - e.damage > 0) {
             return null
         }

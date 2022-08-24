@@ -124,6 +124,7 @@ object PlannersAPI {
 
         getUpgradeConditions(playerSkill).forEach {
             it.consumeTo(player) {
+                rootFrame().rootVariables()["@Context"] = Context.Impl(adaptPlayer(player), playerSkill.instance)
                 rootFrame().rootVariables()["level"] = playerSkill.level
             }
         }
