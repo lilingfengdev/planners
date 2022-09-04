@@ -11,23 +11,20 @@ import taboolib.common.platform.function.info
 
 object GlowUtil {
 
-    private val teams = HashMap<ChatColor, Team>()
+    private val teams = ChatColor.values().map { it to it.scoreboard }.toMap()
     private val entityCache = HashMap<String, ChatColor>()
 
-    private fun initTeams() {
-        ChatColor.values().forEach {
-            val mainScoreBoard = Bukkit.getScoreboardManager()?.mainScoreboard!!
-            val team = mainScoreBoard.getTeam("Planners_Glow_$it") ?: mainScoreBoard.registerNewTeam("Planners_Glow_$it")
-            team.color = it
-            team.prefix = it.toString()
-            teams[it] = team
-        }
-    }
+    val mainScoreboard by lazy { Bukkit.getScoreboardManager()?.mainScoreboard!! }
 
-    @Awake(LifeCycle.ACTIVE)
-    fun init() {
-        initTeams()
-    }
+    val ChatColor.team : String
+        get() = "Planners_Glow_$name"
+
+    val ChatColor.scoreboard: Team
+        get() = mainScoreboard.getTeam(team) ?: mainScoreboard.registerNewTeam(team).also {
+            it.color = this
+            it.prefix = this.name
+        }
+
 
     @JvmStatic
     fun setColor(entity: Entity, color: ChatColor) {

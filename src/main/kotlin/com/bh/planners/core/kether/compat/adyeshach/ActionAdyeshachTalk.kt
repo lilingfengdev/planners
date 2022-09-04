@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture
  * @author sky
  * @since 2021/2/10 6:39 下午
  */
-class ActionTalk(val action: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
+class ActionAdyeshachTalk(val action: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
     fun execute(entity: Entity, message: String) {
         entity.world.players.forEach { player ->
@@ -73,7 +73,7 @@ class ActionTalk(val action: ParsedAction<*>, val selector: ParsedAction<*>?) : 
          */
         @KetherParser(["talk"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionTalk(it.next(ArgTypes.ACTION), it.selectorAction())
+            ActionAdyeshachTalk(it.next(ArgTypes.ACTION), it.selectorAction())
         }
     }
 }

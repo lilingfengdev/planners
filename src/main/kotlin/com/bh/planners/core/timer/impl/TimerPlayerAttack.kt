@@ -5,15 +5,11 @@ import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.timer.AbstractTimer
 import com.bh.planners.core.timer.Template
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
-import org.bukkit.event.entity.EntityDamageByEntityEvent
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.function.adaptPlayer
-import taboolib.common.platform.function.info
 import taboolib.module.kether.ScriptContext
-import taboolib.platform.type.BukkitProxyEvent
 
 object TimerPlayerAttack : AbstractTimer<ProxyDamageEvent>() {
     override val name: String

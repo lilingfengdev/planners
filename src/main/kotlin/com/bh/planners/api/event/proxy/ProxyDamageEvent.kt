@@ -1,12 +1,10 @@
 package com.bh.planners.api.event.proxy
 
 import ac.github.oa.api.event.entity.EntityDamageEvent
-import ac.github.oa.api.event.entity.OriginCustomDamageEvent
 import ac.github.oa.internal.base.enums.PriorityEnum
 import ac.github.oa.internal.base.event.impl.DamageMemory
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -14,7 +12,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.OptionalEvent
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.info
 import taboolib.platform.type.BukkitProxyEvent
 import java.util.UUID
 
@@ -23,12 +20,12 @@ class ProxyDamageEvent(
     val entity: Entity,
     val cause: DamageCause?,
     var damage: Double,
-    var memory: DamageMemory? = null
+    var memory: Any? = null
 ) : BukkitProxyEvent() {
 
     fun addDamage(double: Double) {
         if (memory != null) {
-            memory?.addDamage(UUID.randomUUID().toString(), double)
+            (memory as? DamageMemory)?.addDamage(UUID.randomUUID().toString(), double)
         } else {
             this.damage += double
         }
@@ -61,6 +58,7 @@ class ProxyDamageEvent(
                 damageEvent.call()
 
                 e.isCancelled = damageEvent.isCancelled
+                e.damageMemory.event.isCancelled = damageEvent.isCancelled
             }
 
         }

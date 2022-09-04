@@ -24,7 +24,7 @@ object EffectLoader : ClassVisitor(0) {
             val classInstance = instance?.get() ?: return
             val parser = method.invoke(classInstance) as EffectParser
             val annotation = method.getAnnotation(KetherParser::class.java)
-            Effects.parsers[annotation.property<Array<String>>("value")!!] = parser
+            Effects.parsers[annotation.property("value", arrayOf())] = parser
         }
     }
 

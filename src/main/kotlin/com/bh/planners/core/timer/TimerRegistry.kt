@@ -1,8 +1,10 @@
 package com.bh.planners.core.timer
 
+import com.bh.planners.api.common.Plugin
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Skill
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import taboolib.common.LifeCycle
@@ -12,6 +14,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.platform.function.submit
 import taboolib.module.kether.KetherShell
@@ -29,7 +32,15 @@ object TimerRegistry {
     fun loadImplClass() {
         runningClasses.forEach {
             if (Timer::class.java.isAssignableFrom(it)) {
+
+                if (it.isAssignableFrom(Plugin::class.java)) {
+                    val annotation = it.getAnnotation(Plugin::class.java)
+                    if (!Bukkit.getPluginManager().isPluginEnabled(annotation.name)) {
+                        return@forEach
+                    }
+                }
                 (it.getInstance()?.get() as? Timer<*>)?.register()
+
 
             }
         }
@@ -37,10 +48,12 @@ object TimerRegistry {
 
     fun <E : Event> Timer<E>.register() {
         triggers[name] = this
+        info(this,eventClazz)
         registerBukkitListener(eventClazz, this.priority, ignoreCancelled) { e ->
             val checkPlayer = this@register.check(e) ?: return@registerBukkitListener
             callTimer(this@register, checkPlayer, e)
         }
+
     }
 
     fun <E : Event> callTimer(timer: Timer<E>, sender: ProxyCommandSender, event: E) {

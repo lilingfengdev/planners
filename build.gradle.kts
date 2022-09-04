@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("io.izzel.taboolib") version "1.40"
+    id("io.izzel.taboolib") version "1.42"
     id("org.jetbrains.kotlin.jvm") version "1.5.10"
 //    kotlin("jvm") version "1.0.0"
 }
@@ -25,7 +25,7 @@ taboolib {
     install("expansion-command-helper")
     install("platform-bukkit")
     classifier = null
-    version = "6.0.9-58"
+    version = "6.0.9-74"
     description {
         dependencies {
             name("PlaceholderAPI").optional(true)
@@ -44,13 +44,16 @@ repositories {
 
 dependencies {
 
-    compileOnly("public:ModelEngine:2.5.1")
     compileOnly("ink.ptms:nms-all:1.0.0")
-    compileOnly("ink.ptms.core:v11800:11800-minimize:api")
-    compileOnly("ink.ptms.core:v11800:11800-minimize:mapped")
+    compileOnly("ink.ptms.core:v11900:11900:mapped")
+    compileOnly("ink.ptms.core:v11900:11900:universal")
+//    compileOnly("ink.ptms.core:v11200:11200")
+//    compileOnly("ink.ptms.core:v11500:11200")
+
+    compileOnly("public:ModelEngine:2.5.1")
     compileOnly("com.google.code.gson:gson:2.8.5")
     compileOnly("com.google.guava:guava:21.0")
-    compileOnly("com.elmakers.mine.bukkit:EffectLib:9.4")
+
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
 }

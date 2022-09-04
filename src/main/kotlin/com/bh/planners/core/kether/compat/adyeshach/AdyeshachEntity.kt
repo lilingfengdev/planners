@@ -30,6 +30,9 @@ import java.util.*
 
 class AdyeshachEntity(val entity: EntityInstance) : LivingEntity {
 
+    val id: String
+        get() = entity.id
+
     override fun getAttribute(p0: Attribute): AttributeInstance? {
         return null
     }
@@ -208,7 +211,7 @@ class AdyeshachEntity(val entity: EntityInstance) : LivingEntity {
     }
 
     override fun getNearbyEntities(p0: Double, p1: Double, p2: Double): MutableList<Entity> {
-        return world.getNearbyEntities(location,p0, p1, p2).toMutableList()
+        return world.getNearbyEntities(location, p0, p1, p2).toMutableList()
     }
 
     override fun getEntityId(): Int {
@@ -414,6 +417,10 @@ class AdyeshachEntity(val entity: EntityInstance) : LivingEntity {
 
     override fun getPose(): Pose {
         return Pose.STANDING
+    }
+
+    override fun getSpawnCategory(): SpawnCategory {
+        return SpawnCategory.ANIMAL
     }
 
     override fun damage(p0: Double) {

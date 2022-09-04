@@ -22,7 +22,6 @@ object TimerPlayerKilled : AbstractTimer<ProxyDamageEvent>() {
     override fun check(e: ProxyDamageEvent): ProxyCommandSender? {
         val player = e.getPlayer(e.damager) ?: return null
         val entity = e.entity as? LivingEntity ?: return null
-        info("health ${entity.health} damage ${e.damage} result ${entity.health - e.damage}")
         if (entity.health - e.damage > 0) {
             return null
         }

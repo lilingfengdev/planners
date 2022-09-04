@@ -9,6 +9,7 @@ import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage.Companion.toUserId
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.module.database.ColumnTypeSQL
 import taboolib.module.database.Table
@@ -148,7 +149,7 @@ open class StorageSQL : Storage {
         return future
     }
 
-    override fun updateSkill(profile: PlayerProfile,skill: PlayerJob.Skill) {
+    override fun updateSkill(profile: PlayerProfile, skill: PlayerJob.Skill) {
         if (skill.id == -1L) return
         skillTable.update(dataSource) {
             where {
@@ -162,8 +163,10 @@ open class StorageSQL : Storage {
     fun getSkills(player: Player, jobKey: String): List<PlayerJob.Skill> {
         val userId = player.toUserId()
         return skillTable.select(dataSource) {
-            USER eq userId
-            JOB eq jobKey
+            where {
+                USER eq userId
+                JOB eq jobKey
+            }
             rows(ID, SKILL, LEVEL, SHORTCUT_KEY)
         }.map {
             PlayerJob.Skill(getLong(ID), getString(SKILL), getInt(LEVEL), getString(SHORTCUT_KEY))

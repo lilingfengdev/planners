@@ -12,7 +12,6 @@ import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.*
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.metadata.FixedMetadataValue
-import org.bukkit.util.Vector
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ArgTypes
@@ -24,7 +23,7 @@ import taboolib.module.kether.scriptParser
 import taboolib.platform.BukkitPlugin
 import java.util.concurrent.CompletableFuture
 
-class ActionProjectile {
+class ActionEntityProjectile {
 
     class ActionLaunch(
         val action: ParsedAction<*>,

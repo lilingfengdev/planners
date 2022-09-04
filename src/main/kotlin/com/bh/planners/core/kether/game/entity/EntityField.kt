@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether.game.entity
 
+import com.bh.planners.core.kether.compat.adyeshach.AdyeshachEntity
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
@@ -7,6 +8,10 @@ import org.bukkit.entity.LivingEntity
 enum class EntityField(val get: Entity.() -> Any?) {
 
     UUID({ uniqueId }),
+
+    ID({
+        (this as? AdyeshachEntity)?.id ?: "none"
+    }),
 
     NAME({ name }),
 

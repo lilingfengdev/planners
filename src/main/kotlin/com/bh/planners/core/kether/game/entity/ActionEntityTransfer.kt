@@ -8,7 +8,8 @@ import taboolib.module.kether.ScriptFrame
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class ActionOfEntity(val action: ParsedAction<*>) : ScriptAction<LivingEntity>() {
+class ActionEntityTransfer(val action: ParsedAction<*>) : ScriptAction<LivingEntity>() {
+
     override fun run(frame: ScriptFrame): CompletableFuture<LivingEntity> {
         return frame.newFrame(action).run<Any>().thenApply {
             Bukkit.getEntity(UUID.fromString(it.toString())) as LivingEntity
