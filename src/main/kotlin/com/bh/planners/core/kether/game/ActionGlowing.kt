@@ -19,7 +19,7 @@ class ActionGlowing(val tick: ParsedAction<*>, val value: ParsedAction<*>, val c
     ScriptAction<Void>() {
 
     fun execute(entity: Entity, value: Boolean, color: ChatColor, tick: Long) {
-        GlowUtil.setColor(entity, color)
+        if (value) GlowUtil.setColor(entity, color) else GlowUtil.removeColor(entity)
         if (tick == -1L) return
         SimpleTimeoutTask.createSimpleTask(tick, true) {
             GlowUtil.removeColor(entity)
