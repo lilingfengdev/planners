@@ -21,13 +21,13 @@ object ActionAdyeshach {
     fun parser() = scriptParser {
         it.switch {
             case("spawn") {
-                ActionAdyeshachSpawn(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.selectorAction())
+                ActionAdyeshachSpawn(it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(), it.selectorAction())
             }
             case("follow") {
-                ActionAdyeshachFollow(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.tryGet(arrayOf("option","params"),"EMPTY")!!)
+                ActionAdyeshachFollow(it.nextParsedAction(), it.nextParsedAction(), it.tryGet(arrayOf("option","params"),"EMPTY")!!)
             }
             case("script") {
-                ActionAdyeshachScript(it.next(ArgTypes.ACTION), it.next(ArgTypes.listOf(ArgTypes.ACTION)),it.selectorAction())
+                ActionAdyeshachScript(it.nextParsedAction(), it.next(ArgTypes.listOf(ArgTypes.ACTION)),it.selectorAction())
             }
             case("remove") {
                 ActionAdyeshachRemove(it.selector())

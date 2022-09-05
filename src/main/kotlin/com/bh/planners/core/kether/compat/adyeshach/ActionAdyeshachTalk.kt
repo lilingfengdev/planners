@@ -73,7 +73,7 @@ class ActionAdyeshachTalk(val action: ParsedAction<*>, val selector: ParsedActio
          */
         @KetherParser(["talk"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionAdyeshachTalk(it.next(ArgTypes.ACTION), it.selectorAction())
+            ActionAdyeshachTalk(it.nextParsedAction(), it.selectorAction())
         }
     }
 }

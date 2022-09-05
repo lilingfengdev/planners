@@ -22,11 +22,11 @@ class ActionEntity {
             it.switch {
 
                 case("of") {
-                    ActionEntityTransfer(it.next(ArgTypes.ACTION))
+                    ActionEntityTransfer(it.nextParsedAction())
                 }
 
                 case("spawn") {
-                    ActionEntitySpawn(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.selectorAction())
+                    ActionEntitySpawn(it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(), it.selectorAction())
                 }
 
                 other {

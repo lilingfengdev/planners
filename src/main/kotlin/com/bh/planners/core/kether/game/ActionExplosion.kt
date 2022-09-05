@@ -50,7 +50,7 @@ class ActionExplosion(
          */
         @KetherParser(["explosion"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val power = it.next(ArgTypes.ACTION)
+            val power = it.nextParsedAction()
             ActionExplosion(power, it.selectorAction())
         }
     }

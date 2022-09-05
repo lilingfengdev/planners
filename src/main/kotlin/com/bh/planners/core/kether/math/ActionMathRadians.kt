@@ -28,7 +28,7 @@ class ActionMathRadians(val action: ParsedAction<*>) : ScriptAction<Any>() {
          */
         @KetherParser(["radians"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionMathRadians(it.next(ArgTypes.ACTION))
+            ActionMathRadians(it.nextParsedAction())
         }
     }
 

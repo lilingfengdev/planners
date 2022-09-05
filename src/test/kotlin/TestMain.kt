@@ -6,7 +6,6 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        println(getNumber("§F#FFE6681D-FFE61D58-FFE67272⟠ 猎魂 §E(10)"))
     }
 
 

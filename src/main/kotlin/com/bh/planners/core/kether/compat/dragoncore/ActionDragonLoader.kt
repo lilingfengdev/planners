@@ -24,12 +24,12 @@ object ActionDragonLoader {
             case("animation") {
                 when (it.expects("send", "stop")) {
                     "send" -> {
-                        ActionDragonAnimation(it.nextToken(), false, it.next(ArgTypes.ACTION), it.selector())
+                        ActionDragonAnimation(it.nextToken(), false, it.nextParsedAction(), it.selector())
                     }
 
                     "stop" -> {
                         ActionDragonAnimation(
-                            it.nextToken(), true, it.next(ArgTypes.ACTION), it.selector()
+                            it.nextToken(), true, it.nextParsedAction(), it.selector()
                         )
                     }
 
@@ -38,7 +38,7 @@ object ActionDragonLoader {
             }
             case("sound") {
                 ActionDragonSound(
-                    it.next(ArgTypes.ACTION),
+                    it.nextParsedAction(),
                     it.tryGet(arrayOf("volume"), 1.0f)!!,
                     it.tryGet(arrayOf("pitch"), 1.0f)!!,
                     it.tryGet(arrayOf("loop"), false)!!,
@@ -47,7 +47,7 @@ object ActionDragonLoader {
             }
             case("particle", "effect") {
                 ActionDragonEffect(
-                    it.next(ArgTypes.ACTION),
+                    it.nextParsedAction(),
                     it.tryGet(arrayOf("rotation"), "0,0,0")!!,
                     it.tryGet(arrayOf("time"), 100)!!,
                     it.selectorAction()

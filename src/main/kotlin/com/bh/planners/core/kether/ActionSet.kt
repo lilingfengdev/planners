@@ -1,10 +1,6 @@
 package com.bh.planners.core.kether
 
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.QuestAction
-import taboolib.library.kether.QuestContext
-import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -30,14 +26,14 @@ class ActionSet(val action: ParsedAction<*>, val value: ParsedAction<*>) : Scrip
          */
         @KetherParser(["set"], namespace = NAMESPACE, shared = true)
         fun parser0() = scriptParser {
-            val key = it.next(ArgTypes.ACTION)
+            val key = it.nextParsedAction()
             val value = try {
                 it.mark()
                 it.expects("to", "set")
-                it.next(ArgTypes.ACTION)
+                it.nextParsedAction()
             } catch (_: Exception) {
                 it.reset()
-                it.next(ArgTypes.ACTION)
+                it.nextParsedAction()
             }
             ActionSet(key, value)
         }

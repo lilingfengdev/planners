@@ -29,7 +29,7 @@ class ActionFunction(val source: ParsedAction<*>) : ScriptAction<String>() {
 
         @KetherParser(["inline", "function"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionFunction(it.next(ArgTypes.ACTION))
+            ActionFunction(it.nextParsedAction())
         }
     }
 }

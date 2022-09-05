@@ -58,11 +58,11 @@ class ActionMythicMob {
         fun parser() = scriptParser {
             it.switch {
                 case("spawn") {
-                    val mob = it.next(ArgTypes.ACTION)
-                    val offsetX = it.next(ArgTypes.ACTION)
-                    val offsetY = it.next(ArgTypes.ACTION)
-                    val offsetZ = it.next(ArgTypes.ACTION)
-                    val selector = it.next(ArgTypes.ACTION)
+                    val mob = it.nextParsedAction()
+                    val offsetX = it.nextParsedAction()
+                    val offsetY = it.nextParsedAction()
+                    val offsetZ = it.nextParsedAction()
+                    val selector = it.nextParsedAction()
                     MythicMobSpawn(mob, offsetX, offsetY, offsetZ, selector)
                 }
             }

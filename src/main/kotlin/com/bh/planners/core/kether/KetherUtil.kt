@@ -21,7 +21,6 @@ import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
 import taboolib.library.kether.QuestReader
-import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import taboolib.platform.type.BukkitPlayer
 import java.util.*
@@ -286,12 +285,12 @@ fun QuestReader.tryGet(array: Array<out String>, def: Any? = null): ParsedAction
     return try {
         mark()
         expects(*array)
-        next(ArgTypes.ACTION)
+        this.nextParsedAction()
     } catch (e: Exception) {
         reset()
         if (def == null) {
             null
-        } else ParsedAction(LiteralAction<Any>(def))
+        } else literalAction(def)
     }
 }
 

@@ -56,7 +56,7 @@ class ActionSkill {
                         "set" -> Operator.SET
                         else -> error("error of case")
                     }
-                    CooldownOperator(operator, it.next(ArgTypes.ACTION), it.tryGet(arrayOf("of", "the")))
+                    CooldownOperator(operator, it.nextParsedAction(), it.tryGet(arrayOf("of", "the")))
                 }
 
             }

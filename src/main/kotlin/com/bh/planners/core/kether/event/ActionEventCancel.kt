@@ -3,14 +3,9 @@ package com.bh.planners.core.kether.event
 import com.bh.planners.core.kether.ActionEvent.Companion.event
 import com.bh.planners.core.kether.eventParser
 import com.bh.planners.core.kether.runTransfer
-import org.bukkit.Bukkit
+import com.bh.planners.core.kether.tryGet
 import org.bukkit.event.Cancellable
-import taboolib.common.platform.function.info
-import taboolib.common5.Coerce
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.QuestReader
-import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -38,15 +33,7 @@ class ActionEventCancel(val action: ParsedAction<*>) : ScriptAction<Void>() {
 
         @KetherParser(["cancel"])
         fun parser() = eventParser {
-            val action = try {
-                it.mark()
-                it.expect("to")
-                it.next(ArgTypes.ACTION)
-            } catch (_: Exception) {
-                it.reset()
-                ParsedAction(LiteralAction<Boolean>("true"))
-            }
-            ActionEventCancel(action)
+            ActionEventCancel(it.tryGet(arrayOf("to"),true)!!)
         }
 
     }

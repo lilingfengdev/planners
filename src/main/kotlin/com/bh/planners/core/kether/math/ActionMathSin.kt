@@ -27,7 +27,7 @@ class ActionMathSin(val action: ParsedAction<*>) : ScriptAction<Any>() {
          */
         @KetherParser(["sin"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionMathSin(it.next(ArgTypes.ACTION))
+            ActionMathSin(it.nextParsedAction())
         }
     }
 

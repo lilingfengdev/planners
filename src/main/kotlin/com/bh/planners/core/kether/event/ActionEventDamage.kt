@@ -11,7 +11,6 @@ import org.bukkit.event.Cancellable
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -79,9 +78,9 @@ class ActionEventDamage(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
             try {
                 it.mark()
                 when (it.expects("add", "+=", "take", "-=", "set", "=", "to", "finalDamage", "finaldamage")) {
-                    "add", "+=" -> ActionEventDamageOperator(it.next(ArgTypes.ACTION), Operator.ADD)
-                    "take", "-=" -> ActionEventDamageOperator(it.next(ArgTypes.ACTION), Operator.TAKE)
-                    "set", "=" -> ActionEventDamageOperator(it.next(ArgTypes.ACTION), Operator.SET)
+                    "add", "+=" -> ActionEventDamageOperator(it.nextParsedAction(), Operator.ADD)
+                    "take", "-=" -> ActionEventDamageOperator(it.nextParsedAction(), Operator.TAKE)
+                    "set", "=" -> ActionEventDamageOperator(it.nextParsedAction(), Operator.SET)
                     else -> error("error")
                 }
             } catch (_: Exception) {

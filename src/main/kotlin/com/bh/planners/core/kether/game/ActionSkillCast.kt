@@ -70,7 +70,7 @@ class ActionSkillCast {
          */
         @KetherParser(["try-cast"], namespace = NAMESPACE, shared = true)
         fun parser1() = scriptParser {
-            TryCast(it.next(ArgTypes.ACTION), it.selectorAction())
+            TryCast(it.nextParsedAction(), it.selectorAction())
         }
 
         /**
@@ -81,7 +81,7 @@ class ActionSkillCast {
          */
         @KetherParser(["direct-cast"], namespace = NAMESPACE, shared = true)
         fun parser2() = scriptParser {
-            DirectCast(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.selectorAction())
+            DirectCast(it.nextParsedAction(), it.nextParsedAction(), it.selectorAction())
         }
     }
 

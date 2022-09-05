@@ -9,7 +9,6 @@ import com.bh.planners.core.pojo.data.Data
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -107,26 +106,18 @@ class ActionFlag {
          */
         @KetherParser(["flag", "data"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val key = it.next(ArgTypes.ACTION)
+            val key = it.nextParsedAction()
             try {
                 it.mark()
                 when (it.expects("add", "set", "get","to")) {
                     "set", "to" -> {
-                        val value = it.next(ArgTypes.ACTION)
-                        val timeout = try {
-                            it.mark()
-                            it.expects("timeout")
-                            it.next(ArgTypes.ACTION)
-                        } catch (_: Throwable) {
-                            it.reset()
-                            ParsedAction(LiteralAction<Long>(-1L))
-                        }
-                        DataSet(key, value, timeout, it.selectorAction())
+                        val value = it.nextParsedAction()
+                        DataSet(key, value, it.tryGet(arrayOf("timeout"),-1)!!, it.selectorAction())
                     }
 
                     "get" -> DataGet(key, it.selectorAction())
 
-                    "add" -> DataAdd(key, it.next(ArgTypes.ACTION), it.selectorAction())
+                    "add" -> DataAdd(key, it.nextParsedAction(), it.selectorAction())
 
                     else -> error("error of case!")
                 }

@@ -40,7 +40,7 @@ class ActionSilence(
          */
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val seconds = it.next(ArgTypes.ACTION)
+            val seconds = it.nextParsedAction()
             ActionSilence(seconds, it.selectorAction())
         }
 

@@ -91,14 +91,14 @@ class ActionAttribute {
             it.switch {
                 case("add", "+=") {
                     AttributeAdd(
-                        it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION),
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
                         it.selectorAction()
                     )
                 }
                 case("take", "-=") {
-                    AttributeTake(it.next(ArgTypes.ACTION), it.selectorAction())
+                    AttributeTake(it.nextParsedAction(), it.selectorAction())
                 }
                 case("update", "refresh") {
                     AttributeUpdate(it.selectorAction())

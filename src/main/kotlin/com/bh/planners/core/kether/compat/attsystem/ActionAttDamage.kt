@@ -49,7 +49,7 @@ class ActionAttDamage {
          */
         @KetherParser(["as-attack"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            Attack(it.next(ArgTypes.ACTION), it.selector())
+            Attack(it.nextParsedAction(), it.selector())
         }
 
     }

@@ -98,7 +98,7 @@ class ActionDamage {
          */
         @KetherParser(["damage"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            Damage(it.next(ArgTypes.ACTION), it.selector(), it.tryGet(arrayOf("source")))
+            Damage(it.nextParsedAction(), it.selector(), it.tryGet(arrayOf("source")))
         }
 
         /**
@@ -108,7 +108,7 @@ class ActionDamage {
          */
         @KetherParser(["attack"], namespace = NAMESPACE, shared = true)
         fun parser2() = scriptParser {
-            Attack(it.next(ArgTypes.ACTION), it.selector())
+            Attack(it.nextParsedAction(), it.selector())
         }
 
         @SubscribeEvent(bind = "ac.github.oa.api.event.entity.EntityDamageEvent", ignoreCancelled = true, priority = EventPriority.LOWEST)

@@ -62,7 +62,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
 
         @KetherParser(["command"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val command = it.next(ArgTypes.ACTION)
+            val command = it.nextParsedAction()
             it.mark()
             val by = try {
                 it.expects("by", "with", "as")

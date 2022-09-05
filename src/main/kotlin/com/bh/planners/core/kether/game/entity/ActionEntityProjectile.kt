@@ -133,8 +133,8 @@ class ActionEntityProjectile {
         @KetherParser(["projectile"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             ActionLaunch(
-                it.next(ArgTypes.ACTION),
-                it.next(ArgTypes.ACTION),
+                it.nextParsedAction(),
+                it.nextParsedAction(),
                 it.tryGet(arrayOf("step"), 0.4)!!,
                 it.tryGet(arrayOf("rotateX"),0.0)!!,
                 it.tryGet(arrayOf("rotateY"),0.0)!!,

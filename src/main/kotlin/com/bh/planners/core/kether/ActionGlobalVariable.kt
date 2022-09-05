@@ -1,11 +1,9 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.api.GlobalVarTable
-import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -72,32 +70,16 @@ class ActionGlobalVariable {
          */
         @KetherParser(["global"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val key = it.next(ArgTypes.ACTION)
+            val key = it.nextParsedAction()
             try {
                 when (it.expects("get", "set", "to", "=", "keys")) {
                     "to", "set", "=" -> {
-                        val value = it.next(ArgTypes.ACTION)
-                        val timeout = try {
-                            it.mark()
-                            it.expects("timeout", "time", "t")
-                            it.next(ArgTypes.ACTION)
-                        } catch (_: Throwable) {
-                            it.reset()
-                            ParsedAction(LiteralAction<Long>("-1"))
-                        }
-                        Set(key, value, timeout)
+                        val value = it.nextParsedAction()
+                        Set(key, value, it.tryGet(arrayOf("timeout","time"),-1)!!)
                     }
 
                     "keys" -> {
-                        val check = try {
-                            it.mark()
-                            it.expect("check")
-                            it.next(ArgTypes.ACTION)
-                        } catch (e: Exception) {
-                            it.reset()
-                            ParsedAction(LiteralAction<String>("*"))
-                        }
-                        Keys(check)
+                        Keys(it.tryGet(arrayOf("check"),"*")!!)
                     }
 
                     "get" -> Get(key)

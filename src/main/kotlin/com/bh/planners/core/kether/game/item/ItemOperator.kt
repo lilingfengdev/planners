@@ -26,19 +26,19 @@ object ItemOperator {
             case("count") {
                 when (it.expects("add", "get", "set")) {
                     "add" -> ActionItemCountAdd(
-                        it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION),
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
                         it.tryGet(arrayOf("max", "maximum"), Int.MAX_VALUE)!!,
                         it.selectorAction()
                     )
 
-                    "get" -> ActionItemCountGet(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.selectorAction())
+                    "get" -> ActionItemCountGet(it.nextParsedAction(), it.nextParsedAction(), it.selectorAction())
 
                     "set" -> ActionItemCountSet(
-                        it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION),
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
                         it.selectorAction()
                     )
 
@@ -47,11 +47,11 @@ object ItemOperator {
             }
 
             case("name", "display") {
-                ActionItemName(it.next(ArgTypes.ACTION), it.selectorAction())
+                ActionItemName(it.nextParsedAction(), it.selectorAction())
             }
 
             case("lore") {
-                ActionItemLore(it.next(ArgTypes.ACTION), it.selectorAction())
+                ActionItemLore(it.nextParsedAction(), it.selectorAction())
             }
         }
     }

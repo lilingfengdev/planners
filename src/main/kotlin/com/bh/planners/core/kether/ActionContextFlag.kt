@@ -1,14 +1,9 @@
 package com.bh.planners.core.kether
 
-import com.bh.planners.api.PlannersAPI.plannersProfile
-import com.bh.planners.api.getFlag
-import com.bh.planners.api.setFlag
-import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.data.Data
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -77,25 +72,17 @@ class ActionContextFlag {
         fun parser() = scriptParser {
             it.switch {
                 case("flag") {
-                    val key = it.next(ArgTypes.ACTION)
+                    val key = it.nextParsedAction()
                     try {
                         mark()
                         when (expects("add", "set", "get", "to", "has")) {
                             "set", "to" -> {
-                                val value = it.next(ArgTypes.ACTION)
-                                val timeout = try {
-                                    mark()
-                                    expects("timeout")
-                                    it.next(ArgTypes.ACTION)
-                                } catch (_: Throwable) {
-                                    reset()
-                                    ParsedAction(LiteralAction<Long>(-1L))
-                                }
-                                ContextDataSet(key, value, timeout)
+                                val value = it.nextParsedAction()
+                                ContextDataSet(key, value, tryGet(arrayOf("timeout"),-1)!!)
                             }
 
                             "get" -> ContextDataGet(key)
-                            "add" -> ContextDataAdd(key, it.next(ArgTypes.ACTION))
+                            "add" -> ContextDataAdd(key, it.nextParsedAction())
                             "has" -> ContextDataHas(key)
                             else -> error("error of case!")
                         }

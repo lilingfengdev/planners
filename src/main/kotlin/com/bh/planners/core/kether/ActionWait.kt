@@ -41,7 +41,7 @@ class ActionWait(val ticks: ParsedAction<*>) : ScriptAction<Void>() {
 
         @KetherParser(["wait", "delay", "sleep"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionWait(it.next(ArgTypes.ACTION))
+            ActionWait(it.nextParsedAction())
         }
     }
 }

@@ -15,7 +15,6 @@ import org.bukkit.entity.Player
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -122,9 +121,9 @@ class ActionProfile {
                     try {
                         mark()
                         when (expects("take", "-=", "add", "+=", "set", "=")) {
-                            "take", "-=" -> ManaOperation(next(ArgTypes.ACTION), Operator.TAKE)
-                            "add", "+=" -> ManaOperation(next(ArgTypes.ACTION), Operator.ADD)
-                            "set", "=" -> PointOperation(next(ArgTypes.ACTION), Operator.SET)
+                            "take", "-=" -> ManaOperation(it.nextParsedAction(), Operator.TAKE)
+                            "add", "+=" -> ManaOperation(it.nextParsedAction(), Operator.ADD)
+                            "set", "=" -> PointOperation(it.nextParsedAction(), Operator.SET)
                             else -> error("out of case")
                         }
                     } catch (e: Throwable) {
@@ -144,9 +143,9 @@ class ActionProfile {
                     try {
                         mark()
                         when (expects("take", "-=", "set", "=", "add", "+=")) {
-                            "take", "-=" -> PointOperation(next(ArgTypes.ACTION), Operator.TAKE)
-                            "set", "=" -> PointOperation(next(ArgTypes.ACTION), Operator.SET)
-                            "add", "+=" -> PointOperation(next(ArgTypes.ACTION), Operator.ADD)
+                            "take", "-=" -> PointOperation(it.nextParsedAction(), Operator.TAKE)
+                            "set", "=" -> PointOperation(it.nextParsedAction(), Operator.SET)
+                            "add", "+=" -> PointOperation(it.nextParsedAction(), Operator.ADD)
                             else -> error("out of case")
                         }
                     } catch (e: Throwable) {
@@ -180,16 +179,16 @@ class ActionProfile {
                 }
 
                 case("flag", "data") {
-                    val key = it.next(ArgTypes.ACTION)
+                    val key = it.nextParsedAction()
                     try {
                         mark()
                         when (expects("add", "set", "get", "to", "has")) {
                             "set", "to" -> {
-                                DataSet(key, it.next(ArgTypes.ACTION), it.tryGet(arrayOf("timeout"), -1L)!!)
+                                DataSet(key, it.nextParsedAction(), it.tryGet(arrayOf("timeout"), -1L)!!)
                             }
 
                             "get" -> DataGet(key)
-                            "add" -> DataAdd(key, it.next(ArgTypes.ACTION))
+                            "add" -> DataAdd(key, it.nextParsedAction())
                             "has" -> DataHas(key)
                             else -> error("error of case!")
                         }

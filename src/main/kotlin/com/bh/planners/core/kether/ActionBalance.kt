@@ -59,13 +59,13 @@ class ActionBalance {
         fun parser() = scriptParser {
             it.switch {
                 case("has") {
-                    BalanceHas(next(ArgTypes.ACTION))
+                    BalanceHas(it.nextParsedAction())
                 }
                 case("take", "withdraw") {
-                    BalanceWithdraw(next(ArgTypes.ACTION))
+                    BalanceWithdraw(it.nextParsedAction())
                 }
                 case("add", "deposit") {
-                    BalanceDeposit(next(ArgTypes.ACTION))
+                    BalanceDeposit(it.nextParsedAction())
                 }
                 case("get", "look") {
                     BalanceGet()

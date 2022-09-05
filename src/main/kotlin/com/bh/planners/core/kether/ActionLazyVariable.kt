@@ -48,16 +48,16 @@ class ActionLazyVariable {
         fun parser() = scriptParser {
             it.switch {
                 case("get") {
-                    VariableGet(it.next(ArgTypes.ACTION))
+                    VariableGet(it.nextParsedAction())
                 }
 
                 case("reload") {
-                    VariableReload(it.next(ArgTypes.ACTION))
+                    VariableReload(it.nextParsedAction())
 
                 }
 
                 other {
-                    VariableGet(it.next(ArgTypes.ACTION))
+                    VariableGet(it.nextParsedAction())
                 }
             }
         }

@@ -28,7 +28,7 @@ class ActionMathCos(val action: ParsedAction<*>) : ScriptAction<Any>() {
          */
         @KetherParser(["cos"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionMathCos(it.next(ArgTypes.ACTION))
+            ActionMathCos(it.nextParsedAction())
         }
     }
 

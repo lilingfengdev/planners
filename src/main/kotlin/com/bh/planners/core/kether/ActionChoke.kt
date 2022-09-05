@@ -26,7 +26,7 @@ class ActionChoke(val value: ParsedAction<*>) : ScriptAction<Void>() {
 
         @KetherParser(["choke"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionChoke(it.next(ArgTypes.ACTION))
+            ActionChoke(it.nextParsedAction())
         }
 
     }

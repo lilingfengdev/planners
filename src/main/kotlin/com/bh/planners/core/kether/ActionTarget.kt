@@ -53,7 +53,7 @@ class ActionTarget {
         fun parser() = scriptParser {
             it.switch {
                 case("switch") {
-                    ActionTargetSwitch(it.next(ArgTypes.ACTION))
+                    ActionTargetSwitch(it.nextParsedAction())
                 }
                 case("get") {
                     ActionTargetGet()

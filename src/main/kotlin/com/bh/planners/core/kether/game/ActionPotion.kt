@@ -111,14 +111,14 @@ class ActionPotion {
             it.switch {
                 case("give") {
                     Give(
-                        it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION),
-                        it.next(ArgTypes.ACTION),
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
                         it.selectorAction()
                     )
                 }
                 case("clear") { Clear(it.selectorAction()) }
-                case("remove") { Remove(it.next(ArgTypes.ACTION), it.selectorAction()) }
+                case("remove") { Remove(it.nextParsedAction(), it.selectorAction()) }
             }
         }
     }

@@ -3,10 +3,8 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.core.kether.*
 import org.bukkit.entity.Player
 import taboolib.common5.Coerce
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
-import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -53,24 +51,18 @@ class ActionTitle(
 
         @KetherParser(["title"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val title = it.next(ArgTypes.ACTION)
+            val title = it.nextParsedAction()
             it.mark()
-            val subTitle = try {
-                it.expect("subtitle")
-                it.next(ArgTypes.ACTION)
-            } catch (ignored: Exception) {
-                it.reset()
-                ParsedAction(LiteralAction<String>(""))
-            }
-            var fadeIn: ParsedAction<*> = ParsedAction(LiteralAction<String>("0"))
-            var stay: ParsedAction<*> = ParsedAction(LiteralAction<String>("20"))
-            var fadeOut: ParsedAction<*> = ParsedAction(LiteralAction<String>("0"))
+            val subTitle = it.tryGet(arrayOf("subtitle"),"")!!
+            var fadeIn: ParsedAction<*> = literalAction(0)
+            var stay: ParsedAction<*> = literalAction(20)
+            var fadeOut: ParsedAction<*> = literalAction(0)
             it.mark()
             try {
                 it.expects("by", "with")
-                fadeIn = it.next(ArgTypes.ACTION)
-                stay = it.next(ArgTypes.ACTION)
-                fadeOut = it.next(ArgTypes.ACTION)
+                fadeIn = it.nextParsedAction()
+                stay = it.nextParsedAction()
+                fadeOut = it.nextParsedAction()
             } catch (ignored: Exception) {
                 it.reset()
             }

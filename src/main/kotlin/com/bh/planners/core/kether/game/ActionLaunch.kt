@@ -57,9 +57,9 @@ class ActionLaunch(
          */
         @KetherParser(["launch"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val x = it.next(ArgTypes.ACTION)
-            val y = it.next(ArgTypes.ACTION)
-            val z = it.next(ArgTypes.ACTION)
+            val x = it.nextParsedAction()
+            val y = it.nextParsedAction()
+            val z = it.nextParsedAction()
             ActionLaunch(x, y, z, it.selectorAction())
         }
     }

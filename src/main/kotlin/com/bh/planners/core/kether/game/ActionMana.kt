@@ -54,15 +54,15 @@ class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: 
 
             it.switch {
                 case("add", "give") {
-                    ActionMana(Operator.ADD, it.next(ArgTypes.ACTION), it.selectorAction())
+                    ActionMana(Operator.ADD, it.nextParsedAction(), it.selectorAction())
                 }
 
                 case("take", "subtract") {
-                    ActionMana(Operator.TAKE, it.next(ArgTypes.ACTION), it.selectorAction())
+                    ActionMana(Operator.TAKE, it.nextParsedAction(), it.selectorAction())
                 }
 
                 case("set") {
-                    ActionMana(Operator.SET, it.next(ArgTypes.ACTION), it.selectorAction())
+                    ActionMana(Operator.SET, it.nextParsedAction(), it.selectorAction())
                 }
                 other {
                     error("error of case!")

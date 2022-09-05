@@ -44,7 +44,7 @@ object ActionGermLoader {
             }
             case("sound") {
                 ActionGermSound(
-                    it.next(ArgTypes.ACTION),
+                    it.nextParsedAction(),
                     it.tryGet(arrayOf("soundtype", "type"), "MASTER")!!,
                     it.tryGet(arrayOf("volume"), 1)!!,
                     it.tryGet(arrayOf("pitch"), 1)!!,
@@ -52,7 +52,7 @@ object ActionGermLoader {
                 )
             }
             case("effect") {
-                ActionGermParticle(it.next(ArgTypes.ACTION), it.selectorAction())
+                ActionGermParticle(it.nextParsedAction(), it.selectorAction())
             }
         }
     }

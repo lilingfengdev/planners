@@ -68,9 +68,9 @@ class ActionVelocity(
                 "set" -> Mode.SET
                 else -> error("error")
             }
-            val x = it.next(ArgTypes.ACTION)
-            val y = it.next(ArgTypes.ACTION)
-            val z = it.next(ArgTypes.ACTION)
+            val x = it.nextParsedAction()
+            val y = it.nextParsedAction()
+            val z = it.nextParsedAction()
             ActionVelocity(mode, x, y, z, it.selectorAction())
         }
     }

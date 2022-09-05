@@ -114,13 +114,13 @@ class ActionSelector {
          */
         @KetherParser(["selector"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val key = it.next(ArgTypes.ACTION)
+            val key = it.nextParsedAction()
             try {
                 it.mark()
                 when (it.expects("to", "set", "remove", "size", "list", "merge", "unmerge")) {
 
                     "to", "set" -> {
-                        ActionTargetContainerSet(key, it.next(ArgTypes.ACTION))
+                        ActionTargetContainerSet(key, it.nextParsedAction())
                     }
 
                     "remove" -> ActionTargetContainerRemove(key)

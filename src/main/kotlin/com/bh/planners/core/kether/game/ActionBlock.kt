@@ -65,7 +65,7 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
          */
         @KetherParser(["block"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionBlock(it.next(ArgTypes.ACTION), it.next(ArgTypes.ACTION), it.selectorAction())
+            ActionBlock(it.nextParsedAction(), it.nextParsedAction(), it.selectorAction())
         }
 
     }

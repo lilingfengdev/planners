@@ -34,7 +34,6 @@ object GermPluginHook {
     @SubscribeEvent(bind = "com.germ.germplugin.api.event.GermClientLinkedEvent")
     fun e0(ope: OptionalEvent) {
         val e = ope.get<GermClientLinkedEvent>()
-        info("debug germ linked")
         if (e.player.plannersProfileIsLoaded) {
             updateAll(e.player)
         }
@@ -42,7 +41,6 @@ object GermPluginHook {
 
     @SubscribeEvent
     fun e(e: PlayerInitializeEvent) {
-        info("debug germ player initialize")
         if (isEnable) {
             updateAll(e.player)
         }
@@ -101,7 +99,6 @@ object GermPluginHook {
 
     fun update(player: Player, id: String, item: ItemStack) {
         GermSlotAPI.saveItemStackToDatabase(player, id, item)
-        info("debug update $id $item")
     }
 
 
