@@ -44,10 +44,10 @@ object EffectArc : Effect() {
         get() = Coerce.toDouble(this.demand.get(listOf("rax", "rotateAxisX", "0")))
 
     val EffectOption.rotateAxisY: Double
-        get() = Coerce.toDouble(this.demand.get(listOf("rax", "rotateAxisY", "0")))
+        get() = Coerce.toDouble(this.demand.get(listOf("ray", "rotateAxisY", "0")))
 
     val EffectOption.rotateAxisZ: Double
-        get() = Coerce.toDouble(this.demand.get(listOf("rax", "rotateAxisZ", "0")))
+        get() = Coerce.toDouble(this.demand.get(listOf("raz", "rotateAxisZ", "0")))
 
 
     override fun sendTo(target: Target?, option: EffectOption, context: Context) {
