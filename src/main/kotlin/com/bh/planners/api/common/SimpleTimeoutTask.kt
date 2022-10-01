@@ -13,6 +13,8 @@ open class SimpleTimeoutTask(val tick: Long, open val closed: () -> Unit = EMPTY
     // 结束时间
     val end = System.currentTimeMillis() + tick * 50
 
+    var isClosed = false
+
     companion object {
 
         val EMPTY = { }
@@ -28,10 +30,18 @@ open class SimpleTimeoutTask(val tick: Long, open val closed: () -> Unit = EMPTY
             }
         }
 
+        fun cancel(simpleTask: SimpleTimeoutTask) {
+            cache -= simpleTask
+            // 如果已经结束了
+            if (simpleTask.isClosed) return
+            simpleTask.closed()
+            simpleTask.isClosed = false
+        }
+
         fun register(simpleTask: SimpleTimeoutTask, async: Boolean = !Bukkit.isPrimaryThread()) {
             cache += simpleTask
             submit(delay = simpleTask.tick, async = async) {
-                simpleTask.closed()
+                Companion.cancel(simpleTask)
             }
         }
 

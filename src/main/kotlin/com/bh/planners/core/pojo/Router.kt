@@ -32,7 +32,6 @@ class Router(val config: ConfigurationSection) {
             TransferJob(Configuration.fromMap(it))
         }
 
-
         val job: Job
             get() = PlannersAPI.jobs.firstOrNull { it.key == jobKey } ?: error("Job '$jobKey' not found.")
 

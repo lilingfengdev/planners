@@ -17,7 +17,7 @@ object Their : Selector {
 
     override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
         val player = context.executor.asPlayer() ?: return CompletableFuture.completedFuture(null)
-        container.removeIf { this == player }
+        container.removeIf { it == player }
 
         return CompletableFuture.completedFuture(null)
     }

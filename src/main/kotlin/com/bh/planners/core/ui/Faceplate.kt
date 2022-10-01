@@ -133,7 +133,7 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
         viewer.openMenu<Linked<SkillIcon>>(title.replace("{name}", skill.option.name)) {
             rows(rows)
             elements { (1..skill.option.levelCap).map { SkillIcon(viewer, skill.key, it, false) } }
-            slots(slots)
+            slots(Faceplate.slots)
             config.getKeys(false).filter { it.startsWith("icon-") }.forEach {
                 val itemStack = buildItem(config.getItemStack(it)!!) {
                     flags += ItemFlag.values()

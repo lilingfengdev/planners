@@ -41,7 +41,7 @@ class JobUI(viewer: Player) : IUI(viewer) {
         viewer.openMenu<Linked<Router>>(title) {
             rows(rows)
             elements { PlannersAPI.routers }
-            slots(slots)
+            slots(JobUI.slots)
             onGenerate { _, element, _, _ ->
                 buildItem(element.icon) {
                     name = toLabel(name!!, element).colored()

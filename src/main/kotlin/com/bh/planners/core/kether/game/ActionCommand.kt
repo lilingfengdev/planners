@@ -19,41 +19,41 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
         PLAYER, OPERATOR, CONSOLE
     }
 
-    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+    fun execute(player: Player, type: Type, command: String) {
+        when (type) {
+            Type.PLAYER -> {
+                player.performCommand(command.replace("@player", player.name))
+            }
 
-        fun execute(player: Player, type: Type, command: String) {
-            when (type) {
-                Type.PLAYER -> {
+            Type.OPERATOR -> {
+                val isOp = player.isOp
+                player.isOp = true
+                try {
                     player.performCommand(command.replace("@player", player.name))
+                } catch (ex: Throwable) {
+                    ex.printStackTrace()
                 }
+                player.isOp = isOp
+            }
 
-                Type.OPERATOR -> {
-                    val isOp = player.isOp
-                    player.isOp = true
-                    try {
-                        player.performCommand(command.replace("@player", player.name))
-                    } catch (ex: Throwable) {
-                        ex.printStackTrace()
-                    }
-                    player.isOp = isOp
-                }
-
-                Type.CONSOLE -> {
-                    console().performCommand(command.replace("@player", player.name))
-                }
+            Type.CONSOLE -> {
+                console().performCommand(command.replace("@player", player.name))
             }
         }
+    }
 
-        return frame.newFrame(command).run<Any>().thenAcceptAsync({
-            val command = it.toString().trimIndent()
+    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+        frame.runTransfer<String>(command).thenAccept { command ->
             if (selector != null) {
                 frame.execPlayer(selector) {
                     execute(this, this@ActionCommand.type, command)
                 }
             } else {
-                execute(frame.asPlayer() ?: return@thenAcceptAsync, this@ActionCommand.type, command)
+                execute(frame.asPlayer() ?: return@thenAccept, this@ActionCommand.type, command)
             }
-        }, frame.context().executor)
+        }
+
+        return CompletableFuture.completedFuture(null)
 
 
     }

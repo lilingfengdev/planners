@@ -1,9 +1,9 @@
 package com.bh.planners.core.effect
 
-import com.bh.planners.core.kether.catchRunning
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target.Companion.createContainer
 import com.bh.planners.core.effect.common.Sphere
+import com.bh.planners.core.kether.game.ActionEffect
 import taboolib.common5.Coerce
 
 /**
@@ -19,7 +19,7 @@ object EffectSphere : com.bh.planners.core.effect.Effect() {
     val EffectOption.radius: Double
         get() = Coerce.toDouble(demand.get("radius", "1"))
 
-    override fun sendTo(target: Target?, option: EffectOption, context: Context) {
+    override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {
         val effectSpawner = EffectSpawner(option)
         option.createContainer(target, context).thenAccept {
             it.forEachLocation {

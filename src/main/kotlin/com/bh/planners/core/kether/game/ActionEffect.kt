@@ -1,44 +1,64 @@
 package com.bh.planners.core.kether.game
 
+import com.bh.planners.core.effect.Effect
 import com.bh.planners.core.effect.EffectOption
 import com.bh.planners.core.effect.Effects
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.getContext
-import com.bh.planners.core.kether.toOriginLocation
+import com.bh.planners.core.effect.inline.Incident.Companion.handleIncident
+import com.bh.planners.core.effect.inline.IncidentEffectTick
+import com.bh.planners.core.kether.*
+import com.bh.planners.core.pojo.Session
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.material.MaterialData
 import taboolib.common.platform.function.submit
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestFuture
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 object ActionEffect {
 
-    // action FLAME 0 0 0 pos1 [ -@c-dot 3,0 ] pos2 [ -@c-dot 4,0 ]
-    class Parser(val effect: com.bh.planners.core.effect.Effect, val action: ParsedAction<*>) : ScriptAction<Void>() {
+    // effect action ""
+    class Parser(val effect: Effect, val action: ParsedAction<*>, val onTick: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            val future = CompletableFuture<Void>()
 
-            frame.newFrame(action).run<Any>().thenAccept {
-                try {
-                    val context = frame.getContext()
-                    future.complete(null)
+            frame.run(action).str { action ->
+                val context = frame.getContext()
+                frame.run(onTick).str { ontick ->
+
+                    val response = Response(frame.getSession(), ontick)
+
                     submit(async = true) {
-                        val effectOption = EffectOption.get(it.toString())
-                        effect.sendTo(frame.toOriginLocation(), effectOption, context)
+                        val effectOption = EffectOption.get(action)
+                        effect.sendTo(frame.toOriginLocation(), effectOption, context, response)
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+
                 }
+
             }
 
-            return future
+            return CompletableFuture.completedFuture(null)
         }
+    }
+
+    class Response(val session: Session, val name: String) {
+
+
+        fun onTick(locations: List<Location>) {
+
+            if (name == "none") return
+
+            val effectTick = IncidentEffectTick(locations)
+            session.handleIncident(name, effectTick)
+        }
+
     }
 
     /**
      * effect 【loader: action】 [option: string>]
-     * effect line "FLAME 0 0 0 -speed 1.0 -count 10 -@self"
+     * effect line "FLAME 0 0 0 -speed 1.0 -count 10 -@self" ontick
      */
     @KetherParser(["effect"], namespace = NAMESPACE, shared = true)
     fun parser() = scriptParser {
@@ -46,7 +66,7 @@ object ActionEffect {
             it.mark()
             val expect = it.expects(*Effects.effectKeys.toTypedArray())
             val effectLoader = Effects.get(expect)
-            Parser(effectLoader, it.nextParsedAction())
+            Parser(effectLoader, it.nextParsedAction(), it.tryGet(arrayOf("ontick", "onTick"), "none")!!)
         } catch (ex: Exception) {
             it.reset()
             throw ex

@@ -1,0 +1,4 @@
+dungeon-plus:
+  filter-member: true
+my-pet:
+  filter-pet: true

@@ -7,7 +7,7 @@ import taboolib.common.platform.Awake
 
 object Effects {
 
-    val effects = mutableMapOf<String, com.bh.planners.core.effect.Effect>()
+    val effects = mutableMapOf<String, Effect>()
     val parsers = mutableMapOf<Array<String>, EffectParser>()
 
 
@@ -16,16 +16,16 @@ object Effects {
     val ANGLE = listOf("angle", "a")
 
 
-    fun get(key: String): com.bh.planners.core.effect.Effect {
+    fun get(key: String): Effect {
         return effects[key]!!
     }
 
     @Awake(LifeCycle.LOAD)
     fun load() {
         runningClasses.forEach {
-            if (com.bh.planners.core.effect.Effect::class.java.isAssignableFrom(it)) {
-                if (com.bh.planners.core.effect.Effect::class.java.isAssignableFrom(it)) {
-                    (it.getInstance()?.get() as? com.bh.planners.core.effect.Effect)?.let { effect ->
+            if (Effect::class.java.isAssignableFrom(it)) {
+                if (Effect::class.java.isAssignableFrom(it)) {
+                    (it.getInstance()?.get() as? Effect)?.let { effect ->
                         effects[effect.name] = effect
                     }
                 }

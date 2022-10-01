@@ -142,15 +142,19 @@ class Line(
     }
 
     companion object {
-        fun buildLine(locA: Location, locB: Location, step: Double, spawner: ParticleSpawner) {
+        fun buildLine(locA: Location, locB: Location, step: Double, spawner: ParticleSpawner): List<Location> {
             val vectorAB = locB.clone().subtract(locA).toVector()
+            val list = mutableListOf<Location>()
             val vectorLength = vectorAB.length()
             vectorAB.normalize()
             var i = 0.0
             while (i < vectorLength) {
-                spawner.spawn(locA.clone().add(vectorAB.clone().multiply(i)))
+                val location = locA.clone().add(vectorAB.clone().multiply(i))
+                spawner.spawn(location)
+                list += location
                 i += step
             }
+            return list
         }
     }
 }

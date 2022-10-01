@@ -1,5 +1,6 @@
 __option__:
   name: 't'
+  mode: default
   variables:
     cooldown: 0
     mp: math meta skill level * 2.8
@@ -7,14 +8,17 @@ __option__:
     upgradePoint: math meta skill level * 2
     base: 10
 action: |-
-  projectile arrow "def0" oncapture e0
-  
-
-events:
-  e0:
-    async: true
-    action: |-
-      tell &@Target
+  def main = {
+    tell "skill run!"
+    effect "" ontick "effectTick" vars [ xxx ]
+    projectile oncapture handleCapture 
+  }
+  def effectTick = {
+    tell inline "var0 = {{ &var0 }}"
+  }
+  def handleCapture = {
+    damage 10 they &entity
+  }
 
   
 

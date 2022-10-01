@@ -1,8 +1,9 @@
 package com.bh.planners.core.kether.game.entity
 
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.effect.inline.CaptureEntity
-import com.bh.planners.core.effect.inline.InlineEvent.Companion.callEvent
+import com.bh.planners.core.effect.inline.Incident.Companion.handleIncident
+import com.bh.planners.core.effect.inline.IncidentCaptureEntity
+import com.bh.planners.core.effect.inline.IncidentHitEntity
 import com.bh.planners.core.effect.rotateAroundX
 import com.bh.planners.core.effect.rotateAroundY
 import com.bh.planners.core.effect.rotateAroundZ
@@ -14,7 +15,6 @@ import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
@@ -62,9 +62,9 @@ class ActionEntityProjectile {
                 val velocity = projectile.velocity
 
                 // 处理向量旋转
-                rotateAroundX(velocity,rotateX)
-                rotateAroundY(velocity,rotateY)
-                rotateAroundZ(velocity,rotateZ)
+                rotateAroundX(velocity, rotateX)
+                rotateAroundY(velocity, rotateY)
+                rotateAroundZ(velocity, rotateZ)
 
                 projectile.velocity = velocity.multiply(step);
                 listOf += projectile
@@ -78,23 +78,48 @@ class ActionEntityProjectile {
             frame.runTransfer0<Type>(action) { type ->
                 frame.runTransfer0<String>(name) { name ->
                     frame.runTransfer0<Double>(step) { step ->
-                        frame.runTransfer0<Double>(rotateX) {rotateX ->
-                            frame.runTransfer0<Double>(rotateY){rotateY ->
+                        frame.runTransfer0<Double>(rotateX) { rotateX ->
+                            frame.runTransfer0<Double>(rotateY) { rotateY ->
                                 frame.runTransfer0<Double>(rotateZ) { rotateZ ->
                                     frame.runTransfer0<String>(event) { event ->
                                         val context = frame.getContext()
                                         if (selector != null) {
                                             frame.createContainer(selector).thenAccept {
-                                                val entities = it.targets.filterIsInstance<Target.Entity>().filter { it.isLiving }
-                                                    .map { it.entity } as List<LivingEntity>
-                                                submit { future.complete(execute(context, name, entities, type, step, event,rotateX,rotateY,rotateZ)) }
+                                                val entities =
+                                                    it.filterIsInstance<Target.Entity>().filter { it.isLiving }
+                                                        .mapNotNull { it.asLivingEntity }
+                                                submit {
+                                                    future.complete(
+                                                        execute(
+                                                            context,
+                                                            name,
+                                                            entities,
+                                                            type,
+                                                            step,
+                                                            event,
+                                                            rotateX,
+                                                            rotateY,
+                                                            rotateZ
+                                                        )
+                                                    )
+                                                }
                                             }
                                         } else {
                                             val player = frame.asPlayer()
                                             if (player != null) {
                                                 submit {
                                                     future.complete(
-                                                        execute(context, name, listOf(player), type, step, event,rotateX,rotateY,rotateZ)
+                                                        execute(
+                                                            context,
+                                                            name,
+                                                            listOf(player),
+                                                            type,
+                                                            step,
+                                                            event,
+                                                            rotateX,
+                                                            rotateY,
+                                                            rotateZ
+                                                        )
                                                     )
                                                 }
                                             } else {
@@ -136,9 +161,9 @@ class ActionEntityProjectile {
                 it.nextParsedAction(),
                 it.nextParsedAction(),
                 it.tryGet(arrayOf("step"), 0.4)!!,
-                it.tryGet(arrayOf("rotateX"),0.0)!!,
-                it.tryGet(arrayOf("rotateY"),0.0)!!,
-                it.tryGet(arrayOf("rotateZ"),0.0)!!,
+                it.tryGet(arrayOf("rotateX"), 0.0)!!,
+                it.tryGet(arrayOf("rotateY"), 0.0)!!,
+                it.tryGet(arrayOf("rotateZ"), 0.0)!!,
                 it.tryGet(arrayOf("oncapture"), "none")!!,
                 it.selectorAction()
             )
@@ -151,7 +176,7 @@ class ActionEntityProjectile {
                 val owner = e.entity.getMetadata("owner").getOrNull(0)?.value() as? LivingEntity ?: return
                 val context = e.entity.getMetadata("context").getOrNull(0)?.value() as? Session ?: return
                 val event = e.entity.getMetadata("event").getOrNull(0)?.asString() ?: return
-                context.callEvent(event, owner, CaptureEntity(e.hitEntity!!))
+                context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!))
             }
             e.entity.remove()
 

@@ -23,7 +23,7 @@ object Self : Selector {
         val executor = context.executor as? BukkitPlayer ?: return CompletableFuture.completedFuture(null)
         val entity = executor.player.toTarget()
         if (name.isNon()) {
-            container.removeIf { this == entity }
+            container.removeIf { it == entity }
         } else {
             container.add(if (args.contains("m")) Target.Location(entity.entity.location) else entity)
         }

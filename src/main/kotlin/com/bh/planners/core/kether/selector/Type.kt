@@ -16,8 +16,8 @@ object Type : Selector {
     override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
         val types = args.split(",")
         container.removeIf {
-            if (this is Target.Entity) {
-                if (name.isNon()) type.name in types else type.name !in types
+            if (it is Target.Entity) {
+                if (name.isNon()) it.type.name in types else it.type.name !in types
             } else true
         }
         return CompletableFuture.completedFuture(null)

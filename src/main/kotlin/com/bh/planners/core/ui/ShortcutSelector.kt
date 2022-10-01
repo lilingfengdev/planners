@@ -53,7 +53,7 @@ class ShortcutSelector(viewer: Player, val callback: IKeySlot.() -> Unit) : IUI(
     override fun open() {
         viewer.openMenu<Linked<IKeySlot>>(title) {
             rows(rows)
-            slots(slots)
+            slots(ShortcutSelector.slots)
             elements { PlannersAPI.keySlots }
 
             onGenerate { _, element, _, _ -> toIcon(element) }

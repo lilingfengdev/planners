@@ -1,5 +1,6 @@
 package com.bh.planners.util
 
+import com.bh.planners.core.pojo.Skill
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
@@ -24,4 +25,16 @@ fun String.eval(amount: Double): Double {
     } else {
         Coerce.toDouble(this)
     }
+}
+
+fun getAction(action: String, func: (Skill.ActionMode) -> Unit): String {
+    val first = action.split("\n")[0].trim()
+
+    if (first == "# mode default") {
+        func(Skill.ActionMode.DEFAULT)
+    } else {
+        func(Skill.ActionMode.SIMPLE)
+    }
+
+    return action.split("\n").mapNotNull { if (it.trim().getOrNull(0) == '#') null else it }.joinToString("\n")
 }

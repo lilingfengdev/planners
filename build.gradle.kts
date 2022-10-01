@@ -25,7 +25,7 @@ taboolib {
     install("expansion-command-helper")
     install("platform-bukkit")
     classifier = null
-    version = "6.0.9-80"
+    version = "6.0.9-103"
     description {
         dependencies {
             name("PlaceholderAPI").optional(true)
@@ -44,10 +44,10 @@ repositories {
 
 dependencies {
 
-    compileOnly("ink.ptms:nms-all:1.0.0")
+//    compileOnly("ink.ptms:nms-all:1.0.0")
     compileOnly("ink.ptms.core:v11900:11900:mapped")
     compileOnly("ink.ptms.core:v11900:11900:universal")
-//    compileOnly("ink.ptms.core:v11200:11200")
+    compileOnly("ink.ptms.core:v11200:11200")
 //    compileOnly("ink.ptms.core:v11500:11200")
 
     compileOnly("public:ModelEngine:2.5.1")

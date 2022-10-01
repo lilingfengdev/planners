@@ -42,7 +42,7 @@ class ActionTarget {
         }
 
         fun ScriptFrame.getTarget(): Target? {
-            return getSession().getTarget()
+            return getContext().getTarget()
         }
 
         fun Context.getTarget(): Target? {

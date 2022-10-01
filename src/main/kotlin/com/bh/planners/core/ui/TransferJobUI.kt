@@ -59,7 +59,7 @@ class TransferJobUI(viewer: Player) : IUI(viewer) {
         viewer.openMenu<Linked<Router.TransferJob>>(title) {
             rows(rows)
             elements { route.transferJobs }
-            slots(slots)
+            slots(TransferJobUI.slots)
             onGenerate { _, element, _, _ -> toItem(element) }
             root.getKeys(false).filter { it.startsWith("icon-") }.forEach {
                 val itemStack = buildItem(root.getItemStack(it)!!) {

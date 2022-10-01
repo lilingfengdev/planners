@@ -62,7 +62,7 @@ class ActionGermParticle(val name: ParsedAction<*>, val selector: ParsedAction<*
             val effectParticle = create(name)
             if (selector != null) {
                 frame.createContainer(selector).thenAccept {
-                    it.targets.forEach { execute(it, effectParticle) }
+                    it.forEach { execute(it, effectParticle) }
                 }
             } else {
                 execute(frame.target(), effectParticle)

@@ -132,7 +132,7 @@ fun Location.toLocal(): String {
 
 fun ScriptFrame.exec(selector: ParsedAction<*>, call: Target.() -> Unit) {
     createContainer(selector).thenAccept {
-        it.targets.forEach(call)
+        it.forEach(call)
     }
 }
 
@@ -233,12 +233,12 @@ fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Ta
             is Target.Container -> future.complete(it)
 
             is Target -> {
-                future.complete(container.add(it))
+                future.complete(container.join(it))
             }
 
-            is Entity -> future.complete(container.add(it.toTarget()))
+            is Entity -> future.complete(container.join(it.toTarget()))
 
-            is Location -> future.complete(container.add(it.toTarget()))
+            is Location -> future.complete(container.join(it.toTarget()))
 
             is UUID -> {
                 val entity = Bukkit.getEntity(it)

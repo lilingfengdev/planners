@@ -1,12 +1,11 @@
 package com.bh.planners.core.effect
 
-import com.bh.planners.core.effect.EffectArc.startAngle
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target.Companion.createContainer
 import com.bh.planners.core.effect.common.PlayerFrontCoordinate
+import com.bh.planners.core.kether.game.ActionEffect
 import org.bukkit.Location
 import org.bukkit.util.Vector
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import kotlin.math.abs
@@ -50,7 +49,7 @@ object EffectArc : Effect() {
         get() = Coerce.toDouble(this.demand.get(listOf("rax", "rotateAxisZ", "0")))
 
 
-    override fun sendTo(target: Target?, option: EffectOption, context: Context) {
+    override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {
         val effectSpawner = EffectSpawner(option)
         option.createContainer(target, context).thenAccept { container ->
             val spread = option.spread
@@ -81,6 +80,7 @@ object EffectArc : Effect() {
 
                 if (option.period == 0L) {
                     locations.forEach(effectSpawner::spawn)
+                    response.onTick(locations)
                 } else {
                     var pointer = 0
                     submit(async = true, period = option.period) {
@@ -88,7 +88,9 @@ object EffectArc : Effect() {
                             cancel()
                             return@submit
                         }
-                        effectSpawner.spawn(locations[pointer++])
+                        val location = locations[pointer++]
+                        response.onTick(listOf(location))
+                        effectSpawner.spawn(location)
                     }
                 }
             }

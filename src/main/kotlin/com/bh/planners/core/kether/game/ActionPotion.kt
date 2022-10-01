@@ -37,19 +37,24 @@ class ActionPotion {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.runTransfer0<String>(name) { name ->
                 frame.runTransfer0<Int>(duration) { duration ->
-                    submit {
-                        frame.runTransfer0<Int>(amplifier) { amplifier ->
+                    frame.runTransfer0<Int>(amplifier) { amplifier ->
+                        val effectType = PotionEffectType.getByName(name.uppercase(Locale.getDefault()))
 
-                            val effectType = PotionEffectType.getByName(name.uppercase(Locale.getDefault()))
-
-                            if (selector != null) {
-                                frame.execLivingEntity(selector) { execute(this, effectType, duration, amplifier) }
-                            } else {
-                                val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
+                        if (selector != null) {
+                            frame.createContainer(selector).thenAccept {
+                                submit {
+                                    it.forEachLivingEntity { execute(this, effectType, duration, amplifier) }
+                                }
+                            }
+                        } else {
+                            val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
+                            submit {
                                 execute(viewer, effectType, duration, amplifier)
                             }
                         }
+
                     }
+
                 }
             }
             return CompletableFuture.completedFuture(null)

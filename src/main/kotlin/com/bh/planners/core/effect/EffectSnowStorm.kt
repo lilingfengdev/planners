@@ -1,5 +1,6 @@
 package com.bh.planners.core.effect
 
+import com.bh.planners.core.kether.game.ActionEffect
 import com.bh.planners.core.pojo.Context
 import org.bukkit.Bukkit
 
@@ -21,7 +22,7 @@ class EffectSnowStorm : com.bh.planners.core.effect.Effect() {
     }
 
 
-    override fun sendTo(target: Target?, option: EffectOption, context: Context) {
+    override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {
 
 
     }

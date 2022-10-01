@@ -65,7 +65,7 @@ class ActionAdyeshachSpawn(
                 frame.runTransfer<Long>(timeout).thenAccept { timeout ->
                     if (selector != null) {
                         frame.createContainer(selector).thenAccept {
-                            val locations = it.targets.filterIsInstance<Target.Location>().map { it.value }
+                            val locations = it.filterIsInstance<Target.Location>().map { it.value }
                             spawn(type, locations, name, timeout).thenAccept {
                                 future.complete(it.map { AdyeshachEntity(it) })
                             }

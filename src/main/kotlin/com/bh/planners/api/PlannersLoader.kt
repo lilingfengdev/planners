@@ -1,6 +1,7 @@
 package com.bh.planners.api
 
 import com.bh.planners.api.event.PluginReloadEvent
+import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Router
 import com.bh.planners.core.pojo.Skill
@@ -37,6 +38,7 @@ object PlannersLoader {
         files("skill", listOf("skill_def0.yml")) {
             PlannersAPI.skills += Skill(it.toYamlName(), Configuration.loadFromFile(it))
         }
+        ScriptLoader.autoLoad()
     }
 
     @Awake(LifeCycle.ENABLE)

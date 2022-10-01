@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture
  * -@fetch t0
  */
 object Fetch : Selector {
+
     override val names: Array<String>
         get() = arrayOf("get", "fetch")
 

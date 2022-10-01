@@ -21,7 +21,16 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
     ScriptAction<List<Target>>() {
 
     fun execute(location: Location, material: Material, ticks: Long) {
-        SimpleTimeoutTask.register(BlockSimpleTask(location, material, ticks))
+        // 如果上一次的任务还未结束 则提前结束
+        if (cache.containsKey(location)) {
+            SimpleTimeoutTask.cancel(cache[location]!!)
+        }
+
+        val simpleTask = BlockSimpleTask(location, material, ticks)
+        SimpleTimeoutTask.register(simpleTask)
+        // 注入新的
+        cache[location] = simpleTask
+
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<Target>> {
@@ -43,12 +52,28 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
         return CompletableFuture.completedFuture(null)
     }
 
-    class BlockSimpleTask(val location: Location, val to: Material, tick: Long) : SimpleTimeoutTask(tick) {
+    class BlockSimpleTask(val location: Location, var to: Material, tick: Long) : SimpleTimeoutTask(tick) {
 
-        val mark = location.block.type
+
+        var block = location.block
+        var mark = location.block.type
+        var blockData = block.blockData
 
         override val closed: () -> Unit
-            get() = { location.block.type = mark }
+            get() = {
+                update()
+                isClosed = true
+            }
+
+        fun update() {
+
+            location.block.type = mark
+            if (block.type != Material.AIR) {
+                info("block data $blockData")
+                block.blockData = blockData
+            }
+
+        }
 
         init {
             location.block.type = to
@@ -58,6 +83,7 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
 
     companion object {
 
+        val cache = mutableMapOf<Location, BlockSimpleTask>()
 
         /**
          * block material timeout(tick) <selector>

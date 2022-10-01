@@ -40,7 +40,7 @@ class Backpack(viewer: Player) : IUI(viewer) {
     override fun open() {
         viewer.openMenu<Linked<PlayerJob.Skill>>(title) {
             rows(rows)
-            slots(slots)
+            slots(Backpack.slots)
             elements { profile.getSkills() }
 
             onGenerate { _, element, _, _ ->

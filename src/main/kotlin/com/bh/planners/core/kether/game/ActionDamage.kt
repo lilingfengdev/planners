@@ -1,9 +1,15 @@
 package com.bh.planners.core.kether.game
 
 import ac.github.oa.api.event.entity.EntityDamageEvent
+import ac.github.oa.taboolib.common.reflect.Reflex.Companion.getProperty
 import ac.github.oa.taboolib.common.reflect.Reflex.Companion.setProperty
 import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.game.damage.AttackProvider
 import com.bh.planners.util.eval
+import net.minecraft.server.v1_12_R1.Entity
+import net.minecraft.server.v1_12_R1.EntityHuman
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer
 import org.bukkit.entity.LivingEntity
 import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.platform.event.EventPriority
@@ -34,7 +40,6 @@ class ActionDamage {
             if (source != null && entity.health - result <= 0) {
                 entity.setKiller(source)
             }
-
             entity.damage(result)
             entity.removeMeta("Planners:Damage")
         }
@@ -42,9 +47,9 @@ class ActionDamage {
         fun LivingEntity.setKiller(source: LivingEntity) {
             when (MinecraftVersion.major) {
                 // 1.12.*
-                4 -> setProperty("entity/killer", source)
+                4 -> setProperty("entity/killer", source.getProperty("entity"))
                 // 1.18.* 1.19.*
-                7, 8, 9, 10, 11 -> setProperty("entity/bc", source)
+                7, 8, 9, 10, 11 -> setProperty("entity/bc", source.getProperty("entity"))
             }
         }
 
@@ -79,7 +84,7 @@ class ActionDamage {
                         container.forEachLivingEntity {
                             this.noDamageTicks = 0
                             this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
-                            this.damage(damage.eval(this.maxHealth), asPlayer)
+                            AttackProvider.INSTANCE?.doDamage(this,damage.eval(this.maxHealth), asPlayer)
                             this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
                         }
                     }
@@ -111,14 +116,18 @@ class ActionDamage {
             Attack(it.nextParsedAction(), it.selector())
         }
 
-        @SubscribeEvent(bind = "ac.github.oa.api.event.entity.EntityDamageEvent", ignoreCancelled = true, priority = EventPriority.LOWEST)
-        fun e(ope: OptionalEvent) {
-            val e = ope.get<EntityDamageEvent>()
-            // 如果是来自pl的攻击 则取消
-            if (e.damageMemory.injured.hasMeta("Planners:Damage")) {
-                e.isCancelled = true
-            }
-        }
+//        @SubscribeEvent(
+//            bind = "ac.github.oa.api.event.entity.EntityDamageEvent",
+//            ignoreCancelled = true,
+//            priority = EventPriority.LOWEST
+//        )
+//        fun e(ope: OptionalEvent) {
+//            val e = ope.get<EntityDamageEvent>()
+//            // 如果是来自pl的攻击 则取消
+//            if (e.damageMemory.injured.hasMeta("Planners:Damage")) {
+//                e.isCancelled = true
+//            }
+//        }
 
     }
 

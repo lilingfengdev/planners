@@ -149,6 +149,13 @@ open class StorageSQL : Storage {
         return future
     }
 
+    override fun updateSkillJob(player: Player, job: PlayerJob, skill: PlayerJob.Skill) {
+        skillTable.update(dataSource) {
+            where { ID eq skill.id }
+            set(JOB, job.jobKey)
+        }
+    }
+
     override fun updateSkill(profile: PlayerProfile, skill: PlayerJob.Skill) {
         if (skill.id == -1L) return
         skillTable.update(dataSource) {
@@ -224,6 +231,7 @@ open class StorageSQL : Storage {
         }
         return future
     }
+
 
     override fun updateJob(player: Player, job: PlayerJob) {
         jobTable.update(dataSource) {

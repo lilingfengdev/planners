@@ -10,9 +10,13 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 
 interface Target {
+
+    val isValid: Boolean
+        get() = true
 
     fun toLocal(): String
 
@@ -32,11 +36,15 @@ interface Target {
         }
 
         fun org.bukkit.entity.Entity.toTarget(): Entity {
-            return Entity(this)
+            return Entity(this).apply {
+
+            }
         }
 
         fun org.bukkit.Location.toTarget(): Location {
-            return Location(this)
+            return Location(this).apply {
+
+            }
         }
 
         fun Target.ifLocation(call: Location.() -> Unit) {
@@ -53,70 +61,62 @@ interface Target {
 
     }
 
-    open class Container {
+    open class Container : LinkedHashSet<Target>() {
 
-        val targets = mutableSetOf<Target>()
+        override fun forEach(action: Consumer<in Target>) {
+            super.forEach {
+                if (it.isValid) action.accept(it)
+            }
+        }
 
-        val size: Int
-            get() = targets.size
-
-        val isEmpty: Boolean
-            get() = size == 0
-
-        val isNotEmpty: Boolean
-            get() = !isEmpty
-
-        fun add(vararg target: Target): Container {
-            this.targets += target
+        fun join(vararg target: Target): Container {
+            this += target
             return this
         }
 
-        fun addAll(targets: List<Target>): Container {
-            this.targets += targets
+        fun join(targets: List<Target>): Container {
+            this += targets
             return this
         }
 
         fun has(target: Target): Boolean {
-            return target in targets
+            return target in this
         }
 
         fun unmerge(container: Container): Container {
-            if (container.isEmpty) return this
-            removeIf { container.has(this) }
+            if (container.isEmpty()) return this
+            removeIf { container.contains(it) }
             return this
         }
 
         fun merge(container: Container): Container {
-            if (container.isEmpty) return this
-            targets += container.targets
+            if (container.isEmpty()) return this
+            this += container
             return this
-        }
-
-        fun clearAll() {
-            this.targets.clear()
-        }
-
-        fun removeIf(check: Target.() -> Boolean) {
-            targets.removeIf { check(it) }
         }
 
         fun remove(amount: Int = 1) {
             (0 until amount).forEach { _ ->
-                if (targets.isNotEmpty()) {
-                    targets.remove(targets.random())
+                if (this.isNotEmpty()) {
+                    this -= this.random()
                 }
             }
         }
 
         inline fun <reified T> forEach(func: T.(Int) -> Unit) {
 
-            targets.filterIsInstance<T>().forEachIndexed { index, t ->
+            filterIsInstance<T>().forEachIndexed { index, t ->
                 func(t, index)
             }
+
         }
 
         fun forEachEntity(func: org.bukkit.entity.Entity.(Int) -> Unit) {
             forEach<Entity> { index -> func(entity, index) }
+        }
+
+        inline fun <reified T : Target> map(check: T.() -> Boolean): List<T> {
+            return this.filterIsInstance<T>().filter(check)
         }
 
         fun forEachLivingEntity(func: LivingEntity.(Int) -> Unit) {
@@ -141,14 +141,13 @@ interface Target {
             forEach<Location> { index -> func(value, index) }
         }
 
-        fun firstTarget() = targets.firstOrNull()
+        fun firstTarget() = firstOrNull()
 
-        fun firstLivingEntityTarget() =
-            targets.filterIsInstance<Entity>().filter { it.isLiving }.firstOrNull()?.asLivingEntity
+        fun firstLivingEntityTarget() = filterIsInstance<Entity>().firstOrNull { it.isLiving }?.asLivingEntity
 
-        fun firstEntityTarget() = targets.filterIsInstance<Entity>().firstOrNull()?.entity
+        fun firstEntityTarget() = filterIsInstance<Entity>().firstOrNull()?.entity
 
-        fun getLocationTarget(index: Int) = targets.filterIsInstance<Location>().getOrNull(index)?.value
+        fun getLocationTarget(index: Int) = filterIsInstance<Location>().getOrNull(index)?.value
 
         fun firstLocationTarget() = getLocationTarget(0)
 
@@ -176,9 +175,14 @@ interface Target {
             return true
         }
 
+        override fun toString(): String {
+            return "Location(loc=$loc)"
+        }
+
+
     }
 
-    class Entity(val entity: org.bukkit.entity.Entity) : Location(null) {
+    open class Entity(val entity: org.bukkit.entity.Entity) : Location(null) {
 
         override val value: org.bukkit.Location
             get() = if (isLiving) asLivingEntity!!.eyeLocation else entity.location
@@ -187,7 +191,7 @@ interface Target {
             get() = entity is LivingEntity
 
         val asLivingEntity: LivingEntity?
-            get() = entity as LivingEntity
+            get() = entity as? LivingEntity
 
         val type = entity.type
 
@@ -199,6 +203,8 @@ interface Target {
             return entity.hashCode()
         }
 
+
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other is org.bukkit.entity.Entity) {
@@ -206,6 +212,10 @@ interface Target {
             }
 
             return true
+        }
+
+        override fun toString(): String {
+            return "Entity(entity=$entity, type=$type)"
         }
 
     }

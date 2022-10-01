@@ -56,7 +56,7 @@ class ActionSelector {
         override fun run(frame: ScriptFrame): CompletableFuture<Set<Target>> {
 
             return frame.newFrame(key).run<String>().thenApply {
-                frame.getContext().flags.get(it.toString())?.asContainer()?.targets ?: emptySet()
+                frame.getContext().flags.get(it.toString())?.asContainer() ?: emptySet()
             }
 
         }

@@ -49,7 +49,7 @@ class ActionAdyeshachTalk(val action: ParsedAction<*>, val selector: ParsedActio
             val message = it.toString()
             if (selector != null) {
                 frame.createContainer(selector).thenAccept { container ->
-                    container.targets.forEach {
+                    container.forEach {
                         if (it is Target.Entity) {
                             execute(it.entity, message)
                         } else if (it is Target.Location) {

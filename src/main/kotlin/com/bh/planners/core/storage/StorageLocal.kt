@@ -100,6 +100,13 @@ class StorageLocal : Storage {
         return CompletableFuture.completedFuture(PlayerJob.Skill(generatorId, skill.key, 0, null))
     }
 
+    override fun updateSkillJob(player: Player, job: PlayerJob, skill: PlayerJob.Skill) {
+        at(player) {
+            this["job.${job.id}.skill.${skill.id}.key"] = skill.key
+            this["job.${job.id}.skill.${skill.id}.level"] = 0
+        }
+    }
+
     override fun updateSkill(profile: PlayerProfile, skill: PlayerJob.Skill) {
         at(profile.player) {
             this["job.${profile.job?.id}.skill.${skill.id}.level"] = skill.level

@@ -80,7 +80,7 @@ class ActionEntitySpawn(
                         val tick = Coerce.toLong(this)
                         if (selector != null) {
                             frame.createContainer(selector).thenAccept {
-                                val locations = it.targets.filterIsInstance<Target.Location>().map { it.value }
+                                val locations = it.filterIsInstance<Target.Location>().map { it.value }
                                 spawn(entityType, locations, name, health, tick).thenAccept {
                                     future.complete(it)
                                 }

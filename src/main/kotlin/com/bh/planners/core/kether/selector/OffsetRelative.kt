@@ -8,10 +8,11 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 该操作会把实体目标转换为坐标目标
+ * :@offset-r 1,1,1 基于原有地址偏移(1,1,1)xyz
  */
-object OffsetRelative : Selector{
+object OffsetRelative : Selector {
     override val names: Array<String>
-        get() = arrayOf("offset-r","offsetr","offset-relative")
+        get() = arrayOf("offset-r", "offsetr", "offset-relative")
 
     override fun check(
         name: String,
@@ -26,16 +27,16 @@ object OffsetRelative : Selector{
         val removes = mutableListOf<Target>()
         val addons = mutableListOf<Target>()
 
-        container.targets.forEach {
+        container.forEach {
             if (it is Target.Entity) {
                 removes += it
-                addons += it.value.clone().add(split[0],split[1],split[2]).toTarget()
+                addons += it.value.clone().add(split[0], split[1], split[2]).toTarget()
             } else if (it is Target.Location) {
-                it.value.add(split[0],split[1],split[2])
+                it.value.add(split[0], split[1], split[2])
             }
         }
 
-        container.removeIf { this in removes }
+        container.removeIf { it in removes }
         container.addAll(addons)
 
         return CompletableFuture.completedFuture(null)

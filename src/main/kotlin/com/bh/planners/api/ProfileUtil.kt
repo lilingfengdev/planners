@@ -16,10 +16,12 @@ import com.bh.planners.core.storage.Storage
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.info
+import taboolib.common.platform.function.submitAsync
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.runKether
 import taboolib.platform.util.sendLang
+import java.util.concurrent.CompletableFuture
 
 
 fun PlayerProfile.addPoint(point: Int) {
@@ -117,14 +119,25 @@ val PlayerProfile.hasJob: Boolean
 fun PlayerProfile.transfer(target: Job): Boolean {
     if (!isTransfer()) return false
     val transferJob = getTransferJob(this.job!!.instance, target)!!
+    // 重定位职业
     this.job!!.jobKey = transferJob.jobKey
+    // 删除其他技能
     this.job!!.skills.removeIf { it.key !in transferJob.job.skills }
-    Storage.INSTANCE.updateCurrentJob(this)
-    Storage.INSTANCE.updateJob(player, this.job!!)
-    PlayerSelectedJobEvent(this).call()
+
+    // 提取到异步保存
+    submitAsync {
+        // 重新定位剩余所属技能
+        this@transfer.job!!.skills.forEach {
+            info("transfer skill ${it.id}#${it.key} = ${this@transfer.job}")
+            Storage.INSTANCE.updateSkillJob(player, this@transfer.job!!, it)
+        }
+        Storage.INSTANCE.updateCurrentJob(this@transfer)
+        Storage.INSTANCE.updateJob(player, this@transfer.job!!)
+        PlayerSelectedJobEvent(this@transfer).call()
+    }
+    
     return true
 }
-
 
 fun getTransferJob(origin: Job, target: Job): Router.TransferJob? {
     val router = PlannersAPI.routers.firstOrNull { origin.key in it.routes.map { it.jobKey } } ?: return null

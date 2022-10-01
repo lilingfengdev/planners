@@ -20,18 +20,17 @@ object Range : Selector {
         get() = arrayOf("range", "r")
 
     override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
-        val ranges = if (args.contains(",")) args.split(",") else listOf(args, args, args)
-        val split = ranges.map { Coerce.toDouble(it) }
+        val ranges = args.split(",");
+        val x = Coerce.toDouble(ranges[0])
+        val y = Coerce.toDouble(ranges.getOrElse(1) { ranges[0] })
+        val z = Coerce.toDouble(ranges.getOrElse(2) { ranges[0] })
 
         val location = target as? Target.Location ?: return CompletableFuture.completedFuture(null)
 
         val future = CompletableFuture<Void>()
         submit(async = false) {
-            val targets = location.value.world!!
-                .getNearbyEntities(location.value, split[0], split[1], split[2])
-                .filterIsInstance<LivingEntity>()
-                .map { it.toTarget() }
-            container.addAll(targets)
+            container += location.value.world?.getNearbyEntities(location.value, x,y,z)?.filterIsInstance<LivingEntity>()
+                ?.map { it.toTarget() } ?: emptyList()
             future.complete(null)
         }
         return future
