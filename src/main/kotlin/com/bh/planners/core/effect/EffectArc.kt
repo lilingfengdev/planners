@@ -7,6 +7,7 @@ import com.bh.planners.core.kether.game.ActionEffect
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.submitAsync
 import taboolib.common5.Coerce
 import kotlin.math.abs
 import kotlin.math.cos
@@ -37,7 +38,7 @@ object EffectArc : Effect() {
 
     // 粒子渲染周期间隔
     val EffectOption.period: Long
-        get() = Coerce.toLong(this.demand.get(listOf("period", "p"), "0"))
+        get() = (Coerce.toFloat(this.demand.get(listOf("period", "p"), "0")) * 50f).toLong()
 
     val EffectOption.rotateAxisX: Double
         get() = Coerce.toDouble(this.demand.get(listOf("rax", "rotateAxisX", "0")))
@@ -83,6 +84,9 @@ object EffectArc : Effect() {
                     response.onTick(locations)
                 } else {
                     var pointer = 0
+                    submitAsync {
+
+                    }
                     submit(async = true, period = option.period) {
                         if (pointer == locations.size) {
                             cancel()

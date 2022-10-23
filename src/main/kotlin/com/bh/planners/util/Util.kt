@@ -26,7 +26,6 @@ fun String.eval(amount: Double): Double {
         Coerce.toDouble(this)
     }
 }
-
 fun getAction(action: String, func: (Skill.ActionMode) -> Unit): String {
     val first = action.split("\n")[0].trim()
 

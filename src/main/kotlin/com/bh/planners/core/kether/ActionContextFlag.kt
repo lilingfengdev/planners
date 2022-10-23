@@ -21,20 +21,22 @@ class ActionContextFlag {
     class ContextDataSet(val action: ParsedAction<*>, val value: ParsedAction<*>, val time: ParsedAction<*>) :
         ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(action).run<Any>().thenAccept {
-                val key = it.toString()
+
+
+            frame.run(action).str { key ->
                 frame.newFrame(value).run<Any>().thenAccept { value ->
                     frame.newFrame(time).run<Any>().thenAccept { time ->
                         frame.getContext().flags[key] = Data(value, survivalStamp = Coerce.toLong(time))
                     }
                 }
             }
+
+            return CompletableFuture.completedFuture(null)
         }
 
     }
 
-    class ContextDataAdd(val action: ParsedAction<*>, val value: ParsedAction<*>) :
-        ScriptAction<Void>() {
+    class ContextDataAdd(val action: ParsedAction<*>, val value: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<Any>().thenAccept {
                 val key = it.toString()
@@ -78,7 +80,7 @@ class ActionContextFlag {
                         when (expects("add", "set", "get", "to", "has")) {
                             "set", "to" -> {
                                 val value = it.nextParsedAction()
-                                ContextDataSet(key, value, tryGet(arrayOf("timeout"),-1)!!)
+                                ContextDataSet(key, value, tryGet(arrayOf("timeout"), -1)!!)
                             }
 
                             "get" -> ContextDataGet(key)

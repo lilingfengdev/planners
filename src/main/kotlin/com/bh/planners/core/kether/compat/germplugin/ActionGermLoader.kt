@@ -51,6 +51,9 @@ object ActionGermLoader {
                     it.selector()
                 )
             }
+            case("look") {
+                ActionGermLook(it.nextParsedAction(),it.tryGet(arrayOf("at")))
+            }
             case("effect") {
                 ActionGermParticle(it.nextParsedAction(), it.selectorAction())
             }

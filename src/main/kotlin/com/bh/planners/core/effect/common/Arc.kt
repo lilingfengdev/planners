@@ -20,8 +20,10 @@ class Arc : ParticleObj, Playable {
         private set
     private var currentAngle = 0.0
 
-    constructor(origin: Location, spawner: ParticleSpawner) : this(origin, 30.0, spawner) {}
-    constructor(origin: Location, angle: Double, spawner: ParticleSpawner) : this(origin, angle, 1.0, spawner) {}
+    constructor(origin: Location, spawner: ParticleSpawner) : this(origin, 30.0, spawner)
+
+    constructor(origin: Location, angle: Double, spawner: ParticleSpawner) : this(origin, angle, 1.0, spawner)
+
     constructor(origin: Location, angle: Double, radius: Double, spawner: ParticleSpawner) : this(
         origin, angle, radius, 1.0, spawner
     ) {
@@ -49,12 +51,7 @@ class Arc : ParticleObj, Playable {
      * @param step   每个粒子的间隔(也即步长)
      * @param period 特效周期(如果需要可以使用)
      */
-    constructor(
-        origin: Location, angle: Double, radius: Double, step: Double, period: Long, spawner: ParticleSpawner
-    ) : super(
-        spawner!!
-    ) {
-
+    constructor(origin: Location, angle: Double, radius: Double, step: Double, period: Long, spawner: ParticleSpawner) : super(spawner) {
         this.origin = origin
         this.angle = angle
         this.radius = radius
@@ -73,17 +70,7 @@ class Arc : ParticleObj, Playable {
      * @param period     特效周期(如果需要可以使用)
      * @param spawner    粒子生成器
      */
-    constructor(
-        origin: Location,
-        startAngle: Double,
-        angle: Double,
-        radius: Double,
-        step: Double,
-        period: Long,
-        spawner: ParticleSpawner
-    ) : super(
-        spawner!!
-    ) {
+    constructor(origin: Location, startAngle: Double, angle: Double, radius: Double, step: Double, period: Long, spawner: ParticleSpawner) : super(spawner) {
         this.origin = origin
         this.startAngle = startAngle
         this.angle = angle

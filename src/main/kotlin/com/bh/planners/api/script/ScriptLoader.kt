@@ -20,14 +20,10 @@ object ScriptLoader {
     val runningScripts = MultimapBuilder.hashKeys().arrayListValues().build<String, ScriptContext>()
 
     fun autoLoad() {
-        clear()
+        scripts.clear()
         PlannersAPI.skills.filter { it.actionMode == Skill.ActionMode.DEFAULT }.forEach {
             load(it)
         }
-    }
-
-    fun clear() {
-        scripts.clear()
     }
 
     fun runScript(session: Session, func: (ScriptContext) -> Unit) {

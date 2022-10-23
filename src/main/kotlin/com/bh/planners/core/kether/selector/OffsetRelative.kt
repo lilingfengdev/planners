@@ -8,9 +8,10 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 该操作会把实体目标转换为坐标目标
- * :@offset-r 1,1,1 基于原有地址偏移(1,1,1)xyz
+ * :@offset-r 1,1,1,0,0 基于原有地址偏移(1,1,1)xyz,pitch,yaw
  */
 object OffsetRelative : Selector {
+
     override val names: Array<String>
         get() = arrayOf("offset-r", "offsetr", "offset-relative")
 
@@ -21,8 +22,12 @@ object OffsetRelative : Selector {
         context: Context,
         container: Target.Container
     ): CompletableFuture<Void> {
-        val offset = if (args.contains(",")) args.split(",") else listOf(args, args, args)
-        val split = offset.map { Coerce.toDouble(it) }
+        val split = args.split(",").map { Coerce.toDouble(it) }
+        val x = split.getOrElse(0) { 0.0 }
+        val y = split.getOrElse(1) { 0.0 }
+        val z = split.getOrElse(2) { 0.0 }
+        val pitch = Coerce.toFloat(split.getOrElse(3) { 0.0 })
+        val yaw = Coerce.toFloat(split.getOrElse(4) { 0.0 })
 
         val removes = mutableListOf<Target>()
         val addons = mutableListOf<Target>()
@@ -30,7 +35,13 @@ object OffsetRelative : Selector {
         container.forEach {
             if (it is Target.Entity) {
                 removes += it
-                addons += it.value.clone().add(split[0], split[1], split[2]).toTarget()
+
+                val location = it.value.clone()
+                location.add(x, y, z)
+                location.yaw += yaw
+                location.pitch += pitch
+                addons += location.toTarget()
+
             } else if (it is Target.Location) {
                 it.value.add(split[0], split[1], split[2])
             }

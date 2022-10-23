@@ -135,7 +135,7 @@ fun PlayerProfile.transfer(target: Job): Boolean {
         Storage.INSTANCE.updateJob(player, this@transfer.job!!)
         PlayerSelectedJobEvent(this@transfer).call()
     }
-    
+
     return true
 }
 
@@ -150,7 +150,7 @@ fun hasTransfer(origin: Job, target: Job): Boolean {
 }
 
 fun getUpgradeConditions(playerSkill: PlayerJob.Skill): List<Skill.UpgradeCondition> {
-    return playerSkill.instance.option.upgradeConditions.filter { it.indexTo == playerSkill.level }
+    return playerSkill.instance.option.upgradeConditions.filter { -1 in it.indexTo || playerSkill.level in it.indexTo }
 }
 
 fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {

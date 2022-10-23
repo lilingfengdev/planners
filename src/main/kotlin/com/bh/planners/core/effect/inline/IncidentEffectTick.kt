@@ -10,6 +10,7 @@ import taboolib.module.kether.ScriptContext
 class IncidentEffectTick(val locations: List<Location>) : Incident {
 
     override fun inject(context: ScriptContext) {
+
         context.rootFrame().variables()["targetAt"] = LazyGetter {
             val container = Target.Container()
             container.addAll(locations.flatMap { it.entityAt().map { it.toTarget() } })

@@ -14,7 +14,6 @@ class ActionActionBar(val message: ParsedAction<*>, val selector: ParsedAction<*
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         return frame.newFrame(message).run<Any>().thenAccept { message ->
-
             if (selector != null) {
                 frame.newFrame(selector).run<Any>().thenAccept {
                     frame.execPlayer(selector) {
