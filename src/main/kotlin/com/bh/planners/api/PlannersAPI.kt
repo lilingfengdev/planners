@@ -5,6 +5,7 @@ import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.common.ExecuteResult
 import com.bh.planners.api.event.PlayerCastSkillEvent
 import com.bh.planners.api.event.PlayerKeydownEvent
+import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.pojo.*
@@ -15,10 +16,12 @@ import com.google.gson.Gson
 import org.bukkit.entity.Player
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.printKetherErrorMessage
+import taboolib.module.kether.runKether
 import java.util.*
 
 object PlannersAPI {
@@ -111,7 +114,8 @@ object PlannersAPI {
     }
 
     fun checkUpgrade(player: Player, playerSkill: PlayerJob.Skill): Boolean {
-        return getUpgradeConditions(playerSkill).any { return checkCondition(player, playerSkill, it) }
+        val conditions = getUpgradeConditions(playerSkill)
+        return conditions.isEmpty() || conditions.any { return checkCondition(player, playerSkill, it) }
     }
 
     fun tryUpgrade(player: Player, playerSkill: PlayerJob.Skill): Boolean {
@@ -147,23 +151,22 @@ object PlannersAPI {
         return listOf
     }
 
-
     fun checkCondition(player: Player, playerSkill: PlayerJob.Skill, it: Condition): Boolean {
-        return checkCondition(player, it) {
-            rootFrame().rootVariables()["level"] = playerSkill.level
-            rootFrame().rootVariables()["@Skill"] = playerSkill
-        }
+        return checkCondition(Context.Impl(adaptPlayer(player), playerSkill.instance), it)
     }
 
-    fun checkCondition(player: Player, condition: Condition, context: ScriptContext.() -> Unit): Boolean {
-        return try {
-            KetherShell.eval(condition.condition, sender = adaptPlayer(player), namespace = namespaces) {
-                context(this)
+    fun checkCondition(player: Player,condition: Condition): Boolean {
+        return runKether {
+            ScriptLoader.createScript(ContextAPI.create(player),condition.condition) {
+
             }.thenApply { Coerce.toBoolean(it) }.get()
-        } catch (e: Throwable) {
-            e.printKetherErrorMessage()
-            false
-        }
+        } ?: false
+    }
+
+    fun checkCondition(context: Context.Impl, condition: Condition): Boolean {
+        return runKether {
+            ScriptLoader.createScript(context, condition.condition) { }.thenApply { Coerce.toBoolean(it) }.get()
+        } ?: false
     }
 
     fun hasJob(key: String) = key in jobs.map { it.key }

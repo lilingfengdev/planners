@@ -31,7 +31,7 @@ open class Session(executor: ProxyCommandSender, skill: Skill) : Context.Impl(ex
         // 简洁模式运行
         if (skill.actionMode == Skill.ActionMode.SIMPLE) {
             runKether {
-                KetherShell.eval(skill.action, sender = executor, namespace = namespaces) {
+                ScriptLoader.createScript(this) {
                     open(this)
                 }
             }
@@ -47,7 +47,6 @@ open class Session(executor: ProxyCommandSender, skill: Skill) : Context.Impl(ex
     fun open(context: ScriptContext) {
         context.sender = executor
         context.rootFrame().variables()["@Context"] = this@Session
-        context.rootFrame().variables()["@Skill"] = playerSkill
         variables.forEach {
             context.rootFrame().variables()[it.key] = it.value
         }

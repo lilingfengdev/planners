@@ -60,7 +60,14 @@ fun ScriptFrame.skill(): PlayerJob.Skill {
 
 
 fun ScriptFrame.getSkill(): PlayerJob.Skill {
-    return rootVariables().get<PlayerJob.Skill>("@Skill").orElse(null) ?: error("Error running environment !")
+
+    val context = getContext()
+
+    if (context is Context.Impl) {
+        return context.playerSkill
+    }
+
+    error("Error running environment !")
 }
 
 fun ScriptFrame.target(): Target {
@@ -100,7 +107,6 @@ fun Any?.increaseAny(any: Any): Any {
 fun evalKether(player: Player, action: String, skill: PlayerJob.Skill): String? {
     return try {
         KetherShell.eval(action, sender = adaptPlayer(player), namespace = namespaces) {
-            this.rootFrame().variables()["@Skill"] = skill
         }.get()?.toString()
     } catch (e: Throwable) {
         e.printKetherErrorMessage()

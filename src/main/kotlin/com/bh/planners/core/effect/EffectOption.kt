@@ -43,7 +43,7 @@ open class EffectOption(text: String) {
         demand.get("block")?.let {
             val args = it.split(",")
             data = ProxyParticle.BlockData(
-                args.getOrElse(0) { "DIRT" },
+                args.getOrElse(0) { "DIRT" }.uppercase(),
                 Coerce.toInteger(args.getOrElse(1) { 0 })
             )
         }

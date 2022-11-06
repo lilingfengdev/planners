@@ -3,8 +3,10 @@ package com.bh.planners.core.kether
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.common.Operator
 import com.bh.planners.api.Counting
+import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -54,6 +56,7 @@ class ActionSkill {
                         "add" -> Operator.ADD
                         "take" -> Operator.TAKE
                         "set" -> Operator.SET
+                        "reset" -> Operator.RESET
                         else -> error("error of case")
                     }
                     CooldownOperator(operator, it.nextParsedAction(), it.tryGet(arrayOf("of", "the")))
@@ -68,6 +71,7 @@ class ActionSkill {
                 Operator.ADD -> Counting.increase(player, skill, amount)
                 Operator.TAKE -> Counting.reduce(player, skill, amount)
                 Operator.SET -> Counting.set(player, skill, amount)
+                Operator.RESET -> Counting.reset(player, Session(adaptPlayer(player), skill))
             }
         }
 

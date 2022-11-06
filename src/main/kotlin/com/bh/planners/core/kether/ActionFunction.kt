@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether
 
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -19,7 +20,8 @@ class ActionFunction(val source: ParsedAction<*>) : ScriptAction<String>() {
                     vars.forEach { (k, v) -> rootFrame().variables().set(k, v) }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                e.printKetherErrorMessage()
+                info("Error kether script = $it")
                 it.toString()
             }
         }

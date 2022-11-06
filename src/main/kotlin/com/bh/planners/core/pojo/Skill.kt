@@ -10,7 +10,7 @@ open class Skill(val key: String, val config: ConfigurationSection) {
 
     open val option = Option(config.getConfigurationSection("__option__") ?: config.createSection("__option__"))
 
-    open lateinit var actionMode : ActionMode
+    open lateinit var actionMode: ActionMode
 
     open val action = getAction(config.getString("action", "")!!) {
         actionMode = it
@@ -23,6 +23,7 @@ open class Skill(val key: String, val config: ConfigurationSection) {
         open val async = root.getBoolean("async", false)
         open val isBind = root.getBoolean("bind", false)
         open val isNatural = root.getBoolean("natural", false)
+        val attribute = Attribute(root.getConfigurationSection("attribute") ?: Configuration.empty())
 
         open val upgradeConditions = root.getMapList("upgrade-condition").map {
             UpgradeCondition(Configuration.fromMap(it))
@@ -31,6 +32,26 @@ open class Skill(val key: String, val config: ConfigurationSection) {
         open val variables = root.getConfigurationSection("variables")?.getKeys(false)?.map {
             Variable(it, root.getString("variables.$it")!!)
         } ?: emptyList()
+
+    }
+
+    class Attribute(val root: ConfigurationSection) {
+
+        val map = root.getKeys(false).map {
+            it.split(",") to root.getStringList(it)
+        }.toMap()
+
+        val default = get("default") ?: emptyList()
+
+        fun get(index: String): List<String>? {
+
+            map.forEach {
+                if (index in it.key) {
+                    return it.value
+                }
+            }
+            return null
+        }
 
     }
 

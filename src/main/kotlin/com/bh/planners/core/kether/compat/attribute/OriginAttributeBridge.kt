@@ -42,7 +42,7 @@ class OriginAttributeBridge : AttributeBridge {
             get() = max(end - System.currentTimeMillis(), 0)
 
         override val isValid: Boolean
-            get() = countdown > 0L
+            get() = timeout == -1L || countdown > 0L
 
     }
 

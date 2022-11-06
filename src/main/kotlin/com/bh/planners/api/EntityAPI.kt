@@ -16,10 +16,10 @@ object EntityAPI {
 
 
     fun Entity.getDataContainer(): DataContainer {
-        if (this is Player) {
-            return plannersProfile.flags
+        return if (this is Player) {
+            plannersProfile.flags
         } else {
-            return map.computeIfAbsent(this.uniqueId) { DataContainer() }
+            map.computeIfAbsent(this.uniqueId) { DataContainer() }
         }
     }
 

@@ -1,8 +1,11 @@
 package com.bh.planners.core.ui
 
+import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.core.kether.LazyGetter
 import com.bh.planners.core.kether.namespaces
+import com.bh.planners.core.kether.rootVariables
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.player.PlayerJob
 import org.bukkit.entity.Player
@@ -19,7 +22,6 @@ import taboolib.platform.util.buildItem
 class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: Boolean = false) {
 
     companion object {
-        val ZERO = LazyGetter { "?" }
 
         fun PlayerJob.Skill.toIcon(player: Player, conceal: Boolean = false): SkillIcon {
             return toIcon(player, this.level, conceal)
@@ -35,15 +37,11 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: B
 
     }
 
-    val isConceal = level == 0 || conceal
+    private val skill = PlannersAPI.getSkill(skillKey)!!
 
-    private val skill = player.plannersProfile.getSkill(skillKey)!!.virtual(level)
+    val context = Context.Impl1(adaptPlayer(player),skill,level)
 
-    private val option = skill.instance.option
-
-    private val variables = option.variables.associate {
-        it.key to if (isConceal) ZERO else toLazyVariable(skill, it, player)
-    }
+    private val option = skill.option
 
     fun build(): ItemStack {
         return buildItem(option.root.getString("icon.material")!!.parseToMaterial()) {
@@ -53,22 +51,11 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: B
         }
     }
 
-    private fun toLazyVariable(skill: PlayerJob.Skill, variable: Skill.Variable, player: Player): LazyGetter<*> {
-        return LazyGetter {
-            KetherShell.eval(variable.expression, namespace = namespaces, sender = adaptPlayer(player)) {
-                rootFrame().variables()["@Skill"] = skill
-                variables.filter { it.key != variable.key }.forEach {
-                    rootFrame().variables()[it.key] = it.value
-                }
-            }.get()
-        }
-    }
-
     fun format(str: String): String {
         return try {
             KetherFunction.parse(str, sender = adaptPlayer(player), namespace = namespaces) {
-                rootFrame().variables()["@Skill"] = skill
-                variables.forEach {
+                rootFrame().rootVariables()["@Context"] = context
+                context.variables.forEach {
                     rootFrame().variables()[it.key] = it.value
                 }
             }.colored()

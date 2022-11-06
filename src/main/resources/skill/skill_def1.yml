@@ -7,17 +7,17 @@ __option__:
     damage: math meta skill level * 1.2 * lazy base
     upgradePoint: math meta skill level * 2
     base: 10
+  attribute:
+    default: [ ]
+    1: [ ]
 action: |-
+  # mode default
   def main = {
     tell "skill run!"
-    effect "" ontick "effectTick" vars [ xxx ]
-    projectile oncapture handleCapture 
+    effect arc "FLAME 0 0 0 :radius 3 :step 10 :@self" ontick handleEffectTick
   }
-  def effectTick = {
-    tell inline "var0 = {{ &var0 }}"
-  }
-  def handleCapture = {
-    damage 10 they &entity
+  def handleEffectTick = {
+    tell vars
   }
 
   

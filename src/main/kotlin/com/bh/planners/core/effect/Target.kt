@@ -193,6 +193,9 @@ interface Target {
         val asLivingEntity: LivingEntity?
             get() = entity as? LivingEntity
 
+        val asPlayer: Player?
+            get() = entity as? Player
+
         val type = entity.type
 
         override fun toLocal(): String {

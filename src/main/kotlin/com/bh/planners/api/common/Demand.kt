@@ -25,7 +25,7 @@ class Demand(val source: String) {
         val skipIndex = arrayListOf<Int>()
         args.forEachIndexed { index, s ->
             if (index in skipIndex || s.isEmpty()) return@forEachIndexed
-            if (s[0] == ':') {
+            if (s[0] == ':' || s[0] == '@') {
                 when {
                     index + 1 >= args.size -> {
                         put(s.substring(1), "")
@@ -71,7 +71,7 @@ class Demand(val source: String) {
     }
 
     fun get(key: List<String>, def: String? = null): String? {
-        return key.mapNotNull { get(it) }.firstOrNull() ?: def
+        return key.firstNotNullOfOrNull { get(it) } ?: def
     }
 
     fun get(key: String, def: String? = null): String? {

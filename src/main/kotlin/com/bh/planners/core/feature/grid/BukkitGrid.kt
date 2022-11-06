@@ -65,7 +65,6 @@ object BukkitGrid {
         val skill = get(player, grid) ?: return ""
         return try {
             KetherFunction.parse(gridActionbarValue, sender = adaptPlayer(player), namespace = namespaces) {
-                rootFrame().rootVariables()["@Skill"] = skill
                 rootFrame().rootVariables()["@Context"] = Context.Impl(sender!!, skill.instance)
             }
         } catch (e: Throwable) {

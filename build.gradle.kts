@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("io.izzel.taboolib") version "1.42"
+    id("io.izzel.taboolib") version "1.50"
     id("org.jetbrains.kotlin.jvm") version "1.5.10"
 //    kotlin("jvm") version "1.0.0"
 }
@@ -25,7 +25,7 @@ taboolib {
     install("expansion-command-helper")
     install("platform-bukkit")
     classifier = null
-    version = "6.0.9-103"
+    version = "6.0.10-16"
     description {
         dependencies {
             name("PlaceholderAPI").optional(true)

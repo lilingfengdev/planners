@@ -31,6 +31,8 @@ enum class EntityField(val get: Entity.() -> Any?) {
 
     VEHICLE({ this.vehicle }),
 
+    BODY_IN_ARROW({ (this as? LivingEntity)?.arrowsInBody }),
+
     MAX_HEALTH({ (this as? LivingEntity)?.maxHealth });
 
 

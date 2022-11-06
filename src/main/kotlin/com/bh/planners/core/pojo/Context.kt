@@ -37,7 +37,9 @@ abstract class Context(val executor: ProxyCommandSender) {
         }
     }
 
-    open class Impl0(executor: ProxyCommandSender) : Context(executor)
+    open class Impl0(executor: ProxyCommandSender) : Context(executor) {
+
+    }
 
     open class Impl1(executor: ProxyCommandSender, skill: Skill, val level: Int) : Session(executor, skill) {
 
@@ -57,7 +59,6 @@ abstract class Context(val executor: ProxyCommandSender) {
                 try {
                     KetherShell.eval(variable.expression, namespace = namespaces, sender = executor) {
                         rootFrame().variables()["@Context"] = this@Impl
-                        rootFrame().variables()["@Skill"] = playerSkill
                         variables.filter { it.key != variable.key }.forEach {
                             rootFrame().variables()[it.key] = it.value
                         }

@@ -19,6 +19,7 @@ import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.platform.function.submit
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
+import taboolib.module.kether.runKether
 
 object TimerRegistry {
 
@@ -73,17 +74,12 @@ object TimerRegistry {
     }
 
     fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
-        try {
+        runKether {
             KetherShell.eval(template.action, cacheScript = true, sender = sender, namespace = namespaces) {
                 rootFrame().variables()["@Context"] = Context.Impl0(sender)
                 rootFrame().variables()["@Event"] = event
                 timer.onStart(this, template, event)
             }
-        } catch (e: Throwable) {
-            e.printStackTrace()
-            e.printKetherErrorMessage()
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 

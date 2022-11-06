@@ -103,7 +103,6 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
     fun toPlaceholder(string: String): String {
         return try {
             KetherFunction.parse(string, sender = adaptPlayer(viewer), namespace = namespaces) {
-                rootFrame().rootVariables()["@Skill"] = playerSkill
                 rootFrame().rootVariables()["level"] = playerSkill.level
             }
         } catch (e: Throwable) {

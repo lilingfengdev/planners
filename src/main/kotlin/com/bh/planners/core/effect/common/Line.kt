@@ -61,7 +61,7 @@ class Line(
 
     override fun play() {
 
-        submit(now = false, async = true, delay = 0, period = period, commit = null) {
+        submit(now = false, async = true, delay = 0, period = period) {
             if (currentStep > length) {
                 cancel()
                 return@submit
@@ -74,7 +74,7 @@ class Line(
     }
 
     fun callPlay(call: Location.(PlatformExecutor.PlatformTask) -> Unit) {
-        submit(now = false, async = false, delay = 0, period = period, commit = null) {
+        submit(now = false, async = false, delay = 0, period = period) {
             if (currentStep > length) {
                 cancel()
                 return@submit

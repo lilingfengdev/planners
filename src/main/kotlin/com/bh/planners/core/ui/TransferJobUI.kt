@@ -111,7 +111,7 @@ class TransferJobUI(viewer: Player) : IUI(viewer) {
 
     fun check(job: Router.TransferJob): List<Condition> {
         return job.conditions.filter {
-            !PlannersAPI.checkCondition(viewer, it) {}
+            !PlannersAPI.checkCondition(viewer, it)
         }
     }
 

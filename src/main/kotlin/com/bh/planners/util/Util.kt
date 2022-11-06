@@ -21,7 +21,7 @@ fun generatorId(): Long {
 
 fun String.eval(amount: Double): Double {
     return if (this.last() == '%') {
-        amount * (Coerce.toDouble(this.substring(0, this.lastIndex - 1)) / 100)
+        amount * (Coerce.toDouble(this.substring(0, this.lastIndex)) / 100)
     } else {
         Coerce.toDouble(this)
     }

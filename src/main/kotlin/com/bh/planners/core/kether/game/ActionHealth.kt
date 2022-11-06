@@ -22,6 +22,7 @@ class ActionHealth {
                 Operator.ADD -> entity.health + value
                 Operator.TAKE -> entity.health - value
                 Operator.SET -> value
+                else -> entity.health
             }.coerceAtLeast(0.0).coerceAtMost(entity.maxHealth)
             entity.health = result
         }
