@@ -126,11 +126,10 @@ object PlannersAPI {
         // 如果不满足条件 则失败
         if (!checkUpgrade(player, playerSkill)) return false
 
+        val context = Context.Impl(adaptPlayer(player), playerSkill.instance)
+
         getUpgradeConditions(playerSkill).forEach {
-            it.consumeTo(player) {
-                rootFrame().rootVariables()["@Context"] = Context.Impl(adaptPlayer(player), playerSkill.instance)
-                rootFrame().rootVariables()["level"] = playerSkill.level
-            }
+            it.consumeTo(context)
         }
         player.plannersProfile.next(playerSkill)
         return true

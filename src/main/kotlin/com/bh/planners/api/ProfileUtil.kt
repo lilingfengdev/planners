@@ -3,11 +3,9 @@ package com.bh.planners.api
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.event.*
+import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.kether.namespaces
-import com.bh.planners.core.pojo.Condition
-import com.bh.planners.core.pojo.Job
-import com.bh.planners.core.pojo.Router
-import com.bh.planners.core.pojo.Skill
+import com.bh.planners.core.pojo.*
 import com.bh.planners.core.pojo.data.Data
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
@@ -176,12 +174,10 @@ fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {
 
 }
 
-fun Condition.consumeTo(player: Player, context: (ScriptContext.() -> Unit)? = null) {
-    runKether {
-        KetherShell.eval(consume ?: return@runKether, sender = adaptPlayer(player), namespace = namespaces) {
-            if (context != null) {
-                context(this)
-            }
-        }
-    }
+fun Condition.consumeTo(viewer: Player) {
+    ScriptLoader.createScript(ContextAPI.create(viewer), this.consume ?: return) { }
+}
+
+fun Condition.consumeTo(context: Context) {
+    ScriptLoader.createScript(context, this.consume ?: return) { }
 }

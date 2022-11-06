@@ -25,7 +25,8 @@ class Demand(val source: String) {
         val skipIndex = arrayListOf<Int>()
         args.forEachIndexed { index, s ->
             if (index in skipIndex || s.isEmpty()) return@forEachIndexed
-            if (s[0] == ':' || s[0] == '@') {
+            // argument value
+            if (s[0] == ':') {
                 when {
                     index + 1 >= args.size -> {
                         put(s.substring(1), "")
@@ -38,6 +39,24 @@ class Demand(val source: String) {
 
                     else -> {
                         put(s.substring(1), "")
+                    }
+                }
+            }
+            // target select
+            else if (s[0] == '@') {
+                when {
+
+                    index + 1 >= args.size -> {
+                        put(s, "")
+                    }
+
+                    args[index + 1][0] != ':' -> {
+                        put(s, args[index + 1])
+                        skipIndex += index + 1
+                    }
+
+                    else -> {
+                        put(s, "")
                     }
                 }
             }
