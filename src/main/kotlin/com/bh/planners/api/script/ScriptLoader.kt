@@ -36,24 +36,24 @@ object ScriptLoader {
         runningScripts.put(session.id, ScriptData(session.executor, scriptContext))
         scriptContext.runActions().thenRunAsync({
             runningScripts.remove(session.id, scriptContext)
-        }, ScriptService.executor)
+        }, ScriptService.asyncExecutor)
     }
 
     fun createScript(session: Session, block: ScriptContext.() -> Unit): CompletableFuture<Any?> {
-        return createScript(session) {
+        return createScript(session as Context.Impl) {
             block(this)
-            runningScripts.put(session.id, ScriptData(session.executor,this))
+            runningScripts.put(session.id, ScriptData(session.executor, this))
             rootFrame().addClosable(AutoCloseable {
                 runningScripts.remove(session.id, this)
             })
         }
     }
 
-    fun createScript(context: Context.Impl,block: ScriptContext.() -> Unit) : CompletableFuture<Any?> {
-        return createScript(context,context.skill.action,block)
+    fun createScript(context: Context.Impl, block: ScriptContext.() -> Unit): CompletableFuture<Any?> {
+        return createScript(context, context.skill.action, block)
     }
 
-    fun createScript(context: Context,script: String,block: ScriptContext.() -> Unit) : CompletableFuture<Any?> {
+    fun createScript(context: Context, script: String, block: ScriptContext.() -> Unit): CompletableFuture<Any?> {
         return KetherShell.eval(script, sender = context.executor, namespace = namespaces) {
             rootFrame().rootVariables()["@Context"] = context
             if (context is Context.Impl) {
