@@ -20,7 +20,6 @@ object Planners : Plugin() {
     lateinit var config: Configuration
 
     override fun onEnable() {
-        Chest
         Metrics(15573, BukkitPlugin.getInstance().description.version, Platform.BUKKIT)
         BukkitPlugin.getInstance().description.version
     }
