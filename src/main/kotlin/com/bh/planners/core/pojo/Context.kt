@@ -1,6 +1,7 @@
 package com.bh.planners.core.pojo
 
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.kether.LazyGetter
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.data.DataContainer
@@ -12,6 +13,7 @@ import taboolib.common.platform.function.submit
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.printKetherErrorMessage
+import taboolib.module.kether.runKether
 
 abstract class Context(val executor: ProxyCommandSender) {
 
@@ -25,14 +27,10 @@ abstract class Context(val executor: ProxyCommandSender) {
 
     val flags = DataContainer()
 
-    private fun toLazyVariable(variable: Skill.Variable): LazyGetter<*> {
+    protected fun toLazyVariable(variable: Skill.Variable): LazyGetter<*> {
         return LazyGetter {
-            try {
-                KetherShell.eval(variable.expression, namespace = namespaces, sender = executor) {
-                    rootFrame().variables()["@Context"] = this@Context
-                }.get()
-            } catch (e: Throwable) {
-                e.printKetherErrorMessage()
+            runKether {
+                ScriptLoader.createScript(this, variable.expression) { }.get()
             }
         }
     }
@@ -54,20 +52,6 @@ abstract class Context(val executor: ProxyCommandSender) {
 
         val variables = skill.option.variables.associate { it.key to toLazyVariable(it) }
 
-        private fun toLazyVariable(variable: Skill.Variable): LazyGetter<*> {
-            return LazyGetter {
-                try {
-                    KetherShell.eval(variable.expression, namespace = namespaces, sender = executor) {
-                        rootFrame().variables()["@Context"] = this@Impl
-                        variables.filter { it.key != variable.key }.forEach {
-                            rootFrame().variables()[it.key] = it.value
-                        }
-                    }.get()
-                } catch (e: Throwable) {
-                    e.printKetherErrorMessage()
-                }
-            }
-        }
     }
 
 }

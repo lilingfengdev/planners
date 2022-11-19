@@ -47,6 +47,14 @@ interface Target {
             }
         }
 
+        fun Target.getEntity() : org.bukkit.entity.Entity? {
+            return (this as? Entity)?.entity
+        }
+
+        fun Target.getLivingEntity() : LivingEntity? {
+            return (this as? Entity)?.asLivingEntity
+        }
+
         fun Target.ifLocation(call: Location.() -> Unit) {
             if (this is Location) {
                 call(this)

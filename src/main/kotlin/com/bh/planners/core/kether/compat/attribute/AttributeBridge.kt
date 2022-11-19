@@ -87,7 +87,6 @@ interface AttributeBridge {
                     ) {
                         rootFrame().rootVariables()["@Context"] = context
                     }
-                info("${player.name} ${skill.key} = $strings")
                 bridge.addAttributes("Skill:${skill.key}", player.uniqueId, -1, strings)
             }
         }

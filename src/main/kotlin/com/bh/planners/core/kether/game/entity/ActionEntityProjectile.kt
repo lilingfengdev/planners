@@ -37,17 +37,7 @@ class ActionEntityProjectile {
     ) :
         ScriptAction<List<Entity>>() {
 
-        fun execute(
-            context: Context,
-            name: String,
-            owners: List<LivingEntity>,
-            type: Type,
-            step: Double,
-            event: String,
-            rotateX: Double,
-            rotateY: Double,
-            rotateZ: Double,
-        ): List<Projectile> {
+        fun execute(context: Context, name: String, owners: List<LivingEntity>, type: Type, step: Double, event: String, rotateX: Double, rotateY: Double, rotateZ: Double, ): List<Projectile> {
             val listOf = mutableListOf<Projectile>()
             owners.forEach {
                 val projectile = it.launchProjectile(type.clazz)

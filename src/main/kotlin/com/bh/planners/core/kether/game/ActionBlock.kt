@@ -69,7 +69,6 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
 
             location.block.type = mark
             if (block.type != Material.AIR) {
-                info("block data $blockData")
                 block.blockData = blockData
             }
 

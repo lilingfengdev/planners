@@ -11,6 +11,13 @@ import taboolib.module.kether.ScriptAction
 import kotlin.math.cos
 import kotlin.math.sin
 
+// 粒子渲染周期间隔
+val EffectOption.period: String
+    get() = this.demand.get(listOf("period", "p"), "0")!!
+
+val EffectOption.isAnimation: Boolean
+    get() = period == "0"
+
 fun Matrix.applyBukkitVector(vector: Vector): Vector {
     if (row == 2 && column == 2) {
         return applyInBukkit2DVector(vector)

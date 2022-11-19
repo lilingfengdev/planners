@@ -1,10 +1,12 @@
 package com.bh.planners.core.kether.game.item
 
 import com.bh.planners.core.kether.asPlayer
+import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.execLivingEntity
 import com.bh.planners.core.kether.game.item.ItemOperator.getNumber
 import com.bh.planners.core.kether.runTransfer
 import org.bukkit.inventory.ItemStack
+import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptAction
@@ -31,11 +33,15 @@ class ActionItemCountAdd (
                 frame.runTransfer<Int>(amount).thenAccept { amount ->
                     frame.runTransfer<Int>(max).thenAccept { max ->
                         if (selector != null) {
-                            frame.execLivingEntity(selector) {
-                                execute(slot.getItem(this), keyword, amount, max)
+                            frame.createContainer(selector).thenAccept { container ->
+                                submit {
+                                    container.forEachLivingEntity {
+                                        execute(slot.getItem(this), keyword, amount, max)
+                                    }
+                                }
                             }
                         } else {
-                            execute(slot.getItem(frame.asPlayer()), keyword, amount, max)
+                            submit { execute(slot.getItem(frame.asPlayer()), keyword, amount, max) }
                         }
                     }
                 }

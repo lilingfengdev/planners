@@ -126,7 +126,6 @@ fun PlayerProfile.transfer(target: Job): Boolean {
     submitAsync {
         // 重新定位剩余所属技能
         this@transfer.job!!.skills.forEach {
-            info("transfer skill ${it.id}#${it.key} = ${this@transfer.job}")
             Storage.INSTANCE.updateSkillJob(player, this@transfer.job!!, it)
         }
         Storage.INSTANCE.updateCurrentJob(this@transfer)

@@ -45,15 +45,26 @@ object ActionEffect {
 
     class Response(val session: Session, val name: String) {
 
+        val listeners = mutableMapOf<String, MutableList<Location>.() -> Unit>()
+
+        fun addListener(id: String, block: MutableList<Location>.() -> Unit) {
+            listeners[id] = block
+        }
+
+        fun onTick(location: Location) {
+            this.onTick(listOf(location))
+        }
 
         fun onTick(locations: List<Location>) {
 
             if (name == "none") return
 
-            val effectTick = IncidentEffectTick(locations)
+            val mutableList = locations.toMutableList()
+            listeners.forEach { it.value(mutableList) }
+
+            val effectTick = IncidentEffectTick(mutableList)
             session.handleIncident(name, effectTick)
         }
-
     }
 
     /**

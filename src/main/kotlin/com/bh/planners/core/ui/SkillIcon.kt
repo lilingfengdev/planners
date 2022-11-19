@@ -17,6 +17,7 @@ import taboolib.module.chat.colored
 import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
+import taboolib.module.kether.runKether
 import taboolib.platform.util.buildItem
 
 class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: Boolean = false) {
@@ -39,7 +40,7 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: B
 
     private val skill = PlannersAPI.getSkill(skillKey)!!
 
-    val context = Context.Impl1(adaptPlayer(player),skill,level)
+    val context = Context.Impl1(adaptPlayer(player), skill, level)
 
     private val option = skill.option
 
@@ -52,17 +53,14 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: B
     }
 
     fun format(str: String): String {
-        return try {
-            KetherFunction.parse(str, sender = adaptPlayer(player), namespace = namespaces) {
+        return runKether {
+            KetherFunction.parse(str, sender = context.executor, namespace = namespaces) {
                 rootFrame().rootVariables()["@Context"] = context
                 context.variables.forEach {
                     rootFrame().variables()[it.key] = it.value
                 }
             }.colored()
-        } catch (e: Throwable) {
-            e.printKetherErrorMessage()
-            "&cError: $str".colored()
-        }
+        } ?: "&cError: $str".colored()
     }
 
 }

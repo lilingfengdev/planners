@@ -38,8 +38,13 @@ taboolib {
 }
 
 repositories {
+
     mavenCentral()
     mavenLocal()
+//    maven {
+//        url = uri("http://nexus.okkero.com/repository/maven-releases/")
+//        isAllowInsecureProtocol = true
+//    }
 }
 
 dependencies {
@@ -48,11 +53,11 @@ dependencies {
     compileOnly("ink.ptms.core:v11900:11900:mapped")
     compileOnly("ink.ptms.core:v11900:11900:universal")
     compileOnly("ink.ptms.core:v11200:11200")
-//    compileOnly("ink.ptms.core:v11500:11200")
 
     compileOnly("public:ModelEngine:2.5.1")
     compileOnly("com.google.code.gson:gson:2.8.5")
     compileOnly("com.google.guava:guava:21.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
 
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))

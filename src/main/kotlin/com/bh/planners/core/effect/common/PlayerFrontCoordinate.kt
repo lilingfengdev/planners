@@ -10,17 +10,13 @@ import org.bukkit.Location
  *
  * @author Zoyn
  */
-class PlayerFrontCoordinate(playerLocation: Location) {
+class PlayerFrontCoordinate(val playerLocation: Location) {
 
-    val originDot: Location = playerLocation.clone()
-
-    private val rotateAngle: Double = playerLocation.yaw.toDouble() - 90.0
-
-    init {
-        originDot.pitch = 0f
-    }
+    var originDot: Location = playerLocation
 
     fun newLocation(x: Double, y: Double, z: Double): Location {
-        return rotateLocationAboutPoint(originDot.clone().add(-x, y, z), rotateAngle, originDot)
+        val location = playerLocation.clone()
+        location.pitch = 0f
+        return rotateLocationAboutPoint(location.add(-x, y, z), location.yaw.toDouble() - 90, originDot)
     }
 }

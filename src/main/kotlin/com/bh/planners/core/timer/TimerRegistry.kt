@@ -1,6 +1,7 @@
 package com.bh.planners.core.timer
 
 import com.bh.planners.api.common.Plugin
+import com.bh.planners.api.event.ISource
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Skill
@@ -57,7 +58,11 @@ object TimerRegistry {
     }
 
     fun <E : Event> callTimer(timer: Timer<E>, sender: ProxyCommandSender, event: E) {
-        val list = TimerDrive.templates.filter { timer.name in it.triggers }
+
+        // 精确检索
+        val id = (event as? ISource)?.id() ?: "*"
+
+        val list = TimerDrive.templates.filter { timer.name in it.triggers && (id == "*" || id == it.id) }
         list.forEach { callTimer(timer, it, sender, event) }
     }
 

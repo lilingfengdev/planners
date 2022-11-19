@@ -1,5 +1,6 @@
 package com.bh.planners.core.timer.impl
 
+import com.bh.planners.api.event.ISource
 import com.bh.planners.core.timer.*
 import com.bh.planners.core.timer.TimerDrive.getTemplates
 import org.bukkit.Bukkit
@@ -7,19 +8,20 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.Schedule
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.console
+import taboolib.common.platform.function.info
 import taboolib.platform.type.BukkitProxyEvent
+import java.util.Collections
 
 object TimerRunnable : AbstractTimer<TimerRunnable.TimerRunnableEvent>() {
 
     override val eventClazz: Class<TimerRunnableEvent>
         get() = TimerRunnableEvent::class.java
 
-    private val cache = mutableMapOf<String, Long>()
+    var pointer = 0
 
     @Schedule(period = 1, async = true)
     fun run() {
-        getTemplates(this).filter { isClosed(it) }.forEach {
-            mark(it)
+        getTemplates(this).filter { hasNext(it) }.forEach {
             if (it.sender == "console") {
                 TimerRunnableEvent(console(), it).call()
             } else if (it.sender == "player") {
@@ -29,20 +31,16 @@ object TimerRunnable : AbstractTimer<TimerRunnable.TimerRunnableEvent>() {
             }
 
         }
+        pointer++
     }
 
-    private fun mark(template: Template) {
-        cache[template.id] = System.currentTimeMillis()
-    }
-
-    private fun isClosed(template: Template): Boolean {
-        if (!cache.containsKey(template.id)) return true
-        return System.currentTimeMillis() >= cache[template.id]!! + template.period()
+    fun hasNext(template: Template): Boolean {
+        return pointer % template.period() == 0L
     }
 
 
     private fun Template.period(): Long {
-        return root.getLong("__option__.period", 20L)
+        return root.getLong("__option__.period", 1000L) / 50
     }
 
     override fun check(e: TimerRunnableEvent): ProxyCommandSender? {
@@ -55,6 +53,12 @@ object TimerRunnable : AbstractTimer<TimerRunnable.TimerRunnableEvent>() {
     val Template.sender: String
         get() = root.getString("__option__.sender", "player")!!
 
-    class TimerRunnableEvent(val sender: ProxyCommandSender, val template: Template) : BukkitProxyEvent()
+    class TimerRunnableEvent(val sender: ProxyCommandSender, val template: Template) : BukkitProxyEvent(), ISource {
+
+        override fun id(): String {
+            return template.id
+        }
+
+    }
 
 }

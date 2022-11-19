@@ -1,5 +1,5 @@
-import com.bh.planners.api.common.Demand
-import com.bh.planners.util.eval
+import kotlinx.coroutines.*
+import java.time.Duration
 
 object TestMain {
 
@@ -17,10 +17,9 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val eval = "1%".eval(40.0)
-        println(eval)
-    }
 
+
+    }
 
     val FILTER_RULES = listOf(
         Regex("#?+[a-zA-Z0-9]+"),
