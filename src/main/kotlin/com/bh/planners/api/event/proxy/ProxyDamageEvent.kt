@@ -3,6 +3,7 @@ package com.bh.planners.api.event.proxy
 import ac.github.oa.api.event.entity.EntityDamageEvent
 import ac.github.oa.internal.base.enums.PriorityEnum
 import ac.github.oa.internal.base.event.impl.DamageMemory
+import com.bh.planners.api.event.EntityEvents
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -59,6 +60,17 @@ class ProxyDamageEvent(
 
                 e.isCancelled = damageEvent.isCancelled
                 e.damageMemory.event.isCancelled = damageEvent.isCancelled
+            }
+
+        }
+
+        @SubscribeEvent
+        fun e(e: EntityEvents.DamageByEntity) {
+            if (e.damager != null) {
+                val damageEvent = ProxyDamageEvent(e.damager, e.entity, DamageCause.CUSTOM, e.value, null)
+                if (!damageEvent.call()) {
+                    damageEvent.isCancelled = true
+                }
             }
 
         }

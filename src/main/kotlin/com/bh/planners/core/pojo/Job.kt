@@ -6,6 +6,7 @@ import com.bh.planners.api.PlannersOption
 import com.bh.planners.core.pojo.level.LevelOption
 import com.bh.planners.core.pojo.level.LevelSystem
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.Configuration
 
 class Job(val key: String, val config: ConfigurationSection) {
 
@@ -22,6 +23,7 @@ class Job(val key: String, val config: ConfigurationSection) {
         val routerKey = root.getString("router")!!
         val actionbar = root.getString("actionbar")
         val regainManaExperience = root.getString("regain-mana-eval")
+        val attribute = Skill.Attribute(root.getConfigurationSection("attribute") ?: Configuration.empty())
 
         val router : Router
             get() = PlannersAPI.getRouter(routerKey)

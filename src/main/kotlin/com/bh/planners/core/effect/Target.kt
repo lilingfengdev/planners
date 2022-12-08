@@ -47,11 +47,15 @@ interface Target {
             }
         }
 
-        fun Target.getEntity() : org.bukkit.entity.Entity? {
+        fun Target.getLocation(): org.bukkit.Location? {
+            return (this as? Location)?.value
+        }
+
+        fun Target.getEntity(): org.bukkit.entity.Entity? {
             return (this as? Entity)?.entity
         }
 
-        fun Target.getLivingEntity() : LivingEntity? {
+        fun Target.getLivingEntity(): LivingEntity? {
             return (this as? Entity)?.asLivingEntity
         }
 
@@ -193,7 +197,10 @@ interface Target {
     open class Entity(val entity: org.bukkit.entity.Entity) : Location(null) {
 
         override val value: org.bukkit.Location
-            get() = if (isLiving) asLivingEntity!!.eyeLocation else entity.location
+            get() = if (isLiving)
+                asLivingEntity!!.eyeLocation
+            else
+                entity.location
 
         val isLiving: Boolean
             get() = entity is LivingEntity
@@ -213,7 +220,6 @@ interface Target {
         override fun hashCode(): Int {
             return entity.hashCode()
         }
-
 
 
         override fun equals(other: Any?): Boolean {

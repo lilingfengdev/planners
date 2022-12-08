@@ -16,6 +16,7 @@ class Router(val config: ConfigurationSection) {
     val start = config.getString("start")!!
     val counterKey = config.getString("counter")!!
     val regainManaExperience = config.getString("regain-mana-eval")
+    val attribute = Skill.Attribute(config.getConfigurationSection("attribute") ?: Configuration.empty())
 
     val counter: LevelOption
         get() = LevelSystem.getLevelOption(counterKey) ?: error("Level counter $counterKey not found")

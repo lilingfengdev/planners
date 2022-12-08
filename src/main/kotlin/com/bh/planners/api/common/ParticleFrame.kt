@@ -60,7 +60,7 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
                     return@ParticleFrame
                 }
                 builder.spawner.spawn(next)
-                response.onTick(next)
+                response.handleTick(next)
                 task()
             }
 

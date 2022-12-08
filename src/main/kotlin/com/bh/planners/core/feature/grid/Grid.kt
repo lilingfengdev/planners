@@ -28,12 +28,12 @@ enum class Grid(val id: Int, val slot: Int) {
         }
 
         fun isGrid(keySlot: IKeySlot): Boolean {
-            val split = keySlot.group.split(" ")
+            val split = keySlot.getGroup(null).split(" ")
             return split.size == 2 && split[0] == "minecraft"
         }
 
 
-        fun get(keySlot: IKeySlot) = get(keySlot.group)
+        fun get(keySlot: IKeySlot) = get(keySlot.getGroup(null))
 
         fun get(group: String): Grid? {
             val split = group.split(" ")

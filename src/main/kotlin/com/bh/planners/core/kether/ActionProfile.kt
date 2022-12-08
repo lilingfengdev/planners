@@ -23,7 +23,7 @@ class ActionProfile {
     class PointOperation(val action: ParsedAction<*>, val operator: Operator) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<Any>().thenAccept {
-                val profile = frame.asPlayer()!!.plannersProfile
+                val profile = frame.senderPlannerProfile() ?: return@thenAccept
                 when (operator) {
                     Operator.ADD -> profile.addPoint(Coerce.toInteger(it))
                     Operator.TAKE -> profile.addPoint(-Coerce.toInteger(it))
@@ -36,7 +36,7 @@ class ActionProfile {
     class ManaOperation(val action: ParsedAction<*>, val operator: Operator) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<Any>().thenAccept {
-                val profile = frame.asPlayer()!!.plannersProfile
+                val profile = frame.senderPlannerProfile() ?: return@thenAccept
                 when (operator) {
                     Operator.ADD -> profile.addMana(Coerce.toDouble(it))
                     Operator.TAKE -> profile.addMana(-Coerce.toDouble(it))
@@ -50,7 +50,8 @@ class ActionProfile {
     class DataGet(val action: ParsedAction<*>) : ScriptAction<Any?>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
             return frame.newFrame(action).run<Any>().thenApply {
-                frame.asPlayer()!!.plannersProfile.getFlag(it.toString())?.data
+
+                frame.senderPlannerProfile()?.getFlag(it.toString())?.data
             }
         }
 
@@ -61,7 +62,7 @@ class ActionProfile {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<Any>().thenAccept { key ->
                 frame.newFrame(value).run<Any>().thenAccept { value ->
-                    val profile = frame.asPlayer()!!.plannersProfile
+                    val profile = frame.senderPlannerProfile() ?: return@thenAccept
                     frame.newFrame(time).run<Any>().thenAccept { time ->
                         profile.setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time) * 50))
                     }
@@ -77,7 +78,7 @@ class ActionProfile {
             return frame.newFrame(action).run<Any>().thenAccept {
                 val key = it.toString()
                 frame.newFrame(value).run<Any>().thenAccept { value ->
-                    val dataContainer = frame.asPlayer()!!.plannersProfile.flags
+                    val dataContainer = frame.senderPlannerProfile()?.flags ?: return@thenAccept
                     if (dataContainer.containsKey(key)) {
                         dataContainer.update(key, dataContainer[key]!!.increaseAny(value.toString()))
                     }
@@ -90,7 +91,7 @@ class ActionProfile {
         override fun run(frame: ScriptFrame): CompletableFuture<Boolean> {
             return frame.newFrame(action).run<Any>().thenApply {
                 val key = it.toString()
-                val dataContainer = frame.asPlayer()!!.plannersProfile.flags
+                val dataContainer = frame.senderPlannerProfile()?.flags ?: return@thenApply false
                 dataContainer.containsKey(key)
             }
         }
@@ -150,32 +151,22 @@ class ActionProfile {
                         }
                     } catch (e: Throwable) {
                         reset()
-                        actionNow {
-                            script().sender!!.cast<Player>().plannersProfile.point
-                        }
+                        actionNow { senderPlannerProfile()?.point }
                     }
 
                 }
                 case("job") {
-                    actionNow {
-                        script().sender!!.cast<Player>().plannersProfile.job?.name ?: "暂无"
-                    }
+                    actionNow { senderPlannerProfile()?.job?.name ?: "暂无" }
                 }
                 case("level") {
-                    actionNow {
-                        script().sender!!.cast<Player>().plannersProfile.level
-                    }
+                    actionNow { senderPlannerProfile()?.level }
                 }
                 case("exp", "experience") {
-                    actionNow {
-                        script().sender!!.cast<Player>().plannersProfile.experience
-                    }
+                    actionNow { senderPlannerProfile()?.experience }
                 }
 
                 case("max-exp", "max-experience") {
-                    actionNow {
-                        script().sender!!.cast<Player>().plannersProfile.maxExperience
-                    }
+                    actionNow { senderPlannerProfile()?.maxExperience }
                 }
 
                 case("flag", "data") {

@@ -21,6 +21,8 @@ import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.scriptParser
 import taboolib.platform.BukkitPlugin
+import taboolib.platform.util.hasMeta
+import taboolib.platform.util.setMeta
 import java.util.concurrent.CompletableFuture
 
 class ActionEntityProjectile {
@@ -47,6 +49,7 @@ class ActionEntityProjectile {
                     projectile.setMetadata("context", FixedMetadataValue(BukkitPlugin.getInstance(), context))
                 }
 
+                projectile.setMeta("@Planners:Projectile",true)
                 projectile.customName = name
                 projectile.isCustomNameVisible = false
                 val velocity = projectile.velocity
@@ -167,8 +170,13 @@ class ActionEntityProjectile {
                 val context = e.entity.getMetadata("context").getOrNull(0)?.value() as? Session ?: return
                 val event = e.entity.getMetadata("event").getOrNull(0)?.asString() ?: return
                 context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!))
+
             }
-            e.entity.remove()
+
+            // 是pl实体总是删除
+            if (e.entity.hasMeta("@Planners:Projectile")) {
+                e.entity.remove()
+            }
 
         }
 

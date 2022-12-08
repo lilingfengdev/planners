@@ -1,8 +1,5 @@
 package com.bh.planners.core.kether.game
 
-import ac.github.oa.api.event.entity.EntityDamageEvent
-import ac.github.oa.taboolib.common.reflect.Reflex.Companion.getProperty
-import ac.github.oa.taboolib.common.reflect.Reflex.Companion.setProperty
 import com.bh.planners.api.event.EntityEvents
 import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.game.damage.AttackProvider
@@ -17,6 +14,8 @@ import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.OptionalEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
+import taboolib.library.reflex.Reflex.Companion.getProperty
+import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -35,35 +34,12 @@ class ActionDamage {
         fun execute(entity: LivingEntity, source: LivingEntity?, damage: String) {
             val result = damage.eval(entity.maxHealth)
 
-
-            if (EntityEvents.DamageByEntity(source,entity,result).call()) {
-
-                entity.noDamageTicks = 0
-                entity.setMeta("Planners:Damage", true)
-
-
-                // 如果实体血量 - 预计伤害值 < 0 提前设置击杀者
-                if (source != null && entity.health - result <= 0) {
-                    entity.setKiller(source)
-                }
-                entity.damage(result)
-                entity.removeMeta("Planners:Damage")
+            if (EntityEvents.DamageByEntity(source, entity, result).call()) {
+                doDamage(source, entity, result)
             }
 
         }
 
-        fun LivingEntity.setKiller(source: LivingEntity) {
-            this.killer
-            when (MinecraftVersion.major) {
-                // 1.12.* 1.16.*
-                4, 8 -> setProperty("entity/killer", source.getProperty("entity"))
-                // 1.18.* 1.19.*
-                7, 9 -> setProperty("entity/bc", source.getProperty("entity"))
-                // 1.18.* 1.19.* bd
-                10, 11 -> setProperty("entity/bd", source.getProperty("entity"))
-
-            }
-        }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
@@ -140,6 +116,30 @@ class ActionDamage {
 //                e.isCancelled = true
 //            }
 //        }
+
+        fun doDamage(source: LivingEntity?, entity: LivingEntity, damage: Double) {
+            entity.noDamageTicks = 0
+            entity.setMeta("Planners:Damage", true)
+
+            // 如果实体血量 - 预计伤害值 < 0 提前设置击杀者
+            if (source != null && entity.health - damage <= 0) {
+                entity.setKiller(source)
+            }
+            entity.damage(damage)
+            entity.removeMeta("Planners:Damage")
+        }
+
+        fun LivingEntity.setKiller(source: LivingEntity) {
+            when (MinecraftVersion.major) {
+                // 1.12.* 1.16.*
+                4, 8 -> setProperty("entity/killer", source.getProperty("entity"))
+                // 1.18.* 1.19.*
+                7, 9 -> setProperty("entity/bc", source.getProperty("entity"))
+                // 1.18.* 1.19.* bd
+                10, 11 -> setProperty("entity/bd", source.getProperty("entity"))
+
+            }
+        }
 
     }
 

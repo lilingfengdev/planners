@@ -129,7 +129,7 @@ class ActionSelector {
                     "get" -> ActionTargetContainerGet(key)
                     "merge" -> ActionTargetContainerMerge(key, it.selectorAction()!!)
                     "unmerge" -> ActionTargetContainerUnmerge(key, it.selectorAction()!!)
-                    else -> error("error of case!")
+                    else -> ActionTargetContainerList(key)
                 }
             } catch (_: Exception) {
                 it.reset()

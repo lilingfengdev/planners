@@ -66,7 +66,7 @@ object PlannersAPI {
     }
 
     fun callKeyByGroup(player: Player, keyGroup: String) {
-        this.callKey(player, keySlots.firstOrNull { it.group == keyGroup } ?: return)
+        this.callKey(player, keySlots.firstOrNull { it.getGroup(player) == keyGroup } ?: return)
     }
 
     fun callKeyById(player: Player, keyId: String) {

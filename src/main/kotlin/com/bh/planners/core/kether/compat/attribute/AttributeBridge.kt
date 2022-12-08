@@ -3,8 +3,10 @@ package com.bh.planners.core.kether.compat.attribute
 import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.event.PlayerInitializeEvent
+import com.bh.planners.api.event.PlayerLevelChangeEvent
 import com.bh.planners.api.event.PlayerSkillUpgradeEvent
 import com.bh.planners.api.event.PluginReloadEvent
+import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.pojo.player.PlayerJob
@@ -47,19 +49,28 @@ interface AttributeBridge {
         @SubscribeEvent
         fun e(e: PlayerInitializeEvent) {
             updateSkill(e.profile)
+            updateJob(e.profile)
         }
 
         @SubscribeEvent
         fun e(e: PluginReloadEvent) {
             Bukkit.getOnlinePlayers().forEach {
                 updateSkill(it)
+                updateJob(it)
             }
         }
 
         @SubscribeEvent
         fun e(e: PlayerSkillUpgradeEvent) {
-            updateSkill(e.player, e.skill)
-            INSTANCE?.update(e.player)
+            updateSkill(e.player,e.skill)
+            updateJob(e.player)
+        }
+
+        @SubscribeEvent
+        fun e(e: PlayerLevelChangeEvent) {
+            val profile = e.player.plannersProfile
+            updateSkill(profile)
+            updateJob(profile)
         }
 
         fun updateSkill(player: Player) {
@@ -75,26 +86,50 @@ interface AttributeBridge {
 
         fun updateSkill(player: Player, skill: PlayerJob.Skill) {
             val bridge = INSTANCE ?: return
-            val context = ContextAPI.create(player, skill.instance, skill.level)
+            val context = ContextAPI.create(player, skill.instance, skill.level)!!
+            val attributes = getSkillAttributes(skill)
 
+            bridge.addAttributes(
+                "Skill:${skill.key}",
+                player.uniqueId,
+                -1,
+                ScriptLoader.createFunctionScript(context, attributes)
+            )
+        }
 
-            runKether {
-                val strings =
-                    KetherFunction.parse(
-                        getSkillAttributes(skill),
-                        namespace = namespaces,
-                        sender = adaptPlayer(player)
-                    ) {
-                        rootFrame().rootVariables()["@Context"] = context
-                    }
-                bridge.addAttributes("Skill:${skill.key}", player.uniqueId, -1, strings)
-            }
+        fun updateJob(player: Player) {
+            return updateJob(player.plannersProfile)
+        }
+
+        fun updateJob(profile: PlayerProfile) {
+            val bridge = INSTANCE ?: return
+            val context = ContextAPI.create(profile.player)
+
+            bridge.addAttributes(
+                "Job",
+                profile.player.uniqueId,
+                -1,
+                ScriptLoader.createFunctionScript(context,getJobAttribute(profile))
+            )
+            INSTANCE?.update(profile.player)
         }
 
         fun getSkillAttributes(skill: PlayerJob.Skill): List<String> {
             val attribute = skill.instance.option.attribute
+            return attribute.getOrDefaultOrEmpty(skill.level.toString())
+        }
 
-            return attribute.get(skill.level.toString()) ?: attribute.default
+        fun getJobAttribute(player: Player): List<String> {
+            return getJobAttribute(player.plannersProfile)
+        }
+
+        // 优先级 Job > Router
+        fun getJobAttribute(profile: PlayerProfile): List<String> {
+            val level = profile.level
+            val instance = profile.job?.instance ?: return emptyList()
+
+            return instance.option.attribute.getOrDefault("$level")
+                ?: instance.router.attribute.getOrDefaultOrEmpty("$level")
         }
 
     }

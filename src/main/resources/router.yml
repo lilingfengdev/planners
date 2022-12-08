@@ -10,6 +10,11 @@ warrior:
       - ' &7攻击力: 3'
       - ' &7防御力: 2'
       - ' &7移动速度: 2'
+
+  attribute:
+    default:
+      - 攻击力 +{{ player level }}
+    1: [ ]
   start: job_def0 #
   routes:
     job_def0:

@@ -37,3 +37,9 @@ fun getAction(action: String, func: (Skill.ActionMode) -> Unit): String {
 
     return action.split("\n").mapNotNull { if (it.trim().getOrNull(0) == '#') null else it }.joinToString("\n")
 }
+
+fun Location.clearVisual(): Location {
+    this.pitch = 0f
+    this.yaw = 0f
+    return this
+}

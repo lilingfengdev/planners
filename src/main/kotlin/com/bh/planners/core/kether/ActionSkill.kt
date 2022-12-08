@@ -3,6 +3,7 @@ package com.bh.planners.core.kether
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.common.Operator
 import com.bh.planners.api.Counting
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
 import org.bukkit.entity.Player
@@ -23,7 +24,7 @@ class ActionSkill {
                 if (target != null) {
                     frame.runTransfer0<String>(target) {
                         val skill = PlannersAPI.getSkill(it) ?: return@runTransfer0
-                        execute(frame.asPlayer() ?: return@runTransfer0, skill, operator, amount * 50)
+                        execute(frame.player() ?: return@runTransfer0, skill, operator, amount * 50)
                     }
                 } else {
                     execute(frame.asPlayer() ?: return@runTransfer0, frame.skill().instance, operator, amount * 50)
@@ -32,6 +33,24 @@ class ActionSkill {
 
             return CompletableFuture.completedFuture(null)
         }
+    }
+
+    class LevelGet(val of: ParsedAction<*>?) : ScriptAction<Int>() {
+
+        override fun run(frame: ScriptFrame): CompletableFuture<Int> {
+            val future = CompletableFuture<Int>()
+
+            if (of != null) {
+                frame.run(of).str { skill ->
+                    future.complete(frame.player()?.plannersProfile?.getSkill(skill)?.level ?: -1)
+                }
+            } else {
+                future.complete(frame.skill().level)
+            }
+
+            return future
+        }
+
     }
 
     companion object {
@@ -60,6 +79,9 @@ class ActionSkill {
                         else -> error("error of case")
                     }
                     CooldownOperator(operator, it.nextParsedAction(), it.tryGet(arrayOf("of", "the")))
+                }
+                case("level") {
+                    LevelGet(it.tryGet(arrayOf("of","the")))
                 }
 
             }

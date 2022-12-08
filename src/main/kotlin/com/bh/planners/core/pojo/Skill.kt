@@ -23,7 +23,7 @@ open class Skill(val key: String, val config: ConfigurationSection) {
         open val async = root.getBoolean("async", false)
         open val isBind = root.getBoolean("bind", false)
         open val isNatural = root.getBoolean("natural", false)
-        val attribute = Attribute(root.getConfigurationSection("attribute") ?: Configuration.empty())
+        open val attribute = Attribute(root.getConfigurationSection("attribute") ?: Configuration.empty())
 
         open val upgradeConditions = root.getMapList("upgrade-condition").map {
             UpgradeCondition(Configuration.fromMap(it))
@@ -41,7 +41,7 @@ open class Skill(val key: String, val config: ConfigurationSection) {
             it.split(",") to root.getStringList(it)
         }.toMap()
 
-        val default = get("default") ?: emptyList()
+        val default = get("default")
 
         fun get(index: String): List<String>? {
 
@@ -51,6 +51,14 @@ open class Skill(val key: String, val config: ConfigurationSection) {
                 }
             }
             return null
+        }
+
+        fun getOrDefault(index: String) : List<String>? {
+            return get(index) ?: default
+        }
+
+        fun getOrDefaultOrEmpty(index: String) : List<String> {
+            return getOrDefault(index) ?: emptyList()
         }
 
     }

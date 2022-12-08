@@ -25,6 +25,11 @@ object ActionGermLoader {
      *
      * 例子播放
      * germ effect [name: action] <selector>
+     *
+     * 特效移动动画
+     * germ effect move [name: action] <selector>
+     *
+     *
      */
     @KetherParser(["germengine", "germ", "germplugin"], namespace = NAMESPACE, shared = true)
     fun parser() = scriptParser {
@@ -55,7 +60,17 @@ object ActionGermLoader {
 //                ActionGermLook(it.nextParsedAction(),it.tryGet(arrayOf("at"))!!)
 //            }
             case("effect") {
-                ActionGermParticle(it.nextParsedAction(), it.selectorAction())
+
+                try {
+                    it.mark()
+                    it.expects("move")
+                    ActionGermEffectMove(it.nextParsedAction(), it.nextParsedAction(),it.tryGet(arrayOf("to")) ?: error("lack 'to'"))
+                }catch (e: Exception) {
+                    it.reset()
+                    ActionGermParticle(it.nextParsedAction(),it.tryGet(arrayOf("animation"),"__none__")!!, it.selectorAction())
+                }
+
+
             }
         }
     }

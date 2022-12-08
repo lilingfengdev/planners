@@ -37,7 +37,7 @@ object BukkitGrid {
     @Awake(LifeCycle.ACTIVE)
     fun initGrids() {
         grids.clear()
-        grids += PlannersAPI.keySlots.mapNotNull { Grid.get(it.group) }
+        grids += PlannersAPI.keySlots.mapNotNull { Grid.get(it.getGroup(null)) }
     }
 
     val gridInteractActions: List<String>

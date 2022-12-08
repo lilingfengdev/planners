@@ -2,6 +2,7 @@ package com.bh.planners.core.effect
 
 import com.bh.planners.api.common.ParticleFrame
 import com.bh.planners.core.effect.Target.Companion.createContainer
+import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.effect.common.PlayerFrontCoordinate
 import com.bh.planners.core.kether.game.ActionEffect
 import com.bh.planners.core.pojo.Context
@@ -22,6 +23,13 @@ object EffectProjectile : Effect() {
         get() = Coerce.toInteger(this.demand.get("amount", "5.0"))
 
     override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {
+
+        // 忽略捕获释放者
+        response.hit?.listeners?.let {
+            val entity = target?.getEntity() ?: return@let
+            it["@Ignore"] = { it.removeIf { entity == it } }
+        }
+
         val step = option.step
         val amount = option.amount
         val period = option.period
@@ -29,7 +37,7 @@ object EffectProjectile : Effect() {
         option.createContainer(target, context).thenAccept { container ->
             container.forEachLocation {
                 val builder = Builder(this, step, amount, effectSpawner)
-                ParticleFrame.create(period, builder,response)
+                ParticleFrame.create(period, builder, response)
             }
         }
     }

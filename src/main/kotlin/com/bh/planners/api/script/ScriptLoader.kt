@@ -13,6 +13,8 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.kether.*
 import java.nio.charset.StandardCharsets
+import java.sql.PreparedStatement
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
 @Suppress("UnstableApiUsage")
@@ -30,7 +32,7 @@ object ScriptLoader {
         }
     }
 
-    fun runScript(session: Session, func: (ScriptContext) -> Unit) {
+    fun runScript(session: Session, func: (ScriptContext) -> Unit = {}) {
         val script = scripts[session.skill.key] ?: return
         val scriptContext = ScriptContext.create(script, func)
         runningScripts.put(session.id, ScriptData(session.executor, scriptContext))
@@ -39,7 +41,7 @@ object ScriptLoader {
         }, ScriptService.asyncExecutor)
     }
 
-    fun createScript(session: Session, block: ScriptContext.() -> Unit): CompletableFuture<Any?> {
+    fun createScript(session: Session, block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {
         return createScript(session as Context.Impl) {
             block(this)
             runningScripts.put(session.id, ScriptData(session.executor, this))
@@ -49,16 +51,33 @@ object ScriptLoader {
         }
     }
 
-    fun createScript(context: Context.Impl, block: ScriptContext.() -> Unit): CompletableFuture<Any?> {
+    fun createScript(context: Context.Impl, block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {
         return createScript(context, context.skill.action, block)
     }
 
-    fun createScript(context: Context, script: String, block: ScriptContext.() -> Unit): CompletableFuture<Any?> {
-        return KetherShell.eval(script, sender = context.executor, namespace = namespaces) {
-            rootFrame().rootVariables()["@Context"] = context
+    fun createFunctionScript(context: Context, inputs: List<String>, block: ScriptContext.() -> Unit = {}): List<String> {
+        return inputs.map { createFunctionScript(context, it, block) }
+    }
+
+    fun createFunctionScript(context: Context, input: String, block: ScriptContext.() -> Unit = {}): String {
+        return KetherFunction.parse(input) {
+            this.rootFrame().rootVariables()["@Context"] = context
             if (context is Context.Impl) {
                 context.variables.forEach {
-                    rootFrame().variables()[it.key] = it.value
+                    this.rootFrame().variables()[it.key] = it.value
+                }
+            }
+            block(this)
+        }
+    }
+
+    fun createScript(context: Context, script: String, block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {
+        return KetherShell.eval(script, sender = context.executor, namespace = namespaces) {
+            this.id = UUID.randomUUID().toString()
+            this.rootFrame().rootVariables()["@Context"] = context
+            if (context is Context.Impl) {
+                context.variables.forEach {
+                    this.rootFrame().variables()[it.key] = it.value
                 }
             }
             block(this)
@@ -74,7 +93,7 @@ object ScriptLoader {
         }
     }
 
-    fun invokeFunction(session: Session, name: String, func: (ScriptContext) -> Unit) {
+    fun invokeFunction(session: Session, name: String, func: (ScriptContext) -> Unit = {}) {
         val script = scripts[session.skill.key] ?: return
         val scriptContext = ScriptContext.create(script) {
             session.open(this)
@@ -88,7 +107,9 @@ object ScriptLoader {
     }
 
     fun load(skill: Skill) {
-        scripts[skill.key] = ketherScriptLoader.load(ScriptService, skill.key, getBytes(skill), namespaces)
+        runKether {
+            scripts[skill.key] = ketherScriptLoader.load(ScriptService, skill.key, getBytes(skill), namespaces)
+        }
     }
 
     fun getBytes(skill: Skill): ByteArray {

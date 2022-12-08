@@ -36,17 +36,29 @@ class ShortcutSelector(viewer: Player, val callback: IKeySlot.() -> Unit) : IUI(
             get() = config.getIntegerList("key-slots")
 
         fun toIcon(key: IKeySlot): ItemStack {
-            return buildItem(config.getItemStack("key-icon")!!) {
-                name = format(key, config.getString("key-icon.name")!!)
+            return toIcon(null,key)
+        }
+
+        fun toIcon(player: Player?,temp: ItemStack,key: IKeySlot): ItemStack {
+            return buildItem(temp) {
+                name = format(player,key, config.getString("key-icon.name")!!)
                 lore.clear()
-                lore += config.getStringList("key-icon.lore-pre").map { format(key, it) }
-                lore += key.description.map { format(key, it) }
-                lore += config.getStringList("key-icon.lore-post").map { format(key, it) }
+                lore += config.getStringList("key-icon.lore-pre")
+                lore += key.description
+                lore += config.getStringList("key-icon.lore-post")
+
+                lore.forEachIndexed { index, s ->
+                    lore[index] = format(player, key, s)
+                }
             }
         }
 
-        fun format(key: IKeySlot, str: String): String {
-            return str.replace("{name}", key.name).replace("{key}", key.key).replace("{group}", key.group)
+        fun toIcon(player: Player?,key: IKeySlot) : ItemStack {
+            return toIcon(player,config.getItemStack("key-icon")!!,key)
+        }
+
+        fun format(player: Player?,key: IKeySlot, str: String): String {
+            return str.replace("{name}", key.name).replace("{key}", key.key).replace("{group}", key.getGroup(player))
         }
     }
 
@@ -56,7 +68,7 @@ class ShortcutSelector(viewer: Player, val callback: IKeySlot.() -> Unit) : IUI(
             slots(ShortcutSelector.slots)
             elements { PlannersAPI.keySlots }
 
-            onGenerate { _, element, _, _ -> toIcon(element) }
+            onGenerate { _, element, _, _ -> toIcon(viewer,element) }
 
             config.getKeys(false).filter { it.startsWith("icon-") }.forEach {
                 val itemStack = buildItem(config.getItemStack(it)!!) {

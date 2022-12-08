@@ -1,6 +1,7 @@
 package com.bh.planners.core.effect
 
 import com.bh.planners.api.PlannersOption
+import com.bh.planners.core.effect.common.Area
 import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.effect.common.Matrix
 import org.bukkit.Location
@@ -60,13 +61,19 @@ fun Matrix.applyInBukkit3DVector(vector: Vector): Vector {
     return Vector(ax + ay + az, bx + by + bz, cx + cy + cz)
 }
 
+
 fun Location.capture(): MutableList<LivingEntity> {
-    return world!!.getNearbyEntities(
-        this,
-        PlannersOption.scopeThreshold[0],
-        PlannersOption.scopeThreshold[1],
-        PlannersOption.scopeThreshold[2]
-    ).filterIsInstance<LivingEntity>().toMutableList()
+
+    val listOf = mutableListOf<LivingEntity>()
+
+    val range = Area.Range(this, PlannersOption.scopeThreshold[0], PlannersOption.scopeThreshold[1], PlannersOption.scopeThreshold[2])
+    world!!.getEntitiesByClass(LivingEntity::class.java).forEach {
+        if (range.contains(it)) {
+            listOf += it
+        }
+    }
+
+    return listOf
 }
 
 

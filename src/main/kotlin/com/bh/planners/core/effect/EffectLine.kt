@@ -29,13 +29,6 @@ object EffectLine : Effect() {
         if (target !is Target.Location) return
 
 
-        // 忽略捕获释放者
-        response.addListener("@Line:Ignore") {
-
-            val entity = target.getEntity()
-            removeIf { it == entity }
-
-        }
 
         val step = option.step
         val period = option.period

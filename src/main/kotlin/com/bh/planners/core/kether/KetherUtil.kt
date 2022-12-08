@@ -1,5 +1,7 @@
 package com.bh.planners.core.kether
 
+import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.kether.selector.Selector
@@ -8,6 +10,7 @@ import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
+import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.util.StringNumber
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -53,7 +56,9 @@ fun ProxyCommandSender.asPlayer(): Player? {
 fun ScriptFrame.asPlayer(): Player? {
     return getContext().executor.asPlayer()
 }
-
+fun ScriptFrame.player(): Player? {
+    return getContext().executor.asPlayer()
+}
 fun ScriptFrame.skill(): PlayerJob.Skill {
     return getSkill()
 }
@@ -215,6 +220,25 @@ fun ScriptFrame.execPlayer(selector: ParsedAction<*>, call: Player.() -> Unit) {
             call(this.entity as? Player ?: return@exec)
         }
     }
+}
+
+fun ScriptFrame.getEntity(selector: ParsedAction<*>): CompletableFuture<Entity?> {
+    return createContainer(selector).thenApply { it.firstEntityTarget() }
+}
+
+fun ScriptFrame.getLocation(selector: ParsedAction<*>): CompletableFuture<Location> {
+    return createContainer(selector).thenApply { it.firstLocationTarget() }
+}
+
+fun ScriptFrame.senderPlannerProfile(): PlayerProfile? {
+    val player = script().sender!!.castSafely<Player>()!!
+
+    if (!player.plannersProfileIsLoaded) {
+        ScriptService.terminateQuest(script())
+        return null
+    }
+
+    return player.plannersProfile
 }
 
 fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Target.Container> {

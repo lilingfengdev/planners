@@ -2,6 +2,7 @@ package com.bh.planners.core.timer
 
 import com.bh.planners.api.common.Plugin
 import com.bh.planners.api.event.ISource
+import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Skill
@@ -79,12 +80,10 @@ object TimerRegistry {
     }
 
     fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
-        runKether {
-            KetherShell.eval(template.action, cacheScript = true, sender = sender, namespace = namespaces) {
-                rootFrame().variables()["@Context"] = Context.Impl0(sender)
-                rootFrame().variables()["@Event"] = event
-                timer.onStart(this, template, event)
-            }
+        val context = Context.Impl0(sender)
+        ScriptLoader.createScript(context,template.action) {
+            rootFrame().variables()["@Event"] = event
+            timer.onStart(this, template, event)
         }
     }
 
