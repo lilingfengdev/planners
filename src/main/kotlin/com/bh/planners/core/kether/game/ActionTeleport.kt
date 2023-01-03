@@ -22,7 +22,7 @@ class ActionTeleport(
                     execute(this, it)
                 }
             } else {
-                execute(frame.asPlayer() ?: return@thenAccept, it)
+                execute(frame.bukkitPlayer() ?: return@thenAccept, it)
             }
         }
 

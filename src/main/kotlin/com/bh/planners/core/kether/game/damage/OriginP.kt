@@ -5,6 +5,7 @@ import ac.github.oa.api.event.entity.OriginCustomDamageEvent
 import ac.github.oa.internal.base.enums.PriorityEnum
 import ac.github.oa.internal.base.event.impl.DamageMemory
 import ac.github.oa.internal.core.attribute.AttributeData
+import com.bh.planners.core.kether.game.ActionDamage
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -28,7 +29,7 @@ class OriginP : AttackProvider {
 
             // POST CALL
             if (ac.github.oa.api.event.entity.EntityDamageEvent(damageMemory, PriorityEnum.POST).call()) {
-                entity.damage(damageMemory.totalDamage.coerceAtLeast(0.0))
+                ActionDamage.doDamage(source, entity, damageMemory.totalDamage.coerceAtLeast(0.0))
             }
         }
 

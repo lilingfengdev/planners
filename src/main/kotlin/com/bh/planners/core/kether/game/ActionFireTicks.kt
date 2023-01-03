@@ -19,7 +19,7 @@ class ActionFireTicks(val ticks: ParsedAction<*>, val selector: ParsedAction<*>?
             if (selector != null) {
                 frame.execEntity(selector) { fireTicks = ticks }
             } else {
-                frame.asPlayer()?.fireTicks = ticks
+                frame.bukkitPlayer()?.fireTicks = ticks
             }
         }
         return CompletableFuture.completedFuture(null)

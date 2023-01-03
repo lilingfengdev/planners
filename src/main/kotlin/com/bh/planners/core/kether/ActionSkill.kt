@@ -24,10 +24,10 @@ class ActionSkill {
                 if (target != null) {
                     frame.runTransfer0<String>(target) {
                         val skill = PlannersAPI.getSkill(it) ?: return@runTransfer0
-                        execute(frame.player() ?: return@runTransfer0, skill, operator, amount * 50)
+                        execute(frame.bukkitPlayer() ?: return@runTransfer0, skill, operator, amount * 50)
                     }
                 } else {
-                    execute(frame.asPlayer() ?: return@runTransfer0, frame.skill().instance, operator, amount * 50)
+                    execute(frame.bukkitPlayer() ?: return@runTransfer0, frame.skill().instance, operator, amount * 50)
                 }
             }
 
@@ -42,7 +42,7 @@ class ActionSkill {
 
             if (of != null) {
                 frame.run(of).str { skill ->
-                    future.complete(frame.player()?.plannersProfile?.getSkill(skill)?.level ?: -1)
+                    future.complete(frame.bukkitPlayer()?.plannersProfile?.getSkill(skill)?.level ?: -1)
                 }
             } else {
                 future.complete(frame.skill().level)

@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.game.item
 
-import com.bh.planners.core.kether.asPlayer
+import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.execLivingEntity
 import com.bh.planners.core.kether.game.item.ItemOperator.getNumber
@@ -34,7 +34,7 @@ class ActionItemName(
                     }
                 }
             } else {
-                future.complete(slot.getItem(frame.asPlayer())?.itemMeta?.displayName)
+                future.complete(slot.getItem(frame.bukkitPlayer())?.itemMeta?.displayName)
             }
         }
 

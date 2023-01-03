@@ -27,7 +27,7 @@ class ActionSkillCast {
                         PlannersAPI.cast(this, skill.toString(), true)
                     }
                 } else {
-                    PlannersAPI.cast(frame.asPlayer() ?: return@thenAccept, skill.toString(), true)
+                    PlannersAPI.cast(frame.bukkitPlayer() ?: return@thenAccept, skill.toString(), true)
                 }
             }
         }
@@ -45,7 +45,7 @@ class ActionSkillCast {
                             ContextAPI.create(this, skill, level)?.cast()
                         }
                     } else {
-                        ContextAPI.create(frame.asPlayer() ?: return@thenAccept, skill, level)?.cast()
+                        ContextAPI.create(frame.bukkitPlayer() ?: return@thenAccept, skill, level)?.cast()
                     }
                 }
             }

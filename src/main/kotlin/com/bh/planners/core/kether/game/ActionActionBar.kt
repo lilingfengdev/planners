@@ -21,8 +21,8 @@ class ActionActionBar(val message: ParsedAction<*>, val selector: ParsedAction<*
                     }
                 }
             } else {
-                val asPlayer = frame.asPlayer() ?: return@thenAccept
-                asPlayer.sendActionBar(message.toString().trimIndent().replace("@sender", asPlayer.name))
+                val player = frame.bukkitPlayer() ?: return@thenAccept
+                player.sendActionBar(message.toString().trimIndent().replace("@sender", player.name))
             }
         }
     }

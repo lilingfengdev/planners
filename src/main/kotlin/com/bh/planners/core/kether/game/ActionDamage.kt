@@ -13,6 +13,7 @@ import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.OptionalEvent
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.setProperty
@@ -46,7 +47,7 @@ class ActionDamage {
             frame.runTransfer0<String>(value) { damage ->
                 frame.createContainer(selector).thenAccept { container ->
                     if (source == null) {
-                        val sourceEntity = frame.asPlayer()
+                        val sourceEntity = frame.bukkitPlayer()
                         submit {
                             container.forEachLivingEntity { execute(this, sourceEntity, damage) }
                         }
@@ -65,14 +66,14 @@ class ActionDamage {
 
     class Attack(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            val asPlayer = frame.asPlayer() ?: return CompletableFuture.completedFuture(null)
+            val player = frame.bukkitPlayer() ?: return CompletableFuture.completedFuture(null)
             frame.runTransfer0<String>(value) { damage ->
                 frame.createContainer(selector).thenAccept { container ->
                     submit {
                         container.forEachLivingEntity {
                             this.noDamageTicks = 0
                             this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
-                            AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.maxHealth), asPlayer)
+                            AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.maxHealth), player)
                             this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
                         }
                     }

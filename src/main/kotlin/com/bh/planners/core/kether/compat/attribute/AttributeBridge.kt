@@ -153,4 +153,10 @@ interface AttributeBridge {
 
     fun update(uuid: UUID)
 
+    fun get(uuid: UUID,keyword: String) : Any
+
+    fun get(entity: LivingEntity,keyword: String): Any {
+        return get(entity.uniqueId,keyword)
+    }
+
 }

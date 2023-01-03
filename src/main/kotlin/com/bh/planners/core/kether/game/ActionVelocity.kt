@@ -43,7 +43,7 @@ class ActionVelocity(
                     if (selector != null) {
                         frame.execEntity(selector) { execute(this, mode, toVector) }
                     } else {
-                        execute(frame.asPlayer()!!, mode, toVector)
+                        execute(frame.bukkitPlayer()!!, mode, toVector)
                     }
                 }
             }

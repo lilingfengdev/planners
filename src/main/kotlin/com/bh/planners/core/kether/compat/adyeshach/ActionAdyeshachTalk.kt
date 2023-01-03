@@ -59,7 +59,7 @@ class ActionAdyeshachTalk(val action: ParsedAction<*>, val selector: ParsedActio
 
                 }
             } else {
-                execute(frame.asPlayer() ?: return@thenAccept, it.toString())
+                execute(frame.bukkitPlayer() ?: return@thenAccept, it.toString())
             }
         }
 

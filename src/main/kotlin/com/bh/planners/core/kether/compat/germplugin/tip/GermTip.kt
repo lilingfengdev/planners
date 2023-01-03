@@ -17,7 +17,7 @@ class GermTip {
                         GermTip.send(this, message)
                     }
                 } else {
-                    GermTip.send(frame.asPlayer() ?: return@str, message)
+                    GermTip.send(frame.bukkitPlayer() ?: return@str, message)
                 }
             }
 

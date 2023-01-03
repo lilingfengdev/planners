@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.selector
 
-import com.bh.planners.core.kether.asPlayer
+import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target
 import taboolib.common.platform.function.info
@@ -16,7 +16,7 @@ object Their : Selector {
         get() = arrayOf("their", "filterthis")
 
     override fun check(name: String, target: Target?, args: String, context: Context, container: Target.Container): CompletableFuture<Void> {
-        val player = context.executor.asPlayer() ?: return CompletableFuture.completedFuture(null)
+        val player = context.executor.bukkitPlayer() ?: return CompletableFuture.completedFuture(null)
         container.removeIf { it == player }
 
         return CompletableFuture.completedFuture(null)

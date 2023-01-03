@@ -4,7 +4,7 @@ import com.bh.planners.api.common.SimpleTimeoutTask
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.runAny
-import com.bh.planners.core.kether.toOriginLocation
+import com.bh.planners.core.kether.origin
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -87,7 +87,7 @@ class ActionEntitySpawn(
                             }
                         } else {
                             spawn(
-                                entityType, listOf(frame.toOriginLocation()!!.value), name, health, tick
+                                entityType, listOf(frame.origin()!!.value), name, health, tick
                             ).thenAccept {
                                 future.complete(it)
                             }

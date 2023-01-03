@@ -5,18 +5,18 @@ import com.bh.planners.core.effect.inline.IncidentEffectHit
 import com.bh.planners.core.effect.inline.IncidentEffectTick
 import com.bh.planners.core.effect.inline.IncidentHitEntity
 import com.bh.planners.core.kether.game.ActionEffect
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
-abstract class EffectICallback<T>(val name: String,val session: Session) {
+abstract class EffectICallback<T>(val name: String,val context: Context.SourceImpl) {
 
     val listeners = mutableMapOf<String, (T) -> Unit>()
 
-    class Tick(name: String,session: Session) : EffectICallback<MutableList<Location>>(name,session) {
-
+    class Tick(name: String,context: Context.SourceImpl) : EffectICallback<MutableList<Location>>(name,context) {
 
         fun handle(location: Location) {
             this.handle(listOf(location))
@@ -31,12 +31,12 @@ abstract class EffectICallback<T>(val name: String,val session: Session) {
             listeners.forEach { it.value(mutableList) }
 
             val effectTick = IncidentEffectTick(mutableList)
-            session.handleIncident(name,effectTick)
+            context.handleIncident(name,effectTick)
         }
 
     }
 
-    class Hit(name: String,session: Session) : EffectICallback<MutableList<LivingEntity>>(name,session) {
+    class Hit(name: String,context: Context.SourceImpl) : EffectICallback<MutableList<LivingEntity>>(name,context) {
 
         fun handle(location: Location) {
             this.handle(listOf(location))
@@ -46,14 +46,12 @@ abstract class EffectICallback<T>(val name: String,val session: Session) {
 
             if (name == "__none__") return
 
-            val entities = locations.flatMap { it.capture() }.toMutableList()
-
-            listeners.forEach { it.value(entities) }
-
-            if (entities.isNotEmpty()) {
-
-                session.handleIncident(name, IncidentEffectHit(entities))
-
+            locations.forEach {
+                it.capture().thenAccept { entities ->
+                    if (entities.isNotEmpty()) {
+                        context.handleIncident(name, IncidentEffectHit(entities))
+                    }
+                }
             }
 
         }

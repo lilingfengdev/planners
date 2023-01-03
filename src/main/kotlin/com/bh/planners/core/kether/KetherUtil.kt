@@ -46,18 +46,15 @@ fun ScriptFrame.executor(): ProxyCommandSender {
     return getContext().executor
 }
 
-fun ProxyCommandSender.asPlayer(): Player? {
+fun ProxyCommandSender.bukkitPlayer(): Player? {
     if (this is BukkitPlayer) {
         return player
     }
     return null
 }
 
-fun ScriptFrame.asPlayer(): Player? {
-    return getContext().executor.asPlayer()
-}
-fun ScriptFrame.player(): Player? {
-    return getContext().executor.asPlayer()
+fun ScriptFrame.bukkitPlayer(): Player? {
+    return getContext().executor.bukkitPlayer()
 }
 fun ScriptFrame.skill(): PlayerJob.Skill {
     return getSkill()
@@ -90,7 +87,7 @@ fun ScriptFrame.target(): Target {
     return Any().toLocation().toTarget()
 }
 
-fun ScriptFrame.toOriginLocation(): Target.Location {
+fun ScriptFrame.origin(): Target.Location {
     return target() as Target.Location
 }
 
@@ -281,7 +278,7 @@ fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Ta
             else -> {
                 catchRunning {
                     val demand = it.toString().toDemand()
-                    Selector.check(toOriginLocation(), getContext(), demand, container).thenAccept {
+                    Selector.check(origin(), getContext(), demand, container).thenAccept {
                         future.complete(container)
                     }
                 }

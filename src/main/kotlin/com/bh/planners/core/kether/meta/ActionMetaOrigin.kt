@@ -2,7 +2,7 @@ package com.bh.planners.core.kether.meta
 
 import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.kether.toLocation
-import com.bh.planners.core.kether.toOriginLocation
+import com.bh.planners.core.kether.origin
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.createContainer
 import org.bukkit.Location
@@ -36,7 +36,7 @@ class ActionMetaOrigin {
 
     class Get : ScriptAction<Target.Location?>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Location?> {
-            return CompletableFuture.completedFuture(frame.toOriginLocation())
+            return CompletableFuture.completedFuture(frame.origin())
         }
 
     }

@@ -4,11 +4,17 @@ import com.bh.planners.api.PlannersOption
 import com.bh.planners.core.effect.common.Area
 import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.effect.common.Matrix
+import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
+import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
+import taboolib.common.platform.function.submit
+import taboolib.common5.Coerce
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.ScriptAction
+import java.util.concurrent.CompletableFuture
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -18,6 +24,43 @@ val EffectOption.period: String
 
 val EffectOption.isAnimation: Boolean
     get() = period == "0"
+
+
+val EffectOption.startAngle: Double
+    get() = Coerce.toDouble(this.demand.get("start", "0.0"))
+
+val EffectOption.angle: Double
+    get() = Coerce.toDouble(this.demand.get(Effects.ANGLE, "1.0"))
+
+val EffectOption.radius: Double
+    get() = Coerce.toDouble(this.demand.get(Effects.RADIUS, "1.0"))
+
+val EffectOption.step: Double
+    get() = Coerce.toDouble(this.demand.get(Effects.STEP, "1.0"))
+
+val EffectOption.spread: Double
+    get() = Coerce.toDouble(this.demand.get("spread", "0.0"))
+
+val EffectOption.slope: Double
+    get() = Coerce.toDouble(this.demand.get("slope", "0.0"))
+
+val EffectOption.rotateAxisX: Double
+    get() = Coerce.toDouble(this.demand.get(listOf("rax", "rotateAxisX", "0")))
+
+val EffectOption.rotateAxisY: Double
+    get() = Coerce.toDouble(this.demand.get(listOf("ray", "rotateAxisY", "0")))
+
+val EffectOption.rotateAxisZ: Double
+    get() = Coerce.toDouble(this.demand.get(listOf("raz", "rotateAxisZ", "0")))
+
+val EffectOption.effect: String
+    get() = this.demand.get("effect", "arc")!!
+
+val EffectOption.amount: Int
+    get() = Coerce.toInteger(this.demand.get("amount", "5.0"))
+
+val EffectOption.sample: Int
+    get() = Coerce.toInteger(demand.get("sample", "50"))
 
 fun Matrix.applyBukkitVector(vector: Vector): Vector {
     if (row == 2 && column == 2) {
@@ -61,19 +104,39 @@ fun Matrix.applyInBukkit3DVector(vector: Vector): Vector {
     return Vector(ax + ay + az, bx + by + bz, cx + cy + cz)
 }
 
+private fun createBoundingBox(location: Location): BoundingBox {
+    return BoundingBox.of(
+        location,
+        PlannersOption.scopeThreshold[0],
+        PlannersOption.scopeThreshold[1],
+        PlannersOption.scopeThreshold[2]
+    )
+}
 
-fun Location.capture(): MutableList<LivingEntity> {
+private fun Location.getNearbyEntities(): List<LivingEntity> {
+    return world!!.getNearbyEntities(
+        this,
+        PlannersOption.scopeThreshold[0],
+        PlannersOption.scopeThreshold[1],
+        PlannersOption.scopeThreshold[2]
+    ).filterIsInstance<LivingEntity>()
+}
 
-    val listOf = mutableListOf<LivingEntity>()
 
-    val range = Area.Range(this, PlannersOption.scopeThreshold[0], PlannersOption.scopeThreshold[1], PlannersOption.scopeThreshold[2])
-    world!!.getEntitiesByClass(LivingEntity::class.java).forEach {
-        if (range.contains(it)) {
-            listOf += it
+fun Location.capture(): CompletableFuture<List<LivingEntity>> {
+
+
+    val future = CompletableFuture<List<LivingEntity>>()
+
+    if (Bukkit.isPrimaryThread()) {
+        future.complete(this.getNearbyEntities())
+    } else {
+        submit {
+            future.complete(this@capture.getNearbyEntities())
         }
     }
 
-    return listOf
+    return future
 }
 
 

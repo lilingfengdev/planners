@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 class ActionPxrpgMark(val id: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        val player = frame.asPlayer() ?: return CompletableFuture.completedFuture(null)
+        val player = frame.bukkitPlayer() ?: return CompletableFuture.completedFuture(null)
 
         val future = CompletableFuture<Void>()
 

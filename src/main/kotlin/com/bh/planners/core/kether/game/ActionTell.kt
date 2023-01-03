@@ -14,7 +14,7 @@ class ActionTell(val message: ParsedAction<*>, val selector: ParsedAction<*>?) :
             if (selector != null) {
                 frame.execPlayer(selector) { sendMessage(message.trimIndent()) }
             } else {
-                frame.asPlayer()?.sendMessage(message.trimIndent())
+                frame.bukkitPlayer()?.sendMessage(message.trimIndent())
             }
 
         }

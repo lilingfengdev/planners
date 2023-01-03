@@ -14,16 +14,20 @@ import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.kether.runKether
+import java.util.*
 
 abstract class Context(val executor: ProxyCommandSender) {
 
+
+    val id = UUID.randomUUID().toString()
+
     var closed = false
 
-    val asPlayer: Player
+    val player: Player
         get() = executor.cast()
 
     val profile: PlayerProfile
-        get() = asPlayer.plannersProfile
+        get() = player.plannersProfile
 
     val flags = DataContainer()
 
@@ -35,6 +39,29 @@ abstract class Context(val executor: ProxyCommandSender) {
         }
     }
 
+    abstract class SourceImpl(executor: ProxyCommandSender) : Context(executor) {
+
+        abstract val sourceId: String
+
+    }
+
+    open class Impl(executor: ProxyCommandSender, val skill: Skill) : SourceImpl(executor) {
+
+        open val playerSkill: PlayerJob.Skill
+            get() = profile.getSkill(skill.key)!!
+
+        override val sourceId: String = skill.key
+
+        val script = skill.script
+
+        val scriptMode = script.mode
+
+        val scriptAction = script.action
+
+        val variables = skill.option.variables.associate { it.key to toLazyVariable(it) }
+
+    }
+
     open class Impl0(executor: ProxyCommandSender) : Context(executor) {
 
     }
@@ -44,14 +71,4 @@ abstract class Context(val executor: ProxyCommandSender) {
         override val playerSkill = PlayerJob.Skill(-1, skill.key, level, null)
 
     }
-
-    open class Impl(executor: ProxyCommandSender, val skill: Skill) : Context(executor) {
-
-        open val playerSkill: PlayerJob.Skill
-            get() = profile.getSkill(skill.key)!!
-
-        val variables = skill.option.variables.associate { it.key to toLazyVariable(it) }
-
-    }
-
 }

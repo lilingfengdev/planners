@@ -9,6 +9,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -45,6 +46,10 @@ interface Target {
             return Location(this).apply {
 
             }
+        }
+
+        fun Target.getDirection(): Vector {
+            return (this as? Entity)?.value?.direction ?: Vector(0,0,0)
         }
 
         fun Target.getLocation(): org.bukkit.Location? {
@@ -208,7 +213,7 @@ interface Target {
         val asLivingEntity: LivingEntity?
             get() = entity as? LivingEntity
 
-        val asPlayer: Player?
+        val player: Player?
             get() = entity as? Player
 
         val type = entity.type

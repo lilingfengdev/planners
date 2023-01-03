@@ -29,7 +29,7 @@ class ActionFlag {
                         }
                     }
                 } else {
-                    future.complete(frame.asPlayer()?.getFlag(key))
+                    future.complete(frame.bukkitPlayer()?.getFlag(key))
                 }
             }
             return future
@@ -53,7 +53,7 @@ class ActionFlag {
                                 setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time) * 50))
                             }
                         } else {
-                            val profile = frame.asPlayer()!!.plannersProfile
+                            val profile = frame.bukkitPlayer()!!.plannersProfile
                             profile.setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time) * 50))
                         }
                     }
@@ -77,7 +77,7 @@ class ActionFlag {
                             }
                         }
                     } else {
-                        val dataContainer = frame.asPlayer()!!.getDataContainer()
+                        val dataContainer = frame.bukkitPlayer()!!.getDataContainer()
                         if (dataContainer.containsKey(key)) {
                             dataContainer.update(key, dataContainer[key]!!.increaseAny(value.toString()))
                         }

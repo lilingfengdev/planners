@@ -1,14 +1,11 @@
 package com.bh.planners.core.kether.compat.adyeshach
 
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.kether.asPlayer
+import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.runTransfer
 import ink.ptms.adyeshach.internal.command.CommandScript
-import ink.ptms.adyeshach.taboolib.module.kether.ScriptContext
 import org.bukkit.Bukkit
-import org.bukkit.command.CommandSender
-import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.function.submitAsync
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptAction
@@ -30,7 +27,7 @@ class ActionAdyeshachScript(val file: ParsedAction<*>, val args: List<ParsedActi
             if (selector != null) {
                 frame.execPlayer(selector) { run(file, this.name, array.toTypedArray()) }
             } else {
-                run(file, frame.asPlayer()?.name ?: return@thenAccept, array.toTypedArray())
+                run(file, frame.bukkitPlayer()?.name ?: return@thenAccept, array.toTypedArray())
             }
         }
 

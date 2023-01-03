@@ -37,7 +37,7 @@ class ActionGlowing(val tick: ParsedAction<*>, val value: ParsedAction<*>, val c
                             execute(this, value, glowColor, tick)
                         }
                     } else {
-                        execute(frame.asPlayer() ?: return@runTransfer0, value, glowColor, tick)
+                        execute(frame.bukkitPlayer() ?: return@runTransfer0, value, glowColor, tick)
                     }
                 }
             }

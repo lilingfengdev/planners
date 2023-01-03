@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.game.item
 
-import com.bh.planners.core.kether.asPlayer
+import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.execLivingEntity
 import com.bh.planners.core.kether.game.item.ItemOperator.getNumber
 import com.bh.planners.core.kether.runTransfer
@@ -32,7 +32,7 @@ class ActionItemCountSet(
                             execute(slot.getItem(this), keyword, amount)
                         }
                     } else {
-                        execute(slot.getItem(frame.asPlayer()), keyword, amount)
+                        execute(slot.getItem(frame.bukkitPlayer()), keyword, amount)
                     }
                 }
             }

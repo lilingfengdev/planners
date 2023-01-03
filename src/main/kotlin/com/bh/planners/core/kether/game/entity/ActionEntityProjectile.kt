@@ -98,7 +98,7 @@ class ActionEntityProjectile {
                                                 }
                                             }
                                         } else {
-                                            val player = frame.asPlayer()
+                                            val player = frame.bukkitPlayer()
                                             if (player != null) {
                                                 submit {
                                                     future.complete(

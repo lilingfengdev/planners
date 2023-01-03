@@ -96,7 +96,7 @@ class ActionToast(
                                 }
                             }
                         } else {
-                            submit { execute(frame.asPlayer() ?: return@submit, material, message, data, f) }
+                            submit { execute(frame.bukkitPlayer() ?: return@submit, material, message, data, f) }
                         }
                     }
                 }

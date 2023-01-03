@@ -20,10 +20,6 @@ object EffectLine : Effect() {
         get() = "line"
 
 
-    val EffectOption.step: Double
-        get() = Coerce.toDouble(this.demand.get(Effects.STEP, "0.0"))
-
-
     override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {
 
         if (target !is Target.Location) return

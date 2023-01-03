@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.exec
 import com.bh.planners.core.kether.selectorAction
-import com.bh.planners.core.kether.toOriginLocation
+import com.bh.planners.core.kether.origin
 import org.bukkit.Location
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
@@ -31,7 +31,7 @@ class ActionExplosion(
                     createExplosion(loc, Coerce.toFloat(it))
                 }
             } else {
-                createExplosion(frame.toOriginLocation()?.value ?: return@thenApply, Coerce.toFloat(it))
+                createExplosion(frame.origin()?.value ?: return@thenApply, Coerce.toFloat(it))
             }
 
         }

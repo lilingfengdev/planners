@@ -38,7 +38,7 @@ class ActionTitle(
                             if (selector != null) {
                                 frame.execPlayer(selector) { execute(this, title, subTitle, fadeIn, stay, fadeOut) }
                             } else {
-                                execute(frame.asPlayer()!!, title, subTitle, fadeIn, stay, fadeOut)
+                                execute(frame.bukkitPlayer()!!, title, subTitle, fadeIn, stay, fadeOut)
                             }
                         }
                     }

@@ -2,8 +2,10 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.effect.*
 import com.bh.planners.core.kether.*
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import org.bukkit.Location
+import org.bukkit.craftbukkit.v1_12_R1.CraftServer
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -18,18 +20,21 @@ object ActionEffect {
 
             frame.run(action).str { action ->
                 val context = frame.getContext()
+                
+                if (context !is Context.SourceImpl) return@str 
+                
                 frame.run(onTick).str { ontick ->
 
                     frame.run(onHit).str { onhit ->
 
-                        val response = Response(frame.getSession())
+                        val response = Response(context)
 
-                        response.tick = EffectICallback.Tick(ontick,response.session)
-                        response.hit = EffectICallback.Hit(onhit,response.session)
-
+                        response.tick = EffectICallback.Tick(ontick,response.context )
+                        response.hit = EffectICallback.Hit(onhit,response.context)
+                        
                         submit(async = true) {
                             val effectOption = EffectOption.get(action)
-                            effect.sendTo(frame.toOriginLocation(), effectOption, context, response)
+                            effect.sendTo(frame.origin(), effectOption, context, response)
                         }
                     }
 
@@ -43,7 +48,7 @@ object ActionEffect {
         }
     }
 
-    class Response(val session: Session) {
+    class Response(val context: Context.SourceImpl) {
 
 
         var tick: EffectICallback.Tick? = null

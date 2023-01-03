@@ -28,7 +28,7 @@ class ActionDragonEffect(
                             execute(id, scheme, rotation, time, this)
                         }
                     } else {
-                        execute(id, scheme, rotation, time, frame.toOriginLocation() ?: return@runTransfer0)
+                        execute(id, scheme, rotation, time, frame.origin() ?: return@runTransfer0)
                     }
                 }
             }

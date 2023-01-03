@@ -17,19 +17,18 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-
-
+        val listOf = mutableListOf(
+            Data(10),
+            Data(8),
+            Data(2),
+            Data(52),
+            Data(45),
+            Data(1),
+            Data(3),
+        )
+        listOf.sortBy { it.priority }
+        println(listOf)
     }
 
-    val FILTER_RULES = listOf(
-        Regex("#?+[a-zA-Z0-9]+"),
-        Regex("§+[a-zA-Z0-9%]"),
-        Regex("[^0-9+--.]"),
-    )
-
-    fun getNumber(string: String): String {
-        var prey = string
-        FILTER_RULES.forEach { prey = prey.replace(it, "") }
-        return prey.ifEmpty { "0.0" }
-    }
+    class Data(val priority: Int)
 }

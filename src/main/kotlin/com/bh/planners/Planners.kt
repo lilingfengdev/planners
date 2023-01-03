@@ -1,5 +1,6 @@
 package com.bh.planners
 
+import org.bukkit.Material
 import org.bukkit.block.Chest
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Platform
@@ -21,6 +22,5 @@ object Planners : Plugin() {
 
     override fun onEnable() {
         Metrics(15573, BukkitPlugin.getInstance().description.version, Platform.BUKKIT)
-        BukkitPlugin.getInstance().description.version
     }
 }

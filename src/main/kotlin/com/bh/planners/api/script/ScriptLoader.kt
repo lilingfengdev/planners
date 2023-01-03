@@ -6,6 +6,9 @@ import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
+import com.bh.planners.core.timer.Template
+import com.bh.planners.core.timer.TimerDrive
+import com.bh.planners.core.timer.TimerRegistry
 import com.google.common.collect.MultimapBuilder
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
@@ -27,17 +30,24 @@ object ScriptLoader {
 
     fun autoLoad() {
         scripts.clear()
-        PlannersAPI.skills.filter { it.actionMode == Skill.ActionMode.DEFAULT }.forEach {
-            load(it)
+        PlannersAPI.skills.forEach {
+            if (it.script.mode == Skill.ActionMode.DEFAULT) {
+                load(it)
+            }
+        }
+        TimerDrive.templates.forEach {
+            if (it.script.mode == Skill.ActionMode.DEFAULT) {
+                load(it)
+            }
         }
     }
 
-    fun runScript(session: Session, func: (ScriptContext) -> Unit = {}) {
-        val script = scripts[session.skill.key] ?: return
+    fun runScript(context: Context, func: (ScriptContext) -> Unit = {}) {
+        val script = scripts[context.id] ?: return
         val scriptContext = ScriptContext.create(script, func)
-        runningScripts.put(session.id, ScriptData(session.executor, scriptContext))
+        runningScripts.put(context.id, ScriptData(context.executor, scriptContext))
         scriptContext.runActions().thenRunAsync({
-            runningScripts.remove(session.id, scriptContext)
+            runningScripts.remove(context.id, scriptContext)
         }, ScriptService.asyncExecutor)
     }
 
@@ -52,7 +62,7 @@ object ScriptLoader {
     }
 
     fun createScript(context: Context.Impl, block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {
-        return createScript(context, context.skill.action, block)
+        return createScript(context, context.skill.script.action, block)
     }
 
     fun createFunctionScript(context: Context, inputs: List<String>, block: ScriptContext.() -> Unit = {}): List<String> {
@@ -93,10 +103,14 @@ object ScriptLoader {
         }
     }
 
-    fun invokeFunction(session: Session, name: String, func: (ScriptContext) -> Unit = {}) {
-        val script = scripts[session.skill.key] ?: return
+    fun invokeFunction(context: Context.SourceImpl, name: String, func: (ScriptContext) -> Unit = {}) {
+
+        val sourceId = context.sourceId
+
+        val script = scripts[sourceId] ?: return
         val scriptContext = ScriptContext.create(script) {
-            session.open(this)
+            this.rootFrame().variables()["@Context"] = context
+            (context as? Session)?.open(this)
             func(this)
         }
         script.getBlock(name).ifPresent {
@@ -112,11 +126,21 @@ object ScriptLoader {
         }
     }
 
-    fun getBytes(skill: Skill): ByteArray {
-        val texts = skill.action.split("\n")
+    fun load(template: Template) {
+        runKether {
+            scripts[template.id] = ketherScriptLoader.load(ScriptService,template.id, getBytes(template.script.action))
+        }
+    }
+
+    fun getBytes(text: String) : ByteArray {
+        val texts = text.split("\n")
         return texts.mapNotNull { if (it.trim().startsWith("#")) null else it }.joinToString("\n").toByteArray(
             StandardCharsets.UTF_8
         )
+    }
+
+    fun getBytes(skill: Skill): ByteArray {
+        return getBytes(skill.script.action)
     }
 
     class ScriptData(val sender: ProxyCommandSender, val context: ScriptContext) {

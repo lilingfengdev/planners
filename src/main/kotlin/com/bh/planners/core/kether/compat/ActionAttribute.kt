@@ -31,7 +31,7 @@ class ActionAttribute {
                         if (selector != null) {
                             frame.execLivingEntity(selector) { execute(this, source, timeout, list) }
                         } else {
-                            execute(frame.asPlayer() ?: return@thenAccept, source, timeout, list)
+                            execute(frame.bukkitPlayer() ?: return@thenAccept, source, timeout, list)
                         }
                     }
                 }
@@ -52,7 +52,7 @@ class ActionAttribute {
                 if (selector != null) {
                     frame.execLivingEntity(selector) { execute(this, source) }
                 } else {
-                    execute(frame.asPlayer() ?: return@thenAccept, source)
+                    execute(frame.bukkitPlayer() ?: return@thenAccept, source)
                 }
             }
         }
@@ -68,10 +68,17 @@ class ActionAttribute {
             if (selector != null) {
                 frame.execLivingEntity(selector) { execute(this) }
             } else {
-                execute(frame.asPlayer() ?: return CompletableFuture.completedFuture(null))
+                execute(frame.bukkitPlayer() ?: return CompletableFuture.completedFuture(null))
             }
             return CompletableFuture.completedFuture(null)
         }
+    }
+
+    class AttributeGet(val selector: ParsedAction<*>) : ScriptAction<Any>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Any> {
+            TODO("Not yet implemented")
+        }
+
     }
 
     companion object {
@@ -102,6 +109,9 @@ class ActionAttribute {
                 }
                 case("update", "refresh") {
                     AttributeUpdate(it.selectorAction())
+                }
+                other {
+                    AttributeGet(it.selector())
                 }
             }
         }

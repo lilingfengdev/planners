@@ -38,7 +38,7 @@ class ActionLaunch(
 
                             execute(this, x, y, z) }
                     } else {
-                        execute(frame.asPlayer()!!, x, y, z)
+                        execute(frame.bukkitPlayer()!!, x, y, z)
                     }
 
                 }

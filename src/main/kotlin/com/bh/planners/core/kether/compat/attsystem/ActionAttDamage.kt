@@ -19,11 +19,11 @@ class ActionAttDamage {
     class Attack(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(value).run<Any>().thenAccept { key ->
-                val asPlayer = frame.asPlayer() ?: return@thenAccept
+                val player = frame.bukkitPlayer() ?: return@thenAccept
                 frame.execLivingEntity(selector) {
                     catchRunning {
                         this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
-                        val data = FightData(asPlayer, this).apply {
+                        val data = FightData(player, this).apply {
                             frame.variables().run {
                                 forEach {(key,value)-> this@apply.put(key,value) }
                             }
@@ -31,7 +31,7 @@ class ActionAttDamage {
                         val damage =
                             AttributeSystem.attributeSystemAPI.runFight(key.toString(),data , true)
                         AttributeSystem.attributeSystemAPI.skipNextDamageCal()
-                        this.damage(damage, asPlayer)
+                        this.damage(damage, player)
                         this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
                         this.noDamageTicks = 0
                     }

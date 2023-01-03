@@ -38,7 +38,7 @@ class ActionMeta {
                         "level" -> actionNow { skill().level }
                         "level-cap", "level-max" -> actionNow { skill().instance.option.levelCap }
                         "shortcut" -> actionNow { skill().keySlot?.name ?: "暂无" }
-                        "countdown" -> actionNow { Counting.getCountdown(asPlayer()!!, skill().instance) }
+                        "countdown" -> actionNow { Counting.getCountdown(bukkitPlayer()!!, skill().instance) }
                         else -> actionNow { "error" }
                     }
 
@@ -47,10 +47,10 @@ class ActionMeta {
                 case("executor") {
                     when (expects("name", "uuid", "loc", "location", "mana", "max-mana")) {
                         "name" -> actionNow { executor().name }
-                        "uuid" -> actionNow { asPlayer()!!.uniqueId.toString() }
-                        "loc", "location" -> actionNow { asPlayer()!!.location.toLocal() }
-                        "mana" -> actionNow { asPlayer()!!.toCurrentMana() }
-                        "max-mana" -> actionNow { asPlayer()!!.toMaxMana() }
+                        "uuid" -> actionNow { bukkitPlayer()!!.uniqueId.toString() }
+                        "loc", "location" -> actionNow { bukkitPlayer()!!.location.toLocal() }
+                        "mana" -> actionNow { bukkitPlayer()!!.toCurrentMana() }
+                        "max-mana" -> actionNow { bukkitPlayer()!!.toMaxMana() }
                         else -> actionNow { "error" }
                     }
                 }

@@ -71,7 +71,7 @@ class ActionAdyeshachSpawn(
                             }
                         }
                     } else {
-                        spawn(type, listOf(frame.toOriginLocation().value), name, timeout).thenAccept {
+                        spawn(type, listOf(frame.origin().value), name, timeout).thenAccept {
                             future.complete(it.map { AdyeshachEntity(it) })
                         }
                     }

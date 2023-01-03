@@ -13,15 +13,6 @@ object EffectProjectile : Effect() {
     override val name: String
         get() = "projectile"
 
-    val EffectOption.effect: String
-        get() = this.demand.get("effect", "arc")!!
-
-    val EffectOption.step: Double
-        get() = Coerce.toDouble(this.demand.get(Effects.STEP, "1.0"))
-
-    val EffectOption.amount: Int
-        get() = Coerce.toInteger(this.demand.get("amount", "5.0"))
-
     override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {
 
         // 忽略捕获释放者

@@ -28,9 +28,9 @@ class ActionKeyPress(
                         }
                     }
                 } else {
-                    Emitter.registerSubscribers(frame.asPlayer() ?: return@runTransfer0, key, timeout * 50).thenAccept {
+                    Emitter.registerSubscribers(frame.bukkitPlayer() ?: return@runTransfer0, key, timeout * 50).thenAccept {
                         if (!frame.isDone) {
-                            process(frame.asPlayer()!!, frame)
+                            process(frame.bukkitPlayer()!!, frame)
                         }
                     }
                 }

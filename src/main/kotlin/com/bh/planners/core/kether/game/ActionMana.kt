@@ -23,7 +23,7 @@ class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: 
             if (selector != null) {
                 frame.execPlayer(selector) { execute(this, mode, amount) }
             } else {
-                execute(frame.asPlayer() ?: return@thenApply, mode, amount)
+                execute(frame.bukkitPlayer() ?: return@thenApply, mode, amount)
             }
         }
         return CompletableFuture.completedFuture(null)

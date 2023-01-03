@@ -3,7 +3,7 @@ package com.bh.planners.api
 import com.bh.planners.api.ManaCounter.takeMana
 import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.common.ExecuteResult
-import com.bh.planners.api.event.PlayerCastSkillEvent
+import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.api.event.PlayerKeydownEvent
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.kether.namespaces
@@ -46,6 +46,7 @@ object PlannersAPI {
 
 
     fun cast(player: Player, skillName: String, mark: Boolean = true): ExecuteResult {
+        player.isBlocking
         return player.plannersProfile.cast(skillName, mark)
     }
 
@@ -90,7 +91,7 @@ object PlannersAPI {
             return ExecuteResult.SUCCESS
         }
 
-        val preEvent = PlayerCastSkillEvent.Pre(player, skill).apply { call() }
+        val preEvent = PlayerCastSkillEvents.Pre(player, skill).apply { call() }
         if (preEvent.isCancelled) return ExecuteResult.CANCELED
 
         if (!Counting.hasNext(player, skill)) return ExecuteResult.COOLING
@@ -100,12 +101,12 @@ object PlannersAPI {
 
         Counting.reset(player, session)
         takeMana(mana)
-        PlayerCastSkillEvent.Record(player, skill).call()
+        PlayerCastSkillEvents.Record(player, skill).call()
 
         session.cast()
         session.closed = true
 
-        PlayerCastSkillEvent.Post(player, skill).call()
+        PlayerCastSkillEvents.Post(player, skill).call()
         return ExecuteResult.SUCCESS
     }
 

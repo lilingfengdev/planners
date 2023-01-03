@@ -68,7 +68,7 @@ object TimerRegistry {
     }
 
     fun <E : Event> callTimer(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
-        if (template.action.isNotEmpty()) {
+        if (template.script.action.isNotEmpty()) {
             when (template.async) {
                 true -> submit(async = true) {
                     callTimerAction(timer, template, sender, event)
@@ -80,11 +80,28 @@ object TimerRegistry {
     }
 
     fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
-        val context = Context.Impl0(sender)
-        ScriptLoader.createScript(context,template.action) {
-            rootFrame().variables()["@Event"] = event
-            timer.onStart(this, template, event)
+
+        val context = object : Context.SourceImpl(sender) {
+
+            override val sourceId: String = template.id
+
         }
+        if (template.script.mode == Skill.ActionMode.SIMPLE) {
+            runKether {
+                ScriptLoader.createScript(context, template.script.action) {
+                    rootFrame().variables()["@Event"] = event
+                    timer.onStart(this, template, event)
+                }
+            }
+        } else {
+            runKether {
+                ScriptLoader.runScript(context) {
+                    it.rootFrame().variables()["@Event"] = event
+                    timer.onStart(it, template, event)
+                }
+            }
+        }
+
     }
 
 }

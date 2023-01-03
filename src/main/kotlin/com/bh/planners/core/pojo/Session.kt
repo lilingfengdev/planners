@@ -13,7 +13,6 @@ import java.util.UUID
 open class Session(executor: ProxyCommandSender, skill: Skill) : Context.Impl(executor, skill) {
 
 
-    val id = UUID.randomUUID().toString()
 
     val cooldown = variables["cooldown"] ?: LazyGetter { 0 }
 
@@ -27,9 +26,10 @@ open class Session(executor: ProxyCommandSender, skill: Skill) : Context.Impl(ex
         }
     }
 
+
     private fun run() {
         // 简洁模式运行
-        if (skill.actionMode == Skill.ActionMode.SIMPLE) {
+        if (scriptMode == Skill.ActionMode.SIMPLE) {
             runKether {
                 ScriptLoader.createScript(this) {
                     open(this)

@@ -23,4 +23,8 @@ class SXAttributeBridge : AttributeBridge {
     override fun update(uuid: UUID) {
         TODO("Not yet implemented")
     }
+
+    override fun get(uuid: UUID, keyword: String): Any {
+        return "__NULL__"
+    }
 }

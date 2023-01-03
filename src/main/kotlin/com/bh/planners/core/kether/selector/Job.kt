@@ -13,11 +13,11 @@ object Job : Selector {
 
         if (name.isNon()) {
             container.removeIf {
-                (it as? Target.Entity)?.asPlayer?.plannersProfile?.job?.jobKey == args
+                (it as? Target.Entity)?.player?.plannersProfile?.job?.jobKey == args
             }
         } else {
             container.removeIf {
-                (it as? Target.Entity)?.asPlayer?.plannersProfile?.job?.jobKey != args
+                (it as? Target.Entity)?.player?.plannersProfile?.job?.jobKey != args
             }
         }
         return CompletableFuture.completedFuture(null)

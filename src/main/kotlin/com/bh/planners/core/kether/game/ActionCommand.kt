@@ -49,7 +49,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
                     execute(this, this@ActionCommand.type, command)
                 }
             } else {
-                execute(frame.asPlayer() ?: return@thenAccept, this@ActionCommand.type, command)
+                execute(frame.bukkitPlayer() ?: return@thenAccept, this@ActionCommand.type, command)
             }
         }
 

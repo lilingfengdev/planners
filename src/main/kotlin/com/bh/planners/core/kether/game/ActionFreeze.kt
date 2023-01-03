@@ -17,7 +17,7 @@ class ActionFreeze(val ticks: ParsedAction<*>, val selector: ParsedAction<*>?) :
             if (selector != null) {
                 frame.execEntity(selector) { freezeTicks = ticks }
             } else {
-                frame.asPlayer()?.freezeTicks = ticks
+                frame.bukkitPlayer()?.freezeTicks = ticks
             }
         }
         return CompletableFuture.completedFuture(null)

@@ -2,7 +2,7 @@ package com.bh.planners.core.kether.compat.germplugin
 
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
-import com.bh.planners.core.kether.asPlayer
+import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.execEntity
 import com.germ.germplugin.api.GermPacketAPI
@@ -27,7 +27,7 @@ class ActionGermLook(val duration: ParsedAction<*>, val group: ParsedAction<*>, 
         frame.run(duration).long { duration ->
             frame.createContainer(group).thenAccept { container ->
                 if (target == null) {
-                    val player = frame.asPlayer() ?: return@thenAccept
+                    val player = frame.bukkitPlayer() ?: return@thenAccept
                     Target.Container().let {
                         it += player.toTarget()
                         execute(duration,container,it)

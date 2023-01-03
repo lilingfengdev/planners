@@ -10,6 +10,9 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.module.kether.ScriptContext
+import taboolib.platform.util.getMeta
+import taboolib.platform.util.getMetaFirst
+import taboolib.platform.util.getMetaFirstOrNull
 
 object TimerPlayerAttack : AbstractTimer<ProxyDamageEvent>() {
     override val name: String
@@ -39,13 +42,6 @@ object TimerPlayerAttack : AbstractTimer<ProxyDamageEvent>() {
             context.rootFrame().variables()["@Target"] = e.entity.toTarget()
         }
 
-        if (e.damager is Projectile) {
-            context.rootFrame().variables()["projectile"] = e.damager
-        }
-
-        context.rootFrame().variables()["entity"] = e.entity
-        context.rootFrame().variables()["cause"] = e.cause
-        context.rootFrame().variables()["damage"] = e.damage
     }
 
 }

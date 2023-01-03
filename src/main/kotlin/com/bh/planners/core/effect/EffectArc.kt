@@ -17,32 +17,6 @@ object EffectArc : Effect() {
     override val name: String
         get() = "arc"
 
-    val EffectOption.startAngle: Double
-        get() = Coerce.toDouble(this.demand.get("start", "0.0"))
-
-    val EffectOption.angle: Double
-        get() = Coerce.toDouble(this.demand.get(Effects.ANGLE, "1.0"))
-
-    val EffectOption.radius: Double
-        get() = Coerce.toDouble(this.demand.get(Effects.RADIUS, "1.0"))
-
-    val EffectOption.step: Double
-        get() = Coerce.toDouble(this.demand.get(Effects.STEP, "1.0"))
-
-    val EffectOption.spread: Double
-        get() = Coerce.toDouble(this.demand.get("spread", "0.0"))
-
-    val EffectOption.slope: Double
-        get() = Coerce.toDouble(this.demand.get("slope", "0.0"))
-
-    val EffectOption.rotateAxisX: Double
-        get() = Coerce.toDouble(this.demand.get(listOf("rax", "rotateAxisX", "0")))
-
-    val EffectOption.rotateAxisY: Double
-        get() = Coerce.toDouble(this.demand.get(listOf("ray", "rotateAxisY", "0")))
-
-    val EffectOption.rotateAxisZ: Double
-        get() = Coerce.toDouble(this.demand.get(listOf("raz", "rotateAxisZ", "0")))
 
 
     override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {

@@ -33,7 +33,7 @@ class ActionHealth {
                     if (selector != null) {
                         frame.execLivingEntity(selector) { execute(this, it.toString()) }
                     } else {
-                        execute(frame.asPlayer() ?: return@catchRunning, it.toString())
+                        execute(frame.bukkitPlayer() ?: return@catchRunning, it.toString())
                     }
                 }
             }

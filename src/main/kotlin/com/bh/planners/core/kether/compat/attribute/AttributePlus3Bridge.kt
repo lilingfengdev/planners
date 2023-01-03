@@ -58,6 +58,10 @@ class AttributePlus3Bridge : AttributeBridge {
 
     }
 
+    override fun get(uuid: UUID, keyword: String): Any {
+        return 0
+    }
+
     class Data(val source: String, val timeout: Long) {
 
         val create = System.currentTimeMillis()

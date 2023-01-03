@@ -7,7 +7,7 @@ import de.Keyle.MyPet.MyPetApi
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 
-class EntityPet : Selector {
+object EntityPet : Selector {
 
     override val names: Array<String>
         get() = arrayOf("pet", "e-pet", "!pet", "!e-pet")

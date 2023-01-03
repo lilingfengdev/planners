@@ -1,8 +1,6 @@
 package com.bh.planners.core.pojo
 
-import com.bh.planners.core.feature.presskey.Emitter.type
-import com.bh.planners.core.timer.Template
-import com.bh.planners.util.getAction
+import com.bh.planners.util.getScriptFactor
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
 
@@ -10,11 +8,7 @@ open class Skill(val key: String, val config: ConfigurationSection) {
 
     open val option = Option(config.getConfigurationSection("__option__") ?: config.createSection("__option__"))
 
-    open lateinit var actionMode: ActionMode
-
-    open val action = getAction(config.getString("action", "")!!) {
-        actionMode = it
-    }
+    open val script = getScriptFactor(config.getString("action", "")!!)
 
     open class Option(val root: ConfigurationSection) {
 
@@ -72,7 +66,7 @@ open class Skill(val key: String, val config: ConfigurationSection) {
 
     class Empty : Skill("", Configuration.empty()) {
 
-        override val action: String = ""
+        override val script: ScriptFactor = ScriptFactor(ActionMode.SIMPLE,"")
 
         override val option: Option = EmptyOption()
 

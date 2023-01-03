@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.game
 
-import com.bh.planners.api.event.PlayerCastSkillEvent
+import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.selectorAction
@@ -35,7 +35,7 @@ class ActionSilence(
         private val silenceMap = mutableMapOf<UUID, Long>()
         /**
          * 沉默目标 使对方在一定时间内无法释放技能
-         *  *** 暂时无效 等PlayerCastSkillEvent完善即可
+         *  *** 暂时无效 等PlayerCastSkillEvents完善即可
          * silence [seconds] [selector]
          */
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
@@ -45,7 +45,7 @@ class ActionSilence(
         }
 
         @SubscribeEvent(EventPriority.LOWEST)
-        fun onCastSkill(e: PlayerCastSkillEvent.Pre) {
+        fun onCastSkill(e: PlayerCastSkillEvents.Pre) {
             val time = silenceMap[e.player.uniqueId] ?: return
             if (System.currentTimeMillis() > time) {
                 silenceMap.remove(e.player.uniqueId)

@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.selector
-import com.bh.planners.core.kether.toOriginLocation
+import com.bh.planners.core.kether.origin
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
@@ -51,7 +51,7 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
                     }
                 } else {
                     container.forEachEntity {
-                        this.velocity = next(this.location, frame.toOriginLocation()!!.value, step)
+                        this.velocity = next(this.location, frame.origin()!!.value, step)
                     }
                 }
 

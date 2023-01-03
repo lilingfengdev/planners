@@ -43,7 +43,7 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
                     }
                 } else {
                     submit {
-                        execute(frame.toOriginLocation()!!.value, material, timeout)
+                        execute(frame.origin()!!.value, material, timeout)
                     }
                 }
             }

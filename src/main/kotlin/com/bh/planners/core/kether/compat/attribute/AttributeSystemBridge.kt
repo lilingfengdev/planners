@@ -4,6 +4,7 @@ import com.skillw.attsystem.AttributeSystem
 import com.skillw.attsystem.api.AttrAPI.addAttribute
 import com.skillw.attsystem.api.AttrAPI.read
 import com.skillw.attsystem.api.AttrAPI.removeAttribute
+import com.skillw.pouvoir.util.EntityUtils.livingEntity
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.submit
@@ -50,6 +51,9 @@ class AttributeSystemBridge : AttributeBridge {
         AttributeSystem.attributeSystemAPI.update(uuid)
     }
 
+    override fun get(uuid: UUID, keyword: String): Any {
+        return 0
+    }
     class Data(val source: String, val timeout: Long) {
 
         val create = System.currentTimeMillis()

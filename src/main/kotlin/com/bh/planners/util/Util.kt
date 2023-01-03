@@ -1,5 +1,6 @@
 package com.bh.planners.util
 
+import com.bh.planners.core.pojo.ScriptFactor
 import com.bh.planners.core.pojo.Skill
 import org.bukkit.Location
 import org.bukkit.Material
@@ -26,16 +27,14 @@ fun String.eval(amount: Double): Double {
         Coerce.toDouble(this)
     }
 }
-fun getAction(action: String, func: (Skill.ActionMode) -> Unit): String {
+fun getScriptFactor(action: String): ScriptFactor {
+
     val first = action.split("\n")[0].trim()
-
-    if (first == "# mode default") {
-        func(Skill.ActionMode.DEFAULT)
+    return if (first == "# mode default") {
+        ScriptFactor(Skill.ActionMode.DEFAULT,action.split("\n").mapNotNull { if (it.trim().getOrNull(0) == '#') null else it }.joinToString("\n"))
     } else {
-        func(Skill.ActionMode.SIMPLE)
+        ScriptFactor(Skill.ActionMode.SIMPLE,action.split("\n").mapNotNull { if (it.trim().getOrNull(0) == '#') null else it }.joinToString("\n"))
     }
-
-    return action.split("\n").mapNotNull { if (it.trim().getOrNull(0) == '#') null else it }.joinToString("\n")
 }
 
 fun Location.clearVisual(): Location {
