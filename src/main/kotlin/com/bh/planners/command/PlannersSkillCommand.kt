@@ -108,5 +108,33 @@ object PlannersSkillCommand {
         }
     }
 
+    @CommandBody
+    val clear = subCommand {
+        dynamic("player") {
+
+            suggestion<ProxyCommandSender> { sender, context ->
+                listOf("*", *Bukkit.getOnlinePlayers().map { it.name }.toTypedArray())
+            }
+
+            dynamic("skill") {
+
+                suggestion<ProxyCommandSender> { sender, context ->
+                    listOf("*", *PlannersAPI.skills.map { it.key }.toTypedArray())
+                }
+
+                execute<ProxyCommandSender> { sender, context, argument ->
+                    val player = Bukkit.getPlayerExact(context.argument(-1))!!
+                    val profile = player.plannersProfile
+                    if (argument == "*") {
+                        profile.getSkills().forEach { PlannersAPI.resetSkillPoint(profile,it) }
+                    } else {
+                        val skill = profile.getSkill(argument) ?: return@execute
+                        PlannersAPI.resetSkillPoint(profile,skill)
+                    }
+                }
+
+            }
+        }
+    }
 
 }

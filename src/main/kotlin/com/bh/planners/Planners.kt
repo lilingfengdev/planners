@@ -5,6 +5,7 @@ import org.bukkit.block.Chest
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Platform
 import taboolib.common.platform.Plugin
+import taboolib.common.platform.function.submitAsync
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.Configuration
 import taboolib.module.metrics.Metrics

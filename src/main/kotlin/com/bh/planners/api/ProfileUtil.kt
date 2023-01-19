@@ -157,7 +157,6 @@ fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {
         val oldKeySlot = skill.keySlot
         skill.shortcutKey = null
         PlayerSkillBindEvent(player, skill, oldKeySlot).call()
-        Storage.INSTANCE.updateSkill(this, skill)
     } else {
         // 解绑同快捷键技能
         val orNull = this.getSkills().firstOrNull { it.key != skill.key && it.keySlot == iKeySlot }
@@ -167,9 +166,10 @@ fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {
         val oldKeySlot = skill.keySlot
         skill.shortcutKey = iKeySlot.key
         PlayerSkillBindEvent(player, skill, oldKeySlot).call()
-        Storage.INSTANCE.updateSkill(this, skill)
     }
-
+    submitAsync {
+        Storage.INSTANCE.updateSkill(this@bind, skill)
+    }
 
 }
 

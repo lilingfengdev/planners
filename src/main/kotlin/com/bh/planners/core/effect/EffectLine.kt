@@ -3,16 +3,8 @@ package com.bh.planners.core.effect
 import com.bh.planners.api.common.ParticleFrame
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target.Companion.createContainer
-import com.bh.planners.core.effect.Target.Companion.getEntity
-import com.bh.planners.core.effect.common.Line
-import com.bh.planners.core.effect.renderer.LineRenderer
 import com.bh.planners.core.kether.game.ActionEffect
-import com.bh.planners.core.pojo.Session
-import com.bh.planners.util.entityAt
 import org.bukkit.Location
-import org.bukkit.entity.LivingEntity
-import taboolib.common.reflect.Reflex.Companion.getProperty
-import taboolib.common5.Coerce
 
 object EffectLine : Effect() {
 

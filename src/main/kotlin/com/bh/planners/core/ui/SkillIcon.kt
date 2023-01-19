@@ -2,6 +2,8 @@ package com.bh.planners.core.ui
 
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.script.ScriptLoader
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.LazyGetter
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.kether.rootVariables
@@ -40,7 +42,7 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: B
 
     private val skill = PlannersAPI.getSkill(skillKey)!!
 
-    val context = Context.Impl1(adaptPlayer(player), skill, level)
+    val context = Context.Impl1(player.toTarget(), skill, level)
 
     private val option = skill.option
 
@@ -54,12 +56,7 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: B
 
     fun format(str: String): String {
         return runKether {
-            KetherFunction.parse(str, sender = context.executor, namespace = namespaces) {
-                rootFrame().rootVariables()["@Context"] = context
-                context.variables.forEach {
-                    rootFrame().variables()[it.key] = it.value
-                }
-            }.colored()
+            ScriptLoader.createFunctionScript(context,str).colored()
         } ?: "&cError: $str".colored()
     }
 

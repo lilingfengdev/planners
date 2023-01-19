@@ -11,22 +11,23 @@ import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, val selector: ParsedAction<*>?) :
-    ScriptAction<List<Target>>() {
+class ActionBlock : ScriptAction<List<Target>>() {
 
-    fun execute(location: Location, material: Material, ticks: Long) {
+    lateinit var material: ParsedAction<*>
+    lateinit var timeout: ParsedAction<*>
+    lateinit var data: ParsedAction<*>
+    var selector: ParsedAction<*>? = null
+
+    fun execute(location: Location, material: Material, data: Byte, ticks: Long) {
         // 如果上一次的任务还未结束 则提前结束
         if (cache.containsKey(location)) {
             SimpleTimeoutTask.cancel(cache[location]!!)
         }
 
-        val simpleTask = BlockSimpleTask(location, material, ticks)
+        val simpleTask = BlockSimpleTask(location, material, data, ticks)
         SimpleTimeoutTask.register(simpleTask)
         // 注入新的
         cache[location] = simpleTask
@@ -34,16 +35,17 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<Target>> {
-
-        frame.runTransfer0<Material>(material) { material ->
-            frame.runTransfer0<Long>(timeout) { timeout ->
-                if (selector != null) {
-                    frame.createContainer(selector).thenAccept {
-                        submit { it.forEachLocation { execute(this, material, timeout) } }
-                    }
-                } else {
-                    submit {
-                        execute(frame.origin()!!.value, material, timeout)
+        frame.run(material).material { material ->
+            frame.run(timeout).long { timeout ->
+                frame.run(data).byte { data ->
+                    if (selector != null) {
+                        frame.createContainer(selector!!).thenAccept {
+                            submit { it.forEachLocation { execute(this, material, data, timeout) } }
+                        }
+                    } else {
+                        submit {
+                            execute(frame.origin().value, material, data, timeout)
+                        }
                     }
                 }
             }
@@ -52,12 +54,12 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
         return CompletableFuture.completedFuture(null)
     }
 
-    class BlockSimpleTask(val location: Location, var to: Material, tick: Long) : SimpleTimeoutTask(tick) {
+    class BlockSimpleTask(val location: Location, var to: Material, val data: Byte, tick: Long) :
+        SimpleTimeoutTask(tick) {
 
-
+        val world = location.world!!
         var block = location.block
         var mark = location.block.type
-        var blockData = block.blockData
 
         override val closed: () -> Unit
             get() = {
@@ -67,15 +69,16 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
 
         fun update() {
 
-            location.block.type = mark
-            if (block.type != Material.AIR) {
-                block.blockData = blockData
+            world.players.forEach {
+                it.sendBlockChange(location, block.type, block.data)
             }
 
         }
 
         init {
-            location.block.type = to
+            world.players.forEach {
+                it.sendBlockChange(location, to, data)
+            }
         }
 
     }
@@ -90,7 +93,12 @@ class ActionBlock(val material: ParsedAction<*>, val timeout: ParsedAction<*>, v
          */
         @KetherParser(["block"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionBlock(it.nextParsedAction(), it.nextParsedAction(), it.selectorAction())
+            val actionBlock = ActionBlock()
+            actionBlock.material = it.nextParsedAction()
+            actionBlock.timeout = it.nextParsedAction()
+            actionBlock.data = it.tryGet(arrayOf("data"), "0")!!
+            actionBlock.selector = it.selectorAction()
+            actionBlock
         }
 
     }

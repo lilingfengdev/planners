@@ -10,23 +10,18 @@ import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionTeleport(
-    val action: ParsedAction<*>,
-    val selector: ParsedAction<*>?
-) : ScriptAction<Void>() {
+class ActionTeleport(val action: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        return frame.newFrame(action).run<Any>().thenAccept {
+        return frame.run(action).thenAccept {
             if (selector != null) {
                 frame.execEntity(selector) {
-                    execute(this, it)
+                    execute(this, it!!)
                 }
             } else {
-                execute(frame.bukkitPlayer() ?: return@thenAccept, it)
+                execute(frame.bukkitPlayer() ?: return@thenAccept, it!!)
             }
         }
-
-
     }
 
     fun execute(entity: Entity, it: Any) {

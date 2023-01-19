@@ -26,7 +26,7 @@ class ActionEventDamage(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Double> {
             val event = frame.event()
             if (event is ProxyDamageEvent) {
-                return CompletableFuture.completedFuture(event.damage)
+                return CompletableFuture.completedFuture(event.realDamage)
             }
             error("Error running environment !")
         }

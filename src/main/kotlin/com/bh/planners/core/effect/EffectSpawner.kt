@@ -1,6 +1,5 @@
 package com.bh.planners.core.effect
 
-import com.bh.planners.core.effect.common.ParticleSpawner
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -8,12 +7,13 @@ import org.bukkit.material.MaterialData
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.function.info
 import taboolib.common.util.Vector
+import taboolib.module.effect.ParticleSpawner
 import taboolib.module.nms.MinecraftVersion
 import taboolib.platform.util.toBukkitLocation
 
-class EffectSpawner(val option: EffectOption) : ParticleSpawner {
+open class EffectSpawner(val option: EffectOption)  {
 
-    override fun spawn(location: Location) {
+    fun spawn(location: Location) {
         try {
             getViewer(location).forEach { player ->
                 player.sendParticle(

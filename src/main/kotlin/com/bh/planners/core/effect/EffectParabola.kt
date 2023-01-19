@@ -64,7 +64,6 @@ object EffectParabola : Effect() {
         var t = 0.0
 
         override fun next(): Location? {
-            Particle
             if (t < threshold) {
                 val v1 = p1.clone().subtract(p0).toVector()
                 val t1 = p0.clone().add(v1.multiply(t))

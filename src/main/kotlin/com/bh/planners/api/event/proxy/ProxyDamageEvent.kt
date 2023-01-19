@@ -24,6 +24,9 @@ class ProxyDamageEvent(
     var memory: Any? = null
 ) : BukkitProxyEvent() {
 
+    val realDamage : Double
+        get() = (memory as? DamageMemory)?.totalDamage ?: this.damage
+
     fun addDamage(double: Double) {
         if (memory != null) {
             (memory as? DamageMemory)?.addDamage(UUID.randomUUID().toString(), double)
@@ -68,6 +71,7 @@ class ProxyDamageEvent(
         fun e(e: EntityEvents.DamageByEntity) {
             if (e.damager != null) {
                 val damageEvent = ProxyDamageEvent(e.damager, e.entity, DamageCause.CUSTOM, e.value, null)
+                e.value = damageEvent.realDamage
                 if (!damageEvent.call()) {
                     damageEvent.isCancelled = true
                 }

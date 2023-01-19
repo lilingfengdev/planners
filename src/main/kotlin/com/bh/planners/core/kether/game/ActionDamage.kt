@@ -34,13 +34,12 @@ class ActionDamage {
 
         fun execute(entity: LivingEntity, source: LivingEntity?, damage: String) {
             val result = damage.eval(entity.maxHealth)
-
-            if (EntityEvents.DamageByEntity(source, entity, result).call()) {
-                doDamage(source, entity, result)
+            val damageByEntityEvent = EntityEvents.DamageByEntity(source, entity, result)
+            if (damageByEntityEvent.call()) {
+                doDamage(source, entity, damageByEntityEvent.value)
             }
 
         }
-
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
@@ -117,7 +116,6 @@ class ActionDamage {
 //                e.isCancelled = true
 //            }
 //        }
-
         fun doDamage(source: LivingEntity?, entity: LivingEntity, damage: Double) {
             entity.noDamageTicks = 0
             entity.setMeta("Planners:Damage", true)

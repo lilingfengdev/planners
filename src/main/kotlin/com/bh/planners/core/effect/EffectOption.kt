@@ -23,12 +23,14 @@ open class EffectOption(text: String) {
         }
 
     }
-
     val demand = text.toDemand()
+
+    val optOffsetVector = demand.get(listOf("offset","os"),"0 0 0")!!.map { Coerce.toDouble(it) }
+
     val particle = Enums.getIfPresent(ProxyParticle::class.java, demand.namespace.toUpperCase()).or(ProxyParticle.FLAME)!!
-    val offsetX = Coerce.toDouble(demand.get(1, "0")!!)
-    val offsetY = Coerce.toDouble(demand.get(2, "0")!!)
-    val offsetZ = Coerce.toDouble(demand.get(3, "0")!!)
+    val offsetX = Coerce.toDouble(optOffsetVector.getOrElse(0) { "0" })
+    val offsetY = Coerce.toDouble(optOffsetVector.getOrElse(1) { "0" })
+    val offsetZ = Coerce.toDouble(optOffsetVector.getOrElse(2) { "0" })
     val posX = Coerce.toDouble(demand.get("posX"))
     val posY = Coerce.toDouble(demand.get("posY"))
     val posZ = Coerce.toDouble(demand.get("posZ"))

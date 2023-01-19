@@ -1,3 +1,4 @@
+import com.bh.planners.api.common.Demand
 import kotlinx.coroutines.*
 import java.time.Duration
 
@@ -17,17 +18,8 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val listOf = mutableListOf(
-            Data(10),
-            Data(8),
-            Data(2),
-            Data(52),
-            Data(45),
-            Data(1),
-            Data(3),
-        )
-        listOf.sortBy { it.priority }
-        println(listOf)
+        val demand = Demand("flame :key 123 456 :key1 sadasd")
+        println(demand)
     }
 
     class Data(val priority: Int)

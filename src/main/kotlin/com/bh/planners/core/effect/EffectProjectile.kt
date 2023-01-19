@@ -15,10 +15,12 @@ object EffectProjectile : Effect() {
 
     override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {
 
+        val entity = target?.getEntity() ?: return
         // 忽略捕获释放者
-        response.hit?.listeners?.let {
-            val entity = target?.getEntity() ?: return@let
-            it["@Ignore"] = { it.removeIf { entity == it } }
+        response.eventTicks.forEach {
+            if (it is EffectICallback.Tick) {
+                it.listeners["@Ignore"] = { it.removeIf { entity == it } }
+            }
         }
 
         val step = option.step

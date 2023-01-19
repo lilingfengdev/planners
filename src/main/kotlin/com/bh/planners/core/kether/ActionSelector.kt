@@ -1,12 +1,8 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.kether.selector.Fetch.asContainer
-import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class ActionSelector {
@@ -14,7 +10,7 @@ class ActionSelector {
     class ActionTargetContainerGetSize(val action: ParsedAction<*>) : ScriptAction<Int>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Int> {
             return frame.newFrame(action).run<Any>().thenApply {
-                frame.getContext().flags.get(it.toString())?.asContainer()?.size ?: 0
+                frame.variables().get<Target.Container>(it.toString()).orElseGet { EMPTY_CONTAINER }.size
             }
         }
 
@@ -23,7 +19,7 @@ class ActionSelector {
     class ActionTargetContainerGet(val action: ParsedAction<*>) : ScriptAction<Target.Container?>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container?> {
             return frame.newFrame(action).run<Any>().thenApply {
-                frame.getContext().flags.get(it.toString())?.asContainer()
+                frame.variables().get<Target.Container>(it.toString()).orElseGet { null }
             }
         }
 
@@ -35,7 +31,7 @@ class ActionSelector {
             val future = CompletableFuture<Void>()
             frame.newFrame(keyAction).run<String>().thenAccept { key ->
                 frame.createContainer(valueAction).thenAccept { container ->
-                    frame.getContext().flags[key] = container.unsafeData()
+                    frame.variables()[key] = container
                     future.complete(null)
                 }
             }
@@ -46,7 +42,7 @@ class ActionSelector {
     class ActionTargetContainerRemove(val keyAction: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.newFrame(keyAction).run<String>().thenAccept { key ->
-                frame.getContext().flags.remove(key)
+                frame.variables().remove(key)
             }
             return CompletableFuture.completedFuture(null)
         }
@@ -56,7 +52,7 @@ class ActionSelector {
         override fun run(frame: ScriptFrame): CompletableFuture<Set<Target>> {
 
             return frame.newFrame(key).run<String>().thenApply {
-                frame.getContext().flags.get(it.toString())?.asContainer() ?: emptySet()
+                frame.variables().get<Target.Container>(it.toString()).orElseGet { EMPTY_CONTAINER }
             }
 
         }
@@ -66,22 +62,25 @@ class ActionSelector {
         ScriptAction<Target.Container>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
             val future = CompletableFuture<Target.Container>()
-            frame.runTransfer0<String>(key) { key ->
+            frame.run(key).str { key ->
                 frame.createContainer(value).thenAccept { container ->
-                    future.complete(frame.getContext().flags.get(key)?.asContainer()?.unmerge(container))
+                    frame.variables().get<Target.Container>(key).ifPresent {
+                        it.unmerge(container)
+                    }
                 }
             }
             return future
         }
     }
 
-    class ActionTargetContainerMerge(val key: ParsedAction<*>, val value: ParsedAction<*>) :
-        ScriptAction<Target.Container>() {
+    class ActionTargetContainerMerge(val key: ParsedAction<*>, val value: ParsedAction<*>) : ScriptAction<Target.Container>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
             val future = CompletableFuture<Target.Container>()
-            frame.runTransfer0<String>(key) { key ->
+            frame.run(key).str { key ->
                 frame.createContainer(value).thenAccept { container ->
-                    future.complete(frame.getContext().flags.get(key)?.asContainer()?.merge(container))
+                    frame.variables().get<Target.Container>(key).ifPresent {
+                        it.merge(container)
+                    }
                 }
             }
             return future
@@ -89,6 +88,8 @@ class ActionSelector {
     }
 
     companion object {
+
+        val EMPTY_CONTAINER = Target.Container()
 
         /**
          * 缓存目标容器

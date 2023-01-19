@@ -1,13 +1,10 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.kether.selector.Fetch.asContainer
-import com.bh.planners.core.pojo.Context
-import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.data.Data
 import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
 import org.bukkit.Location
-import taboolib.library.kether.ArgTypes
+import taboolib.common.util.orNull
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
@@ -18,7 +15,7 @@ class ActionTarget {
     class ActionTargetSwitch(val action: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<Any>().thenAccept {
-                frame.getSession().flags["@Target"] = (it as? Target)?.unsafeData() ?: return@thenAccept
+                frame.variables()["@Target"] = (it as? Target)?.unsafeData()
             }
         }
     }
@@ -42,12 +39,9 @@ class ActionTarget {
         }
 
         fun ScriptFrame.getTarget(): Target? {
-            return getContext().getTarget()
+            return variables().get<Target>("@Target").orNull()
         }
 
-        fun Context.getTarget(): Target? {
-            return flags["@Target"]?.asTarget()
-        }
 
         @KetherParser(["target"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

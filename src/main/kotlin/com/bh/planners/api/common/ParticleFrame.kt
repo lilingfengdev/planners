@@ -43,6 +43,8 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
 
     companion object {
 
+        val cancelableList = CancelableList()
+
         fun create(time: String, builder: Builder,response: ActionEffect.Response, task: ParticleFrame.() -> Unit = {}): ParticleFrame {
 
             val duration = if (time.endsWith("s")) {
@@ -54,14 +56,31 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
             }
 
             val frame = ParticleFrame(duration) {
-                val next = builder.next()
-                if (next == null) {
-                    close()
-                    return@ParticleFrame
+
+                // 单点渲染
+                if (builder.isSingle) {
+                    val next = builder.next()
+                    if (next == null) {
+                        close()
+                        return@ParticleFrame
+                    }
+                    builder.spawner.spawn(next)
+                    response.handleTick(next)
                 }
-                builder.spawner.spawn(next)
-                response.handleTick(next)
+                // 多点渲染
+                else {
+                    val nexts = builder.nexts()
+                    if (nexts == cancelableList) {
+                        close()
+                        return@ParticleFrame
+                    }
+                    nexts.forEach { builder.spawner.spawn(it) }
+                    response.handleTick(nexts)
+                }
+
                 task()
+
+
             }
 
             if (builder.run) {
@@ -77,8 +96,18 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
 
         open val run = true
 
+        val isSingle = false
+
         abstract fun next(): Location?
 
+        fun nexts() : List<Location> {
+            return emptyList()
+        }
+
+        fun cancel() = cancelableList
+
     }
+
+    class CancelableList : ArrayList<Location>()
 
 }

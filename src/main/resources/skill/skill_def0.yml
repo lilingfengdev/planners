@@ -28,19 +28,10 @@ __option__:
 
   variables:
     cooldown: 0
+    upgrade-points: 1
     mp: math meta skill level * 2.8
     damage: math meta skill level * 1.2 * lazy base
     base: 10
-
-    when:
-      - if: check profile flag xxx == 10
-        goto: action
-
-      - if: check profile flag xxxx == 20
-        goto: action 1
-
-      - else: action2
-
 action: |-
   set loc0 to meta executor loc
   meta origin to meta executor loc

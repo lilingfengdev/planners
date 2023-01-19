@@ -4,23 +4,23 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.bh.planners.core.kether.event.ActionEventParser
-import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
+import com.bh.planners.core.selector.Selector
 import com.bh.planners.util.StringNumber
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
 import taboolib.library.kether.QuestReader
@@ -38,12 +38,12 @@ fun ScriptFrame.getContext(): Context {
     return rootVariables().get<Context>("@Context").orElse(null) ?: error("Error running environment !")
 }
 
-fun ScriptFrame.getSession(): Session {
+fun ScriptFrame.session(): Session {
     return rootVariables().get<Session>("@Context").orElse(null) ?: error("Error running environment !")
 }
 
 fun ScriptFrame.executor(): ProxyCommandSender {
-    return getContext().executor
+    return getContext().proxySender
 }
 
 fun ProxyCommandSender.bukkitPlayer(): Player? {
@@ -54,12 +54,12 @@ fun ProxyCommandSender.bukkitPlayer(): Player? {
 }
 
 fun ScriptFrame.bukkitPlayer(): Player? {
-    return getContext().executor.bukkitPlayer()
+    return getContext().player
 }
+
 fun ScriptFrame.skill(): PlayerJob.Skill {
     return getSkill()
 }
-
 
 fun ScriptFrame.getSkill(): PlayerJob.Skill {
 
@@ -116,7 +116,6 @@ fun evalKether(player: Player, action: String, skill: PlayerJob.Skill): String? 
     }
 }
 
-
 fun Any.toLocation(): Location {
     return when (this) {
         is Location -> this
@@ -162,7 +161,7 @@ inline fun <reified T> ScriptFrame.runTransfer(action: ParsedAction<*>): Complet
 
         if (T::class.java.isEnum) {
             catchRunning {
-                future.complete(getEnum<T>(it.toString().trim().uppercase().replace(".", "_")))
+                future.complete(getEnum<T>(it.toString().trim().toUpperCase().replace(".", "_")))
             }
             return@thenAccept
         }
@@ -245,40 +244,44 @@ fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Ta
 
         when (it) {
             is List<*> -> {
-
-                val list = it.mapNotNull { entry ->
-                    if (entry is Entity) {
-                        entry.toTarget()
-                    } else if (entry is String) {
-                        Bukkit.getEntity(UUID.fromString(entry.toString()))?.toTarget()
-                    } else error("Transfer $entry to target failed")
+                container += it.mapNotNull { entry ->
+                    when (entry) {
+                        is Entity -> entry.toTarget()
+                        is String -> Bukkit.getEntity(UUID.fromString(entry.toString()))?.toTarget()
+                        else -> error("Transfer $entry to target failed")
+                    }
                 }
-                container.addAll(list)
                 future.complete(container)
             }
 
-            is Target.Container -> future.complete(it)
-
-            is Target -> {
-                future.complete(container.join(it))
+            is Target.Container -> {
+                container += it
+                future.complete(container)
             }
 
-            is Entity -> future.complete(container.join(it.toTarget()))
+            is Target -> {
+                container += it
+                future.complete(container)
+            }
 
-            is Location -> future.complete(container.join(it.toTarget()))
+            is Entity -> {
+                container += it.toTarget()
+                future.complete(container)
+            }
+
+            is Location -> {
+                container += it.toTarget()
+                future.complete(container)
+            }
 
             is UUID -> {
-                val entity = Bukkit.getEntity(it)
-                if (entity != null) {
-                    container.add(entity.toTarget())
-                }
+                Bukkit.getEntity(it)?.let { container += it.toTarget() }
                 future.complete(container)
             }
 
             else -> {
                 catchRunning {
-                    val demand = it.toString().toDemand()
-                    Selector.check(origin(), getContext(), demand, container).thenAccept {
+                    Selector.check(origin(), getContext(), it.toString().toDemand(), container).thenAccept {
                         future.complete(container)
                     }
                 }
@@ -298,7 +301,6 @@ fun catchRunning(action: () -> Unit) {
         e.printKetherErrorMessage()
     }
 }
-
 
 fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParser {
     return ActionEventParser(resolve)
@@ -325,4 +327,27 @@ fun QuestReader.selector(): ParsedAction<*> = get(arrayOf("they", "the"))
 
 fun QuestReader.selectorAction(): ParsedAction<*>? {
     return tryGet(arrayOf("they", "the"), null)
+}
+
+fun <T> CompletableFuture<Any?>.material(then: (Material) -> T): CompletableFuture<T> {
+    return thenApply {
+        val id = it!!.toString().toUpperCase()
+        val material = Material.getMaterial(id) ?: error("Block type '$it' is not supported.")
+        then(material)
+    }
+}
+fun <T> CompletableFuture<Any?>.byte(then: (Byte) -> T): CompletableFuture<T> {
+    return thenApply {
+        then(Coerce.toByte(it))
+    }
+}
+fun <T> CompletableFuture<Any?>.materialOrNull(then: (Material?) -> T): CompletableFuture<T> {
+    return thenApply {
+        val id = it!!.toString().toUpperCase()
+        if (id == "*") {
+            then(null)
+        }
+        val material = Material.getMaterial(id) ?: error("Block type '$it' is not supported.")
+        then(material)
+    }
 }

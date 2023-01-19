@@ -2,6 +2,8 @@ package com.bh.planners.api
 
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.event.*
+import com.bh.planners.api.script.ScriptLoader
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Job
@@ -21,6 +23,7 @@ import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import taboolib.module.kether.KetherShell
+import taboolib.module.kether.runKether
 import taboolib.module.nms.sendPacket
 
 object Assembly {
@@ -80,7 +83,7 @@ object Assembly {
         if (e.profile.hasJob) {
             e.profile.getSkills().filter { it.level == 0 && it.instance.option.isNatural }.forEach {
                 it.level = 1
-                Storage.INSTANCE.updateSkill(e.profile,it)
+                Storage.INSTANCE.updateSkill(e.profile, it)
             }
         }
     }
@@ -99,18 +102,12 @@ object Assembly {
 
     fun nextUpgradeGetPoints(profile: PlayerProfile, value: Int): Int {
         if (profile.hasJob) {
-            val expression = profile.job!!.instance.upgradePoints ?: profile.job!!.instance.router.upgradePoints
-            ?: PlannersOption.upgradePoints ?: return 0
-            return try {
-
-                KetherShell.eval(expression, sender = adaptPlayer(profile.player), namespace = namespaces) {
-                    rootFrame().variables()["@Context"] = Context.Impl0(sender!!)
-                    rootFrame().variables()["value"] = value
-                }.thenApply { Coerce.toInteger(it) }.get()
-
-            } catch (_: Throwable) {
-                0
-            }
+            val expression = profile.job!!.optUpgradePoints ?: return 0
+            return runKether {
+                Coerce.toInteger(ScriptLoader.createScript(Context.Impl0(profile.player.toTarget()),expression) {
+                    this.rootFrame().variables()["value"] = value
+                }.get())
+            } ?: 0
         }
         return 0
     }

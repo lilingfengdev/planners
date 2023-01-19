@@ -3,24 +3,17 @@ package com.bh.planners.core.timer
 import com.bh.planners.api.common.Plugin
 import com.bh.planners.api.event.ISource
 import com.bh.planners.api.script.ScriptLoader
-import com.bh.planners.core.kether.namespaces
+import com.bh.planners.core.effect.Target
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Skill
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import taboolib.common.LifeCycle
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.Awake
-import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.event.EventPriority
-import taboolib.common.platform.function.adaptPlayer
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.platform.function.submit
-import taboolib.module.kether.KetherShell
-import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.kether.runKether
 
 object TimerRegistry {
@@ -58,7 +51,7 @@ object TimerRegistry {
 
     }
 
-    fun <E : Event> callTimer(timer: Timer<E>, sender: ProxyCommandSender, event: E) {
+    fun <E : Event> callTimer(timer: Timer<E>, sender: Target, event: E) {
 
         // 精确检索
         val id = (event as? ISource)?.id() ?: "*"
@@ -67,7 +60,7 @@ object TimerRegistry {
         list.forEach { callTimer(timer, it, sender, event) }
     }
 
-    fun <E : Event> callTimer(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
+    fun <E : Event> callTimer(timer: Timer<E>, template: Template, sender: Target, event: E) {
         if (template.script.action.isNotEmpty()) {
             when (template.async) {
                 true -> submit(async = true) {
@@ -79,7 +72,7 @@ object TimerRegistry {
         }
     }
 
-    fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, sender: ProxyCommandSender, event: E) {
+    fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, sender: Target, event: E) {
 
         val context = object : Context.SourceImpl(sender) {
 

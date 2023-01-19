@@ -6,61 +6,39 @@ import java.util.Collections
  * @author bkm016
  * @since 2020/11/22 2:51 下午
  */
-class Demand(val source: String) {
+class Demand(val source: String,val starts : Array<Char> = arrayOf(':')) {
 
     val namespace: String
     val dataMap = Collections.synchronizedMap(LinkedHashMap<String, MutableList<String>>())
     val children = Collections.synchronizedMap(LinkedHashMap<String, Demand>())
-    val args = Collections.synchronizedList(mutableListOf<String>())
 
     init {
         var args = source.split(" ")
-        if (source[0] != ':' && args.size >= 4) {
-            this.args += args.subList(0, 4).toMutableList()
+        if (source[0] != ':') {
             namespace = args[0]
-            args = args.subList(4, args.size)
+            args = args.subList(1, args.size)
         } else {
             namespace = "EMPTY"
         }
-        val skipIndex = arrayListOf<Int>()
+        var dataKey : String? = null
+        val dataValues = mutableListOf<String>()
         args.forEachIndexed { index, s ->
-            if (index in skipIndex || s.isEmpty()) return@forEachIndexed
-            // argument value
-            if (s[0] == ':') {
-                when {
-                    index + 1 >= args.size -> {
-                        put(s.substring(1), "")
-                    }
-
-                    args[index + 1][0] != ':' -> {
-                        put(s.substring(1), args[index + 1])
-                        skipIndex += index + 1
-                    }
-
-                    else -> {
-                        put(s.substring(1), "")
-                    }
+            if (s[0] in starts) {
+                if (dataKey != null) {
+                    put(dataKey!!,dataValues.joinToString(" "))
                 }
+                dataKey = s.substring(1)
+                dataValues.clear()
             }
-            // target select
-            else if (s[0] == '@') {
-                when {
-
-                    index + 1 >= args.size -> {
-                        put(s, "")
-                    }
-
-                    args[index + 1][0] != ':' -> {
-                        put(s, args[index + 1])
-                        skipIndex += index + 1
-                    }
-
-                    else -> {
-                        put(s, "")
-                    }
-                }
+            // 如果key节点追踪到 则自定定位为该key的值
+            else if (dataKey != null) {
+                dataValues += s
             }
         }
+        if (dataKey != null) {
+            put(dataKey!!,dataValues.joinToString(" "))
+        }
+
 
     }
 
@@ -101,12 +79,8 @@ class Demand(val source: String) {
         return dataMap.computeIfAbsent(key) { mutableListOf() }.getOrNull(index) ?: def
     }
 
-    fun get(index: Int, def: String? = null): String? {
-        return args.getOrNull(index) ?: def
-    }
-
     override fun toString(): String {
-        return "Demand(namespace='$namespace', dataMap=$dataMap, args=$args,children=$children)"
+        return "Demand(namespace='$namespace', dataMap=$dataMap,children=$children)"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -114,14 +88,12 @@ class Demand(val source: String) {
         if (other !is Demand) return false
         if (source != other.source) return false
         if (dataMap != other.dataMap) return false
-        if (args != other.args) return false
         return true
     }
 
     override fun hashCode(): Int {
         var result = source.hashCode()
         result = 31 * result + dataMap.hashCode()
-        result = 31 * result + args.hashCode()
         return result
     }
 

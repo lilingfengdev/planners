@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether
 
+import com.bh.planners.core.pojo.data.Data
 import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -13,9 +14,9 @@ class ActionLazyVariable {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Any> {
             return frame.newFrame(action).run<Any>().thenApply {
-                val optional = frame.rootVariables().get<LazyGetter<*>>(it.toString())
+                val optional = frame.rootVariables().get<Data>(it.toString())
                 if (optional.isPresent) {
-                    optional.get().get()
+                    optional.get().toLazyGetter().get()
                 } else "empty $it"
             }
         }
@@ -25,7 +26,7 @@ class ActionLazyVariable {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.newFrame(action).run<String>().thenAccept {
-                frame.rootVariables().get<LazyGetter<*>>(it).get().reload()
+                frame.rootVariables().get<Data>(it).ifPresent { it.toLazyGetter().reload() }
             }
             return CompletableFuture.completedFuture(null)
         }

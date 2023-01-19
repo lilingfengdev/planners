@@ -1,6 +1,8 @@
 package com.bh.planners.api
 
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.game.ActionSkillCast
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
@@ -18,9 +20,13 @@ object ContextAPI {
         return adaptPlayer(player)
     }
 
+    fun create(player: Player,skill: PlayerJob.Skill): Context.Impl1 {
+        return create(player, skill.instance,skill.level)!!
+    }
+
     // 创建释放上下文
     fun create(player: Player): Context.Impl0 {
-        return Context.Impl0(createProxy(player))
+        return Context.Impl0(player.toTarget())
     }
 
     // 创建释放上下文
@@ -32,14 +38,18 @@ object ContextAPI {
     // 创建释放上下文
     fun create(player: Player, skill: Skill, level: Int): Context.Impl1? {
         if (player.plannersProfileIsLoaded) {
-            return Context.Impl1(createProxy(player), skill, level)
+            return Context.Impl1(player.toTarget(), skill, level)
         }
         return null
     }
 
+    fun createSession(target: Target,skill: Skill,consume: Consumer<Session>? = null) : Session {
+        return Session(target, skill).also { consume?.accept(it) }
+    }
+
     // 创建释放环境 Session
     fun createSession(player: Player, skill: Skill, consume: Consumer<Session>? = null): Session {
-        return Session(createProxy(player), skill).also { consume?.accept(it) }
+        return createSession(player.toTarget(),skill, consume)
     }
 
 

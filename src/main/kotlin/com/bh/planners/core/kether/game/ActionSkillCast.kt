@@ -52,11 +52,6 @@ class ActionSkillCast {
         }
     }
 
-
-    class ContextImpl(executor: ProxyCommandSender, skill: Skill, val level: Int) : Session(executor, skill) {
-        override val playerSkill = PlayerJob.Skill(-1, skill.key, level, null)
-    }
-
     companion object {
 
         /**

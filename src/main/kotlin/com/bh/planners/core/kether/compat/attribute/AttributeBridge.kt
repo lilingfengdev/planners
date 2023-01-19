@@ -20,6 +20,7 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.info
 import taboolib.module.kether.KetherFunction
+import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.kether.runKether
 import java.util.UUID
 
@@ -88,13 +89,12 @@ interface AttributeBridge {
             val bridge = INSTANCE ?: return
             val context = ContextAPI.create(player, skill.instance, skill.level)!!
             val attributes = getSkillAttributes(skill)
-
-            bridge.addAttributes(
-                "Skill:${skill.key}",
-                player.uniqueId,
-                -1,
-                ScriptLoader.createFunctionScript(context, attributes)
-            )
+            try {
+                bridge.addAttributes("Skill:${skill.key}", player.uniqueId, -1, ScriptLoader.createFunctionScript(context, attributes))
+            } catch (ex: Exception) {
+                info(attributes)
+                ex.printKetherErrorMessage()
+            }
         }
 
         fun updateJob(player: Player) {
@@ -105,13 +105,12 @@ interface AttributeBridge {
             val bridge = INSTANCE ?: return
             val context = ContextAPI.create(profile.player)
 
-            bridge.addAttributes(
-                "Job",
-                profile.player.uniqueId,
-                -1,
-                ScriptLoader.createFunctionScript(context,getJobAttribute(profile))
-            )
-            INSTANCE?.update(profile.player)
+            runKether {
+                bridge.addAttributes("Job", profile.player.uniqueId, -1, ScriptLoader.createFunctionScript(context,getJobAttribute(profile)))
+                INSTANCE?.update(profile.player)
+            }
+
+
         }
 
         fun getSkillAttributes(skill: PlayerJob.Skill): List<String> {

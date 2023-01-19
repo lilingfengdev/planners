@@ -1,5 +1,7 @@
 package com.bh.planners.core.pojo.data
 
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.kether.LazyGetter
 import taboolib.common.util.asList
 import taboolib.common5.Coerce
 
@@ -54,6 +56,18 @@ open class Data(
 
     fun toBoolean(): Boolean {
         return Coerce.toBoolean(data)
+    }
+
+    fun toLazyGetter(): LazyGetter<*> {
+        return data as LazyGetter<*>
+    }
+
+    fun toDataContainer(): DataContainer {
+        return data as DataContainer
+    }
+
+    fun toTargetContainer() : Target.Container {
+        return data as Target.Container
     }
 
     fun asList(): List<String> {

@@ -1,22 +1,25 @@
 package com.bh.planners.core.pojo
 
+import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.script.ScriptLoader
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.getPlayer
+import com.bh.planners.core.effect.Target.Companion.isPlayer
 import com.bh.planners.core.kether.LazyGetter
-import com.bh.planners.core.kether.namespaces
-import taboolib.common.platform.ProxyCommandSender
+import com.bh.planners.util.toProxyCommandSender
+import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
-import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.runKether
-import java.util.UUID
 
-open class Session(executor: ProxyCommandSender, skill: Skill) : Context.Impl(executor, skill) {
+open class Session(sender: Target, skill: Skill) : Context.Impl(sender, skill) {
 
+    override val sourceId: String
+        get() = skill.key
 
+    val cooldown = variables["cooldown"]?.toLazyGetter() ?: LazyGetter { 0 }
 
-    val cooldown = variables["cooldown"] ?: LazyGetter { 0 }
-
-    val mpCost = variables["mp"] ?: LazyGetter { 0 }
+    val mpCost = variables["mp"]?.toLazyGetter() ?: LazyGetter { 0 }
 
     fun cast() {
         if (skill.option.async) {
@@ -45,7 +48,7 @@ open class Session(executor: ProxyCommandSender, skill: Skill) : Context.Impl(ex
     }
 
     fun open(context: ScriptContext) {
-        context.sender = executor
+        context.sender = proxySender
         context.rootFrame().variables()["@Context"] = this@Session
         variables.forEach {
             context.rootFrame().variables()[it.key] = it.value

@@ -1,15 +1,16 @@
 package com.bh.planners.core.effect
 
 import com.bh.planners.api.common.Demand
-import com.bh.planners.core.kether.selector.Selector
 import com.bh.planners.core.kether.toLocal
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
+import com.bh.planners.core.selector.Selector
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import taboolib.common.platform.function.console
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -22,6 +23,8 @@ interface Target {
     fun toLocal(): String
 
     companion object {
+
+        val consoleTarget = Console()
 
         fun Demand.createContainer(target: Target?, context: Context): CompletableFuture<Container> {
             val future = CompletableFuture<Container>()
@@ -36,16 +39,23 @@ interface Target {
             return demand.createContainer(target, context)
         }
 
-        fun org.bukkit.entity.Entity.toTarget(): Entity {
-            return Entity(this).apply {
+        fun org.bukkit.entity.Entity.target(): Entity {
+            return toTarget()
+        }
 
-            }
+        fun org.bukkit.entity.Entity.toTarget(): Entity {
+            return Entity(this)
         }
 
         fun org.bukkit.Location.toTarget(): Location {
             return Location(this).apply {
 
             }
+        }
+
+        fun Target.isPlayer() : Boolean {
+            val entity = getLivingEntity() ?: return false
+            return entity is Player
         }
 
         fun Target.getDirection(): Vector {
@@ -62,6 +72,10 @@ interface Target {
 
         fun Target.getLivingEntity(): LivingEntity? {
             return (this as? Entity)?.asLivingEntity
+        }
+
+        fun Target.getPlayer(): Player? {
+            return getLivingEntity() as? Player
         }
 
         fun Target.ifLocation(call: Location.() -> Unit) {
@@ -238,6 +252,16 @@ interface Target {
 
         override fun toString(): String {
             return "Entity(entity=$entity, type=$type)"
+        }
+
+    }
+
+    class Console : Target {
+
+        private val bukkitConsole = console()
+
+        override fun toLocal(): String {
+            return "console"
         }
 
     }

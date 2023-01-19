@@ -42,10 +42,11 @@ object ScriptLoader {
         }
     }
 
-    fun runScript(context: Context, func: (ScriptContext) -> Unit = {}) {
-        val script = scripts[context.id] ?: return
+    fun runScript(context: Context.SourceImpl, func: (ScriptContext) -> Unit = {}) {
+        val script = scripts[context.sourceId] ?: return
         val scriptContext = ScriptContext.create(script, func)
-        runningScripts.put(context.id, ScriptData(context.executor, scriptContext))
+        context.ketherScriptContext = scriptContext
+        runningScripts.put(context.id, ScriptData(context.proxySender, scriptContext))
         scriptContext.runActions().thenRunAsync({
             runningScripts.remove(context.id, scriptContext)
         }, ScriptService.asyncExecutor)
@@ -54,7 +55,7 @@ object ScriptLoader {
     fun createScript(session: Session, block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {
         return createScript(session as Context.Impl) {
             block(this)
-            runningScripts.put(session.id, ScriptData(session.executor, this))
+            runningScripts.put(session.id, ScriptData(session.proxySender, this))
             rootFrame().addClosable(AutoCloseable {
                 runningScripts.remove(session.id, this)
             })
@@ -70,7 +71,8 @@ object ScriptLoader {
     }
 
     fun createFunctionScript(context: Context, input: String, block: ScriptContext.() -> Unit = {}): String {
-        return KetherFunction.parse(input) {
+        return KetherFunction.parse(input, sender = context.proxySender, namespace = namespaces) {
+            context.ketherScriptContext = this
             this.rootFrame().rootVariables()["@Context"] = context
             if (context is Context.Impl) {
                 context.variables.forEach {
@@ -82,7 +84,8 @@ object ScriptLoader {
     }
 
     fun createScript(context: Context, script: String, block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {
-        return KetherShell.eval(script, sender = context.executor, namespace = namespaces) {
+        return KetherShell.eval(script, sender = context.proxySender, namespace = namespaces) {
+            context.ketherScriptContext = this
             this.id = UUID.randomUUID().toString()
             this.rootFrame().rootVariables()["@Context"] = context
             if (context is Context.Impl) {
@@ -113,6 +116,7 @@ object ScriptLoader {
             (context as? Session)?.open(this)
             func(this)
         }
+        context.ketherScriptContext = scriptContext
         script.getBlock(name).ifPresent {
             it.actions.forEach {
                 it.process(scriptContext.rootFrame())

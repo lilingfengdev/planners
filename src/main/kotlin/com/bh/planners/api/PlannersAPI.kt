@@ -3,26 +3,26 @@ package com.bh.planners.api
 import com.bh.planners.api.ManaCounter.takeMana
 import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.common.ExecuteResult
+import com.bh.planners.api.enums.UpgradeResult
 import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.api.event.PlayerKeydownEvent
+import com.bh.planners.api.event.PlayerSkillResetEvent
 import com.bh.planners.api.script.ScriptLoader
-import com.bh.planners.core.kether.namespaces
-import com.bh.planners.core.kether.rootVariables
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.*
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
+import com.bh.planners.core.storage.Storage
 import com.google.gson.Gson
 import org.bukkit.entity.Player
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.adaptPlayer
-import taboolib.common.platform.function.info
+import taboolib.common.platform.function.submitAsync
 import taboolib.common5.Coerce
-import taboolib.module.kether.KetherShell
-import taboolib.module.kether.ScriptContext
-import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.kether.runKether
+import taboolib.platform.util.sendLang
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 object PlannersAPI {
 
@@ -46,7 +46,6 @@ object PlannersAPI {
 
 
     fun cast(player: Player, skillName: String, mark: Boolean = true): ExecuteResult {
-        player.isBlocking
         return player.plannersProfile.cast(skillName, mark)
     }
 
@@ -119,23 +118,46 @@ object PlannersAPI {
         return conditions.isEmpty() || conditions.any { return checkCondition(player, playerSkill, it) }
     }
 
-    fun tryUpgrade(player: Player, playerSkill: PlayerJob.Skill): Boolean {
+    fun tryUpgrade(player: Player, playerSkill: PlayerJob.Skill): CompletableFuture<UpgradeResult> {
 
-        // 如果满级 则失败
-        if (playerSkill.isMax) return false
+        val profile = player.plannersProfile
 
-        // 如果不满足条件 则失败
-        if (!checkUpgrade(player, playerSkill)) return false
+        // 优先判定技能点
+        return playerSkill.getNeedPoints(player).thenApply { points ->
+            if (profile.point < points) {
+                player.sendLang("player-points-law",points,profile.point)
+                return@thenApply UpgradeResult.LAW_POINTS
+            }
 
-        val context = Context.Impl(adaptPlayer(player), playerSkill.instance)
+            // 如果满级 则失败
+            if (playerSkill.isMax) return@thenApply UpgradeResult.MAX_LEVEL
 
-        getUpgradeConditions(playerSkill).forEach {
-            it.consumeTo(context)
+            // 如果不满足条件 则失败
+            if (!checkUpgrade(player, playerSkill)) return@thenApply UpgradeResult.MATCH_CONDITION
+
+            val context = Context.Impl(player.toTarget(), playerSkill.instance)
+
+            getUpgradeConditions(playerSkill).forEach {
+                it.consumeTo(context)
+            }
+            // 优先扣除技能点
+            profile.addPoint(-points)
+            profile.next(playerSkill)
+            return@thenApply UpgradeResult.SUCCESS
         }
-        player.plannersProfile.next(playerSkill)
-        return true
+
     }
 
+    fun resetSkillPoint(profile: PlayerProfile,skill: PlayerJob.Skill) {
+        if (PlayerSkillResetEvent.Pre(profile,skill).call()) {
+            skill.level = 0
+            PlayerSkillResetEvent.Post(profile, skill).call()
+            submitAsync {
+                Storage.INSTANCE.updateSkill(profile, skill)
+            }
+        }
+
+    }
 
     val PlayerJob.Skill.isMax: Boolean
         get() = level == instance.option.levelCap
@@ -152,7 +174,7 @@ object PlannersAPI {
     }
 
     fun checkCondition(player: Player, playerSkill: PlayerJob.Skill, it: Condition): Boolean {
-        return checkCondition(Context.Impl(adaptPlayer(player), playerSkill.instance), it)
+        return checkCondition(Context.Impl(player.toTarget(), playerSkill.instance), it)
     }
 
     fun checkCondition(player: Player,condition: Condition): Boolean {

@@ -1,6 +1,7 @@
 package com.bh.planners.core.effect
 
 import org.bukkit.Location
+import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 
 
@@ -33,4 +34,13 @@ fun rotateLocationAboutPoint(location: Location, angle: Double, point: Location)
 fun rotateLocationAboutVector(location: Location, origin: Location, angle: Double, axis: Vector): Location {
     val vector = location.clone().subtract(origin).toVector()
     return origin.clone().add(rotateAroundAxis(vector, axis, angle))
+}
+
+fun isInsideSector(target: Location, livingEntity: LivingEntity, radius: Double, angle: Double): Boolean {
+    val sectorStart: Vector = rotateAroundAxisY(livingEntity.location.direction.clone(), -angle / 2)
+    val sectorEnd: Vector = rotateAroundAxisY(livingEntity.location.direction.clone(), angle / 2)
+    val v = target.clone().subtract(livingEntity.location).toVector()
+    val start = -sectorStart.x * v.z + sectorStart.z * v.x > 0
+    val end = -sectorEnd.x * v.z + sectorEnd.z * v.x > 0
+    return !start && end && target.distance(livingEntity.location) < radius
 }

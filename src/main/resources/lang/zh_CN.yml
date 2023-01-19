@@ -2,7 +2,7 @@ shift-left-info: 'Shift + 左键 选择职业'
 job-exists: '您已选择 {0} 职业,无法重复选择'
 console-player-job-exists: '目标玩家已选择 {0} 职业,无法重复选择'
 console-player-job-not-exists: '目标玩家未选择职业'
-
+player-points-law: '您的技能点缺失,当前{0},需要{1}'
 player-not-job: '您还未选择职业,无法执行该操作哦~'
 player-get-point: '您获得技能点{0}'
 player-set-point: '设置您的技能点{0}'

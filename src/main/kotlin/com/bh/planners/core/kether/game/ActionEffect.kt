@@ -3,43 +3,32 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.core.effect.*
 import com.bh.planners.core.kether.*
 import com.bh.planners.core.pojo.Context
-import com.bh.planners.core.pojo.Session
 import org.bukkit.Location
-import org.bukkit.craftbukkit.v1_12_R1.CraftServer
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 object ActionEffect {
 
     // effect action ""
-    class Parser(val effect: Effect, val action: ParsedAction<*>, val onTick: ParsedAction<*>, val onHit: ParsedAction<*>) : ScriptAction<Void>() {
+    class Parser(val effect: Effect, val action: ParsedAction<*>) : ScriptAction<Void>() {
+
+        val events = mutableMapOf<String, String>()
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
             frame.run(action).str { action ->
                 val context = frame.getContext()
-                
-                if (context !is Context.SourceImpl) return@str 
-                
-                frame.run(onTick).str { ontick ->
 
-                    frame.run(onHit).str { onhit ->
+                if (context !is Context.SourceImpl) return@str
 
-                        val response = Response(context)
+                val response = Response(context, events)
 
-                        response.tick = EffectICallback.Tick(ontick,response.context )
-                        response.hit = EffectICallback.Hit(onhit,response.context)
-                        
-                        submit(async = true) {
-                            val effectOption = EffectOption.get(action)
-                            effect.sendTo(frame.origin(), effectOption, context, response)
-                        }
-                    }
-
-
-
+                submit(async = true) {
+                    val effectOption = EffectOption.get(action)
+                    effect.sendTo(frame.origin(), effectOption, context, response)
                 }
 
             }
@@ -48,21 +37,21 @@ object ActionEffect {
         }
     }
 
-    class Response(val context: Context.SourceImpl) {
+    class Response(val context: Context.SourceImpl, events: Map<String, String>) {
 
+        val eventTicks = mutableListOf<EffectICallback<*>>()
 
-        var tick: EffectICallback.Tick? = null
-
-        var hit: EffectICallback.Hit? = null
+        init {
+            eventTicks += EffectICallback.Tick(events["ontick"] ?: "__null__", context)
+            eventTicks += EffectICallback.Tick(events["onhit"] ?: "__null__", context)
+        }
 
         fun handleTick(location: Location) {
             this.handleTick(listOf(location))
         }
 
         fun handleTick(locations: List<Location>) {
-
-            this.tick?.handle(locations)
-            this.hit?.handle(locations)
+            eventTicks.forEach { it.onTick(locations) }
         }
 
     }
@@ -77,14 +66,32 @@ object ActionEffect {
             it.mark()
             val expect = it.expects(*Effects.effectKeys.toTypedArray())
             val effectLoader = Effects.get(expect)
-            Parser(effectLoader, it.nextParsedAction(),
-                it.tryGet(arrayOf("ontick", "onTick"), "none")!!,
-                it.tryGet(arrayOf("onhit", "onHit"), "none")!!
-            )
+            val events = it.maps()
+            Parser(effectLoader, it.nextParsedAction()).also {
+                it.events += events
+            }
         } catch (ex: Exception) {
             it.reset()
             throw ex
         }
+    }
+
+    /**
+     * 尝试获取一个maps
+     */
+    fun QuestReader.maps(): MutableMap<String, String> {
+        val mapOf = mutableMapOf<String, String>()
+        while (true) {
+            this.mark()
+            val nextToken = this.nextToken()
+            if (nextToken.startsWith("on")) {
+                mapOf[nextToken] = this.nextToken()
+            } else {
+                this.reset()
+                break
+            }
+        }
+        return mapOf
     }
 
 }

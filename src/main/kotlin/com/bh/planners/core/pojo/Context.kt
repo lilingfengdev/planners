@@ -1,35 +1,45 @@
 package com.bh.planners.core.pojo
 
+import com.bh.planners.api.EntityAPI.getDataContainer
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.script.ScriptLoader
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.getLivingEntity
 import com.bh.planners.core.kether.LazyGetter
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.data.DataContainer
+import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
+import com.bh.planners.util.toProxyCommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
-import taboolib.module.kether.KetherShell
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.printKetherErrorMessage
-import taboolib.module.kether.runKether
+import taboolib.module.kether.*
 import java.util.*
 
-abstract class Context(val executor: ProxyCommandSender) {
-
+abstract class Context(val sender: Target) {
 
     val id = UUID.randomUUID().toString()
 
     var closed = false
 
-    val player: Player
-        get() = executor.cast()
+    val proxySender: ProxyCommandSender
+        get() = sender.toProxyCommandSender() ?: console()
 
-    val profile: PlayerProfile
-        get() = player.plannersProfile
+    var ketherScriptContext : ScriptContext? = null
 
-    val flags = DataContainer()
+    val player: Player?
+        get() = sender.getLivingEntity() as? Player
+
+    val profile: PlayerProfile?
+        get() = player?.plannersProfile
+
+    val dataContainer : DataContainer
+        get() = player?.getDataContainer() ?: DataContainer()
+
+    val variables = DataContainer()
 
     protected fun toLazyVariable(variable: Skill.Variable): LazyGetter<*> {
         return LazyGetter {
@@ -39,16 +49,16 @@ abstract class Context(val executor: ProxyCommandSender) {
         }
     }
 
-    abstract class SourceImpl(executor: ProxyCommandSender) : Context(executor) {
+    abstract class SourceImpl(sender: Target) : Context(sender) {
 
         abstract val sourceId: String
 
     }
 
-    open class Impl(executor: ProxyCommandSender, val skill: Skill) : SourceImpl(executor) {
+    open class Impl(sender: Target, val skill: Skill) : SourceImpl(sender) {
 
         open val playerSkill: PlayerJob.Skill
-            get() = profile.getSkill(skill.key)!!
+            get() = profile?.getSkill(skill.key)!!
 
         override val sourceId: String = skill.key
 
@@ -58,15 +68,17 @@ abstract class Context(val executor: ProxyCommandSender) {
 
         val scriptAction = script.action
 
-        val variables = skill.option.variables.associate { it.key to toLazyVariable(it) }
+        init {
+            skill.option.variables.forEach {
+                variables[it.key] = toLazyVariable(it).unsafeData()
+            }
+        }
 
     }
 
-    open class Impl0(executor: ProxyCommandSender) : Context(executor) {
+    open class Impl0(sender: Target) : Context(sender)
 
-    }
-
-    open class Impl1(executor: ProxyCommandSender, skill: Skill, val level: Int) : Session(executor, skill) {
+    open class Impl1(sender: Target, skill: Skill, val level: Int) : Session(sender, skill) {
 
         override val playerSkill = PlayerJob.Skill(-1, skill.key, level, null)
 

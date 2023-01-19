@@ -1,16 +1,22 @@
 package com.bh.planners.core.kether
 
+import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.common.Operator
 import com.bh.planners.api.Counting
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.maxLevel
+import com.bh.planners.api.script.ScriptLoader
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
+import com.bh.planners.core.pojo.player.PlayerJob
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestContext
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -81,19 +87,59 @@ class ActionSkill {
                     CooldownOperator(operator, it.nextParsedAction(), it.tryGet(arrayOf("of", "the")))
                 }
                 case("level") {
-                    LevelGet(it.tryGet(arrayOf("of","the")))
+                    actionSkillNow(tryGet(arrayOf("of","the"))) { it.level }
+                }
+                case("level-cap","max-level","level-max") {
+                    actionSkillNow(tryGet(arrayOf("of","the"))) { it.maxLevel }
+                }
+                case("name") {
+                    actionSkillNow(tryGet(arrayOf("of","the"))) { it.name }
+                }
+                other {
+                    val varKey = nextToken()
+                    actionSkillNow(tryGet(arrayOf("of","the"))) {
+                        val variable = it.instance.option.variables.firstOrNull { it.key == varKey } ?: error("No variable ${varKey} define.")
+                        val context = ContextAPI.create(bukkitPlayer()!!, it)
+                        ScriptLoader.createScript(context,variable.expression)
+                    }
                 }
 
             }
 
         }
 
+        fun actionSkillNow(of: ParsedAction<*>?,func: QuestContext.Frame.(PlayerJob.Skill) -> Any?) = actionNow {
+            val future = CompletableFuture<Any?>()
+            if (of != null) {
+                run(of).str { skill ->
+                    future.complete(func(this,this.bukkitPlayer()?.plannersProfile?.getSkill(skill) ?: error("No skill $skill")))
+                }
+            } else {
+                future.complete(func(this,this.skill()))
+            }
+        }
+
+        fun actionTake(of: ParsedAction<*>?, func: QuestContext.Frame.(PlayerJob.Skill) -> CompletableFuture<*>) = actionTake {
+            val future = CompletableFuture<Any>()
+            if (of != null) {
+                run(of).str { skill ->
+                    func(this,this.bukkitPlayer()?.plannersProfile?.getSkill(skill) ?: error("No skill $skill")).thenAccept {
+                        future.complete(it)
+                    }
+                }
+            } else {
+                func(this,this.skill()).thenAccept {
+                    future.complete(it)
+                }
+            }
+            future
+        }
         fun execute(player: Player, skill: Skill, operator: Operator, amount: Long) {
             when (operator) {
                 Operator.ADD -> Counting.increase(player, skill, amount)
                 Operator.TAKE -> Counting.reduce(player, skill, amount)
                 Operator.SET -> Counting.set(player, skill, amount)
-                Operator.RESET -> Counting.reset(player, Session(adaptPlayer(player), skill))
+                Operator.RESET -> Counting.reset(player, Session(player.toTarget(), skill))
             }
         }
 

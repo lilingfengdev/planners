@@ -8,6 +8,8 @@ import com.bh.planners.api.event.PlayerInitializeEvent
 import com.bh.planners.api.event.PlayerSkillBindEvent
 import com.bh.planners.api.event.PlayerSkillUpgradeEvent
 import com.bh.planners.api.event.PluginReloadEvent
+import com.bh.planners.api.script.ScriptLoader
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.pojo.Context
@@ -28,6 +30,7 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.printKetherErrorMessage
+import taboolib.module.kether.runKether
 
 object BukkitGrid {
 
@@ -63,14 +66,10 @@ object BukkitGrid {
 
     fun toActionbarValue(player: Player, grid: Grid): String {
         val skill = get(player, grid) ?: return ""
-        return try {
-            KetherFunction.parse(gridActionbarValue, sender = adaptPlayer(player), namespace = namespaces) {
-                rootFrame().rootVariables()["@Context"] = Context.Impl(sender!!, skill.instance)
-            }
-        } catch (e: Throwable) {
-            e.printKetherErrorMessage()
-            "&cError $gridActionbarValue"
-        }
+        val context = Context.Impl(player.toTarget(), skill.instance)
+        return runKether {
+            ScriptLoader.createFunctionScript(context, gridActionbarValue)
+        } ?: "&cError $gridActionbarValue"
     }
 
     fun updateAll(player: Player) {

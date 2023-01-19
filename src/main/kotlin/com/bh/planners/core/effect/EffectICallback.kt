@@ -16,13 +16,17 @@ abstract class EffectICallback<T>(val name: String,val context: Context.SourceIm
 
     val listeners = mutableMapOf<String, (T) -> Unit>()
 
+    abstract fun onTick(location: Location)
+
+    abstract fun onTick(locations: List<Location>)
+
     class Tick(name: String,context: Context.SourceImpl) : EffectICallback<MutableList<Location>>(name,context) {
 
-        fun handle(location: Location) {
-            this.handle(listOf(location))
+        override fun onTick(location: Location) {
+            this.onTick(listOf(location))
         }
 
-        fun handle(locations: List<Location>) {
+        override fun onTick(locations: List<Location>) {
 
             if (name == "__none__") return
 
@@ -38,11 +42,11 @@ abstract class EffectICallback<T>(val name: String,val context: Context.SourceIm
 
     class Hit(name: String,context: Context.SourceImpl) : EffectICallback<MutableList<LivingEntity>>(name,context) {
 
-        fun handle(location: Location) {
-            this.handle(listOf(location))
+        override fun onTick(location: Location) {
+            this.onTick(listOf(location))
         }
 
-        fun handle(locations: List<Location>) {
+        override fun onTick(locations: List<Location>) {
 
             if (name == "__none__") return
 

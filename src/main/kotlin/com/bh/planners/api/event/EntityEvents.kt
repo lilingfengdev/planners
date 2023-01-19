@@ -7,6 +7,6 @@ import taboolib.platform.type.BukkitProxyEvent
 class EntityEvents {
 
 
-    class DamageByEntity(val damager: LivingEntity?,val entity: LivingEntity,val value: Double) : BukkitProxyEvent()
+    class DamageByEntity(val damager: LivingEntity?, val entity: LivingEntity, var value: Double) : BukkitProxyEvent()
 
 }

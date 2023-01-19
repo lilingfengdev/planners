@@ -4,6 +4,8 @@ import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.addPoint
 import com.bh.planners.api.event.PlayerSelectedJobEvent
 import com.bh.planners.api.next
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.LazyGetter
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.kether.rootVariables
@@ -71,7 +73,7 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
             get() = config.getStringList("next-icon.condition")
 
         fun nextUpgradePoint(player: Player, skill: PlayerJob.Skill): Int {
-            val session = ContextImpl(adaptPlayer(player), skill)
+            val session = ContextImpl(player.toTarget(), skill)
             return Coerce.toInteger(session.upgradePoint.get())
         }
 
@@ -81,9 +83,9 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
     val playerSkill: PlayerJob.Skill
         get() = profile.getSkill(skill.key)!!
 
-    class ContextImpl(executor: ProxyCommandSender, override val playerSkill: PlayerJob.Skill) : Context.Impl(executor, playerSkill.instance) {
+    class ContextImpl(sender: Target, override val playerSkill: PlayerJob.Skill) : Context.Impl(sender, playerSkill.instance) {
 
-        val upgradePoint = variables["upgradePoint"] ?: LazyGetter { 0 }
+        val upgradePoint = variables["upgradePoint"]?.toLazyGetter() ?: LazyGetter { 0 }
 
     }
 
