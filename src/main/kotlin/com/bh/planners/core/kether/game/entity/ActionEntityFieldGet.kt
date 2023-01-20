@@ -11,7 +11,7 @@ class ActionEntityFieldGet(val field: EntityField, val selector: ParsedAction<*>
         val future = CompletableFuture<Any>()
 
         frame.createContainer(selector).thenAccept {
-            val entityTarget = it.firstEntityTarget()
+            val entityTarget = it.firstProxyEntity(bukkit = false)
             if (entityTarget != null) {
                 future.complete(field.get(entityTarget))
             } else future.complete(null)

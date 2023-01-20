@@ -14,8 +14,7 @@ object EntityPet : Selector {
     override fun check(data: Selector.Data): CompletableFuture<Void> {
         val entityTarget = data.target as? Target.Entity ?: return CompletableFuture.completedFuture(null)
 
-        val player = (entityTarget.entity as? Player) ?: return CompletableFuture.completedFuture(null)
-
+        val player = entityTarget.player ?: return CompletableFuture.completedFuture(null)
 
         val myPet = MyPetApi.getMyPetManager().getMyPet(player) ?: return CompletableFuture.completedFuture(null)
         myPet.entity.ifPresent { entity ->

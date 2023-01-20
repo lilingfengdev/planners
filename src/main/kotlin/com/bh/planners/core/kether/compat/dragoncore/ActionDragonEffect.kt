@@ -41,7 +41,7 @@ class ActionDragonEffect(
 
         val value = when (target) {
             is Target.Entity -> {
-                target.entity.uniqueId.toString()
+                target.proxy.uniqueId.toString()
             }
 
             is Target.Location -> {

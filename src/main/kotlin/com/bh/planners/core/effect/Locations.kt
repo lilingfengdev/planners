@@ -36,11 +36,19 @@ fun rotateLocationAboutVector(location: Location, origin: Location, angle: Doubl
     return origin.clone().add(rotateAroundAxis(vector, axis, angle))
 }
 
-fun isInsideSector(target: Location, livingEntity: LivingEntity, radius: Double, angle: Double): Boolean {
-    val sectorStart: Vector = rotateAroundAxisY(livingEntity.location.direction.clone(), -angle / 2)
-    val sectorEnd: Vector = rotateAroundAxisY(livingEntity.location.direction.clone(), angle / 2)
-    val v = target.clone().subtract(livingEntity.location).toVector()
+fun isInsideSector(target: Location, origin: Location, radius: Double, angle: Double): Boolean {
+    val sectorStart: Vector = rotateAroundAxisY(origin.direction.clone(), -angle / 2)
+    val sectorEnd: Vector = rotateAroundAxisY(origin.direction.clone(), angle / 2)
+    val v = target.clone().subtract(origin).toVector()
     val start = -sectorStart.x * v.z + sectorStart.z * v.x > 0
     val end = -sectorEnd.x * v.z + sectorEnd.z * v.x > 0
-    return !start && end && target.distance(livingEntity.location) < radius
+    return !start && end && target.distance(origin) < radius
+}
+
+fun Location.safeDistance(loc: Location): Double {
+    return if (this.world!!.name == loc.world!!.name) {
+        distance(loc)
+    } else {
+        Double.MAX_VALUE
+    }
 }

@@ -24,14 +24,15 @@ import taboolib.module.kether.runKether
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class ActionGermParticle(val name: ParsedAction<*>,val animation: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
+class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<*>, val selector: ParsedAction<*>?) :
+    ScriptAction<Void>() {
 
     companion object {
 
         val cache = Collections.synchronizedMap(mutableMapOf<String, ConfigurationSection>())
 
 
-        fun get(name: String,rootType: RootType = RootType.EFFECT): ConfigurationSection? {
+        fun get(name: String, rootType: RootType = RootType.EFFECT): ConfigurationSection? {
             return cache.computeIfAbsent(name) {
                 val split = name.split(":")
                 GermSrcManager.getGermSrcManager().getSrc(split[0], rootType)?.getConfigurationSection(split[1])
@@ -62,7 +63,13 @@ class ActionGermParticle(val name: ParsedAction<*>,val animation: ParsedAction<*
 
         Bukkit.getOnlinePlayers().forEach {
             if (target is Target.Entity) {
-                effect.spawnToEntity(it, target.entity)
+                if (target.isBukkit) {
+                    effect.spawnToEntity(it, target.bukkitEntity)
+                }
+                // 虚拟实体特殊处理
+                else {
+                    effect.spawnToLocation(it,target.value)
+                }
             } else if (target is Target.Location) {
                 effect.spawnToLocation(it, target.value)
             }
@@ -78,7 +85,9 @@ class ActionGermParticle(val name: ParsedAction<*>,val animation: ParsedAction<*
 
                     it is IEffectAnimation -> listOf(it)
 
-                    it is List<*> -> it.map { it as? IEffectAnimation ?: error("$it element not match 'EffectAnimation'") }
+                    it is List<*> -> it.map {
+                        it as? IEffectAnimation ?: error("$it element not match 'EffectAnimation'")
+                    }
 
                     it is String && it == "__none__" -> emptyList()
 
@@ -88,10 +97,10 @@ class ActionGermParticle(val name: ParsedAction<*>,val animation: ParsedAction<*
 
                 if (selector != null) {
                     frame.createContainer(selector).thenAccept {
-                        it.forEach { execute(it,animations, effectParticle) }
+                        it.forEach { execute(it, animations, effectParticle) }
                     }
                 } else {
-                    execute(frame.target(),animations, effectParticle)
+                    execute(frame.target(), animations, effectParticle)
                 }
 
             }

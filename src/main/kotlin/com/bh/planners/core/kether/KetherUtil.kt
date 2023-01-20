@@ -189,7 +189,7 @@ inline fun <reified T> ScriptFrame.runTransfer0(action: ParsedAction<*>, crossin
 fun ScriptFrame.execEntity(selector: ParsedAction<*>, call: Entity.() -> Unit) {
     exec(selector) {
         if (this is Target.Entity) {
-            call(this.entity)
+            call(this.bukkitEntity ?: return@exec)
         }
     }
 }
@@ -213,7 +213,7 @@ fun ScriptFrame.execLocation(selector: ParsedAction<*>, call: Location.() -> Uni
 fun ScriptFrame.execPlayer(selector: ParsedAction<*>, call: Player.() -> Unit) {
     exec(selector) {
         if (this is Target.Entity) {
-            call(this.entity as? Player ?: return@exec)
+            call(this.player ?: return@exec)
         }
     }
 }

@@ -16,7 +16,7 @@ object Type : Selector {
         val types = data.values
         data.container.removeIf {
             if (it is Target.Entity) {
-                if (data.isNon) it.type.name in types else it.type.name !in types
+                if (data.isNon) it.type in types else it.type !in types
             } else true
         }
         return CompletableFuture.completedFuture(null)

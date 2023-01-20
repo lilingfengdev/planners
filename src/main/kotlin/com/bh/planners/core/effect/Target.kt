@@ -1,6 +1,8 @@
 package com.bh.planners.core.effect
 
 import com.bh.planners.api.common.Demand
+import com.bh.planners.api.entity.ProxyBukkitEntity
+import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.kether.toLocal
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
@@ -44,7 +46,7 @@ interface Target {
         }
 
         fun org.bukkit.entity.Entity.toTarget(): Entity {
-            return Entity(this)
+            return Entity(ProxyBukkitEntity(this))
         }
 
         fun org.bukkit.Location.toTarget(): Location {
@@ -53,13 +55,13 @@ interface Target {
             }
         }
 
-        fun Target.isPlayer() : Boolean {
+        fun Target.isPlayer(): Boolean {
             val entity = getLivingEntity() ?: return false
             return entity is Player
         }
 
         fun Target.getDirection(): Vector {
-            return (this as? Entity)?.value?.direction ?: Vector(0,0,0)
+            return (this as? Entity)?.value?.direction ?: Vector(0, 0, 0)
         }
 
         fun Target.getLocation(): org.bukkit.Location? {
@@ -67,11 +69,11 @@ interface Target {
         }
 
         fun Target.getEntity(): org.bukkit.entity.Entity? {
-            return (this as? Entity)?.entity
+            return (this as? Entity)?.bukkitEntity
         }
 
         fun Target.getLivingEntity(): LivingEntity? {
-            return (this as? Entity)?.asLivingEntity
+            return (this as? Entity)?.bukkitLivingEntity
         }
 
         fun Target.getPlayer(): Player? {
@@ -143,7 +145,7 @@ interface Target {
         }
 
         fun forEachEntity(func: org.bukkit.entity.Entity.(Int) -> Unit) {
-            forEach<Entity> { index -> func(entity, index) }
+            forEach<Entity> { index -> func(bukkitEntity ?: return@forEach, index) }
         }
 
         inline fun <reified T : Target> map(check: T.() -> Boolean): List<T> {
@@ -152,8 +154,8 @@ interface Target {
 
         fun forEachLivingEntity(func: LivingEntity.(Int) -> Unit) {
             forEach<Entity> { index ->
-                if (entity is LivingEntity) {
-                    func(entity, index)
+                if (isLiving) {
+                    func(bukkitLivingEntity!!, index)
                 }
             }
         }
@@ -174,9 +176,15 @@ interface Target {
 
         fun firstTarget() = firstOrNull()
 
-        fun firstLivingEntityTarget() = filterIsInstance<Entity>().firstOrNull { it.isLiving }?.asLivingEntity
+        fun firstLivingEntityTarget() = filterIsInstance<Entity>().firstOrNull { it.isLiving }?.bukkitLivingEntity
 
-        fun firstEntityTarget() = filterIsInstance<Entity>().firstOrNull()?.entity
+        fun firstProxyEntity(bukkit: Boolean = true) : ProxyEntity? {
+            return filterIsInstance<Entity>().firstOrNull { if (bukkit) it.isBukkit else true }?.proxy
+        }
+
+        fun firstEntityTarget(bukkit: Boolean = true): org.bukkit.entity.Entity? {
+            return filterIsInstance<Entity>().firstOrNull { if (bukkit) it.isBukkit else true }?.bukkitEntity
+        }
 
         fun getLocationTarget(index: Int) = filterIsInstance<Location>().getOrNull(index)?.value
 
@@ -213,45 +221,50 @@ interface Target {
 
     }
 
-    open class Entity(val entity: org.bukkit.entity.Entity) : Location(null) {
+    open class Entity(val proxy: ProxyEntity) : Location(null) {
+
+        val isBukkit = proxy is ProxyBukkitEntity
 
         override val value: org.bukkit.Location
             get() = if (isLiving)
-                asLivingEntity!!.eyeLocation
+                bukkitLivingEntity!!.eyeLocation
             else
-                entity.location
+                proxy.location
 
         val isLiving: Boolean
-            get() = entity is LivingEntity
+            get() = (proxy as? ProxyBukkitEntity)?.isLivingEntity ?: false
 
-        val asLivingEntity: LivingEntity?
-            get() = entity as? LivingEntity
+        val bukkitEntity: org.bukkit.entity.Entity?
+            get() = (proxy as? ProxyBukkitEntity)?.instance
+
+        val bukkitLivingEntity: LivingEntity?
+            get() = bukkitEntity as? LivingEntity
 
         val player: Player?
-            get() = entity as? Player
+            get() = bukkitLivingEntity as? Player
 
-        val type = entity.type
+        val type = proxy.type
 
         override fun toLocal(): String {
-            return entity.uniqueId.toString()
+            return proxy.uniqueId.toString()
         }
 
         override fun hashCode(): Int {
-            return entity.hashCode()
+            return proxy.hashCode()
         }
 
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other is org.bukkit.entity.Entity) {
-                return this.entity == other
+                return this.proxy == other
             }
 
             return true
         }
 
         override fun toString(): String {
-            return "Entity(entity=$entity, type=$type)"
+            return "Entity(entity=$proxy, type=$type)"
         }
 
     }

@@ -80,7 +80,7 @@ class ActionEntityProjectile {
                                             frame.createContainer(selector).thenAccept {
                                                 val entities =
                                                     it.filterIsInstance<Target.Entity>().filter { it.isLiving }
-                                                        .mapNotNull { it.asLivingEntity }
+                                                        .mapNotNull { it.bukkitLivingEntity }
                                                 submit {
                                                     future.complete(
                                                         execute(

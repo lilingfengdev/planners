@@ -1,21 +1,22 @@
 package com.bh.planners.core.kether.game.entity
 
-import com.bh.planners.core.kether.compat.adyeshach.AdyeshachEntity
+import com.bh.planners.api.entity.ProxyAdyeshachEntity
+import com.bh.planners.api.entity.ProxyEntity
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 
-enum class EntityField(val get: Entity.() -> Any?) {
+enum class EntityField(val get: ProxyEntity.() -> Any?) {
 
     UUID({ uniqueId }),
 
     ID({
-        (this as? AdyeshachEntity)?.id ?: "none"
+        (this as? ProxyAdyeshachEntity)?.id ?: "none"
     }),
 
     NAME({ name }),
 
-    TYPE({ type.name }),
+    TYPE({ type }),
 
     YAW({ location.yaw }),
 
@@ -39,7 +40,7 @@ enum class EntityField(val get: Entity.() -> Any?) {
     companion object {
 
         fun fields(): List<String> {
-            return EntityField.values().map { it.name.lowercase() }
+            return EntityField.values().map { it.name.toLowerCase() }
         }
 
     }

@@ -24,7 +24,7 @@ class ActionExplosion(
             if (selector != null) {
                 frame.exec(selector) {
                     val loc = when (this) {
-                        is com.bh.planners.core.effect.Target.Entity -> this.entity.location
+                        is com.bh.planners.core.effect.Target.Entity -> this.proxy.location
                         is com.bh.planners.core.effect.Target.Location -> this.value
                         else -> return@exec
                     }

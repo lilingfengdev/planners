@@ -24,7 +24,7 @@ object Sector : Selector {
         val future = CompletableFuture<Void>()
         submit(async = false) {
             location.world?.getNearbyEntities(location, radius,radius,radius)?.filterIsInstance<LivingEntity>()?.forEach {
-                if (isInsideSector(location,it,radius, angle)) {
+                if (isInsideSector(it.location,location,radius, angle)) {
                     if (data.isNon) {
                         data.container.removeIf { t -> t.getLivingEntity() == it }
                     } else {

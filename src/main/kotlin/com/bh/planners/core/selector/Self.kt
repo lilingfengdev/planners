@@ -27,7 +27,7 @@ object Self : Selector {
         } else {
 
             if (data.read<String>(0,"__null__") == "m") {
-                val location = entity.entity.location
+                val location = entity.proxy.location
                 if (!keepVisual) {
                     location.pitch = 0f
                     location.yaw = 0f

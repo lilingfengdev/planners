@@ -34,7 +34,9 @@ interface Selector {
         fun process(index: Int, future: CompletableFuture<Void>) {
             val key = selectorKeys[index]
             val namespace = key.substring(1)
-            getSelector(namespace).check(Data(namespace, demand.get(key)!!, context, container)).thenAccept {
+            val data = Data(namespace, demand.get(key)!!, context, container)
+            data.target = target
+            getSelector(namespace).check(data).thenAccept {
                 if (index < selectorKeys.size - 1) {
                     process(index + 1, future)
                 } else {
@@ -101,7 +103,8 @@ interface Selector {
 
     class Data(val name: String, val source: String, val context: Context, val container: Target.Container) {
 
-        val target: Target? = null
+        var target: Target? = null
+
         private val args = source.split(" ")
 
         val values: List<String>

@@ -2,6 +2,7 @@ package com.bh.planners.core.ui
 
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.addPoint
+import com.bh.planners.api.enums.UpgradeResult
 import com.bh.planners.api.event.PlayerSelectedJobEvent
 import com.bh.planners.api.next
 import com.bh.planners.core.effect.Target
@@ -170,9 +171,11 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
     }
 
     fun next() {
-        if (PlannersAPI.tryUpgrade(viewer, playerSkill)) {
-            viewer.sendLang("skill-upgrade-success", skill.option.name, playerSkill.level)
-            open()
+        PlannersAPI.tryUpgrade(viewer, playerSkill).thenAccept {
+            if (it == UpgradeResult.SUCCESS) {
+                viewer.sendLang("skill-upgrade-success", skill.option.name, playerSkill.level)
+                open()
+            }
         }
     }
 

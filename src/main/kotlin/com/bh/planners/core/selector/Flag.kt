@@ -18,7 +18,7 @@ object Flag : Selector {
             val key = split[0]
             val value = split[1]
             data.container.removeIf {
-                (it as? Target.Entity)?.entity?.getDataContainer()?.get(key)?.toString() != value
+                (it as? Target.Entity)?.bukkitEntity?.getDataContainer()?.get(key)?.toString() != value
             }
         }
 

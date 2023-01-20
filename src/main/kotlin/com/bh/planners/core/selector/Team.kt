@@ -11,18 +11,19 @@ import java.util.concurrent.CompletableFuture
 
 @Plugin("DungeonPlus")
 object Team : Selector {
+
     override val names: Array<String>
         get() = arrayOf("team", "!team")
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
         val entityTarget = data.target as? Target.Entity ?: return CompletableFuture.completedFuture(null)
 
-        val player = (entityTarget.entity as? Player) ?: return CompletableFuture.completedFuture(null)
+        val player = entityTarget.player ?: return CompletableFuture.completedFuture(null)
 
         val team = getTeamInstance(player) ?: return CompletableFuture.completedFuture(null)
 
         if (data.name.isNon()) {
-            data.container.removeIf { it is Target.Entity && it.entity in team.players }
+            data.container.removeIf { it is Target.Entity && it.player in team.players }
         } else {
             data.container.addAll(team.players.map { it.toTarget() })
         }

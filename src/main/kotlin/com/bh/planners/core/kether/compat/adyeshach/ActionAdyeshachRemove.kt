@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 class ActionAdyeshachRemove(val selector: ParsedAction<*>) : ScriptAction<Void>() {
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         frame.execAdyeshachEntity(selector) {
-            this.entity.delete()
+            this.delete()
         }
         return CompletableFuture.completedFuture(null)
     }

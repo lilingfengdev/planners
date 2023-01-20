@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.compat.adyeshach
 
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.bukkitPlayer
+import com.bh.planners.core.kether.compat.adyeshach.ActionAdyeshach.foreachAdyEntity
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.runTransfer
 import ink.ptms.adyeshach.internal.command.CommandScript
@@ -37,12 +38,9 @@ class ActionAdyeshachScript(val file: ParsedAction<*>, val args: List<ParsedActi
     fun process(frame: ScriptFrame,cur: Int,array: ArrayList<String>) {
         if (cur < args.size) {
             frame.newFrame(args[cur]).run<Any>().thenApply {
-
                 if (it is Target.Container) {
-                    it.forEachEntity {
-                        if (this is AdyeshachEntity) {
-                            array.add(this.id)
-                        }
+                    it.foreachAdyEntity {
+                        array += this.id
                     }
                 } else {
                     array.add(it.toString())

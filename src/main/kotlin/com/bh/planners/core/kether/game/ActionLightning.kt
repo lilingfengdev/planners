@@ -19,7 +19,7 @@ class ActionLightning(val selector: ParsedAction<*>?) : ScriptAction<Void>() {
             frame.exec(selector) {
                 val loc = when (this) {
                     is Target.Entity -> {
-                        this.entity.location
+                        this.proxy.location
                     }
                     is Target.Location -> {
                         this.value

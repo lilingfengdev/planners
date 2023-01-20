@@ -1,5 +1,7 @@
 package com.bh.planners.core.kether.compat.adyeshach
 
+import com.bh.planners.api.entity.ProxyAdyeshachEntity
+import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.*
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -21,7 +23,12 @@ object ActionAdyeshach {
     fun parser() = scriptParser {
         it.switch {
             case("spawn") {
-                ActionAdyeshachSpawn(it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(), it.selectorAction())
+                ActionAdyeshachSpawn().apply {
+                    this.type = it.nextParsedAction()
+                    this.name = it.nextParsedAction()
+                    this.timeout = it.nextParsedAction()
+                    this.selector = it.selectorAction()
+                }
             }
             case("follow") {
                 ActionAdyeshachFollow(it.nextParsedAction(), it.nextParsedAction(), it.tryGet(arrayOf("option","params"),"EMPTY")!!)
@@ -36,10 +43,18 @@ object ActionAdyeshach {
 
     }
 
-    fun ScriptFrame.execAdyeshachEntity(selector: ParsedAction<*>, call: AdyeshachEntity.() -> Unit) {
-        execEntity(selector) {
-            if (this is AdyeshachEntity) {
-                call(this)
+    fun Target.Container.foreachAdyEntity(block: ProxyAdyeshachEntity.() -> Unit) {
+        this.forEach<Target.Entity> {
+            if (this.proxy is ProxyAdyeshachEntity) {
+                block(this.proxy)
+            }
+        }
+    }
+
+    fun ScriptFrame.execAdyeshachEntity(selector: ParsedAction<*>, call: ProxyAdyeshachEntity.() -> Unit) {
+        exec(selector) {
+            if (this is Target.Entity && this.proxy is ProxyAdyeshachEntity) {
+                call(this.proxy)
             }
         }
     }

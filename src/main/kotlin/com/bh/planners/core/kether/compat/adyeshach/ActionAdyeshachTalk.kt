@@ -1,5 +1,7 @@
 package com.bh.planners.core.kether.compat.adyeshach
 
+import com.bh.planners.api.entity.ProxyBukkitEntity
+import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.*
 import ink.ptms.adyeshach.api.AdyeshachAPI
@@ -20,7 +22,7 @@ import java.util.concurrent.CompletableFuture
  */
 class ActionAdyeshachTalk(val action: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
-    fun execute(entity: Entity, message: String) {
+    fun execute(entity: ProxyEntity, message: String) {
         entity.world.players.forEach { player ->
             message.replace("@Target", entity.name).split("\\n").colored().forEachIndexed { index, s ->
 
@@ -51,7 +53,7 @@ class ActionAdyeshachTalk(val action: ParsedAction<*>, val selector: ParsedActio
                 frame.createContainer(selector).thenAccept { container ->
                     container.forEach {
                         if (it is Target.Entity) {
-                            execute(it.entity, message)
+                            execute(it.proxy, message)
                         } else if (it is Target.Location) {
                             execute(it.value, message)
                         }
@@ -59,7 +61,7 @@ class ActionAdyeshachTalk(val action: ParsedAction<*>, val selector: ParsedActio
 
                 }
             } else {
-                execute(frame.bukkitPlayer() ?: return@thenAccept, it.toString())
+                execute(ProxyBukkitEntity(frame.bukkitPlayer() ?: return@thenAccept), it.toString())
             }
         }
 
