@@ -10,8 +10,8 @@ import taboolib.common5.Coerce
 import java.util.concurrent.CompletableFuture
 
 /**
- * radius 半径
- * angle 角度
+ * radius(半径) angle(角度) ignoreOrigin(忽略远点,默认true)
+ *
  */
 object Sector : Selector {
     override val names: Array<String>
@@ -21,17 +21,22 @@ object Sector : Selector {
         val location = data.target?.getLocation() ?: return CompletableFuture.completedFuture(null)
         val radius = data.read<Double>(0,"1")
         val angle = data.read<Double>(1,"0")
+        val ignoreOrigin = data.read<Boolean>(2,"true")
         val future = CompletableFuture<Void>()
         submit(async = false) {
             location.world?.getNearbyEntities(location, radius,radius,radius)?.filterIsInstance<LivingEntity>()?.forEach {
                 if (isInsideSector(it.location,location,radius, angle)) {
                     if (data.isNon) {
-                        data.container.removeIf { t -> t.getLivingEntity() == it }
-                    } else {
+                        data.container.removeIf { t -> t == it }
+                    }
+                    // 如果忽略原点并且他不是原点 则添加
+                    // 如果是原点 则跳过
+                    else if (ignoreOrigin && it != data.target) {
                         data.container += it.toTarget()
                     }
                 }
             }
+
             future.complete(null)
         }
 

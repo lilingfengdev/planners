@@ -49,5 +49,23 @@ class ProxyAdyeshachEntity(val instance: EntityInstance): ProxyEntity {
         instance.delete()
     }
 
+    override fun hashCode(): Int {
+        return instance.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+
+        if (other is EntityInstance) {
+            return instance == other
+        }
+
+        if (other is ProxyAdyeshachEntity) {
+            return other.instance == instance
+        }
+
+        return false
+    }
+
 
 }

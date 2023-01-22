@@ -256,11 +256,7 @@ interface Target {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (other is org.bukkit.entity.Entity) {
-                return this.proxy == other
-            }
-
-            return true
+            return this.proxy == other
         }
 
         override fun toString(): String {

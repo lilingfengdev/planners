@@ -41,5 +41,27 @@ class ProxyBukkitEntity(val instance: Entity) : ProxyEntity {
 
     val isLivingEntity = instance is LivingEntity
 
+    override fun hashCode(): Int {
+        return instance.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+
+        if (other is ProxyBukkitEntity) {
+            return instance == other.instance
+        }
+
+        if (other is Entity) {
+            return instance == other
+        }
+
+        return false
+    }
+
+    override fun toString(): String {
+        return "ProxyBukkitEntity(instance=$instance)"
+    }
+
 
 }

@@ -4,23 +4,29 @@ import java.time.Duration
 
 object TestMain {
 
-    const val NAME = "KunSs"
-
-
-    fun String.eval(amount: Double): Double {
-        return if (this.last() == '%') {
-            println(this.substring(0,this.lastIndex))
-            amount * (this.substring(0, this.lastIndex).toDouble() / 100)
-        } else {
-            this.toDouble()
-        }
-    }
-
     @JvmStatic
     fun main(args: Array<String>) {
-        val demand = Demand("flame :key 123 456 :key1 sadasd")
-        println(demand)
+        val proxy : Any = Proxy("aaa")
+        println(proxy == "aaa")
     }
 
-    class Data(val priority: Int)
+    class Proxy(val name: String) {
+
+        override fun hashCode(): Int {
+            return name.hashCode()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+
+            other as Proxy
+
+            if (name != other.name) return false
+
+            return true
+        }
+
+
+    }
+
 }

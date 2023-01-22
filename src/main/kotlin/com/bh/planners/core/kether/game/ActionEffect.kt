@@ -66,8 +66,9 @@ object ActionEffect {
             it.mark()
             val expect = it.expects(*Effects.effectKeys.toTypedArray())
             val effectLoader = Effects.get(expect)
+            val option = it.nextParsedAction()
             val events = it.maps()
-            Parser(effectLoader, it.nextParsedAction()).also {
+            Parser(effectLoader, option).also {
                 it.events += events
             }
         } catch (ex: Exception) {
