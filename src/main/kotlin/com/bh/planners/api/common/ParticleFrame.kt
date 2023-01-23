@@ -96,7 +96,7 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
 
         open val run = true
 
-        val isSingle = false
+        val isSingle = true
 
         abstract fun next(): Location?
 
