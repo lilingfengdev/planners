@@ -15,7 +15,7 @@ class ActionChoke(val value: ParsedAction<*>) : ScriptAction<Void>() {
      */
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         val future = CompletableFuture<Void>()
-        frame.runTransfer<Long>(value).thenAccept {
+        frame.read<Long>(value).thenAccept {
             Thread.sleep(it)
             future.complete(null)
         }

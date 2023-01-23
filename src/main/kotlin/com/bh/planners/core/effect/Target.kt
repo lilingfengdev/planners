@@ -45,6 +45,9 @@ interface Target {
             return toTarget()
         }
 
+        fun ProxyEntity.target(): Entity {
+            return Target.Entity(this)
+        }
         fun org.bukkit.entity.Entity.toTarget(): Entity {
             return Entity(ProxyBukkitEntity(this))
         }
@@ -174,6 +177,8 @@ interface Target {
             forEach<Location> { index -> func(value, index) }
         }
 
+//        fun firstLocation() = filterIsInstance<Location>()
+
         fun firstTarget() = firstOrNull()
 
         fun firstLivingEntityTarget() = filterIsInstance<Entity>().firstOrNull { it.isLiving }?.bukkitLivingEntity
@@ -186,7 +191,10 @@ interface Target {
             return filterIsInstance<Entity>().firstOrNull { if (bukkit) it.isBukkit else true }?.bukkitEntity
         }
 
-        fun getLocationTarget(index: Int) = filterIsInstance<Location>().getOrNull(index)?.value
+
+        fun getLocationTarget(index: Int) = filterIsInstance<Location>().getOrNull(index)
+
+        fun firstLocation() = getLocationTarget(0)?.value
 
         fun firstLocationTarget() = getLocationTarget(0)
 

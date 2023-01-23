@@ -14,7 +14,7 @@ class Demand(val source: String,val starts : Array<Char> = arrayOf(':')) {
 
     init {
         var args = source.split(" ")
-        if (source[0] != ':') {
+        if (source[0] != ':' && source[0] != '@') {
             namespace = args[0]
             args = args.subList(1, args.size)
         } else {
@@ -23,7 +23,17 @@ class Demand(val source: String,val starts : Array<Char> = arrayOf(':')) {
         var dataKey : String? = null
         val dataValues = mutableListOf<String>()
         args.forEachIndexed { index, s ->
-            if (s[0] in starts) {
+
+            // 参数优先权重 @ 不用忽略@
+            if (s[0] == '@') {
+                if (dataKey != null) {
+                    put(dataKey!!,dataValues.joinToString(" "))
+                }
+                dataKey = s
+                dataValues.clear()
+            }
+            // 次要权重 starts
+            else if (s[0] in starts) {
                 if (dataKey != null) {
                     put(dataKey!!,dataValues.joinToString(" "))
                 }

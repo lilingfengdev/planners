@@ -4,7 +4,7 @@ import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.execLivingEntity
 import com.bh.planners.core.kether.game.item.ItemOperator.getNumber
-import com.bh.planners.core.kether.runTransfer
+import com.bh.planners.core.kether.read
 import org.bukkit.inventory.ItemStack
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
@@ -24,8 +24,8 @@ class ActionItemCountGet(
 
     override fun run(frame: ScriptFrame): CompletableFuture<Int> {
         val future = CompletableFuture<Int>()
-        frame.runTransfer<BukkitEquipment>(slot).thenAccept { slot ->
-            frame.runTransfer<String>(keyword).thenAccept { keyword ->
+        frame.read<BukkitEquipment>(slot).thenAccept { slot ->
+            frame.read<String>(keyword).thenAccept { keyword ->
                 if (selector != null) {
                     frame.createContainer(selector).thenAccept {
                         val entityTarget = it.firstLivingEntityTarget()

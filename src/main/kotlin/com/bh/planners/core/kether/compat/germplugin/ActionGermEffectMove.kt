@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.compat.germplugin
 
 import com.bh.planners.core.kether.getLocation
-import com.bh.planners.core.kether.runTransfer0
+import com.bh.planners.core.kether.readAccept
 import com.germ.germplugin.api.GermSrcManager
 import com.germ.germplugin.api.RootType
 import com.germ.germplugin.api.dynamic.animation.GermAnimationMove
@@ -19,7 +19,7 @@ class ActionGermEffectMove(val name: ParsedAction<*>, val pos1: ParsedAction<*>,
 
     override fun run(frame: ScriptFrame): CompletableFuture<IEffectAnimation> {
         val future = CompletableFuture<IEffectAnimation>()
-        frame.runTransfer0<String>(name) { name ->
+        frame.readAccept<String>(name) { name ->
 
             frame.getLocation(pos1).thenAccept { pos1 ->
                 frame.getLocation(pos2).thenAccept { pos2 ->

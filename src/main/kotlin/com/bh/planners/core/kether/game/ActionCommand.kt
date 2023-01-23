@@ -43,7 +43,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.runTransfer<String>(command).thenAccept { command ->
+        frame.read<String>(command).thenAccept { command ->
             if (selector != null) {
                 frame.execPlayer(selector) {
                     execute(this, this@ActionCommand.type, command)

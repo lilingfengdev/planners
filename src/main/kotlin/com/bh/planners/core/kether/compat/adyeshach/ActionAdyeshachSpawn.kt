@@ -4,18 +4,20 @@ import com.bh.planners.api.common.SimpleTimeoutTask
 import com.bh.planners.api.entity.ProxyAdyeshachEntity
 import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.target
 import com.bh.planners.core.kether.*
 import ink.ptms.adyeshach.api.AdyeshachAPI
 import ink.ptms.adyeshach.common.entity.EntityInstance
 import ink.ptms.adyeshach.common.entity.EntityTypes
 import org.bukkit.*
 import org.bukkit.entity.*
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionAdyeshachSpawn : ScriptAction<List<ProxyEntity>>() {
+class ActionAdyeshachSpawn : ScriptAction<Target.Container>() {
 
     lateinit var type: ParsedAction<*>
     lateinit var name: ParsedAction<*>
@@ -59,21 +61,25 @@ class ActionAdyeshachSpawn : ScriptAction<List<ProxyEntity>>() {
         return "ady:${entity.uniqueId}"
     }
 
-    override fun run(frame: ScriptFrame): CompletableFuture<List<ProxyEntity>> {
-        val future = CompletableFuture<List<ProxyEntity>>()
-        frame.runTransfer<EntityTypes>(type).thenAccept { type ->
-            frame.runTransfer<String>(name).thenAccept { name ->
-                frame.runTransfer<Long>(timeout).thenAccept { timeout ->
+    override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
+        val container = Target.Container()
+        val future = CompletableFuture<Target.Container>()
+
+        frame.read<EntityTypes>(type).thenAccept { type ->
+            frame.read<String>(name).thenAccept { name ->
+                frame.read<Long>(timeout).thenAccept { timeout ->
                     if (selector != null) {
                         frame.createContainer(selector!!).thenAccept {
                             val locations = it.filterIsInstance<Target.Location>().map { it.value }
                             spawn(type, locations, name, timeout).thenAccept {
-                                future.complete(it)
+                                container += it.map { it.target() }
+                                future.complete(container)
                             }
                         }
                     } else {
                         spawn(type, listOf(frame.origin().value), name, timeout).thenAccept {
-                            future.complete(it)
+                            container += it.map { it.target() }
+                            future.complete(container)
                         }
                     }
                 }
@@ -82,5 +88,6 @@ class ActionAdyeshachSpawn : ScriptAction<List<ProxyEntity>>() {
 
         return future
     }
+
 
 }

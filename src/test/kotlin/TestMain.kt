@@ -6,8 +6,8 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val proxy : Any = Proxy("aaa")
-        println(proxy == "aaa")
+        val demand = Demand("flame @target")
+        println(demand)
     }
 
     class Proxy(val name: String) {

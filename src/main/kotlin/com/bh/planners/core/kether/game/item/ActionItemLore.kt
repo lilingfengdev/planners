@@ -4,7 +4,7 @@ import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.execLivingEntity
 import com.bh.planners.core.kether.game.item.ItemOperator.getNumber
-import com.bh.planners.core.kether.runTransfer
+import com.bh.planners.core.kether.read
 import org.bukkit.inventory.ItemStack
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
@@ -23,7 +23,7 @@ class ActionItemLore(
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<String>> {
         val future = CompletableFuture<List<String>>()
-        frame.runTransfer<BukkitEquipment>(slot).thenAccept { slot ->
+        frame.read<BukkitEquipment>(slot).thenAccept { slot ->
             if (selector != null) {
                 frame.createContainer(selector).thenAccept {
                     val entityTarget = it.firstLivingEntityTarget()

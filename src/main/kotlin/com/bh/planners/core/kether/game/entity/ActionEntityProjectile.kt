@@ -68,13 +68,13 @@ class ActionEntityProjectile {
         override fun run(frame: ScriptFrame): CompletableFuture<List<Entity>> {
 
             val future = CompletableFuture<List<Entity>>()
-            frame.runTransfer0<Type>(action) { type ->
-                frame.runTransfer0<String>(name) { name ->
-                    frame.runTransfer0<Double>(step) { step ->
-                        frame.runTransfer0<Double>(rotateX) { rotateX ->
-                            frame.runTransfer0<Double>(rotateY) { rotateY ->
-                                frame.runTransfer0<Double>(rotateZ) { rotateZ ->
-                                    frame.runTransfer0<String>(event) { event ->
+            frame.readAccept<Type>(action) { type ->
+                frame.readAccept<String>(name) { name ->
+                    frame.readAccept<Double>(step) { step ->
+                        frame.readAccept<Double>(rotateX) { rotateX ->
+                            frame.readAccept<Double>(rotateY) { rotateY ->
+                                frame.readAccept<Double>(rotateZ) { rotateZ ->
+                                    frame.readAccept<String>(event) { event ->
                                         val context = frame.getContext()
                                         if (selector != null) {
                                             frame.createContainer(selector).thenAccept {

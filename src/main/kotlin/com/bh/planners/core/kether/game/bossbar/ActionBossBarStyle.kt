@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.game.bossbar
 
-import com.bh.planners.core.kether.runTransfer
+import com.bh.planners.core.kether.read
 import org.bukkit.boss.BarStyle
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptAction
@@ -14,7 +14,7 @@ class ActionBossBarStyle(val id: ParsedAction<*>, val value: ParsedAction<*>) : 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         frame.run(id).str {
             val bossbar = BossBarManager.getBossbar(it)
-            frame.runTransfer<BarStyle>(value).thenAccept { style ->
+            frame.read<BarStyle>(value).thenAccept { style ->
                 bossbar?.style = style
                 bossbar?.update()
             }

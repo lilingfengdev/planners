@@ -19,7 +19,7 @@ interface Selector {
 
     class Transfer(val target: Target?, val context: Context, val demand: Demand, val container: Target.Container) {
 
-        private val selectorKeys = demand.dataMap.filter { it.key[0] == '@' }.keys.toMutableList()
+        private val selectorKeys = demand.dataMap.filter { it.key[0] == '@' }.entries.toMutableList()
 
         fun run(): CompletableFuture<Void> {
             val future = CompletableFuture<Void>()
@@ -32,15 +32,23 @@ interface Selector {
         }
 
         fun process(index: Int, future: CompletableFuture<Void>) {
-            val key = selectorKeys[index]
-            val namespace = key.substring(1)
-            val data = Data(namespace, demand.get(key)!!, context, container)
-            data.target = target
-            getSelector(namespace).check(data).thenAccept {
-                if (index < selectorKeys.size - 1) {
-                    process(index + 1, future)
-                } else {
-                    future.complete(null)
+            val selectorEntry = selectorKeys[index]
+            val namespace = selectorEntry.key.substring(1)
+            selectorEntry.value.forEachIndexed { optionIndex, s ->
+                val data = Data(namespace, s, context, container)
+                data.target = target
+                getSelector(namespace).check(data).thenAccept {
+
+                    // 如果是最后一个 才检索
+                    if (optionIndex == selectorEntry.value.size - 1) {
+                        if (index < selectorKeys.size - 1) {
+                            process(index + 1, future)
+                        } else {
+                            future.complete(null)
+                        }
+                    }
+
+
                 }
             }
         }
@@ -147,5 +155,7 @@ interface Selector {
         }
 
     }
+
+    class Key(val name: String,val option: String)
 
 }

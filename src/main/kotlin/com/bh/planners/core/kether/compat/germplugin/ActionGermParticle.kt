@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.compat.germplugin
 import ac.github.oa.taboolib.common.reflect.Reflex.Companion.invokeMethod
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.createContainer
-import com.bh.planners.core.kether.runTransfer0
+import com.bh.planners.core.kether.readAccept
 import com.bh.planners.core.kether.target
 import com.germ.germplugin.api.GermSrcManager
 import com.germ.germplugin.api.RootType
@@ -77,7 +77,7 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.runTransfer0<String>(name) { name ->
+        frame.readAccept<String>(name) { name ->
             val effectParticle = create(name)
 
             frame.run(animation).thenAccept {

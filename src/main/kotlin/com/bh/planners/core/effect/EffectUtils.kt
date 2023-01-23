@@ -148,7 +148,3 @@ fun Vector.rotateAroundAxisY(angle: Double): Vector {
     return this.setX(x).setZ(z)
 }
 
-
-fun <T> effectParser(resolve: (QuestReader) -> ScriptAction<T>): EffectParser {
-    return EffectParser(resolve)
-}

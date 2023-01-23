@@ -13,7 +13,7 @@ class ActionFreeze(val ticks: ParsedAction<*>, val selector: ParsedAction<*>?) :
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-        frame.runTransfer0<Int>(ticks) { ticks ->
+        frame.readAccept<Int>(ticks) { ticks ->
             if (selector != null) {
                 frame.execEntity(selector) { freezeTicks = ticks }
             } else {

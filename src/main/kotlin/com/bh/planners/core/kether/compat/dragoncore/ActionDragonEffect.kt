@@ -19,16 +19,16 @@ class ActionDragonEffect(
 
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.runTransfer0<String>(scheme) { scheme ->
-            frame.runTransfer0<String>(rotation) { rotation ->
-                frame.runTransfer0<Int>(time) { time ->
+        frame.readAccept<String>(scheme) { scheme ->
+            frame.readAccept<String>(rotation) { rotation ->
+                frame.readAccept<Int>(time) { time ->
                     val id = UUID.randomUUID().toString()
                     if (selector != null) {
                         frame.exec(selector) {
                             execute(id, scheme, rotation, time, this)
                         }
                     } else {
-                        execute(id, scheme, rotation, time, frame.origin() ?: return@runTransfer0)
+                        execute(id, scheme, rotation, time, frame.origin() ?: return@readAccept)
                     }
                 }
             }

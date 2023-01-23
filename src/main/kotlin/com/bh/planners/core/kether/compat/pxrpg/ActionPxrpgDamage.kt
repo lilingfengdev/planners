@@ -16,7 +16,7 @@ class ActionPxrpgMark(val id: ParsedAction<*>, val selector: ParsedAction<*>) : 
 
         val future = CompletableFuture<Void>()
 
-        frame.runTransfer0<String>(id) { id ->
+        frame.readAccept<String>(id) { id ->
             frame.createContainer(selector).thenAccept { container ->
                 container.forEachLivingEntity {
                     PxrpxEvents.Mark(id,frame.skill(), player, this).call()

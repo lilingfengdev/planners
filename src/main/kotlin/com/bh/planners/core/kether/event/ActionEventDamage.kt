@@ -5,7 +5,7 @@ import com.bh.planners.api.common.Operator
 import com.bh.planners.api.event.proxy.ProxyDamageEvent
 import com.bh.planners.core.kether.ActionEvent.Companion.event
 import com.bh.planners.core.kether.eventParser
-import com.bh.planners.core.kether.runTransfer0
+import com.bh.planners.core.kether.readAccept
 import org.bukkit.Bukkit
 import org.bukkit.event.Cancellable
 import taboolib.common5.Coerce
@@ -39,7 +39,7 @@ class ActionEventDamage(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
             val event = frame.event()
             val future = CompletableFuture<Void>()
             if (event is ProxyDamageEvent) {
-                frame.runTransfer0<Double>(action) { value ->
+                frame.readAccept<Double>(action) { value ->
                     when (operator) {
                         Operator.ADD -> event.addDamage(value)
                         Operator.SET -> event.damage = value

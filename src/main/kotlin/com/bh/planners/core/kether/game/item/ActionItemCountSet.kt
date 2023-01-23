@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.game.item
 import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.execLivingEntity
 import com.bh.planners.core.kether.game.item.ItemOperator.getNumber
-import com.bh.planners.core.kether.runTransfer
+import com.bh.planners.core.kether.read
 import org.bukkit.inventory.ItemStack
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
@@ -24,9 +24,9 @@ class ActionItemCountSet(
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-        frame.runTransfer<BukkitEquipment>(slot).thenAccept { slot ->
-            frame.runTransfer<String>(keyword).thenAccept { keyword ->
-                frame.runTransfer<Int>(amount).thenAccept { amount ->
+        frame.read<BukkitEquipment>(slot).thenAccept { slot ->
+            frame.read<String>(keyword).thenAccept { keyword ->
+                frame.read<Int>(amount).thenAccept { amount ->
                     if (selector != null) {
                         frame.execLivingEntity(selector) {
                             execute(slot.getItem(this), keyword, amount)

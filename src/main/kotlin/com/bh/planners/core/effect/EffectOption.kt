@@ -25,7 +25,7 @@ open class EffectOption(text: String) {
     }
     val demand = text.toDemand()
 
-    val optOffsetVector = demand.get(listOf("offset","os"),"0 0 0")!!.map { Coerce.toDouble(it) }
+    val optOffsetVector = demand.get(listOf("offset","os"),"0 0 0")!!.split(" ").map { Coerce.toDouble(it) }
 
     val particle = Enums.getIfPresent(ProxyParticle::class.java, demand.namespace.toUpperCase()).or(ProxyParticle.FLAME)!!
     val offsetX = Coerce.toDouble(optOffsetVector.getOrElse(0) { "0" })

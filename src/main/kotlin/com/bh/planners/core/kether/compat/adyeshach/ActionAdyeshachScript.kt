@@ -4,7 +4,7 @@ import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.compat.adyeshach.ActionAdyeshach.foreachAdyEntity
 import com.bh.planners.core.kether.execPlayer
-import com.bh.planners.core.kether.runTransfer
+import com.bh.planners.core.kether.read
 import ink.ptms.adyeshach.internal.command.CommandScript
 import org.bukkit.Bukkit
 import taboolib.common.platform.function.submitAsync
@@ -21,7 +21,7 @@ class ActionAdyeshachScript(val file: ParsedAction<*>, val args: List<ParsedActi
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-        frame.runTransfer<String>(file).thenAccept { file ->
+        frame.read<String>(file).thenAccept { file ->
             val array = ArrayList<String>()
             process(frame,0,array)
 

@@ -44,7 +44,7 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
             frame.createContainer(selector).thenAccept { container ->
                 if (pos != null) {
                     frame.createContainer(pos).thenAccept {
-                        val pos = it.firstLocationTarget() ?: error("ActionDrag 'pos' empty")
+                        val pos = it.firstLocation() ?: error("ActionDrag 'pos' empty")
                         container.forEachEntity {
                             this.velocity = next(this.location, pos, step)
                         }

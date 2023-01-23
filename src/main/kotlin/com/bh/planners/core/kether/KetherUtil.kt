@@ -12,6 +12,7 @@ import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.selector.Selector
 import com.bh.planners.util.StringNumber
+import ink.ptms.adyeshach.common.entity.EntityTypes
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -154,7 +155,7 @@ inline fun <reified T> getEnum(value: String): T {
 }
 
 
-inline fun <reified T> ScriptFrame.runTransfer(action: ParsedAction<*>): CompletableFuture<T> {
+inline fun <reified T> ScriptFrame.read(action: ParsedAction<*>): CompletableFuture<T> {
 
     val future = CompletableFuture<T>()
     this.newFrame(action).run<Any>().thenAccept {
@@ -182,8 +183,8 @@ inline fun <reified T> ScriptFrame.runTransfer(action: ParsedAction<*>): Complet
     return future
 }
 
-inline fun <reified T> ScriptFrame.runTransfer0(action: ParsedAction<*>, crossinline call: (T) -> Unit) {
-    runTransfer<T>(action).thenAccept { call(it) }
+inline fun <reified T> ScriptFrame.readAccept(action: ParsedAction<*>, crossinline call: (T) -> Unit) {
+    read<T>(action).thenAccept { call(it) }
 }
 
 fun ScriptFrame.execEntity(selector: ParsedAction<*>, call: Entity.() -> Unit) {
@@ -223,7 +224,7 @@ fun ScriptFrame.getEntity(selector: ParsedAction<*>): CompletableFuture<Entity?>
 }
 
 fun ScriptFrame.getLocation(selector: ParsedAction<*>): CompletableFuture<Location> {
-    return createContainer(selector).thenApply { it.firstLocationTarget() }
+    return createContainer(selector).thenApply { it.firstLocation() }
 }
 
 fun ScriptFrame.senderPlannerProfile(): PlayerProfile? {
@@ -336,6 +337,7 @@ fun <T> CompletableFuture<Any?>.material(then: (Material) -> T): CompletableFutu
         then(material)
     }
 }
+
 fun <T> CompletableFuture<Any?>.byte(then: (Byte) -> T): CompletableFuture<T> {
     return thenApply {
         then(Coerce.toByte(it))

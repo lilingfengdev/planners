@@ -20,6 +20,7 @@ object Effects {
         return effects[key]!!
     }
 
+
     @Awake(LifeCycle.LOAD)
     fun load() {
         runningClasses.forEach {

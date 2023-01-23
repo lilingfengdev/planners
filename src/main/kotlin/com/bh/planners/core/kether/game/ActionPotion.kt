@@ -35,9 +35,9 @@ class ActionPotion {
         }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            frame.runTransfer0<String>(name) { name ->
-                frame.runTransfer0<Int>(duration) { duration ->
-                    frame.runTransfer0<Int>(amplifier) { amplifier ->
+            frame.readAccept<String>(name) { name ->
+                frame.readAccept<Int>(duration) { duration ->
+                    frame.readAccept<Int>(amplifier) { amplifier ->
                         val effectType = PotionEffectType.getByName(name.uppercase(Locale.getDefault()))
 
                         if (selector != null) {

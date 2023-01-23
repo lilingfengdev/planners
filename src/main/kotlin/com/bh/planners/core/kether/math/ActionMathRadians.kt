@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.math
 
 import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.runTransfer0
+import com.bh.planners.core.kether.readAccept
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.KetherParser
@@ -15,7 +15,7 @@ import kotlin.math.sin
 class ActionMathRadians(val action: ParsedAction<*>) : ScriptAction<Any>() {
     override fun run(frame: ScriptFrame): CompletableFuture<Any> {
         val future = CompletableFuture<Any>()
-        frame.runTransfer0<Double>(action) {
+        frame.readAccept<Double>(action) {
             future.complete(Math.toRadians(it))
         }
         return future

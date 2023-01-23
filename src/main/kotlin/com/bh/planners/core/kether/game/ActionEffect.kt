@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
 object ActionEffect {
 
     // effect action ""
-    class Parser(val effect: Effect, val action: ParsedAction<*>) : ScriptAction<Void>() {
+    open class Parser(val effect: Effect, val action: ParsedAction<*>) : ScriptAction<Void>() {
 
         val events = mutableMapOf<String, String>()
 
@@ -66,14 +66,21 @@ object ActionEffect {
             it.mark()
             val expect = it.expects(*Effects.effectKeys.toTypedArray())
             val effectLoader = Effects.get(expect)
-            val option = it.nextParsedAction()
-            val events = it.maps()
-            Parser(effectLoader, option).also {
-                it.events += events
+            // 优先解析特殊粒子解析器
+            if (effectLoader is EffectParser) {
+                effectLoader.parser(it)
             }
-        } catch (ex: Exception) {
+            // 粒子默认解析器
+            else {
+                val option = it.nextParsedAction()
+                val events = it.maps()
+                Parser(effectLoader, option).also {
+                    it.events += events
+                }
+            }
+        }catch (e: Exception) {
             it.reset()
-            throw ex
+            throw e
         }
     }
 

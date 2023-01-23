@@ -35,7 +35,7 @@ class ActionTeleport(val action: ParsedAction<*>, val selector: ParsedAction<*>?
             }
 
             is Target.Container -> {
-                entity.teleport(it.firstLocationTarget() ?: return)
+                entity.teleport(it.firstLocation() ?: return)
             }
 
             is Target.Location -> {

@@ -16,8 +16,6 @@ object EffectLine : Effect() {
 
         if (target !is Target.Location) return
 
-
-
         val step = option.step
         val period = option.period
         val spawner = EffectSpawner(option)

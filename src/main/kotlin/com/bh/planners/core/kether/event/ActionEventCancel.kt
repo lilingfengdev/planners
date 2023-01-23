@@ -2,7 +2,7 @@ package com.bh.planners.core.kether.event
 
 import com.bh.planners.core.kether.ActionEvent.Companion.event
 import com.bh.planners.core.kether.eventParser
-import com.bh.planners.core.kether.runTransfer
+import com.bh.planners.core.kether.read
 import com.bh.planners.core.kether.tryGet
 import org.bukkit.event.Cancellable
 import taboolib.library.kether.ParsedAction
@@ -19,7 +19,7 @@ class ActionEventCancel(val action: ParsedAction<*>) : ScriptAction<Void>() {
         val event = frame.event()
         val future = CompletableFuture<Void>()
         if (event is Cancellable) {
-            frame.runTransfer<Boolean>(action).thenAccept { value ->
+            frame.read<Boolean>(action).thenAccept { value ->
                 event.isCancelled = value
                 future.complete(null)
             }

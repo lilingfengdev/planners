@@ -43,7 +43,7 @@ class ActionDamage {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-            frame.runTransfer0<String>(value) { damage ->
+            frame.readAccept<String>(value) { damage ->
                 frame.createContainer(selector).thenAccept { container ->
                     if (source == null) {
                         val sourceEntity = frame.bukkitPlayer()
@@ -66,7 +66,7 @@ class ActionDamage {
     class Attack(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             val player = frame.bukkitPlayer() ?: return CompletableFuture.completedFuture(null)
-            frame.runTransfer0<String>(value) { damage ->
+            frame.readAccept<String>(value) { damage ->
                 frame.createContainer(selector).thenAccept { container ->
                     submit {
                         container.forEachLivingEntity {

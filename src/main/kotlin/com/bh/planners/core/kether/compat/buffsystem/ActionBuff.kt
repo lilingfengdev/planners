@@ -35,10 +35,10 @@ class ActionBuff {
     ) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            frame.runTransfer0<String>(source) { source ->
-                frame.runTransfer0<String>(buffKey) { buffKey ->
+            frame.readAccept<String>(source) { source ->
+                frame.readAccept<String>(buffKey) { buffKey ->
                     submit {
-                        frame.runTransfer0<String>(dataJson) { dataJson ->
+                        frame.readAccept<String>(dataJson) { dataJson ->
                             val buff = buffManager[buffKey] ?: error("buff $buffKey not found")
                             if (selector != null) {
                                 frame.execLivingEntity(selector) { giveBuff(source,buff,"{$dataJson}") }

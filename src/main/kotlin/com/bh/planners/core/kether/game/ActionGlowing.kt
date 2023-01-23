@@ -28,16 +28,16 @@ class ActionGlowing(val tick: ParsedAction<*>, val value: ParsedAction<*>, val c
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-        frame.runTransfer0<Long>(tick) { tick ->
-            frame.runTransfer0<Boolean>(value) { value ->
-                frame.runTransfer0<ChatColor>(color) { color ->
+        frame.readAccept<Long>(tick) { tick ->
+            frame.readAccept<Boolean>(value) { value ->
+                frame.readAccept<ChatColor>(color) { color ->
                     val glowColor = Coerce.toEnum(color, ChatColor::class.java)
                     if (selector != null) {
                         frame.execEntity(selector) {
                             execute(this, value, glowColor, tick)
                         }
                     } else {
-                        execute(frame.bukkitPlayer() ?: return@runTransfer0, value, glowColor, tick)
+                        execute(frame.bukkitPlayer() ?: return@readAccept, value, glowColor, tick)
                     }
                 }
             }
