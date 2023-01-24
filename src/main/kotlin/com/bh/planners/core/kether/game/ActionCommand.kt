@@ -3,6 +3,8 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.core.kether.*
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.console
+import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.submitAsync
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -45,11 +47,17 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         frame.read<String>(command).thenAccept { command ->
             if (selector != null) {
-                frame.execPlayer(selector) {
-                    execute(this, this@ActionCommand.type, command)
+                frame.createContainer(selector).thenAccept { container ->
+                    submitAsync {
+                        container.forEachPlayer {
+                            execute(this, this@ActionCommand.type, command)
+                        }
+                    }
                 }
             } else {
-                execute(frame.bukkitPlayer() ?: return@thenAccept, this@ActionCommand.type, command)
+                submit {
+                    execute(frame.bukkitPlayer() ?: return@submit, this@ActionCommand.type, command)
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.core.effect.Target
+import taboolib.common.platform.function.warning
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
@@ -64,8 +65,14 @@ class ActionSelector {
             val future = CompletableFuture<Target.Container>()
             frame.run(key).str { key ->
                 frame.createContainer(value).thenAccept { container ->
-                    frame.variables().get<Target.Container>(key).ifPresent {
-                        it.unmerge(container)
+                    val optional = frame.variables().get<Target.Container>(key)
+                    if (optional.isPresent) {
+                        future.complete(optional.get().also {
+                            it.unmerge(container)
+                        })
+                    }else {
+                        warning("Selector $key is not found.")
+                        future.complete(container)
                     }
                 }
             }
@@ -78,8 +85,14 @@ class ActionSelector {
             val future = CompletableFuture<Target.Container>()
             frame.run(key).str { key ->
                 frame.createContainer(value).thenAccept { container ->
-                    frame.variables().get<Target.Container>(key).ifPresent {
-                        it.merge(container)
+                    val optional = frame.variables().get<Target.Container>(key)
+                    if (optional.isPresent) {
+                        future.complete(optional.get().also {
+                            it.merge(container)
+                        })
+                    }else {
+                        warning("Selector $key is not found.")
+                        future.complete(container)
                     }
                 }
             }
