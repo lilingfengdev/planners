@@ -9,9 +9,12 @@ import taboolib.platform.util.getMetaFirstOrNull
 
 abstract class AbstractTimerDamage : AbstractTimer<ProxyDamageEvent>() {
 
+    override val eventClazz: Class<ProxyDamageEvent>
+        get() = ProxyDamageEvent::class.java
 
     override fun onStart(context: ScriptContext, template: Template, e: ProxyDamageEvent) {
         super.onStart(context, template, e)
+        context.rootFrame().variables()["event"] = e
         if (e.damager is Projectile) {
             context.rootFrame().variables()["projectile"] = e.damager
         }

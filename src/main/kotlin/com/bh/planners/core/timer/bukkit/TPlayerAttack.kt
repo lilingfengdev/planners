@@ -8,18 +8,15 @@ import com.bh.planners.core.timer.Template
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.event.EventPriority
 import taboolib.module.kether.ScriptContext
+import taboolib.platform.util.attacker
 
-object TPlayerAttack : AbstractTimer<ProxyDamageEvent>() {
+object TPlayerAttack : AbstractTimerDamage() {
+
     override val name: String
         get() = "player attack"
-    override val eventClazz: Class<ProxyDamageEvent>
-        get() = ProxyDamageEvent::class.java
-
-    override val priority: EventPriority
-        get() = EventPriority.LOWEST
 
     override fun check(e: ProxyDamageEvent): Target? {
-        return e.getPlayer(e.damager)?.toTarget()
+        return e.getPlayer(e.event?.attacker ?: return null)?.toTarget()
     }
 
     /**

@@ -8,11 +8,9 @@ import com.bh.planners.core.timer.Template
 import org.bukkit.entity.LivingEntity
 import taboolib.module.kether.ScriptContext
 
-object TPlayerAttacked : AbstractTimer<ProxyDamageEvent>() {
+object TPlayerAttacked : AbstractTimerDamage() {
     override val name: String
         get() = "player attacked"
-    override val eventClazz: Class<ProxyDamageEvent>
-        get() = ProxyDamageEvent::class.java
 
     override fun check(e: ProxyDamageEvent): Target? {
         return e.getPlayer(e.entity)?.toTarget()

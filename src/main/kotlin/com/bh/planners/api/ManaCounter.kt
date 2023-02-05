@@ -1,6 +1,7 @@
 package com.bh.planners.api
 
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.entity.Player
@@ -10,6 +11,7 @@ import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
+import taboolib.module.kether.runKether
 
 object ManaCounter {
 
@@ -28,13 +30,11 @@ object ManaCounter {
     private fun calculate(player: Player): Double {
         val playerJob = player.plannersProfile.job ?: return 0.0
         val manaCalculate = playerJob.instance.option.manaCalculate
-        return try {
-            KetherShell.eval(manaCalculate, sender = adaptPlayer(player), namespace = namespaces)
-                .thenApply { Coerce.toDouble(it) }.getNow(0.0)
-        } catch (e: Throwable) {
-            e.printKetherErrorMessage()
-            0.0
-        }
+        return runKether {
+            ScriptLoader.createScript(ContextAPI.create(player), manaCalculate)
+                .thenApply { Coerce.toDouble(it) }
+                .getNow(0.0)
+        } ?: 0.0
     }
 
     fun PlayerProfile.takeMana(value: Double) {

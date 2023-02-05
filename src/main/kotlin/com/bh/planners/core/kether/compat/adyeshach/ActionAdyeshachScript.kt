@@ -5,7 +5,7 @@ import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.compat.adyeshach.ActionAdyeshach.foreachAdyEntity
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.read
-import ink.ptms.adyeshach.internal.command.CommandScript
+import ink.ptms.adyeshach.module.command.CommandScript
 import org.bukkit.Bukkit
 import taboolib.common.platform.function.submitAsync
 import taboolib.library.kether.ParsedAction

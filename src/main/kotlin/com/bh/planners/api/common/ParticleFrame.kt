@@ -5,8 +5,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import com.bh.planners.api.common.scheduler.SynchronizationContext
-import com.bh.planners.api.common.scheduler.scope
 import com.bh.planners.core.kether.game.ActionEffect
 import taboolib.common.platform.function.submitAsync
 import taboolib.common5.Coerce

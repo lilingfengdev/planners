@@ -39,12 +39,10 @@ object ActionEffect {
 
     class Response(val context: Context.SourceImpl, events: Map<String, String>) {
 
-        val eventTicks = mutableListOf<EffectICallback<*>>()
-
-        init {
-            eventTicks += EffectICallback.Tick(events["ontick"] ?: "__null__", context)
-            eventTicks += EffectICallback.Tick(events["onhit"] ?: "__null__", context)
-        }
+        val eventTicks = mutableListOf<EffectICallback<*>>(
+            EffectICallback.Tick(events["ontick"] ?: "__null__", context),
+            EffectICallback.Hit(events["onhit"] ?: "__null__", context)
+        )
 
         fun handleTick(location: Location) {
             this.handleTick(listOf(location))

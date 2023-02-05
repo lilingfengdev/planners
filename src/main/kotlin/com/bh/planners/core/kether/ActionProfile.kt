@@ -5,6 +5,7 @@ import com.bh.planners.api.ManaCounter.setMana
 import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.ManaCounter.toMaxMana
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.addPoint
 import com.bh.planners.api.common.Operator
 import com.bh.planners.api.getFlag
@@ -12,6 +13,7 @@ import com.bh.planners.api.setFlag
 import com.bh.planners.api.setPoint
 import com.bh.planners.core.pojo.data.Data
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -135,6 +137,32 @@ class ActionProfile {
                     }
 
                 }
+                case("health-percent") {
+                    actionNow {
+                        val player = script().sender!!.cast<Player>()
+                        try {
+                            player.health / player.maxHealth
+                        }catch (e: Exception) {
+                            0.0
+                        }
+                    }
+                }
+                case("mana-percent") {
+                    actionNow {
+                        val player = script().sender!!.cast<Player>()
+                        if (!player.plannersProfileIsLoaded) return@actionNow 0.0
+                        val maxMana = player.toMaxMana()
+                        info("current ${player.toCurrentMana()} max $maxMana")
+                        if (maxMana == 0.0) {
+                            return@actionNow 0.0
+                        }
+                        try {
+                            player.toCurrentMana() / maxMana
+                        }catch (e: Exception) {
+                            0.0
+                        }
+                    }
+                }
                 case("max-mana") {
                     actionNow {
                         script().sender!!.cast<Player>().toMaxMana()
@@ -161,8 +189,22 @@ class ActionProfile {
                 case("level") {
                     actionNow { senderPlannerProfile()?.level }
                 }
+                case("level-length") {
+                    actionNow { senderPlannerProfile()?.level?.toString()?.length }
+                }
                 case("exp", "experience") {
                     actionNow { senderPlannerProfile()?.experience }
+                }
+
+                case("exp-percent") {
+                    actionNow {
+                        val profile = senderPlannerProfile() ?: return@actionNow 0
+                        try {
+                            profile.experience / profile.maxExperience
+                        }catch (e: Exception) {
+                            0.0
+                        }
+                    }
                 }
 
                 case("max-exp", "max-experience") {

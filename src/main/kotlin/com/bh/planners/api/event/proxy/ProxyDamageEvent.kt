@@ -6,6 +6,7 @@ import ac.github.oa.internal.base.event.impl.DamageMemory
 import com.bh.planners.api.event.EntityEvents
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -16,13 +17,9 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.type.BukkitProxyEvent
 import java.util.UUID
 
-class ProxyDamageEvent(
-    val damager: Entity,
-    val entity: Entity,
-    val cause: DamageCause?,
-    var damage: Double,
-    var memory: Any? = null
-) : BukkitProxyEvent() {
+class ProxyDamageEvent(val damager: Entity, val entity: Entity, val cause: DamageCause?, var damage: Double, var memory: Any? = null) : BukkitProxyEvent() {
+
+    var event : EntityDamageByEntityEvent? = null
 
     val realDamage : Double
         get() = (memory as? DamageMemory)?.totalDamage ?: this.damage
@@ -43,6 +40,7 @@ class ProxyDamageEvent(
         fun e(e: EntityDamageByEntityEvent) {
             if (isOriginAttribute) return
             val damageEvent = ProxyDamageEvent(e.damager, e.entity, e.cause, e.damage)
+            damageEvent.event = e
             damageEvent.call()
             e.damage = damageEvent.damage
             e.isCancelled = damageEvent.isCancelled
@@ -57,8 +55,9 @@ class ProxyDamageEvent(
             val e = ope.get<EntityDamageEvent>()
             if (e.priorityEnum == PriorityEnum.POST) {
                 val memory = e.damageMemory
-                val damageEvent =
-                    ProxyDamageEvent(memory.attacker, memory.injured, memory.event.cause, memory.totalDamage, memory)
+                val damager = e.damageMemory.event.damager
+                val damageEvent = ProxyDamageEvent(damager, memory.injured, memory.event.cause, memory.totalDamage, memory)
+                damageEvent.event = e.damageMemory.event.origin
                 damageEvent.call()
 
                 e.isCancelled = damageEvent.isCancelled

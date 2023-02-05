@@ -10,14 +10,13 @@ import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.platform.compat.PlaceholderExpansion
+import java.util.Collections
 
 object PlaceholderKether : PlaceholderExpansion {
 
-    private val cache = mutableMapOf<Player, Context.Impl0>()
+    private val cache = Collections.synchronizedMap(mutableMapOf<Player, Context.Impl0>())
 
-    private fun getContext(player: Player) = cache.computeIfAbsent(player) {
-        Context.Impl0(player.toTarget())
-    }
+    private fun getContext(player: Player) = ContextAPI.create(player)
 
     override val identifier: String
         get() = "planners"

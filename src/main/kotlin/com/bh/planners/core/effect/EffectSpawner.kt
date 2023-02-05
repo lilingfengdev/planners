@@ -37,14 +37,7 @@ open class EffectSpawner(val option: EffectOption)  {
 
     companion object {
 
-        fun Player.sendParticle(
-            particle: ProxyParticle,
-            location: Location,
-            offset: Vector,
-            count: Int,
-            speed: Double,
-            data: ProxyParticle.Data?
-        ) {
+        fun Player.sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
 
             // 1.12.2
             if (particle == ProxyParticle.REDSTONE && MinecraftVersion.majorLegacy == 11202 && data != null && data is ProxyParticle.DustData) {

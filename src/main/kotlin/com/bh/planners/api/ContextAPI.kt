@@ -17,6 +17,7 @@ object ContextAPI {
 
     // 创建玩家代理
     fun createProxy(player: Player): ProxyPlayer {
+        player.inventory.addItem()
         return adaptPlayer(player)
     }
 
