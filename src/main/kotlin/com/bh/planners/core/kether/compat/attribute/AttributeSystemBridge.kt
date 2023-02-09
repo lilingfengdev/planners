@@ -8,6 +8,8 @@ import com.skillw.pouvoir.util.EntityUtils.livingEntity
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.service.PlatformExecutor
 import java.util.*
 import kotlin.math.max
 
@@ -22,6 +24,7 @@ class AttributeSystemBridge : AttributeBridge {
             }
         }
     }
+    val tasks = mutableMapOf<String,PlatformExecutor.PlatformTask>()
 
     fun getCache(livingEntity: LivingEntity): MutableList<Data> {
         return cache.computeIfAbsent(livingEntity) { mutableListOf() }
@@ -34,7 +37,12 @@ class AttributeSystemBridge : AttributeBridge {
     override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>) {
         val entity = Bukkit.getEntity(uuid) as? LivingEntity ?: error("null")
         val attributeData = reads.read(entity).unRelease()
-        getCache(entity) += Data(source, timeout)
+        if (timeout != -1L) {
+            tasks[source]?.cancel()
+            tasks[source] = submitAsync(delay = timeout / 50) {
+                uuid.removeAttribute(source)
+            }
+        }
         uuid.addAttribute(source, attributeData)
     }
 

@@ -36,6 +36,29 @@ fun rotateLocationAboutVector(location: Location, origin: Location, angle: Doubl
     return origin.clone().add(rotateAroundAxis(vector, axis, angle))
 }
 
+/**
+ * 判断一个是否处在另一个坐标面向的扇形区域内
+ *
+ *
+ * 通过反三角算向量夹角的算法
+ *
+ * @param target       目标坐标
+ * @param livingEntity 实体
+ * @param radius       扇形半径
+ * @param angle        扇形角度
+ * @return 如果处于扇形区域则返回 true
+ */
+fun isPointInEntitySector(target: Location, location: Location, radius: Double, angle: Double): Boolean {
+    val v1 = location.direction
+    val v2 = target.clone().subtract(location).toVector()
+    val cosTheta = v1.dot(v2) / (v1.length() * v2.length())
+    val degree = Math.toDegrees(Math.acos(cosTheta))
+    // 距离判断
+    return if (target.distance(location) < radius) {
+        // 向量夹角判断
+        degree < angle * 0.5f
+    } else false
+}
 fun isInsideSector(target: Location, origin: Location, radius: Double, angle: Double): Boolean {
     val sectorStart: Vector = rotateAroundAxisY(origin.direction.clone(), -angle / 2)
     val sectorEnd: Vector = rotateAroundAxisY(origin.direction.clone(), angle / 2)

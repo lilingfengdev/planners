@@ -41,7 +41,10 @@ class AttributePlus3Bridge : AttributeBridge {
     override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>) {
         val entity = Bukkit.getEntity(uuid) as? LivingEntity ?: return
         val attributeSource = AttributeAPI.getAttributeSource(reads)
-        getCache(entity) += Data(source, timeout)
+        if (timeout != -1L) {
+            getCache(entity) += Data(source, timeout)
+        }
+
         AttributeAPI.addSourceAttribute(entity.getAttributeData, source, attributeSource)
     }
 

@@ -4,6 +4,7 @@ import com.bh.planners.core.effect.Target.Companion.getLivingEntity
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.effect.isInsideSector
+import com.bh.planners.core.effect.isPointInEntitySector
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
@@ -25,7 +26,7 @@ object Sector : Selector {
         val future = CompletableFuture<Void>()
         submit(async = false) {
             location.world?.getNearbyEntities(location, radius,radius,radius)?.filterIsInstance<LivingEntity>()?.forEach {
-                if (isInsideSector(it.location,location,radius, angle)) {
+                if (isPointInEntitySector(it.location,location,radius, angle)) {
                     if (data.isNon) {
                         data.container.removeIf { t -> t == it }
                     }

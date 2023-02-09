@@ -90,7 +90,9 @@ interface AttributeBridge {
             val context = ContextAPI.create(player, skill.instance, skill.level)!!
             val attributes = getSkillAttributes(skill)
             try {
-                bridge.addAttributes("Skill:${skill.key}", player.uniqueId, -1, ScriptLoader.createFunctionScript(context, attributes))
+                val script = ScriptLoader.createFunctionScript(context, attributes)
+                info("Debug $script")
+                bridge.addAttributes("Skill:${skill.key}", player.uniqueId, -1, script)
             } catch (ex: Exception) {
                 info(attributes)
                 ex.printKetherErrorMessage()

@@ -152,7 +152,6 @@ class ActionProfile {
                         val player = script().sender!!.cast<Player>()
                         if (!player.plannersProfileIsLoaded) return@actionNow 0.0
                         val maxMana = player.toMaxMana()
-                        info("current ${player.toCurrentMana()} max $maxMana")
                         if (maxMana == 0.0) {
                             return@actionNow 0.0
                         }
