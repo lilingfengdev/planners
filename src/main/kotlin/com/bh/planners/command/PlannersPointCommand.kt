@@ -82,7 +82,7 @@ object PlannersPointCommand {
                     val player = Bukkit.getPlayerExact(context.argument(-1))!!
                     if (player.hasJob) {
                         player.sendLang("player-set-point", argument)
-                        player.plannersProfile.addPoint(-Coerce.toInteger(argument))
+                        player.plannersProfile.setPoint(Coerce.toInteger(argument))
                     }
                 }
             }

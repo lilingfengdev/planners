@@ -104,7 +104,7 @@ class ActionDamage {
             Attack(it.nextParsedAction(), it.selector())
         }
 
-//        @SubscribeEvent(
+        //        @SubscribeEvent(
 //            bind = "ac.github.oa.api.event.entity.EntityDamageEvent",
 //            ignoreCancelled = true,
 //            priority = EventPriority.LOWEST
@@ -132,10 +132,16 @@ class ActionDamage {
             when (MinecraftVersion.major) {
                 // 1.12.* 1.16.*
                 4, 8 -> setProperty("entity/killer", source.getProperty("entity"))
-                // 1.18.* 1.19.*
+                // 1.15.* 1.17.* bc
                 7, 9 -> setProperty("entity/bc", source.getProperty("entity"))
+                // 1.18.2 bc 1.18.1 bd
+                10 -> if (MinecraftVersion.minecraftVersion == "v1_18_R2") {
+                    setProperty("entity/bc", source.getProperty("entity"))
+                } else {
+                    setProperty("entity/bd", source.getProperty("entity"))
+                }
                 // 1.18.* 1.19.* bd
-                10, 11 -> setProperty("entity/bd", source.getProperty("entity"))
+                11 -> setProperty("entity/bd", source.getProperty("entity"))
 
             }
         }

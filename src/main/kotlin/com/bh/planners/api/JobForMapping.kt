@@ -33,7 +33,7 @@ val PlayerJob.Skill.maxLevel: Int
 val PlayerJob.Skill.optVariables: List<Skill.Variable>
     get() = instance.option.variables
 
-val PlayerJob.Skill.needPointsVariable : Skill.Variable
+val PlayerJob.Skill.needPointsVariable: Skill.Variable
     get() = instance.needPointsVariable
 
 val Skill.needPointsVariable: Skill.Variable
@@ -47,10 +47,9 @@ fun PlayerJob.Skill.getNeedPoints(player: Player): CompletableFuture<Int> {
 }
 
 fun Skill.getNeedPoints(player: Player, level: Int): CompletableFuture<Int>? {
-    return ScriptLoader
-        .createScript(ContextAPI.create(player, this,level)!!, needPointsVariable.expression) {
-            this["@level"] = level
-        }.thenApply { Coerce.toInteger(it) }
+    return ScriptLoader.createScript(ContextAPI.create(player, this, level)!!, needPointsVariable.expression) {
+        this["@level"] = level
+    }.thenApply { Coerce.toInteger(it) }
 }
 
 fun Skill.getVariable(id: String, def: Skill.Variable): Skill.Variable {

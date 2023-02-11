@@ -29,14 +29,18 @@ fun PlayerProfile.addPoint(point: Int) {
 fun PlayerProfile.setPoint(point: Int) {
     if (job == null) return
     this.point = point
-    Storage.INSTANCE.updateJob(player, job!!)
+    submitAsync {
+        Storage.INSTANCE.updateJob(player, job!!)
+    }
 }
 
 fun PlayerProfile.next(skill: PlayerJob.Skill) {
     if (1 + skill.level <= skill.instance.option.levelCap) {
         skill.level++
         PlayerSkillUpgradeEvent(player, skill).call()
-        Storage.INSTANCE.updateSkill(this, skill)
+        submitAsync {
+            Storage.INSTANCE.updateSkill(this, skill)
+        }
     }
 }
 
