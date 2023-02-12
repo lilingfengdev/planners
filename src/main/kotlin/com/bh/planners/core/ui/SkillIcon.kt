@@ -10,10 +10,12 @@ import com.bh.planners.core.kether.rootVariables
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.player.PlayerJob
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.info
+import taboolib.common.platform.function.warning
 import taboolib.library.xseries.parseToMaterial
 import taboolib.module.chat.colored
 import taboolib.module.kether.KetherFunction
@@ -46,11 +48,28 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: B
 
     private val option = skill.option
 
+    val icon = option.root.getConfigurationSection("icon")!!
+
+    val material = try {
+        Material.valueOf(icon.getString("material","STONE")!!.toUpperCase())
+    }catch (e: Exception) {
+        warning("Material ${icon.getString("material")} not found.")
+        Material.STONE
+    }
+
+    val modelData = icon.getInt("icon.model-data",-1)
+
+    val name = icon.getString("name","")!!
+
+    val lore = icon.getStringList("lore")
+
+    val damage = icon.getInt("damage",0)
+
     fun build(): ItemStack {
-        return buildItem(option.root.getString("icon.material")!!.parseToMaterial()) {
-            name = format(option.root.getString("icon.name")!!)
-            lore += option.root.getStringList("icon.lore").map { format(it) }
-            damage = option.root.getInt("damage")
+        return buildItem(material) {
+            name = format(this@SkillIcon.name)
+            lore += this@SkillIcon.lore.map { format(it) }
+            damage = damage
         }
     }
 
