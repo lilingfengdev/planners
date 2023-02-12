@@ -57,7 +57,7 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: B
         Material.STONE
     }
 
-    val modelData = icon.getInt("icon.model-data",-1)
+    val modelData = icon.getInt("model-data",-1)
 
     val name = icon.getString("name","")!!
 
