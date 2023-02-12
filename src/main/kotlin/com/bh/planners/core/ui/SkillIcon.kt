@@ -69,7 +69,8 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: B
         return buildItem(material) {
             name = format(this@SkillIcon.name)
             lore += this@SkillIcon.lore.map { format(it) }
-            damage = damage
+            damage = this@SkillIcon.damage
+            customModelData = this@SkillIcon.modelData
         }
     }
 
