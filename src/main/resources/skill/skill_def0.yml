@@ -45,12 +45,13 @@ action: |-
           sleep 20
       }
     }
-  async {
-    invoke next
+    async {
+      invoke next
+    }
+    tell math 8 * 20
+    sleep math 8 * 20
   }
-  tell math 8 * 20
-  sleep math 8 * 20
-  }
+  
   def next = {
     async {
       set damageEval to lazy *damage
