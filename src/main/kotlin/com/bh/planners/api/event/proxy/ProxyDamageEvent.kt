@@ -46,17 +46,13 @@ class ProxyDamageEvent(val damager: Entity, val entity: Entity, val cause: Damag
             e.isCancelled = damageEvent.isCancelled
         }
 
-        @SubscribeEvent(
-            bind = "ac.github.oa.api.event.entity.EntityDamageEvent",
-            ignoreCancelled = true,
-            priority = EventPriority.LOWEST
-        )
+        @SubscribeEvent(bind = "ac.github.oa.api.event.entity.EntityDamageEvent", ignoreCancelled = true, priority = EventPriority.LOWEST)
         fun e(ope: OptionalEvent) {
             val e = ope.get<EntityDamageEvent>()
             if (e.priorityEnum == PriorityEnum.POST) {
                 val memory = e.damageMemory
                 val damager = e.damageMemory.event.damager
-                val damageEvent = ProxyDamageEvent(damager, memory.injured, memory.event.cause, memory.totalDamage, memory)
+                val damageEvent = ProxyDamageEvent(damager, memory.injured, memory.event.bukkitCause, memory.totalDamage, memory)
                 damageEvent.event = e.damageMemory.event.origin
                 damageEvent.call()
 

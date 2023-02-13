@@ -1,6 +1,5 @@
 package com.bh.planners.core.kether.event
 
-import ac.github.oa.api.event.entity.OriginCustomDamageEvent
 import com.bh.planners.api.common.Operator
 import com.bh.planners.api.event.proxy.ProxyDamageEvent
 import com.bh.planners.core.kether.ActionEvent.Companion.event

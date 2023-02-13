@@ -148,7 +148,13 @@ interface Target {
         }
 
         fun forEachEntity(func: org.bukkit.entity.Entity.(Int) -> Unit) {
-            forEach<Entity> { index -> func(bukkitEntity ?: return@forEach, index) }
+            var index = 0
+            forEach<Entity> { func(bukkitEntity ?: return@forEach, index++) }
+        }
+
+        fun forEachProxyEntity(func: ProxyEntity.(Int) -> Unit) {
+            var index = 0
+            forEach<Entity> { func(this.proxy,index++) }
         }
 
         inline fun <reified T : Target> map(check: T.() -> Boolean): List<T> {

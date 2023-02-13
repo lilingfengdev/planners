@@ -10,7 +10,7 @@ class ActionAdyeshachFollow(val owner: ParsedAction<*>, val selector: ParsedActi
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
         return frame.createContainer(owner).thenAccept {
-            val entityTarget = it.firstLivingEntityTarget() ?: return@thenAccept
+            val entityTarget = it.firstProxyEntity() ?: return@thenAccept
             frame.newFrame(option).run<Any>().thenAccept {
                 val option = it.toString()
                 frame.execAdyeshachEntity(selector) {

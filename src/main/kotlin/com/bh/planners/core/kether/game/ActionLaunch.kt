@@ -1,5 +1,8 @@
 package com.bh.planners.core.kether.game
 
+import com.bh.planners.api.entity.ProxyBukkitEntity
+import com.bh.planners.api.entity.ProxyEntity
+import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.*
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
@@ -15,7 +18,7 @@ class ActionLaunch(
     val selector: ParsedAction<*>?
 ) : ScriptAction<Void>() {
 
-    fun execute(entity: Entity, x: Double, y: Double, z: Double) {
+    fun execute(entity: ProxyEntity, x: Double, y: Double, z: Double) {
         val vector1 = entity.location.direction.setY(0).normalize()
         val vector2 = vector1.clone().crossProduct(Vector(0, 1, 0))
         vector1.multiply(Coerce.toDouble(x))
@@ -31,11 +34,13 @@ class ActionLaunch(
                 frame.newFrame(z).run<Any>().thenApply {
                     val z = Coerce.toDouble(it)
                     if (selector != null) {
-                        frame.execLivingEntity(selector) {
-
-                            execute(this, x, y, z) }
+                        frame.exec(selector) {
+                            if (this is Target.Entity) {
+                                execute(this.proxy,x, y, z)
+                            }
+                        }
                     } else {
-                        execute(frame.bukkitPlayer()!!, x, y, z)
+                        execute(ProxyBukkitEntity(frame.bukkitPlayer()!!), x, y, z)
                     }
 
                 }

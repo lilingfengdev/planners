@@ -46,14 +46,14 @@ class OriginAttributeBridge : AttributeBridge {
     }
 
     fun Attribute.searchByKeyword(keyword: String): Attribute.Entry {
-        return getEntities(this).firstOrNull { keyword in it.getKeywords() } ?: error("Attribute [$keyword] not found.")
+        return getEntities(this).firstOrNull { keyword in it.keywords } ?: error("Attribute [$keyword] not found.")
     }
 
     override fun get(entity: LivingEntity, keyword: String): Any {
         val data = OriginAttributeAPI.getAttributeData(entity)
         val index = cache.computeIfAbsent(keyword) {
             AttributeManager.usableAttributes.values.firstOrNull {
-                keyword in getEntities(it).flatMap { it.getKeywords() }
+                keyword in getEntities(it).flatMap { it.keywords }
             }?.getPriority() ?: -1
         }
         if (index == -1) error("Attribute [$keyword] not found.")

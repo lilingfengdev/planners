@@ -11,6 +11,7 @@ import com.bh.planners.core.kether.*
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import org.bukkit.entity.*
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.platform.event.SubscribeEvent
@@ -163,13 +164,19 @@ class ActionEntityProjectile {
         }
 
         @SubscribeEvent
-        fun e(e: ProjectileHitEvent) {
+        fun e(e: EntityDamageByEntityEvent) {
+            if (e.damager is Projectile && e.damager.hasMeta("@Planners:Projectile")) {
+                e.isCancelled = true
+            }
+        }
 
+        @SubscribeEvent(ignoreCancelled = true)
+        fun e(e: ProjectileHitEvent) {
             if (e.hitEntity != null) {
                 val owner = e.entity.getMetadata("owner").getOrNull(0)?.value() as? LivingEntity ?: return
                 val context = e.entity.getMetadata("context").getOrNull(0)?.value() as? Session ?: return
                 val event = e.entity.getMetadata("event").getOrNull(0)?.asString() ?: return
-                context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!))
+                context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!,e))
 
             }
 

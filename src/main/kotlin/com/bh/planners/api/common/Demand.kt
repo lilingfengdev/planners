@@ -14,7 +14,7 @@ class Demand(val source: String,val starts : Array<Char> = arrayOf(':')) {
 
     init {
         var args = source.split(" ")
-        if (source[0] != ':' && source[0] != '@') {
+        if (source.isNotEmpty() && source[0] != ':' && source[0] != '@') {
             namespace = args[0]
             args = args.subList(1, args.size)
         } else {

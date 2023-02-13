@@ -45,13 +45,13 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
                 if (pos != null) {
                     frame.createContainer(pos).thenAccept {
                         val pos = it.firstLocation() ?: error("ActionDrag 'pos' empty")
-                        container.forEachEntity {
+                        container.forEachProxyEntity {
                             this.velocity = next(this.location, pos, step)
                         }
                     }
                 } else {
-                    container.forEachEntity {
-                        this.velocity = next(this.location, frame.origin()!!.value, step)
+                    container.forEachProxyEntity {
+                        this.velocity = next(this.location, frame.origin().value, step)
                     }
                 }
 

@@ -1,15 +1,15 @@
 package com.bh.planners.core.kether.game.damage
 
+import com.bh.planners.api.common.Demand
 import com.bh.planners.core.kether.compat.attribute.*
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
-import taboolib.common.platform.function.info
 
 interface AttackProvider {
 
-    fun doDamage(entity: LivingEntity, damage: Double, source: LivingEntity)
+    fun doDamage(entity: LivingEntity, damage: Double, source: LivingEntity,demand: Demand)
 
     companion object {
 

@@ -1,28 +1,19 @@
 package com.bh.planners.core.kether.game
 
+import com.bh.planners.api.common.Demand
 import com.bh.planners.api.event.EntityEvents
 import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.game.damage.AttackProvider
 import com.bh.planners.util.eval
-import net.minecraft.server.v1_12_R1.Entity
-import net.minecraft.server.v1_12_R1.EntityHuman
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer
 import org.bukkit.entity.LivingEntity
 import org.bukkit.metadata.FixedMetadataValue
-import taboolib.common.platform.event.EventPriority
-import taboolib.common.platform.event.OptionalEvent
-import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.setProperty
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import taboolib.module.nms.MinecraftVersion
 import taboolib.platform.BukkitPlugin
-import taboolib.platform.util.hasMeta
 import taboolib.platform.util.removeMeta
 import taboolib.platform.util.setMeta
 import java.util.concurrent.CompletableFuture
@@ -64,16 +55,22 @@ class ActionDamage {
     }
 
     class Attack(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
+
+        lateinit var data : ParsedAction<*>
+
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             val player = frame.bukkitPlayer() ?: return CompletableFuture.completedFuture(null)
-            frame.readAccept<String>(value) { damage ->
-                frame.createContainer(selector).thenAccept { container ->
-                    submit {
-                        container.forEachLivingEntity {
-                            this.noDamageTicks = 0
-                            this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
-                            AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.maxHealth), player)
-                            this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
+            frame.run(value).str { damage ->
+                frame.run(data).str { data ->
+                    val demand = Demand(data)
+                    frame.createContainer(selector).thenAccept { container ->
+                        submit {
+                            container.forEachLivingEntity {
+                                this.noDamageTicks = 0
+                                this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
+                                AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.maxHealth), player,demand)
+                                this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
+                            }
                         }
                     }
                 }
@@ -100,22 +97,14 @@ class ActionDamage {
          * attack 10.0 they "-@aline 10"
          */
         @KetherParser(["attack"], namespace = NAMESPACE, shared = true)
-        fun parser2() = scriptParser {
-            Attack(it.nextParsedAction(), it.selector())
+        fun parser2() = scriptParser { render ->
+            val action = render.nextParsedAction()
+            val data = render.tryGet(arrayOf("option", "data", "opt"), "")!!
+            Attack(action, render.selector()).also {
+                it.data = data
+            }
         }
 
-        //        @SubscribeEvent(
-//            bind = "ac.github.oa.api.event.entity.EntityDamageEvent",
-//            ignoreCancelled = true,
-//            priority = EventPriority.LOWEST
-//        )
-//        fun e(ope: OptionalEvent) {
-//            val e = ope.get<EntityDamageEvent>()
-//            // 如果是来自pl的攻击 则取消
-//            if (e.damageMemory.injured.hasMeta("Planners:Damage")) {
-//                e.isCancelled = true
-//            }
-//        }
         fun doDamage(source: LivingEntity?, entity: LivingEntity, damage: Double) {
             entity.noDamageTicks = 0
             entity.setMeta("Planners:Damage", true)

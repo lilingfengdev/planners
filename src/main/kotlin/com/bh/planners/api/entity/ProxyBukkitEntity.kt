@@ -5,12 +5,19 @@ import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
+import org.bukkit.util.Vector
 import java.util.*
 
 class ProxyBukkitEntity(val instance: Entity) : ProxyEntity {
 
+    override val isDead: Boolean
+        get() = instance.isDead
+
     override val location: Location
         get() = instance.location
+
+    override val eyeLocation: Location
+        get() = (instance as? LivingEntity)?.eyeLocation ?: location
 
     override val uniqueId: UUID
         get() = instance.uniqueId
@@ -40,6 +47,12 @@ class ProxyBukkitEntity(val instance: Entity) : ProxyEntity {
         get() = instance.vehicle?.run { ProxyBukkitEntity(this) }
 
     val isLivingEntity = instance is LivingEntity
+
+    override var velocity: Vector
+        get() = instance.velocity
+        set(value) {
+            instance.velocity = value
+        }
 
     override fun hashCode(): Int {
         return instance.hashCode()

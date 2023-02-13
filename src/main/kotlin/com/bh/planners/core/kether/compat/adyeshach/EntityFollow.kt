@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.compat.adyeshach
 
 import com.bh.planners.api.common.Demand.Companion.toDemand
+import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.kether.catchRunning
 import ink.ptms.adyeshach.api.nms.NMS
 import ink.ptms.adyeshach.common.entity.EntityInstance
@@ -42,7 +43,7 @@ object EntityFollow {
 
     }
 
-    fun process(entity: LivingEntity, option: Option): Boolean {
+    fun process(entity: ProxyEntity, option: Option): Boolean {
         if (option.entity.isDeleted) {
             return false
         }
@@ -60,7 +61,7 @@ object EntityFollow {
         return true
     }
 
-    fun select(entity: LivingEntity, entityInstance: EntityInstance, source: String) {
+    fun select(entity: ProxyEntity, entityInstance: EntityInstance, source: String) {
         catchRunning {
             val handler = Option(entityInstance, source)
             submit(async = true, period = 1) {

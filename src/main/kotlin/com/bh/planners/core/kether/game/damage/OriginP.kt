@@ -1,35 +1,34 @@
 package com.bh.planners.core.kether.game.damage
 
 import ac.github.oa.api.OriginAttributeAPI
-import ac.github.oa.api.event.entity.OriginCustomDamageEvent
+import ac.github.oa.api.event.entity.ProxyDamageEvent
 import ac.github.oa.internal.base.enums.PriorityEnum
-import ac.github.oa.internal.base.event.impl.DamageMemory
-import ac.github.oa.internal.core.attribute.AttributeData
+import com.bh.planners.api.common.Demand
 import com.bh.planners.core.kether.game.ActionDamage
-import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause
+import taboolib.common5.Coerce
 
 class OriginP : AttackProvider {
 
-    override fun doDamage(entity: LivingEntity, damage: Double, source: LivingEntity) {
-        val damageByEntityEvent = OriginCustomDamageEvent(source, entity, damage, entity, null)
+    val defaultCause = DamageCause.ENTITY_ATTACK
 
-        val attr = OriginAttributeAPI.getAttributeData(source)
+    override fun doDamage(entity: LivingEntity, damage: Double, source: LivingEntity, demand: Demand) {
 
-        // 创建伤害容器
-        val damageMemory = DamageMemory(
-            source, entity, damageByEntityEvent, attr, OriginAttributeAPI.getAttributeData(entity)
-        )
-        damageMemory.addDamage("@Planners",damage)
+        val event = ProxyDamageEvent(EntityDamageByEntityEvent(source, entity, defaultCause, 0.0))
+        if (demand.dataMap.containsKey("cause")) {
+            event.customCause = demand.get("cause")!!.toString()
+        }
 
-        if (ac.github.oa.api.event.entity.EntityDamageEvent(damageMemory, PriorityEnum.PRE).call()) {
-            OriginAttributeAPI.callDamage(damageMemory)
-
-            // POST CALL
-            if (ac.github.oa.api.event.entity.EntityDamageEvent(damageMemory, PriorityEnum.POST).call()) {
-                ActionDamage.doDamage(source, entity, damageMemory.totalDamage.coerceAtLeast(0.0))
+        val context = event.createDamageContext()
+        // 兼容力度
+        context.vigor = damage
+        context.addDamage("@Planners",Coerce.toDouble(demand.get("damage")))
+        if (ac.github.oa.api.event.entity.EntityDamageEvent(context, PriorityEnum.PRE).call()) {
+            OriginAttributeAPI.callDamage(context)
+            if (ac.github.oa.api.event.entity.EntityDamageEvent(context, PriorityEnum.POST).call()) {
+                ActionDamage.doDamage(source, entity, context.totalDamage.coerceAtLeast(0.0))
             }
         }
 
