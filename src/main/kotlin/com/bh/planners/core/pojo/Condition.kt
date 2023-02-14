@@ -3,9 +3,9 @@ package com.bh.planners.core.pojo
 import taboolib.common5.Coerce
 import taboolib.library.configuration.ConfigurationSection
 
-open class Condition(val option: ConfigurationSection) {
+open class Condition(val option: ConfigurationSection) : ICondition {
 
-    val condition = option.getString("if")!!
+    override val condition = option.getString("if")!!
 
     val indexTo = if (option.isList("$")) {
         option.getIntegerList("$")
@@ -15,6 +15,6 @@ open class Condition(val option: ConfigurationSection) {
     } else listOf(option.getInt("$"))
 
     val consume = option.getString("consume")
-    val placeholder = option.getString("placeholder")
+    override val placeholder = option.getString("placeholder")
 
 }

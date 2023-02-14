@@ -21,4 +21,8 @@ interface Timer<E : Event> {
 
     fun check(e: E): Target?
 
+    fun condition(template: Template,event: E) : Boolean {
+        return true
+    }
+
 }

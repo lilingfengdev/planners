@@ -70,7 +70,10 @@ object ActionGermLoader {
                     ActionGermParticle(it.nextParsedAction(),it.tryGet(arrayOf("animation"),"__none__")!!, it.selectorAction())
                 }
 
+            }
 
+            case("stop") {
+                ActionGermStop(it.nextParsedAction())
             }
         }
     }

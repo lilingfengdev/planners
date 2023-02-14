@@ -2,6 +2,7 @@ package com.bh.planners.core.kether
 
 import com.bh.planners.api.ManaCounter.addMana
 import com.bh.planners.api.ManaCounter.setMana
+import com.bh.planners.api.ManaCounter.takeMana
 import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.ManaCounter.toMaxMana
 import com.bh.planners.api.PlannersAPI.plannersProfile
@@ -12,52 +13,18 @@ import com.bh.planners.api.getFlag
 import com.bh.planners.api.setFlag
 import com.bh.planners.api.setPoint
 import com.bh.planners.core.pojo.data.Data
+import com.bh.planners.core.pojo.player.PlayerJob
+import com.bh.planners.core.pojo.player.PlayerProfile
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestContext
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 class ActionProfile {
-
-    class PointOperation(val action: ParsedAction<*>, val operator: Operator) : ScriptAction<Void>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(action).run<Any>().thenAccept {
-                val profile = frame.senderPlannerProfile() ?: return@thenAccept
-                when (operator) {
-                    Operator.ADD -> profile.addPoint(Coerce.toInteger(it))
-                    Operator.TAKE -> profile.addPoint(-Coerce.toInteger(it))
-                    Operator.SET -> profile.setPoint(Coerce.toInteger(it))
-                }
-            }
-        }
-    }
-
-    class ManaOperation(val action: ParsedAction<*>, val operator: Operator) : ScriptAction<Void>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(action).run<Any>().thenAccept {
-                val profile = frame.senderPlannerProfile() ?: return@thenAccept
-                when (operator) {
-                    Operator.ADD -> profile.addMana(Coerce.toDouble(it))
-                    Operator.TAKE -> profile.addMana(-Coerce.toDouble(it))
-                    Operator.SET -> profile.setMana(Coerce.toDouble(it))
-                }
-            }
-        }
-    }
-
-
-    class DataGet(val action: ParsedAction<*>) : ScriptAction<Any?>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
-            return frame.newFrame(action).run<Any>().thenApply {
-
-                frame.senderPlannerProfile()?.getFlag(it.toString())?.data
-            }
-        }
-
-    }
 
     class DataSet(val action: ParsedAction<*>, val value: ParsedAction<*>, val time: ParsedAction<*>) :
         ScriptAction<Void>() {
@@ -99,7 +66,6 @@ class ActionProfile {
         }
     }
 
-
     companion object {
 
 
@@ -124,90 +90,77 @@ class ActionProfile {
                     try {
                         mark()
                         when (expects("take", "-=", "add", "+=", "set", "=")) {
-                            "take", "-=" -> ManaOperation(it.nextParsedAction(), Operator.TAKE)
-                            "add", "+=" -> ManaOperation(it.nextParsedAction(), Operator.ADD)
-                            "set", "=" -> PointOperation(it.nextParsedAction(), Operator.SET)
+                            "take", "-=" -> actionProfileTake(it.nextParsedAction()) { value, profile ->
+                                profile.takeMana(Coerce.toDouble(value))
+                            }
+
+                            "add", "+=" -> actionProfileTake(it.nextParsedAction()) { value, profile ->
+                                profile.addMana(Coerce.toDouble(value))
+                            }
+
+                            "set", "=" -> actionProfileTake(it.nextParsedAction()) { value, profile ->
+                                profile.setMana(Coerce.toDouble(value))
+                            }
+
                             else -> error("out of case")
                         }
                     } catch (e: Throwable) {
                         reset()
-                        actionNow {
-                            script().sender!!.cast<Player>().toCurrentMana()
-                        }
+                        actionProfileNow { it.toCurrentMana() }
                     }
 
                 }
                 case("health-percent") {
-                    actionNow {
-                        val player = script().sender!!.cast<Player>()
-                        try {
-                            player.health / player.maxHealth
-                        }catch (e: Exception) {
-                            0.0
-                        }
-                    }
+                    actionProfileNow { it.player.health / it.player.maxHealth }
                 }
                 case("mana-percent") {
-                    actionNow {
-                        val player = script().sender!!.cast<Player>()
-                        if (!player.plannersProfileIsLoaded) return@actionNow 0.0
-                        val maxMana = player.toMaxMana()
-                        if (maxMana == 0.0) {
-                            return@actionNow 0.0
-                        }
-                        try {
-                            player.toCurrentMana() / maxMana
-                        }catch (e: Exception) {
-                            0.0
-                        }
+                    actionProfileNow {
+                        it.toCurrentMana() / it.toMaxMana()
                     }
                 }
                 case("max-mana") {
-                    actionNow {
-                        script().sender!!.cast<Player>().toMaxMana()
-                    }
+                    actionProfileNow { it.toMaxMana() }
                 }
                 case("point") {
                     try {
                         mark()
                         when (expects("take", "-=", "set", "=", "add", "+=")) {
-                            "take", "-=" -> PointOperation(it.nextParsedAction(), Operator.TAKE)
-                            "set", "=" -> PointOperation(it.nextParsedAction(), Operator.SET)
-                            "add", "+=" -> PointOperation(it.nextParsedAction(), Operator.ADD)
+                            "take", "-=" -> actionProfileTake(it.nextParsedAction()) { value,profile ->
+                                profile.addPoint(-Coerce.toInteger(value))
+                            }
+                            "set", "=" -> actionProfileTake(it.nextParsedAction()) { value,profile ->
+                                profile.setPoint(Coerce.toInteger(value))
+                            }
+                            "add", "+=" -> actionProfileTake(it.nextParsedAction()) { value,profile ->
+                                profile.addPoint(Coerce.toInteger(value))
+                            }
                             else -> error("out of case")
                         }
                     } catch (e: Throwable) {
                         reset()
-                        actionNow { senderPlannerProfile()?.point }
+                        actionProfileNow { it.point }
                     }
 
                 }
                 case("job") {
-                    actionNow { senderPlannerProfile()?.job?.name ?: "暂无" }
+                    actionProfileNow { it.job?.name }
                 }
                 case("level") {
-                    actionNow { senderPlannerProfile()?.level }
+                    actionProfileNow { it.job?.level }
                 }
                 case("level-length") {
-                    actionNow { senderPlannerProfile()?.level?.toString()?.length }
+                    actionProfileNow { it.job?.level?.toString()?.length ?: 0 }
                 }
                 case("exp", "experience") {
-                    actionNow { senderPlannerProfile()?.experience }
+                    actionProfileNow { it.experience }
                 }
 
                 case("exp-percent") {
-                    actionNow {
-                        val profile = senderPlannerProfile() ?: return@actionNow 0
-                        try {
-                            profile.experience / profile.maxExperience
-                        }catch (e: Exception) {
-                            0.0
-                        }
-                    }
+                    actionProfileNow { it.experience / it.maxExperience }
                 }
 
                 case("max-exp", "max-experience") {
-                    actionNow { senderPlannerProfile()?.maxExperience }
+                    actionProfileNow { it.maxExperience }
                 }
 
                 case("flag", "data") {
@@ -219,18 +172,47 @@ class ActionProfile {
                                 DataSet(key, it.nextParsedAction(), it.tryGet(arrayOf("timeout"), -1L)!!)
                             }
 
-                            "get" -> DataGet(key)
+                            "get" -> actionProfileTake(key) { value,profile ->
+                                profile.getFlag(value.toString())
+                            }
                             "add" -> DataAdd(key, it.nextParsedAction())
                             "has" -> DataHas(key)
                             else -> error("error of case!")
                         }
                     } catch (_: Throwable) {
                         reset()
-                        DataGet(key)
+                        actionProfileTake(key) { value,profile ->
+                            profile.getFlag(value.toString())
+                        }
                     }
                 }
 
             }
+        }
+
+        fun actionProfileNow(func: QuestContext.Frame.(PlayerProfile) -> Any?) = actionFuture { future ->
+            val player = this.bukkitPlayer() ?: error("No player selected.")
+            if (!player.plannersProfileIsLoaded) {
+                future.complete("__LOADED__")
+                return@actionFuture future
+            }
+            future.complete(func(this, player.plannersProfile))
+        }
+
+        fun actionProfileTake(
+            action: ParsedAction<*>,
+            func: QuestContext.Frame.(value: Any, profile: PlayerProfile) -> Unit
+        ) = actionTake {
+            val player = this.bukkitPlayer() ?: error("No player selected.")
+            if (!player.plannersProfileIsLoaded) {
+                return@actionTake CompletableFuture.completedFuture(null)
+            }
+
+            this.run(action).thenAccept {
+                func(this, it!!, player.plannersProfile)
+            }
+
+            return@actionTake CompletableFuture.completedFuture(null)
         }
 
     }

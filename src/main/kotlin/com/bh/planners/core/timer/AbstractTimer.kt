@@ -10,7 +10,6 @@ import taboolib.module.kether.printKetherErrorMessage
 
 abstract class AbstractTimer<E : Event>() : Timer<E> {
 
-
     override fun onStart(context: ScriptContext, template: Template, e: E) {
         context.rootFrame().variables()["id"] = template.id
     }

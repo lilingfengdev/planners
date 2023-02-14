@@ -14,6 +14,7 @@ options:
   presskey-patch:
     timeout: 1000
     type: disorderly
+  points-law-papi: '技能点{{ profile points }}/{{ lazy upgrade-points }}'
   grid-air:
     material: WHEAT_SEEDS
     name: '空技能'

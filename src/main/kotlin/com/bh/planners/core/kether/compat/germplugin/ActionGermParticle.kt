@@ -17,20 +17,15 @@ import org.bukkit.configuration.ConfigurationSection
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.info
 import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.run
-import taboolib.module.kether.runKether
+import taboolib.module.kether.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<*>, val selector: ParsedAction<*>?) :
-    ScriptAction<Void>() {
+class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<GermEffectPart<*>>() {
 
     companion object {
 
         val cache = Collections.synchronizedMap(mutableMapOf<String, ConfigurationSection>())
-
 
         fun get(name: String, rootType: RootType = RootType.EFFECT): ConfigurationSection? {
             return cache.computeIfAbsent(name) {
@@ -76,8 +71,9 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
         }
     }
 
-    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.readAccept<String>(name) { name ->
+    override fun run(frame: ScriptFrame): CompletableFuture<GermEffectPart<*>> {
+        val future = CompletableFuture<GermEffectPart<*>>()
+        frame.run(name).str { name ->
             val effectParticle = create(name)
 
             frame.run(animation).thenAccept {
@@ -98,15 +94,17 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
                 if (selector != null) {
                     frame.createContainer(selector).thenAccept {
                         it.forEach { execute(it, animations, effectParticle) }
+                        future.complete(effectParticle)
                     }
                 } else {
                     execute(frame.target(), animations, effectParticle)
+                    future.complete(effectParticle)
                 }
 
             }
 
         }
-        return CompletableFuture.completedFuture(null)
+        return future
     }
 
 
