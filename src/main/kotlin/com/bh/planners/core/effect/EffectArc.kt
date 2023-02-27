@@ -32,7 +32,7 @@ object EffectArc : Effect() {
         val rotateAxisY = option.rotateAxisY
         val rotateAxisZ = option.rotateAxisZ
 
-        option.createContainer(target, context).thenAccept { container ->
+        option.createContainer(context).thenAccept { container ->
             container.forEachLocation {
                 val builder = Builder(this, spread, angle, radius, step, slope, start,rotateAxisX, rotateAxisY, rotateAxisZ, spawner)
                 ParticleFrame.create(option.period, builder, response)

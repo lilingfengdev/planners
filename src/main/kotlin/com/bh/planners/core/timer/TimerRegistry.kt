@@ -35,9 +35,12 @@ object TimerRegistry {
                         return@forEach
                     }
                 }
-                (it.getInstance()?.get() as? Timer<*>)?.register()
 
+                try {
+                    (it.getInstance()?.get() as? Timer<*>)?.register()
+                } catch (_: NoClassDefFoundError) {
 
+                }
             }
         }
     }

@@ -18,7 +18,7 @@ object VisualLine : Selector{
         get() = arrayOf("v-line","!v-line")
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
-        val location = data.target?.getLocation()?.clone() ?: return CompletableFuture.completedFuture(null)
+        val location = data.origin.getLocation()?.clone() ?: return CompletableFuture.completedFuture(null)
         val direction = location.direction
         val length = data.read<Double>(0,"5")
         val radius = data.read<Double>(1,"1")

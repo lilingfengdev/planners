@@ -1,6 +1,7 @@
 package com.bh.planners.core.selector
 
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.submit
@@ -18,16 +19,15 @@ object Range : Selector {
         get() = arrayOf("range", "r")
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
-        val location = data.target as? Target.Location ?: return CompletableFuture.completedFuture(null)
+        val location = data.origin.getLocation() ?: return CompletableFuture.completedFuture(null)
 
-        val x = data.read<Double>(0,"0.0")
-        val y = data.read<Double>(1,"0.0")
-        val z = data.read<Double>(2,"0.0")
-
+        val x = data.read<Double>(0, "0.0")
+        val y = data.read<Double>(1, x.toString())
+        val z = data.read<Double>(2, x.toString())
 
         val future = CompletableFuture<Void>()
         submit(async = false) {
-            location.value.world?.getNearbyEntities(location.value,x,y,z)?.forEach {
+            location.world?.getNearbyEntities(location, x, y, z)?.forEach {
                 if (it is LivingEntity) {
                     data.container += it.toTarget()
                 }

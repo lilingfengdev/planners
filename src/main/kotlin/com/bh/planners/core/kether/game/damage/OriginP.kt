@@ -24,7 +24,11 @@ class OriginP : AttackProvider {
         val context = event.createDamageContext()
         // 兼容力度
         context.vigor = damage
-        context.addDamage("@Planners",Coerce.toDouble(demand.get("damage")))
+        demand.dataMap.forEach {
+            context.labels[it.key] = it.value.firstOrNull() ?: return@forEach
+        }
+        context.addDamage("@Planners", Coerce.toDouble(demand.get("damage")))
+
         if (ac.github.oa.api.event.entity.EntityDamageEvent(context, PriorityEnum.PRE).call()) {
             OriginAttributeAPI.callDamage(context)
             if (ac.github.oa.api.event.entity.EntityDamageEvent(context, PriorityEnum.POST).call()) {

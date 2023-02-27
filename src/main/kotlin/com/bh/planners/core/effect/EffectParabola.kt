@@ -35,7 +35,7 @@ object EffectParabola : Effect() {
         val period = option.period
         val threshold = option.threshold
         val spawner = EffectSpawner(option)
-        option.createContainer(target, context).thenAccept { container ->
+        option.createContainer(context).thenAccept { container ->
             container.forEachLocation {
                 ParticleFrame.create(period,Builder(this,height,power,step,threshold,spawner),response)
             }

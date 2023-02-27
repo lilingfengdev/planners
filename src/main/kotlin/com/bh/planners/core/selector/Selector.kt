@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture
 
 interface Selector {
 
-    class Transfer(val target: Target?, val context: Context, val demand: Demand, val container: Target.Container) {
+    class Transfer(val context: Context, val demand: Demand, val container: Target.Container) {
 
         private val selectorKeys = demand.dataMap.filter { it.key[0] == '@' }.entries.toMutableList()
 
@@ -36,7 +36,6 @@ interface Selector {
             val namespace = selectorEntry.key.substring(1)
             selectorEntry.value.forEachIndexed { optionIndex, s ->
                 val data = Data(namespace, s, context, container)
-                data.target = target
                 getSelector(namespace).check(data).thenAccept {
 
                     // 如果是最后一个 才检索
@@ -63,22 +62,12 @@ interface Selector {
             return selectors.firstOrNull { string in it.names } ?: error("Selector '${string}' not found")
         }
 
-        fun check(
-            target: Target?,
-            context: Context,
-            option: EffectOption,
-            container: Target.Container
-        ): CompletableFuture<Void> {
-            return check(target, context, option.demand, container)
+        fun check(context: Context, option: EffectOption, container: Target.Container): CompletableFuture<Void> {
+            return check(context, option.demand, container)
         }
 
-        fun check(
-            target: Target?,
-            context: Context,
-            demand: Demand,
-            container: Target.Container
-        ): CompletableFuture<Void> {
-            return Transfer(target, context, demand, container).run()
+        fun check(context: Context, demand: Demand, container: Target.Container): CompletableFuture<Void> {
+            return Transfer(context, demand, container).run()
         }
 
         @Awake(LifeCycle.LOAD)
@@ -111,7 +100,7 @@ interface Selector {
 
     class Data(val name: String, val source: String, val context: Context, val container: Target.Container) {
 
-        var target: Target? = null
+        var origin: Target = context.origin
 
         private val args = source.split(" ")
 

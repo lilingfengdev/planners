@@ -1,12 +1,14 @@
 package com.bh.planners.core.timer.germplugin
 
+import com.bh.planners.api.common.Plugin
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.timer.AbstractTimer
 import com.bh.planners.core.timer.Template
 import com.germ.germplugin.api.event.GermKeyDownEvent
 
-object GGermKeydown : AbstractTimer<GermKeyDownEvent>() {
+@Plugin("GermPlugin")
+class GGermKeydown : AbstractTimer<GermKeyDownEvent>() {
 
     override val name: String
         get() = "germ key down"

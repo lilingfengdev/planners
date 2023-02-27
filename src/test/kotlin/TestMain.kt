@@ -9,27 +9,8 @@ object TestMain {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
-        println(random(1,2))
+        val demand = Demand("")
+        println(demand)
     }
     fun random(num1: Int, num2: Int): Int {
         val min = min(num1, num2)

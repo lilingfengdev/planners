@@ -16,7 +16,7 @@ object LookAt : Selector {
         get() = arrayOf("lookat", "lookAt")
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
-        val location = data.target?.getLocation()?.clone() ?: return CompletableFuture.completedFuture(null)
+        val location = data.origin.getLocation()?.clone() ?: return CompletableFuture.completedFuture(null)
         var length = data.read<Double>(0, "3")
         val through = data.read<Boolean>(1, "false")
         val direction = location.direction

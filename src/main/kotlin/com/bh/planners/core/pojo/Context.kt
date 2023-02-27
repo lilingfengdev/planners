@@ -5,6 +5,7 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.getLivingEntity
+import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.kether.LazyGetter
 import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.data.DataContainer
@@ -28,7 +29,9 @@ abstract class Context(val sender: Target) {
     val proxySender: ProxyCommandSender
         get() = sender.toProxyCommandSender() ?: console()
 
-    var ketherScriptContext : ScriptContext? = null
+    var origin = sender
+
+    var ketherScriptContext: ScriptContext? = null
 
     val player: Player?
         get() = sender.getLivingEntity() as? Player
@@ -36,7 +39,7 @@ abstract class Context(val sender: Target) {
     val profile: PlayerProfile?
         get() = player?.plannersProfile
 
-    val dataContainer : DataContainer
+    val dataContainer: DataContainer
         get() = player?.getDataContainer() ?: DataContainer()
 
     val variables = DataContainer()

@@ -3,8 +3,7 @@ package com.bh.planners.core.kether.compat.germplugin
 import ac.github.oa.taboolib.common.reflect.Reflex.Companion.invokeMethod
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.createContainer
-import com.bh.planners.core.kether.readAccept
-import com.bh.planners.core.kether.target
+import com.bh.planners.core.kether.origin
 import com.germ.germplugin.api.GermSrcManager
 import com.germ.germplugin.api.RootType
 import com.germ.germplugin.api.dynamic.animation.AnimationGroup
@@ -14,6 +13,7 @@ import com.germ.germplugin.api.dynamic.effect.GermEffectParticle
 import com.germ.germplugin.api.event.GermSrcReloadEvent
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
+import taboolib.common.platform.event.OptionalEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.info
 import taboolib.library.kether.ParsedAction
@@ -21,7 +21,8 @@ import taboolib.module.kether.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<GermEffectPart<*>>() {
+class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<*>, val selector: ParsedAction<*>?) :
+    ScriptAction<GermEffectPart<*>>() {
 
     companion object {
 
@@ -41,8 +42,8 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
             )
         }
 
-        @SubscribeEvent
-        private fun e(e: GermSrcReloadEvent) {
+        @SubscribeEvent(bind = "com.germ.germplugin.api.event.GermSrcReloadEvent")
+        private fun e(e: OptionalEvent) {
             cache.clear()
         }
 
@@ -63,7 +64,7 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
                 }
                 // 虚拟实体特殊处理
                 else {
-                    effect.spawnToLocation(it,target.value)
+                    effect.spawnToLocation(it, target.value)
                 }
             } else if (target is Target.Location) {
                 effect.spawnToLocation(it, target.value)
@@ -97,7 +98,7 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
                         future.complete(effectParticle)
                     }
                 } else {
-                    execute(frame.target(), animations, effectParticle)
+                    execute(frame.origin(), animations, effectParticle)
                     future.complete(effectParticle)
                 }
 

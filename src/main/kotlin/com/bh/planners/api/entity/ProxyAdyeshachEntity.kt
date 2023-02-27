@@ -81,5 +81,9 @@ class ProxyAdyeshachEntity(val instance: EntityInstance): ProxyEntity {
         return false
     }
 
+    override fun toString(): String {
+        return instance.getCustomName()
+    }
+
 
 }

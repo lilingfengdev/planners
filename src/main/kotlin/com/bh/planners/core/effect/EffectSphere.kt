@@ -22,7 +22,7 @@ object EffectSphere : Effect() {
         val sample = option.sample
         val radius = option.radius
         val period = option.period
-        option.createContainer(target, context).thenAccept {
+        option.createContainer(context).thenAccept {
             it.forEachLocation {
                 val builder = Builder(this, sample, radius, effectSpawner)
                 ParticleFrame.create(period, builder, response)

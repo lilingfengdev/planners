@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether.compat.attribute
 
+import com.bh.planners.api.common.SimpleUniqueTask
 import com.skillw.attsystem.AttributeSystem
 import com.skillw.attsystem.api.AttrAPI.addAttribute
 import com.skillw.attsystem.api.AttrAPI.read
@@ -14,21 +15,6 @@ import java.util.*
 import kotlin.math.max
 
 class AttributeSystemBridge : AttributeBridge {
-    val cache = mutableMapOf<LivingEntity, MutableList<Data>>()
-
-    val task = submit(async = true, period = 20) {
-        cache.forEach {
-            it.value.filter { data -> !data.isValid }.forEach { data ->
-                it.key.removeAttribute(data.source)
-                cache[it.key]!!.remove(data)
-            }
-        }
-    }
-    val tasks = mutableMapOf<String,PlatformExecutor.PlatformTask>()
-
-    fun getCache(livingEntity: LivingEntity): MutableList<Data> {
-        return cache.computeIfAbsent(livingEntity) { mutableListOf() }
-    }
 
     override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>) {
         addAttributes(UUID.randomUUID().toString(), uuid, timeout, reads)
@@ -37,18 +23,17 @@ class AttributeSystemBridge : AttributeBridge {
     override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>) {
         val entity = Bukkit.getEntity(uuid) as? LivingEntity ?: error("null")
         val attributeData = reads.read(entity).unRelease()
+        uuid.addAttribute(source, attributeData)
         if (timeout != -1L) {
-            tasks[source]?.cancel()
-            tasks[source] = submitAsync(delay = timeout / 50) {
-                uuid.removeAttribute(source)
+            SimpleUniqueTask.submit("$uuid:$source", timeout / 50) {
+                removeAttributes(uuid, source)
             }
         }
-        uuid.addAttribute(source, attributeData)
     }
 
     override fun removeAttributes(uuid: UUID, source: String) {
-        val entity = Bukkit.getEntity(uuid) as? LivingEntity ?: error("null")
-        getCache(entity).removeIf { it.source == source }
+        SimpleUniqueTask.remove("$uuid:$source")
+        uuid.removeAttribute(source)
     }
 
     override fun update(entity: LivingEntity) {

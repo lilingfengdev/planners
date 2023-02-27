@@ -35,10 +35,10 @@ object BlockAt : Selector {
         var block: Block? = null
 
 
-        data.target?.ifEntity {
+        data.origin.ifEntity {
             block = getTargetLocation(this.value, value.direction, distance).block
         }
-        data.target?.ifLocation {
+        data.origin.ifLocation {
             block = getTargetLocation(value, value.direction, distance).block
         }
 

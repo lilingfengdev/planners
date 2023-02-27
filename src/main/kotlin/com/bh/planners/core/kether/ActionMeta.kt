@@ -48,7 +48,7 @@ class ActionMeta {
                     when (expects("name", "uuid", "loc", "location", "mana", "max-mana")) {
                         "name" -> actionNow { executor().name }
                         "uuid" -> actionNow { bukkitPlayer()!!.uniqueId.toString() }
-                        "loc", "location" -> actionNow { bukkitPlayer()!!.location.toLocal() }
+                        "loc", "location" -> actionNow { bukkitPlayer()!!.location.clone() }
                         "mana" -> actionNow { bukkitPlayer()!!.toCurrentMana() }
                         "max-mana" -> actionNow { bukkitPlayer()!!.toMaxMana() }
                         else -> actionNow { "error" }

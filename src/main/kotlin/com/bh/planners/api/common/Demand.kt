@@ -13,41 +13,46 @@ class Demand(val source: String,val starts : Array<Char> = arrayOf(':')) {
     val children = Collections.synchronizedMap(LinkedHashMap<String, Demand>())
 
     init {
-        var args = source.split(" ")
-        if (source.isNotEmpty() && source[0] != ':' && source[0] != '@') {
-            namespace = args[0]
-            args = args.subList(1, args.size)
+        if (source.isNotEmpty()) {
+            var args = source.split(" ")
+            if (source.isNotEmpty() && source[0] != ':' && source[0] != '@') {
+                namespace = args[0]
+                args = args.subList(1, args.size)
+            } else {
+                namespace = "EMPTY"
+            }
+            var dataKey : String? = null
+            val dataValues = mutableListOf<String>()
+            args.forEachIndexed { index, s ->
+
+                // 参数优先权重 @ 不用忽略@
+                if (s[0] == '@') {
+                    if (dataKey != null) {
+                        put(dataKey!!,dataValues.joinToString(" "))
+                    }
+                    dataKey = s
+                    dataValues.clear()
+                }
+                // 次要权重 starts
+                else if (s[0] in starts) {
+                    if (dataKey != null) {
+                        put(dataKey!!,dataValues.joinToString(" "))
+                    }
+                    dataKey = s.substring(1)
+                    dataValues.clear()
+                }
+                // 如果key节点追踪到 则自定定位为该key的值
+                else if (dataKey != null) {
+                    dataValues += s
+                }
+            }
+            if (dataKey != null) {
+                put(dataKey!!,dataValues.joinToString(" "))
+            }
         } else {
             namespace = "EMPTY"
         }
-        var dataKey : String? = null
-        val dataValues = mutableListOf<String>()
-        args.forEachIndexed { index, s ->
 
-            // 参数优先权重 @ 不用忽略@
-            if (s[0] == '@') {
-                if (dataKey != null) {
-                    put(dataKey!!,dataValues.joinToString(" "))
-                }
-                dataKey = s
-                dataValues.clear()
-            }
-            // 次要权重 starts
-            else if (s[0] in starts) {
-                if (dataKey != null) {
-                    put(dataKey!!,dataValues.joinToString(" "))
-                }
-                dataKey = s.substring(1)
-                dataValues.clear()
-            }
-            // 如果key节点追踪到 则自定定位为该key的值
-            else if (dataKey != null) {
-                dataValues += s
-            }
-        }
-        if (dataKey != null) {
-            put(dataKey!!,dataValues.joinToString(" "))
-        }
 
 
     }

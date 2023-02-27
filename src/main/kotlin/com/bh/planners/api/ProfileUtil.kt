@@ -4,7 +4,6 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.event.*
 import com.bh.planners.api.script.ScriptLoader
-import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.*
 import com.bh.planners.core.pojo.data.Data
 import com.bh.planners.core.pojo.key.IKeySlot
@@ -12,14 +11,7 @@ import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
 import org.bukkit.entity.Player
-import taboolib.common.platform.function.adaptPlayer
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submitAsync
-import taboolib.module.kether.KetherShell
-import taboolib.module.kether.ScriptContext
-import taboolib.module.kether.runKether
-import taboolib.platform.util.sendLang
-import java.util.concurrent.CompletableFuture
 
 
 fun PlayerProfile.addPoint(point: Int) {
@@ -120,23 +112,27 @@ val PlayerProfile.hasJob: Boolean
 fun PlayerProfile.transfer(target: Job): Boolean {
     if (!isTransfer()) return false
     val transferJob = getTransferJob(this.job!!.instance, target)!!
-    // 重定位职业
-    this.job!!.jobKey = transferJob.jobKey
-    // 删除其他技能
-    this.job!!.skills.removeIf { it.key !in transferJob.job.skills }
+    if (PlayerTransferEvent(player, target).call()) {
+        // 重定位职业
+        this.job!!.jobKey = transferJob.jobKey
+        // 删除其他技能
+        this.job!!.skills.removeIf { it.key !in transferJob.job.skills }
 
-    // 提取到异步保存
-    submitAsync {
-        // 重新定位剩余所属技能
-        this@transfer.job!!.skills.forEach {
-            Storage.INSTANCE.updateSkillJob(player, this@transfer.job!!, it)
+        // 提取到异步保存
+        submitAsync {
+            // 重新定位剩余所属技能
+            this@transfer.job!!.skills.forEach {
+                Storage.INSTANCE.updateSkillJob(player, this@transfer.job!!, it)
+            }
+            Storage.INSTANCE.updateCurrentJob(this@transfer)
+            Storage.INSTANCE.updateJob(player, this@transfer.job!!)
+            PlayerSelectedJobEvent(this@transfer).call()
         }
-        Storage.INSTANCE.updateCurrentJob(this@transfer)
-        Storage.INSTANCE.updateJob(player, this@transfer.job!!)
-        PlayerSelectedJobEvent(this@transfer).call()
+        return true
+    } else {
+        return false
     }
 
-    return true
 }
 
 fun getTransferJob(origin: Job, target: Job): Router.TransferJob? {

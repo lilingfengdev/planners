@@ -1,10 +1,12 @@
 package com.bh.planners.core.feature
 
+import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.ManaCounter.addMana
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.hasJob
+import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.kether.namespaces
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -17,6 +19,7 @@ import taboolib.common.platform.service.PlatformExecutor
 import taboolib.common5.Coerce
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
+import taboolib.module.kether.runKether
 
 object RegainMana {
 
@@ -24,12 +27,10 @@ object RegainMana {
 
     fun regainManaValue(player: Player): Double {
         val expression = getManaExpression(player) ?: return 0.0
-        return try {
-            Coerce.toDouble(KetherShell.eval(expression, sender = adaptPlayer(player), namespace = namespaces).get())
-        } catch (e: Throwable) {
-            e.printKetherErrorMessage()
-            0.0
-        }
+        return runKether {
+            ScriptLoader.createScript(ContextAPI.create(player), expression)
+                .thenApply { Coerce.toDouble(it) }.getNow(0.0)
+        } ?: 0.0
     }
 
     fun nextRegainMana(player: Player): Double {

@@ -2,6 +2,8 @@ package com.bh.planners.core.selector
 
 import com.bh.planners.api.common.Plugin
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.getEntity
+import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -16,7 +18,7 @@ object Team : Selector {
         get() = arrayOf("team", "!team")
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
-        val entityTarget = data.target as? Target.Entity ?: return CompletableFuture.completedFuture(null)
+        val entityTarget = data.origin.getPlayer() ?: return CompletableFuture.completedFuture(null)
 
         val player = entityTarget.player ?: return CompletableFuture.completedFuture(null)
 

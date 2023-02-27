@@ -73,23 +73,9 @@ fun ScriptFrame.getSkill(): PlayerJob.Skill {
     error("Error running environment !")
 }
 
-fun ScriptFrame.target(): Target {
-
-    val optional = rootVariables().get<Target.Location>("@Origin")
-    if (optional.isPresent) {
-        return optional.get()
-    }
-
-    val executor = executor()
-    if (executor is BukkitPlayer) {
-        return executor.player.toTarget()
-    }
-
-    return Any().toLocation().toTarget()
-}
 
 fun ScriptFrame.origin(): Target.Location {
-    return target() as Target.Location
+    return getContext().origin as Target.Location
 }
 
 fun ScriptFrame.rootVariables(): QuestContext.VarTable {
@@ -282,7 +268,7 @@ fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Ta
 
             else -> {
                 catchRunning {
-                    Selector.check(origin(), getContext(), it.toString().toDemand(), container).thenAccept {
+                    Selector.check(getContext(), it.toString().toDemand(), container).thenAccept {
                         future.complete(container)
                     }
                 }
@@ -343,6 +329,7 @@ fun <T> CompletableFuture<Any?>.byte(then: (Byte) -> T): CompletableFuture<T> {
         then(Coerce.toByte(it))
     }
 }
+
 fun <T> CompletableFuture<Any?>.materialOrNull(then: (Material?) -> T): CompletableFuture<T> {
     return thenApply {
         val id = it!!.toString().toUpperCase()

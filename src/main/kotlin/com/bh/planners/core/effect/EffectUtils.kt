@@ -121,18 +121,13 @@ private fun Location.getNearbyEntities(): List<LivingEntity> {
 
 
 fun Location.capture(): CompletableFuture<List<LivingEntity>> {
-
-
     val future = CompletableFuture<List<LivingEntity>>()
 
     if (Bukkit.isPrimaryThread()) {
         future.complete(this.getNearbyEntities())
     } else {
-        submit {
-            future.complete(this@capture.getNearbyEntities())
-        }
+        submit { future.complete(this@capture.getNearbyEntities()) }
     }
-
     return future
 }
 

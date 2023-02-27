@@ -54,9 +54,7 @@ class ActionDamage {
         }
     }
 
-    class Attack(val value: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
-
-        lateinit var data : ParsedAction<*>
+    class Attack(val value: ParsedAction<*>,var data : ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             val player = frame.bukkitPlayer() ?: return CompletableFuture.completedFuture(null)
@@ -97,12 +95,13 @@ class ActionDamage {
          * attack 10.0 they "-@aline 10"
          */
         @KetherParser(["attack"], namespace = NAMESPACE, shared = true)
-        fun parser2() = scriptParser { render ->
-            val action = render.nextParsedAction()
-            val data = render.tryGet(arrayOf("option", "data", "opt"), "")!!
-            Attack(action, render.selector()).also {
-                it.data = data
-            }
+        fun parser2() = scriptParser {
+            val action = it.nextParsedAction()
+            Attack(
+                action,
+                it.tryGet(arrayOf("option", "data", "opt"), "__EMPTY__")!!,
+                it.selector()
+            )
         }
 
         fun doDamage(source: LivingEntity?, entity: LivingEntity, damage: Double) {

@@ -1,6 +1,7 @@
 package com.bh.planners.core.selector
 
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.effect.common.PlayerFrontCoordinate
 import taboolib.common5.Coerce
@@ -20,8 +21,8 @@ object CircleDot : Selector {
     override fun check(
         data: Selector.Data
     ): CompletableFuture<Void> {
-        val location = data.target as? Target.Location ?: return CompletableFuture.completedFuture(null)
-        val coordinate = PlayerFrontCoordinate(location.value)
+        val location = data.origin.getLocation() ?: return CompletableFuture.completedFuture(null)
+        val coordinate = PlayerFrontCoordinate(location)
         val radius = data.read<Double>(0,"1")
         val y = data.read<Double>(1,"0.0")
         val angle = data.read<Double>(2,"0.0")
@@ -31,8 +32,8 @@ object CircleDot : Selector {
         val z: Double = radius * sin(radians)
         val newLocation = coordinate.newLocation(x, y, z)
         if (isKeepVisual) {
-            newLocation.pitch = location.value.pitch
-            newLocation.yaw = location.value.yaw
+            newLocation.pitch = location.pitch
+            newLocation.yaw = location.yaw
         }
         data.container += (newLocation.toTarget())
         return CompletableFuture.completedFuture(null)

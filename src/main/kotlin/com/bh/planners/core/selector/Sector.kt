@@ -19,7 +19,7 @@ object Sector : Selector {
         get() = arrayOf("sector","!sector")
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
-        val location = data.target?.getLocation() ?: return CompletableFuture.completedFuture(null)
+        val location = data.origin.getLocation() ?: return CompletableFuture.completedFuture(null)
         val radius = data.read<Double>(0,"1")
         val angle = data.read<Double>(1,"0")
         val ignoreOrigin = data.read<Boolean>(2,"true")
@@ -32,7 +32,7 @@ object Sector : Selector {
                     }
                     // 如果忽略原点并且他不是原点 则添加
                     // 如果是原点 则跳过
-                    else if (ignoreOrigin && it != data.target) {
+                    else if (ignoreOrigin && it != data.origin) {
                         data.container += it.toTarget()
                     }
                 }

@@ -19,7 +19,7 @@ object EffectLine : Effect() {
         val step = option.step
         val period = option.period
         val spawner = EffectSpawner(option)
-        option.createContainer(target, context).thenAccept { container ->
+        option.createContainer(context).thenAccept { container ->
 
             container.forEachLocation {
 

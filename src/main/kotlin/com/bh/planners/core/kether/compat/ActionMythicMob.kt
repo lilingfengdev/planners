@@ -1,9 +1,8 @@
 package com.bh.planners.core.kether.compat
 
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.kether.*
 import io.lumine.xikage.mythicmobs.MythicMobs
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob
 import taboolib.common5.Coerce
@@ -15,35 +14,23 @@ import java.util.concurrent.CompletableFuture
 class ActionMythicMob {
 
 
-    class MythicMobSpawn(
-        val mob: ParsedAction<*>,
-        val offsetX: ParsedAction<*>,
-        val offsetY: ParsedAction<*>,
-        val offsetZ: ParsedAction<*>,
-        val selector: ParsedAction<*>,
-    ) : ScriptAction<Target.Container>() {
+    class MythicMobSpawn(val mob: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Target.Container>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
             val future = CompletableFuture<Target.Container>()
             frame.newFrame(mob).run<Any>().thenAccept { mob ->
-                frame.newFrame(offsetX).run<Any>().thenAccept { offsetX ->
-                    frame.newFrame(offsetY).run<Any>().thenAccept { offsetY ->
-                        frame.newFrame(offsetZ).run<Any>().thenAccept { offsetZ ->
-                            frame.createContainer(selector).thenAccept { selector ->
-                                val mobs = mutableListOf<ActiveMob>()
-                                val mob = Coerce.toString(mob)
-                                val offsetX = Coerce.toDouble(offsetX)
-                                val offsetY = Coerce.toDouble(offsetY)
-                                val offsetZ = Coerce.toDouble(offsetZ)
-                                selector.forEachLocation {
-                                    mobs += api.mobManager.spawnMob(mob, this.clone().add(offsetX, offsetY, offsetZ))
-                                }
-                                future.complete(Target.Container().also {
-                                    it.addAll(mobs.map { it.livingEntity.toTarget() })
-                                })
-                            }
+                val container = Target.Container()
+                if (selector != null) {
+                    frame.createContainer(selector).thenAccept { selector ->
+                        selector.forEachLocation {
+                            container += api.mobManager.spawnMob(mob.toString(), this).livingEntity.toTarget()
                         }
+                        future.complete(container)
                     }
+                } else {
+                    container += api.mobManager.spawnMob(mob.toString(), frame.origin().value).livingEntity.toTarget()
+                    future.complete(container)
                 }
+
             }
             return future
         }
@@ -58,12 +45,7 @@ class ActionMythicMob {
         fun parser() = scriptParser {
             it.switch {
                 case("spawn") {
-                    val mob = it.nextParsedAction()
-                    val offsetX = it.nextParsedAction()
-                    val offsetY = it.nextParsedAction()
-                    val offsetZ = it.nextParsedAction()
-                    val selector = it.nextParsedAction()
-                    MythicMobSpawn(mob, offsetX, offsetY, offsetZ, selector)
+                    MythicMobSpawn(it.nextParsedAction(), selectorAction())
                 }
             }
         }

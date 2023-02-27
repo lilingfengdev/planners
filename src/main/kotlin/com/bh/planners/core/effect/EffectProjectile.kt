@@ -27,7 +27,7 @@ object EffectProjectile : Effect() {
         val amount = option.amount
         val period = option.period
         val effectSpawner = EffectSpawner(option)
-        option.createContainer(target, context).thenAccept { container ->
+        option.createContainer(context).thenAccept { container ->
             container.forEachLocation {
                 val builder = Builder(this, step, amount, effectSpawner)
                 ParticleFrame.create(period, builder, response)

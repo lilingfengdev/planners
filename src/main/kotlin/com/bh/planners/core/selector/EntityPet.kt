@@ -1,6 +1,8 @@
 package com.bh.planners.core.selector
 
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.getEntity
+import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import de.Keyle.MyPet.MyPetApi
 import org.bukkit.entity.Player
@@ -12,7 +14,7 @@ object EntityPet : Selector {
         get() = arrayOf("pet", "e-pet", "!pet", "!e-pet")
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
-        val entityTarget = data.target as? Target.Entity ?: return CompletableFuture.completedFuture(null)
+        val entityTarget = data.origin.getPlayer() ?: return CompletableFuture.completedFuture(null)
 
         val player = entityTarget.player ?: return CompletableFuture.completedFuture(null)
 

@@ -2,37 +2,20 @@ package com.bh.planners.core.kether.compat.attribute
 
 import ac.github.oa.internal.core.attribute.AttributeData
 import com.bh.planners.api.common.SimpleTimeoutTask
+import com.bh.planners.api.common.SimpleUniqueTask
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.serverct.ersha.api.AttributeAPI
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import java.util.*
 import kotlin.math.max
 
 class AttributePlus3Bridge : AttributeBridge {
 
-    val cache = mutableMapOf<LivingEntity, MutableList<Data>>()
-
-    val task = submit(async = true, period = 20) {
-        cache.forEach {
-            val filter = it.value.filter { !it.isValid }
-            if (filter.isNotEmpty()) {
-                filter.forEach { data ->
-                    AttributeAPI.takeSourceAttribute(it.key.getAttributeData, data.source)
-                    cache[it.key]!!.remove(data)
-                }
-            }
-        }
-
-    }
-
     val LivingEntity.getAttributeData
         get() = AttributeAPI.getAttrData(this)
-
-    fun getCache(livingEntity: LivingEntity): MutableList<Data> {
-        return cache.computeIfAbsent(livingEntity) { mutableListOf() }
-    }
 
     override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>) {
         addAttributes(UUID.randomUUID().toString(), uuid, timeout, reads)
@@ -41,16 +24,19 @@ class AttributePlus3Bridge : AttributeBridge {
     override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>) {
         val entity = Bukkit.getEntity(uuid) as? LivingEntity ?: return
         val attributeSource = AttributeAPI.getAttributeSource(reads)
-        if (timeout != -1L) {
-            getCache(entity) += Data(source, timeout)
-        }
 
         AttributeAPI.addSourceAttribute(entity.getAttributeData, source, attributeSource)
+        if (timeout != -1L) {
+            SimpleUniqueTask.submit("$uuid:$source", timeout / 50) {
+                removeAttributes(uuid, source)
+            }
+        }
     }
 
     override fun removeAttributes(uuid: UUID, source: String) {
+        SimpleUniqueTask.remove("$uuid:$source")
         val entity = Bukkit.getEntity(uuid) as? LivingEntity ?: error("null")
-        getCache(entity).removeIf { it.source == source }
+        AttributeAPI.takeSourceAttribute(entity.getAttributeData,source)
     }
 
     override fun update(entity: LivingEntity) {

@@ -1,6 +1,7 @@
 package com.bh.planners.core.selector
 
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
@@ -22,7 +23,7 @@ object InWorld : Selector {
     // -@inWorld world:PLAYER,ZOMBIE
     override fun check(data: Selector.Data): CompletableFuture<Void> {
 
-        val worldName = data.read<String>(0,(data.target as? Target.Location)?.value?.world?.name ?: error("InWorld no world args"))
+        val worldName = data.read<String>(0,data.origin.getLocation()?.world?.name ?: error("InWorld no world args"))
 
         val types = data.values.subList(1,data.values.size)
 

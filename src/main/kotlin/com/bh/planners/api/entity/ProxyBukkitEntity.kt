@@ -73,7 +73,7 @@ class ProxyBukkitEntity(val instance: Entity) : ProxyEntity {
     }
 
     override fun toString(): String {
-        return "ProxyBukkitEntity(instance=$instance)"
+        return instance.name
     }
 
 

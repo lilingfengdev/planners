@@ -28,17 +28,17 @@ interface Target {
 
         val consoleTarget = Console()
 
-        fun Demand.createContainer(target: Target?, context: Context): CompletableFuture<Container> {
+        fun Demand.createContainer(context: Context): CompletableFuture<Container> {
             val future = CompletableFuture<Container>()
             val container = Container()
-            Selector.check(target, context, this, container).thenAccept {
+            Selector.check(context, this, container).thenAccept {
                 future.complete(container)
             }
             return future
         }
 
-        fun EffectOption.createContainer(target: Target?, context: Context): CompletableFuture<Container> {
-            return demand.createContainer(target, context)
+        fun EffectOption.createContainer(context: Context): CompletableFuture<Container> {
+            return demand.createContainer(context)
         }
 
         fun org.bukkit.entity.Entity.target(): Entity {
