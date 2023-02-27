@@ -21,7 +21,7 @@ class KeySlot(val config: ConfigurationSection) : IKeySlot {
     override val groups: List<Int>
         get() = config.getIntegerList("groups")
 
-    override val name = config.getString("name", key)!!
+    override val name = config.getStringColored("name") ?: key
 
     override val sort = config.getLong("sort", 1)
 
