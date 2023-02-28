@@ -1,43 +1,54 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.common.SimpleTimeoutTask
+import com.bh.planners.api.common.SimpleUniqueTask
 import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.util.GlowUtil
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Entity
+import org.bukkit.scoreboard.Team
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.function.info
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionGlowing(val tick: ParsedAction<*>, val value: ParsedAction<*>, val color: ParsedAction<*>, val selector: ParsedAction<*>?) :
-    ScriptAction<Void>() {
+class ActionGlowing : ScriptAction<Void>() {
+
+    lateinit var tick: ParsedAction<*>
+    lateinit var value: ParsedAction<*>
+    lateinit var color: ParsedAction<*>
+    var selector: ParsedAction<*>? = null
 
     fun execute(entity: Entity, value: Boolean, color: ChatColor, tick: Long) {
-        if (value) GlowUtil.setColor(entity, color) else GlowUtil.removeColor(entity)
-        if (tick == -1L) return
-        SimpleTimeoutTask.createSimpleTask(tick, true) {
-            GlowUtil.removeColor(entity)
+        if (value) {
+            setColor(entity, color)
+            if (tick != -1L) {
+                SimpleUniqueTask.submit("@glowing:${entity.uniqueId}", tick) {
+                    unsetColor(entity)
+                }
+            }
+        } else {
+            unsetColor(entity)
         }
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-        frame.readAccept<Long>(tick) { tick ->
-            frame.readAccept<Boolean>(value) { value ->
-                frame.readAccept<ChatColor>(color) { color ->
-                    val glowColor = Coerce.toEnum(color, ChatColor::class.java)
+        frame.run(tick).long { tick ->
+            frame.run(value).bool { glowing ->
+                frame.run(color).str {
+                    val chatColor = ChatColor.valueOf(it.toUpperCase())
                     if (selector != null) {
-                        frame.execEntity(selector) {
-                            execute(this, value, glowColor, tick)
+                        frame.execEntity(selector!!) {
+                            execute(this, glowing, chatColor, tick)
                         }
                     } else {
-                        execute(frame.bukkitPlayer() ?: return@readAccept, value, glowColor, tick)
+                        execute(frame.bukkitPlayer() ?: return@str, glowing, chatColor, tick)
                     }
                 }
             }
@@ -48,6 +59,28 @@ class ActionGlowing(val tick: ParsedAction<*>, val value: ParsedAction<*>, val c
 
     companion object {
 
+        val colorTeams = mutableMapOf<ChatColor, Team>()
+
+        @Awake(LifeCycle.ENABLE)
+        fun initColor() {
+            ChatColor.values().forEachIndexed { index, chatColor ->
+                colorTeams[chatColor] =
+                    Bukkit.getServer().scoreboardManager!!.mainScoreboard.registerNewTeam("planners-$index").also {
+                        it.color = chatColor
+                        it.prefix = chatColor.toString()
+                    }
+            }
+        }
+
+        fun setColor(entity: Entity, color: ChatColor) {
+            colorTeams[color]?.addEntry(entity.uniqueId.toString())
+            entity.isGlowing = true
+        }
+
+        fun unsetColor(entity: Entity) {
+            entity.isGlowing = false
+        }
+
         /**
          * 设置目标发光，-1为永久值 需要取消
          * glowing <timeout: action(-1)> <value: action(true)> <selector>
@@ -55,12 +88,12 @@ class ActionGlowing(val tick: ParsedAction<*>, val value: ParsedAction<*>, val c
          */
         @KetherParser(["glowing"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionGlowing(
-                it.tryGet(arrayOf("tick", "time", "timeout"), -1)!!,
-                it.tryGet(arrayOf("value"), true)!!,
-                it.tryGet(arrayOf("color"), ChatColor.WHITE)!!,
-                it.selectorAction()
-            )
+            ActionGlowing().apply {
+                this.tick = it.tryGet(arrayOf("tick", "time", "timeout"), -1)!!
+                this.value = it.tryGet(arrayOf("value"), true)!!
+                this.color = it.tryGet(arrayOf("color"), ChatColor.WHITE)!!
+                this.selector = it.selectorAction()
+            }
         }
 
     }

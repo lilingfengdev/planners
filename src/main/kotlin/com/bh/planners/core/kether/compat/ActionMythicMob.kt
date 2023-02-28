@@ -22,12 +22,12 @@ class ActionMythicMob {
                 if (selector != null) {
                     frame.createContainer(selector).thenAccept { selector ->
                         selector.forEachLocation {
-                            container += api.mobManager.spawnMob(mob.toString(), this).livingEntity.toTarget()
+                            container += api.mobManager.spawnMob(mob.toString(), this).entity.bukkitEntity.toTarget()
                         }
                         future.complete(container)
                     }
                 } else {
-                    container += api.mobManager.spawnMob(mob.toString(), frame.origin().value).livingEntity.toTarget()
+                    container += api.mobManager.spawnMob(mob.toString(), frame.origin().value).entity.bukkitEntity.toTarget()
                     future.complete(container)
                 }
 

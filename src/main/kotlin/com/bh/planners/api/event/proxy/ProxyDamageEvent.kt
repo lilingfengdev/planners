@@ -17,11 +17,17 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.type.BukkitProxyEvent
 import java.util.UUID
 
-class ProxyDamageEvent(val damager: Entity, val entity: Entity, val cause: DamageCause?, var damage: Double, var memory: Any? = null) : BukkitProxyEvent() {
+class ProxyDamageEvent(
+    val damager: Entity,
+    val entity: Entity,
+    val cause: DamageCause?,
+    var damage: Double,
+    var memory: Any? = null
+) : BukkitProxyEvent() {
 
-    var event : EntityDamageByEntityEvent? = null
+    var event: EntityDamageByEntityEvent? = null
 
-    val realDamage : Double
+    val realDamage: Double
         get() = (memory as? DamageMemory)?.totalDamage ?: this.damage
 
     fun addDamage(double: Double) {
@@ -43,16 +49,23 @@ class ProxyDamageEvent(val damager: Entity, val entity: Entity, val cause: Damag
             damageEvent.event = e
             damageEvent.call()
             e.damage = damageEvent.damage
-            e.isCancelled = damageEvent.isCancelled
+            if (damageEvent.isCancelled) {
+                e.isCancelled = true
+            }
         }
 
-        @SubscribeEvent(bind = "ac.github.oa.api.event.entity.EntityDamageEvent", ignoreCancelled = true, priority = EventPriority.LOWEST)
+        @SubscribeEvent(
+            bind = "ac.github.oa.api.event.entity.EntityDamageEvent",
+            ignoreCancelled = true,
+            priority = EventPriority.LOWEST
+        )
         fun e(ope: OptionalEvent) {
             val e = ope.get<EntityDamageEvent>()
             if (e.priorityEnum == PriorityEnum.POST) {
                 val memory = e.damageMemory
                 val damager = e.damageMemory.event.damager
-                val damageEvent = ProxyDamageEvent(damager, memory.injured, memory.event.bukkitCause, memory.totalDamage, memory)
+                val damageEvent =
+                    ProxyDamageEvent(damager, memory.injured, memory.event.bukkitCause, memory.totalDamage, memory)
                 damageEvent.event = e.damageMemory.event.origin
                 damageEvent.call()
 
