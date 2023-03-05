@@ -22,11 +22,6 @@ action: |-
     effect projectile "flame 0 0 0 :step 1 :amount 10 ::@self"
   }
   
-  @player attack{async=true}
-  def handlePlayerAttack = {
-    
-  }
-  
   def handleEffectTick = {
     tell vars
   }

@@ -43,6 +43,10 @@ object EntityAPI {
         getDataContainer().update(key, value)
     }
 
+    fun Entity.deleteFlag(key: String) {
+        getDataContainer().remove(key)
+    }
+
     fun Entity.setFlag(key: String, data: Data) {
         getDataContainer()[key] = data
     }

@@ -14,7 +14,7 @@ import taboolib.common.util.random
 import taboolib.common5.Coerce
 import kotlin.random.Random
 
-fun Target.toProxyCommandSender() : ProxyCommandSender? {
+fun Target.toProxyCommandSender(): ProxyCommandSender? {
     return ContextAPI.createProxy(this.getPlayer() ?: return null)
 }
 
@@ -39,10 +39,16 @@ fun String.eval(amount: Double): Double {
 fun getScriptFactor(action: String): ScriptFactor {
 
     val first = action.split("\n")[0].trim()
-    return if (first == "# mode default") {
-        ScriptFactor(Skill.ActionMode.DEFAULT,action.split("\n").mapNotNull { if (it.trim().getOrNull(0) == '#') null else it }.joinToString("\n"))
+    return if (first == "# mode default" || first == "def main = {") {
+        ScriptFactor(
+            Skill.ActionMode.DEFAULT,
+            action.split("\n").mapNotNull { if (it.trim().getOrNull(0) == '#') null else it }.joinToString("\n")
+        )
     } else {
-        ScriptFactor(Skill.ActionMode.SIMPLE,action.split("\n").mapNotNull { if (it.trim().getOrNull(0) == '#') null else it }.joinToString("\n"))
+        ScriptFactor(
+            Skill.ActionMode.SIMPLE,
+            action.split("\n").mapNotNull { if (it.trim().getOrNull(0) == '#') null else it }.joinToString("\n")
+        )
     }
 }
 

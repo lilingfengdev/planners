@@ -108,30 +108,6 @@ class ActionSkill {
 
         }
 
-        fun actionSkillNow(of: ParsedAction<*>?,func: QuestContext.Frame.(PlayerJob.Skill) -> Any?) = actionFuture { future ->
-            if (of != null) {
-                this.run(of).str { skill ->
-                    future.complete(func(this,this.bukkitPlayer()?.plannersProfile?.getSkill(skill) ?: error("No skill $skill")))
-                }
-            } else {
-                future.complete(func(this,this.skill()))
-            }
-        }
-
-        fun actionSkillFuture(of: ParsedAction<*>?, func: QuestContext.Frame.(PlayerJob.Skill) -> CompletableFuture<*>) = actionFuture { future ->
-            if (of != null) {
-                run(of).str { skill ->
-                    func(this,this.bukkitPlayer()?.plannersProfile?.getSkill(skill) ?: error("No skill $skill")).thenAccept {
-                        future.complete(it)
-                    }
-                }
-            } else {
-                func(this,this.skill()).thenAccept {
-                    future.complete(it)
-                }
-            }
-        }
-
         fun execute(player: Player, skill: Skill, operator: Operator, amount: Long) {
             when (operator) {
                 Operator.ADD -> Counting.increase(player, skill, amount)

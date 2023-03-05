@@ -172,8 +172,8 @@ class ActionProfile {
                                 DataSet(key, it.nextParsedAction(), it.tryGet(arrayOf("timeout"), -1L)!!)
                             }
 
-                            "get" -> actionProfileTake(key) { value,profile ->
-                                profile.getFlag(value.toString())
+                            "get" -> actionProfileNow(key) { value,profile ->
+                                profile.getFlag(value.toString())?.data
                             }
                             "add" -> DataAdd(key, it.nextParsedAction())
                             "has" -> DataHas(key)
@@ -181,38 +181,13 @@ class ActionProfile {
                         }
                     } catch (_: Throwable) {
                         reset()
-                        actionProfileTake(key) { value,profile ->
-                            profile.getFlag(value.toString())
+                        actionProfileNow(key) { value, profile ->
+                            profile.getFlag(value.toString())?.data
                         }
                     }
                 }
 
             }
-        }
-
-        fun actionProfileNow(func: QuestContext.Frame.(PlayerProfile) -> Any?) = actionFuture { future ->
-            val player = this.bukkitPlayer() ?: error("No player selected.")
-            if (!player.plannersProfileIsLoaded) {
-                future.complete("__LOADED__")
-                return@actionFuture future
-            }
-            future.complete(func(this, player.plannersProfile))
-        }
-
-        fun actionProfileTake(
-            action: ParsedAction<*>,
-            func: QuestContext.Frame.(value: Any, profile: PlayerProfile) -> Unit
-        ) = actionTake {
-            val player = this.bukkitPlayer() ?: error("No player selected.")
-            if (!player.plannersProfileIsLoaded) {
-                return@actionTake CompletableFuture.completedFuture(null)
-            }
-
-            this.run(action).thenAccept {
-                func(this, it!!, player.plannersProfile)
-            }
-
-            return@actionTake CompletableFuture.completedFuture(null)
         }
 
     }

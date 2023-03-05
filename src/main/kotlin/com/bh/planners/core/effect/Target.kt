@@ -97,22 +97,12 @@ interface Target {
 
     }
 
-    open class Container : LinkedHashSet<Target>() {
+    open class Container : ArrayList<Target>() {
 
         override fun forEach(action: Consumer<in Target>) {
             super.forEach {
                 if (it.isValid) action.accept(it)
             }
-        }
-
-        fun join(vararg target: Target): Container {
-            this += target
-            return this
-        }
-
-        fun join(targets: List<Target>): Container {
-            this += targets
-            return this
         }
 
         fun has(target: Target): Boolean {

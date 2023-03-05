@@ -1,8 +1,10 @@
 package com.bh.planners.command
 
 import com.bh.planners.Planners
+import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.event.PluginReloadEvent
+import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.kether.namespaces
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -64,10 +66,8 @@ object PlannersCommand {
 
             execute<ProxyCommandSender> { sender, context, argument ->
                 val playerExact = Bukkit.getPlayerExact(argument) ?: return@execute
-                runKether {
-                    KetherFunction
-                        .parse(PlannersOption.infos, namespace = namespaces, sender = adaptPlayer(playerExact))
-                        .forEach { sender.sendMessage(it.colored()) }
+                ScriptLoader.createFunctionScript(ContextAPI.create(playerExact),PlannersOption.infos).forEach {
+                    sender.sendMessage(it.colored())
                 }
             }
         }

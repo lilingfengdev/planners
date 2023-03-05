@@ -224,6 +224,36 @@ fun ScriptFrame.senderPlannerProfile(): PlayerProfile? {
     return player.plannersProfile
 }
 
+fun ScriptFrame.containerOrOrigin(action: ParsedAction<*>?): CompletableFuture<Target.Container> {
+    return container(action, origin())
+}
+
+fun ScriptFrame.containerOrSender(action: ParsedAction<*>?): CompletableFuture<Target.Container> {
+    return container(action, bukkitPlayer())
+}
+
+fun ScriptFrame.container(action: ParsedAction<*>?, default: Location?): CompletableFuture<Target.Container> {
+    return container(action, default?.toTarget())
+}
+
+fun ScriptFrame.container(action: ParsedAction<*>?, default: Entity?): CompletableFuture<Target.Container> {
+    return container(action, default?.toTarget())
+}
+
+fun ScriptFrame.container(action: ParsedAction<*>?, default: Target?): CompletableFuture<Target.Container> {
+    if (action != null) {
+        return createContainer(action)
+    } else {
+        val future = CompletableFuture<Target.Container>()
+        val container = Target.Container()
+        if (default != null) {
+            container += default
+        }
+        future.complete(container)
+        return future
+    }
+}
+
 fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Target.Container> {
     val future = CompletableFuture<Target.Container>()
     this.newFrame(selector).run<Any>().thenAccept {

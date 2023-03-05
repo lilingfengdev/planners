@@ -1,10 +1,7 @@
 package com.bh.planners.core.kether.game.item
 
-import com.bh.planners.core.kether.bukkitPlayer
-import com.bh.planners.core.kether.createContainer
-import com.bh.planners.core.kether.execLivingEntity
+import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.game.item.ItemOperator.getNumber
-import com.bh.planners.core.kether.read
 import org.bukkit.inventory.ItemStack
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
@@ -26,17 +23,13 @@ class ActionItemCountGet(
         val future = CompletableFuture<Int>()
         frame.read<BukkitEquipment>(slot).thenAccept { slot ->
             frame.read<String>(keyword).thenAccept { keyword ->
-                if (selector != null) {
-                    frame.createContainer(selector).thenAccept {
-                        val entityTarget = it.firstLivingEntityTarget()
-                        if (entityTarget != null) {
-                            future.complete(get(slot.getItem(entityTarget), keyword))
-                        } else {
-                            future.complete(null)
-                        }
+                frame.containerOrSender(selector).thenAccept {
+                    val entityTarget = it.firstLivingEntityTarget()
+                    if (entityTarget != null) {
+                        future.complete(get(slot.getItem(entityTarget), keyword))
+                    } else {
+                        future.complete(null)
                     }
-                } else {
-                    future.complete(get(slot.getItem(frame.bukkitPlayer()), keyword))
                 }
             }
         }

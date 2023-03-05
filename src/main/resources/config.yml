@@ -11,6 +11,7 @@ options:
   scope-threshold: [ 1.0,1.0,1.0 ]
   auto-save-flag-period: 60000
   level-cover: true
+  minecraft-grid: false
   presskey-patch:
     timeout: 1000
     type: disorderly

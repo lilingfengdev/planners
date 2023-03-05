@@ -1,13 +1,14 @@
 package com.bh.planners.core.kether
 
+import com.bh.planners.api.EntityAPI.deleteFlag
 import com.bh.planners.api.EntityAPI.getDataContainer
 import com.bh.planners.api.EntityAPI.getFlag
 import com.bh.planners.api.EntityAPI.setFlag
+import com.bh.planners.api.EntityAPI.updateFlag
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.setFlag
 import com.bh.planners.core.pojo.data.Data
 import taboolib.common5.Coerce
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
@@ -16,23 +17,12 @@ class ActionFlag {
 
     class DataGet(val action: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Any>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Any> {
-            val future = CompletableFuture<Any>()
-            frame.newFrame(action).run<Any>().thenAccept {
+            return frame.newFrame(action).run<Any>().thenApply {
                 val key = it.toString()
-                if (selector != null) {
-                    frame.createContainer(selector).thenAccept {
-                        val entityTarget = it.firstEntityTarget()
-                        if (entityTarget != null) {
-                            future.complete(entityTarget.getFlag(key))
-                        } else {
-                            future.complete(null)
-                        }
-                    }
-                } else {
-                    future.complete(frame.bukkitPlayer()?.getFlag(key))
+                frame.containerOrSender(selector).thenApply {
+                    it.firstEntityTarget()?.getFlag(key)?.data
                 }
             }
-            return future
         }
 
     }
@@ -44,21 +34,22 @@ class ActionFlag {
         val selector: ParsedAction<*>?
     ) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(action).run<Any>().thenAccept { key ->
-                frame.newFrame(value).run<Any>().thenAccept { value ->
-
-                    frame.newFrame(time).run<Any>().thenAccept { time ->
-                        if (selector != null) {
-                            frame.execEntity(selector) {
-                                setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time) * 50))
+            frame.run(action).str { key ->
+                frame.run(value).thenAccept { value ->
+                    frame.run(time).long { time ->
+                        frame.containerOrSender(selector).thenAccept {
+                            it.forEachEntity {
+                                if (value == null) {
+                                    deleteFlag(key)
+                                } else {
+                                    setFlag(key, Data(value, time * 50))
+                                }
                             }
-                        } else {
-                            val profile = frame.bukkitPlayer()!!.plannersProfile
-                            profile.setFlag(key.toString(), Data(value, survivalStamp = Coerce.toLong(time) * 50))
                         }
                     }
                 }
             }
+            return CompletableFuture.completedFuture(null)
         }
 
     }
@@ -69,20 +60,11 @@ class ActionFlag {
             return frame.newFrame(action).run<Any>().thenAccept {
                 val key = it.toString()
                 frame.newFrame(value).run<Any>().thenAccept { value ->
-                    if (selector != null) {
-                        frame.execEntity(selector) {
-                            val dataContainer = getDataContainer()
-                            if (dataContainer.containsKey(key)) {
-                                dataContainer.update(key, dataContainer[key]!!.increaseAny(value.toString()))
-                            }
-                        }
-                    } else {
-                        val dataContainer = frame.bukkitPlayer()!!.getDataContainer()
-                        if (dataContainer.containsKey(key)) {
-                            dataContainer.update(key, dataContainer[key]!!.increaseAny(value.toString()))
+                    frame.containerOrSender(selector).thenAccept {
+                        it.forEachEntity {
+                            this.updateFlag(key, getFlag(key)!!.data.increaseAny(value.toString()))
                         }
                     }
-
                 }
             }
         }
@@ -109,10 +91,10 @@ class ActionFlag {
             val key = it.nextParsedAction()
             try {
                 it.mark()
-                when (it.expects("add", "set", "get","to")) {
+                when (it.expects("add", "set", "get", "to")) {
                     "set", "to" -> {
                         val value = it.nextParsedAction()
-                        DataSet(key, value, it.tryGet(arrayOf("timeout"),-1)!!, it.selectorAction())
+                        DataSet(key, value, it.tryGet(arrayOf("timeout"), -1)!!, it.selectorAction())
                     }
 
                     "get" -> DataGet(key, it.selectorAction())

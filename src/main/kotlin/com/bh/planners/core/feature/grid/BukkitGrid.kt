@@ -28,6 +28,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.module.configuration.ConfigNode
 import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.kether.runKether
@@ -36,6 +37,8 @@ object BukkitGrid {
 
     val grids = mutableListOf<Grid>()
 
+    @ConfigNode("options.minecraft-grid")
+    var isMinecraftGrid : Boolean = false
 
     @Awake(LifeCycle.ACTIVE)
     fun initGrids() {
@@ -104,6 +107,7 @@ object BukkitGrid {
 
     @SubscribeEvent
     fun e(e: PlayerSwapHandItemsEvent) {
+        if (!isMinecraftGrid) return
         val heldItemSlot = e.player.inventory.heldItemSlot
         if (grids.firstOrNull { it.slot == heldItemSlot } != null) {
             e.isCancelled = true
@@ -113,11 +117,13 @@ object BukkitGrid {
 
     @SubscribeEvent
     fun e(e: PlayerInitializeEvent) {
+        if (!isMinecraftGrid) return
         updateAll(e.player)
     }
 
     @SubscribeEvent
     fun e(e: PlayerDropItemEvent) {
+        if (!isMinecraftGrid) return
         val player = e.player
         val heldItemSlot = player.inventory.heldItemSlot
         if (grids.firstOrNull { it.slot == heldItemSlot } != null) {
@@ -127,6 +133,7 @@ object BukkitGrid {
 
     @SubscribeEvent
     fun e(e: InventoryClickEvent) {
+        if (!isMinecraftGrid) return
         if (e.inventory is PlayerInventory && grids.firstOrNull { it.slot == e.slot } != null) {
             e.isCancelled = true
         }
@@ -134,11 +141,13 @@ object BukkitGrid {
 
     @SubscribeEvent
     fun e(e: PlayerSkillBindEvent) {
+        if (!isMinecraftGrid) return
         updateAll(e.player)
     }
 
     @SubscribeEvent
     fun e(e: PlayerSkillUpgradeEvent) {
+        if (!isMinecraftGrid) return
         if (e.skill.shortcutKey != null) {
             val grid = Grid.get(e.skill.keySlot!!) ?: return
             update(e.player, grid)
@@ -147,6 +156,7 @@ object BukkitGrid {
 
     @SubscribeEvent
     fun e(e: PlayerInteractEvent) {
+        if (!isMinecraftGrid) return
         if (e.hasItem() && e.action.name in gridInteractActions && e.hand == EquipmentSlot.HAND) {
             val player = e.player
             val heldItemSlot = player.inventory.heldItemSlot
@@ -161,6 +171,7 @@ object BukkitGrid {
 
     @SubscribeEvent
     fun e(e: PluginReloadEvent) {
+        if (!isMinecraftGrid) return
         initGrids()
         Bukkit.getOnlinePlayers().forEach(this::updateAll)
     }

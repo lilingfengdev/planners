@@ -17,8 +17,6 @@ object EffectArc : Effect() {
     override val name: String
         get() = "arc"
 
-
-
     override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {
         val spawner = EffectSpawner(option)
 

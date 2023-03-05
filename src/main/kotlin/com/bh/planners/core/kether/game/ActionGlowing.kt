@@ -7,6 +7,7 @@ import com.bh.planners.core.kether.util.GlowUtil
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Entity
+import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
@@ -61,14 +62,18 @@ class ActionGlowing : ScriptAction<Void>() {
 
         val colorTeams = mutableMapOf<ChatColor, Team>()
 
+        fun mainScoreboard(): Scoreboard {
+            return Bukkit.getServer().scoreboardManager!!.mainScoreboard
+        }
+
         @Awake(LifeCycle.ENABLE)
         fun initColor() {
             ChatColor.values().forEachIndexed { index, chatColor ->
-                colorTeams[chatColor] =
-                    Bukkit.getServer().scoreboardManager!!.mainScoreboard.registerNewTeam("planners-$index").also {
-                        it.color = chatColor
-                        it.prefix = chatColor.toString()
-                    }
+                mainScoreboard().getTeam("planners-${chatColor.name}")?.unregister()
+                colorTeams[chatColor] = mainScoreboard().registerNewTeam("planners-${chatColor.name}").also {
+                    it.color = chatColor
+                    it.prefix = chatColor.toString()
+                }
             }
         }
 

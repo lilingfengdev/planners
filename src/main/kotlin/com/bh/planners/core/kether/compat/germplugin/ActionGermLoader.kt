@@ -64,10 +64,18 @@ object ActionGermLoader {
                 try {
                     it.mark()
                     it.expects("move")
-                    ActionGermEffectMove(it.nextParsedAction(), it.nextParsedAction(),it.tryGet(arrayOf("to")) ?: error("lack 'to'"))
-                }catch (e: Exception) {
+                    ActionGermEffectMove(
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
+                        it.tryGet(arrayOf("to")) ?: error("lack 'to'")
+                    )
+                } catch (e: Exception) {
                     it.reset()
-                    ActionGermParticle(it.nextParsedAction(),it.tryGet(arrayOf("animation"),"__none__")!!, it.selectorAction())
+                    ActionGermParticle(
+                        it.nextParsedAction(),
+                        it.tryGet(arrayOf("animation"), "__none__")!!,
+                        it.selectorAction()
+                    )
                 }
 
             }

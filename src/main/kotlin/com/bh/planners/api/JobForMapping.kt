@@ -33,6 +33,9 @@ val PlayerJob.Skill.maxLevel: Int
 val PlayerJob.Skill.optVariables: List<Skill.Variable>
     get() = instance.option.variables
 
+val PlayerJob.Skill.optAsync: Boolean
+    get() = instance.option.async
+
 val PlayerJob.Skill.needPointsVariable: Skill.Variable
     get() = instance.needPointsVariable
 

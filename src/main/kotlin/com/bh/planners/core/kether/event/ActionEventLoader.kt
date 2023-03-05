@@ -8,7 +8,6 @@ import taboolib.module.kether.KetherError
 import taboolib.module.kether.KetherParser
 import java.util.function.Supplier
 
-@Suppress("UNCHECKED_CAST")
 @Awake
 object ActionEventLoader : ClassVisitor(0) {
 

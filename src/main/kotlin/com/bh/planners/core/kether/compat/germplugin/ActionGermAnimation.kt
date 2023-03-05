@@ -4,6 +4,7 @@ import com.bh.planners.core.kether.execEntity
 import com.germ.germplugin.api.GermPacketAPI
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
@@ -14,8 +15,10 @@ class ActionGermAnimation(val state: String, val remove: Boolean, val selector: 
     fun execute(entity: Entity, state: String, remove: Boolean) {
         Bukkit.getOnlinePlayers().forEach {
             if (remove) {
+                info("${entity.name} stop animation $state")
                 GermPacketAPI.stopModelAnimation(it, entity.entityId, state)
             } else {
+                info("${entity.name} send animation $state")
                 GermPacketAPI.sendModelAnimation(it, entity.entityId, state)
             }
         }

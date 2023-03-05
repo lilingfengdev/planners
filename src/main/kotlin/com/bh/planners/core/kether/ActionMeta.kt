@@ -3,6 +3,11 @@ package com.bh.planners.core.kether
 import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.ManaCounter.toMaxMana
 import com.bh.planners.api.Counting
+import com.bh.planners.api.maxLevel
+import com.bh.planners.api.optAsync
+import com.bh.planners.api.optVariables
+import com.bh.planners.core.effect.Target.Companion.getLocation
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.meta.ActionMetaOrigin
 import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.*
@@ -32,13 +37,13 @@ class ActionMeta {
 
                 case("skill") {
                     when (expects("id", "name", "async", "level", "level-cap", "level-max", "shortcut", "countdown")) {
-                        "id" -> actionNow { skill().instance.key }
-                        "name" -> actionNow { skill().instance.option.name }
-                        "async" -> actionNow { skill().instance.option.async }
-                        "level" -> actionNow { skill().level }
-                        "level-cap", "level-max" -> actionNow { skill().instance.option.levelCap }
-                        "shortcut" -> actionNow { skill().keySlot?.name ?: "暂无" }
-                        "countdown" -> actionNow { Counting.getCountdown(bukkitPlayer()!!, skill().instance) }
+                        "id" -> actionSkillNow { it.key }
+                        "name" -> actionSkillNow { it.name }
+                        "async" -> actionSkillNow { it.optAsync }
+                        "level" -> actionSkillNow { it.level }
+                        "level-cap", "level-max", "maxlevel", "max-level" -> actionSkillNow { it.maxLevel }
+                        "shortcut" -> actionSkillNow { it.keySlot?.name ?: "暂无" }
+                        "countdown" -> actionSkillNow { Counting.getCountdown(bukkitPlayer()!!, it.instance) }
                         else -> actionNow { "error" }
                     }
 
@@ -49,19 +54,27 @@ class ActionMeta {
                         "name" -> actionNow { executor().name }
                         "uuid" -> actionNow { bukkitPlayer()!!.uniqueId.toString() }
                         "loc", "location" -> actionNow { bukkitPlayer()!!.location.clone() }
-                        "mana" -> actionNow { bukkitPlayer()!!.toCurrentMana() }
-                        "max-mana" -> actionNow { bukkitPlayer()!!.toMaxMana() }
+                        "mana" -> actionProfileNow { it.toCurrentMana() }
+                        "max-mana", "maxmana" -> actionProfileNow { it.toMaxMana() }
                         else -> actionNow { "error" }
                     }
                 }
                 case("origin") {
                     try {
                         mark()
-                        expects("to", "set", "=")
-                        ActionMetaOrigin.Set(selector())
+                        expects("to", "set", "=","bind")
+                        try {
+                            it.mark()
+                            expects("they","the")
+                            ActionMetaOrigin.Set(it.nextParsedAction())
+                        }catch (_:Throwable) {
+                            it.reset()
+                            ActionMetaOrigin.Set(it.nextParsedAction())
+                        }
+
                     } catch (e: Throwable) {
                         reset()
-                        ActionMetaOrigin.Get()
+                        actionNow { origin() }
                     }
                 }
             }

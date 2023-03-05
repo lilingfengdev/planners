@@ -12,7 +12,6 @@ class ActionInvoke(val func: ParsedAction<*>, val using: List<ParsedAction<*>>) 
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-
         val args = ArrayList<Any>()
         fun process(index: Int) {
             if (args.size < index) {

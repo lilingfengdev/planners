@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.core.effect.Target
+import taboolib.common.OpenResult
 import taboolib.common.platform.function.warning
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -49,8 +50,8 @@ class ActionSelector {
         }
     }
 
-    class ActionTargetContainerList(val key: ParsedAction<*>) : ScriptAction<Set<Target>>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Set<Target>> {
+    class ActionTargetContainerList(val key: ParsedAction<*>) : ScriptAction<Target.Container>() {
+        override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
 
             return frame.newFrame(key).run<String>().thenApply {
                 frame.variables().get<Target.Container>(it.toString()).orElseGet { EMPTY_CONTAINER }
@@ -150,6 +151,32 @@ class ActionSelector {
                 ActionTargetContainerGet(key)
             }
         }
+
+
+        @KetherProperty(bind = Target.Container::class)
+        fun propertyArray() = object : ScriptProperty<Target.Container>("target.container.operator") {
+
+            override fun read(instance: Target.Container, key: String): OpenResult {
+                return when {
+                    key.isInt() -> OpenResult.successful(instance[key.toInt()])
+                    key == "length" || key == "size" -> OpenResult.successful(instance.size)
+                    else -> OpenResult.failed()
+                }
+            }
+
+            override fun write(instance: Target.Container, key: String, value: Any?): OpenResult {
+                return if (key.isInt()) {
+                    val target = (value as? Target.Container)?.firstTarget()
+                    if (target != null) {
+                        instance[key.toInt()] = target
+                    }
+                    OpenResult.successful()
+                } else {
+                    OpenResult.failed()
+                }
+            }
+        }
+
     }
 
 }
