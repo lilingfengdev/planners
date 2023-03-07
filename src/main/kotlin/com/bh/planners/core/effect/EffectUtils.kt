@@ -8,9 +8,7 @@ import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
-import taboolib.library.kether.QuestReader
-import taboolib.module.effect.Matrix
-import taboolib.module.kether.ScriptAction
+import taboolib.module.effect.math.Matrix
 import java.util.concurrent.CompletableFuture
 import kotlin.math.cos
 import kotlin.math.sin

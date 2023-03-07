@@ -5,18 +5,19 @@ import com.bh.planners.core.pojo.Context
 import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.ScriptFrame
 
-fun ScriptContext.setDamageable(damageable: Damageable) {
-    this.rootFrame().rootVariables()["@DamageableContext"] = damageable
+fun ScriptFrame.setDamageable(damageable: Damageable) {
+    this.rootVariables()["damageable"] = damageable
+    this.rootVariables()["model"] = damageable
+    this.rootVariables()["@DamageableContext"] = damageable
 }
 
-fun ScriptContext.getDamageable(): Damageable {
-    return this.rootFrame().get<Damageable>("@DamageableContext").orElse(null) ?: error("Error running environment !")
+fun ScriptFrame.getDamageable(): Damageable {
+    return this.rootVariables().get<Damageable>("@DamageableContext").orElse(null) ?: error("Error running environment !")
 }
 
-fun ScriptContext.setDamageableMeta(meta: DamageableMeta) {
-    this.rootFrame().rootVariables()["@DamageableMeta"] = meta
+fun ScriptFrame.setDamageableMeta(meta: DamageableMeta) {
+    this.rootVariables()["@DamageableMeta"] = meta
 }
-
-fun ScriptContext.getDamageableMeta(): Damageable {
-    return rootFrame().get<DamageableMeta>("@DamageableMeta").orElse(null) ?: error("Error running environment !")
+fun ScriptFrame.getDamageableMeta(): DamageableMeta {
+    return rootVariables().get<DamageableMeta>("@DamageableMeta").orElse(null) ?: error("Error running environment !")
 }

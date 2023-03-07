@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.game.entity
 
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.effect.inline.Incident.Companion.handleIncident
 import com.bh.planners.core.effect.inline.IncidentCaptureEntity
 import com.bh.planners.core.effect.inline.IncidentHitEntity
@@ -38,19 +39,20 @@ class ActionEntityProjectile {
         val event: ParsedAction<*>,
         val selector: ParsedAction<*>?,
     ) :
-        ScriptAction<List<Entity>>() {
+        ScriptAction<Target.Container>() {
 
-        fun execute(context: Context, name: String, owners: List<LivingEntity>, type: Type, step: Double, event: String, rotateX: Double, rotateY: Double, rotateZ: Double, ): List<Projectile> {
+        fun execute(context: Context, name: String, owners: List<Target.Entity>, type: Type, step: Double, event: String, rotateX: Double, rotateY: Double, rotateZ: Double): List<Projectile> {
             val listOf = mutableListOf<Projectile>()
             owners.forEach {
-                val projectile = it.launchProjectile(type.clazz)
+                val entity = it.bukkitLivingEntity ?: return@forEach
+                val projectile = entity.launchProjectile(type.clazz)
                 if (event != "none") {
                     projectile.setMetadata("owner", FixedMetadataValue(BukkitPlugin.getInstance(), it))
                     projectile.setMetadata("event", FixedMetadataValue(BukkitPlugin.getInstance(), event))
                     projectile.setMetadata("context", FixedMetadataValue(BukkitPlugin.getInstance(), context))
                 }
 
-                projectile.setMeta("@Planners:Projectile",true)
+                projectile.setMeta("@Planners:Projectile", true)
                 projectile.customName = name
                 projectile.isCustomNameVisible = false
                 val velocity = projectile.velocity
@@ -66,9 +68,9 @@ class ActionEntityProjectile {
             return listOf
         }
 
-        override fun run(frame: ScriptFrame): CompletableFuture<List<Entity>> {
+        override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
 
-            val future = CompletableFuture<List<Entity>>()
+            val future = CompletableFuture<Target.Container>()
             frame.readAccept<Type>(action) { type ->
                 frame.readAccept<String>(name) { name ->
                     frame.readAccept<Double>(step) { step ->
@@ -77,47 +79,14 @@ class ActionEntityProjectile {
                                 frame.readAccept<Double>(rotateZ) { rotateZ ->
                                     frame.readAccept<String>(event) { event ->
                                         val context = frame.getContext()
-                                        if (selector != null) {
-                                            frame.createContainer(selector).thenAccept {
-                                                val entities =
-                                                    it.filterIsInstance<Target.Entity>().filter { it.isLiving }
-                                                        .mapNotNull { it.bukkitLivingEntity }
-                                                submit {
-                                                    future.complete(
-                                                        execute(
-                                                            context,
-                                                            name,
-                                                            entities,
-                                                            type,
-                                                            step,
-                                                            event,
-                                                            rotateX,
-                                                            rotateY,
-                                                            rotateZ
-                                                        )
-                                                    )
+                                        val container = Target.Container()
+                                        frame.containerOrSender(selector).thenAccept {
+                                            val entities = it.filterIsInstance<Target.Entity>()
+                                            submit {
+                                                execute(context, name, entities, type, step, event, rotateX, rotateY, rotateZ).forEach {
+                                                    container += it.toTarget()
                                                 }
-                                            }
-                                        } else {
-                                            val player = frame.bukkitPlayer()
-                                            if (player != null) {
-                                                submit {
-                                                    future.complete(
-                                                        execute(
-                                                            context,
-                                                            name,
-                                                            listOf(player),
-                                                            type,
-                                                            step,
-                                                            event,
-                                                            rotateX,
-                                                            rotateY,
-                                                            rotateZ
-                                                        )
-                                                    )
-                                                }
-                                            } else {
-                                                future.complete(null)
+                                                future.complete(container)
                                             }
                                         }
                                     }
@@ -176,7 +145,7 @@ class ActionEntityProjectile {
                 val owner = e.entity.getMetadata("owner").getOrNull(0)?.value() as? LivingEntity ?: return
                 val context = e.entity.getMetadata("context").getOrNull(0)?.value() as? Session ?: return
                 val event = e.entity.getMetadata("event").getOrNull(0)?.asString() ?: return
-                context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!,e))
+                context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!, e))
 
             }
 

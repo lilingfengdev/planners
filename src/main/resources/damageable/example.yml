@@ -1,0 +1,16 @@
+
+
+stream-attack:
+  - data: random 1 to 10
+    id: check &data > 0.01
+    pre-action: tell "handle attack pre action"
+    action: |-
+      &@DamageableContext[source.test1] to &data
+    post-action: tell "handle attack post action"
+stream-defend:
+  - data: random 1 to 5
+    id: check &data > 0.01
+    pre-action: tell "handle defend pre action"
+    action: |-
+      &@DamageableContext[source.test1] to math 0 - &data
+    post-action: tell "handle defend post action"

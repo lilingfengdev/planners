@@ -69,8 +69,8 @@ class ActionGlowing : ScriptAction<Void>() {
         @Awake(LifeCycle.ENABLE)
         fun initColor() {
             ChatColor.values().forEachIndexed { index, chatColor ->
-                mainScoreboard().getTeam("planners-${chatColor.name}")?.unregister()
-                colorTeams[chatColor] = mainScoreboard().registerNewTeam("planners-${chatColor.name}").also {
+                mainScoreboard().getTeam("planners-$index")?.unregister()
+                colorTeams[chatColor] = mainScoreboard().registerNewTeam("planners-$index").also {
                     it.color = chatColor
                     it.prefix = chatColor.toString()
                 }

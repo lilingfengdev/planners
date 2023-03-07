@@ -20,14 +20,29 @@ object DamageableScript {
         val meta = DamageableMeta(context, stream)
         if (stream.data != null) {
             return invokeScript(stream.data,meta.sender.toTarget()) {
-                this.setDamageable(context)
-                this.setDamageableMeta(meta)
+                this.rootFrame().setDamageable(context)
+                this.rootFrame().setDamageableMeta(meta)
             }.thenApply {
                 meta.data = it
                 meta
             }
         }
         return CompletableFuture.completedFuture(meta)
+    }
+
+    fun invokeMetaScript(script: String,context: Damageable,meta: DamageableMeta,block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {
+        return invokeScript(script,meta.sender.toTarget()) {
+            this.rootFrame().setDamageable(context)
+            this.rootFrame().setDamageableMeta(meta)
+            this.rootFrame().variables()["data"] = meta.data
+            block(this)
+        }.thenApply {
+            // 结束流
+            if (meta.cancelStream) {
+                context.metaCancel = meta
+            }
+            it
+        }
     }
 
     fun invokeScript(script: String, sender: Target.Entity,block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {

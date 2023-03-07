@@ -30,6 +30,10 @@ import taboolib.platform.type.BukkitPlayer
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
+const val DAMAGEABLE_NAMESPACE = "damageable"
+
+val damageableNamespaces = listOf(DAMAGEABLE_NAMESPACE)
+
 const val NAMESPACE = "Planners"
 
 val namespaces = listOf(NAMESPACE, "kether")

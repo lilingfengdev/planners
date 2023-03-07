@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.common.Demand
 import com.bh.planners.api.event.EntityEvents
+import com.bh.planners.core.feature.damageable.DamageableDispatcher
 import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.game.damage.AttackProvider
 import com.bh.planners.util.eval
@@ -62,12 +63,21 @@ class ActionDamage {
                 frame.run(data).str { data ->
                     val demand = Demand(data)
                     frame.createContainer(selector).thenAccept { container ->
+                        val damageableModelId = demand.namespace
                         submit {
                             container.forEachLivingEntity {
-                                this.noDamageTicks = 0
-                                this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
-                                AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.maxHealth), player,demand)
-                                this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
+                                // 跳转到战斗模型
+                                if (damageableModelId != "EMPTY") {
+                                    DamageableDispatcher.submitDamageable(damageableModelId,player,this)
+                                }
+                                // 默认攻击
+                                else {
+                                    this.noDamageTicks = 0
+                                    this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
+                                    AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.maxHealth), player,demand)
+                                    this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
+                                }
+
                             }
                         }
                     }

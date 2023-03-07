@@ -57,3 +57,11 @@ fun Location.clearVisual(): Location {
     this.yaw = 0f
     return this
 }
+
+fun timing(): Long {
+    return System.currentTimeMillis()
+}
+
+fun timing(start: Long): Double {
+    return Coerce.format((System.currentTimeMillis() - start) / 100.0,2)
+}

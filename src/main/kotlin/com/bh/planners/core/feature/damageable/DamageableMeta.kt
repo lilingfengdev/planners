@@ -10,4 +10,6 @@ class DamageableMeta(val context: Damageable, val stream: DamageableModel.Stream
 
     var data: Any? = null
 
+    var cancelStream = false
+
 }
