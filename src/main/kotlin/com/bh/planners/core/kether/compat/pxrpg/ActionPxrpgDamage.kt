@@ -36,7 +36,7 @@ class ActionPxrpgMark(val id: ParsedAction<*>, val selector: ParsedAction<*>) : 
          */
         @KetherParser(["px", "pxrpg"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionPxrpgMark(it.nextParsedAction(), it.selector())
+            ActionPxrpgMark(it.nextParsedAction(), it.nextSelector())
         }
 
     }

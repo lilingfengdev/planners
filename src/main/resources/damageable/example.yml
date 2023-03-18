@@ -1,16 +1,11 @@
 
 
 stream-attack:
-  - data: random 1 to 10
-    id: check &data > 0.01
-    pre-action: tell "handle attack pre action"
+  - data: $ "物理攻击"
+    pre-action: ""
     action: |-
-      &@DamageableContext[source.test1] to &data
-    post-action: tell "handle attack post action"
+      set &damageable[source.test1] to &data[random]
 stream-defend:
-  - data: random 1 to 5
-    id: check &data > 0.01
-    pre-action: tell "handle defend pre action"
+  - data: $ "物理防御"
     action: |-
-      &@DamageableContext[source.test1] to math 0 - &data
-    post-action: tell "handle defend post action"
+      set &damageable[source.test2] to math 0 - &data[random]

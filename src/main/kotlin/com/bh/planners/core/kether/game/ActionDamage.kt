@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.common.Demand
 import com.bh.planners.api.event.EntityEvents
+import com.bh.planners.core.effect.Target.Companion.getLivingEntity
 import com.bh.planners.core.feature.damageable.DamageableDispatcher
 import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.game.damage.AttackProvider
@@ -21,8 +22,7 @@ import java.util.concurrent.CompletableFuture
 
 class ActionDamage {
 
-    class Damage(val value: ParsedAction<*>, val selector: ParsedAction<*>, val source: ParsedAction<*>?) :
-        ScriptAction<Void>() {
+    class Damage(val value: ParsedAction<*>, val selector: ParsedAction<*>, val source: ParsedAction<*>?) : ScriptAction<Void>() {
 
         fun execute(entity: LivingEntity, source: LivingEntity?, damage: String) {
             val result = damage.eval(entity.maxHealth)
@@ -30,23 +30,15 @@ class ActionDamage {
             if (damageByEntityEvent.call()) {
                 doDamage(source, entity, damageByEntityEvent.value)
             }
-
         }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
             frame.readAccept<String>(value) { damage ->
-                frame.createContainer(selector).thenAccept { container ->
-                    if (source == null) {
-                        val sourceEntity = frame.bukkitPlayer()
-                        submit {
-                            container.forEachLivingEntity { execute(this, sourceEntity, damage) }
-                        }
-                    } else {
-                        frame.createContainer(source).thenAccept { source ->
-                            val sourceEntity = source.firstLivingEntityTarget() ?: return@thenAccept
-                            container.forEachLivingEntity { execute(this, sourceEntity, damage) }
-                        }
+                frame.container(selector).thenAccept { victim ->
+                    frame.containerOrSender(source).thenAccept { source ->
+                        val sourceEntity = source.firstLivingEntityTarget() ?: return@thenAccept
+                        victim.forEachLivingEntity { execute(this, sourceEntity, damage) }
                     }
                 }
             }
@@ -55,26 +47,26 @@ class ActionDamage {
         }
     }
 
-    class Attack(val value: ParsedAction<*>,var data : ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
+    class Attack(val value: ParsedAction<*>, var data: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            val player = frame.bukkitPlayer() ?: return CompletableFuture.completedFuture(null)
+            val source = frame.getContext().sender.getLivingEntity() ?: return CompletableFuture.completedFuture(null)
             frame.run(value).str { damage ->
                 frame.run(data).str { data ->
                     val demand = Demand(data)
-                    frame.createContainer(selector).thenAccept { container ->
+                    frame.container(selector).thenAccept { container ->
                         val damageableModelId = demand.namespace
                         submit {
                             container.forEachLivingEntity {
                                 // 跳转到战斗模型
                                 if (damageableModelId != "EMPTY") {
-                                    DamageableDispatcher.submitDamageable(damageableModelId,player,this)
+                                    DamageableDispatcher.submitDamageable(damageableModelId, source, this)
                                 }
                                 // 默认攻击
                                 else {
                                     this.noDamageTicks = 0
                                     this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
-                                    AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.maxHealth), player,demand)
+                                    AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.maxHealth), source, demand)
                                     this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
                                 }
 
@@ -96,7 +88,7 @@ class ActionDamage {
          */
         @KetherParser(["damage"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            Damage(it.nextParsedAction(), it.selector(), it.tryGet(arrayOf("source")))
+            Damage(it.nextParsedAction(), it.nextSelector(), it.tryGet(arrayOf("source")))
         }
 
         /**
@@ -109,8 +101,8 @@ class ActionDamage {
             val action = it.nextParsedAction()
             Attack(
                 action,
-                it.tryGet(arrayOf("option", "data", "opt"), "__EMPTY__")!!,
-                it.selector()
+                it.tryGet(arrayOf("option", "data", "opt"), "EMPTY")!!,
+                it.nextSelector()
             )
         }
 

@@ -66,7 +66,7 @@ class ActionTitle(
             } catch (ignored: Exception) {
                 it.reset()
             }
-            ActionTitle(title, subTitle, fadeIn, stay, fadeOut, it.selectorAction())
+            ActionTitle(title, subTitle, fadeIn, stay, fadeOut, it.nextSelectorOrNull())
         }
     }
 }

@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.execPlayer
-import com.bh.planners.core.kether.selectorAction
+import com.bh.planners.core.kether.nextSelectorOrNull
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common5.Coerce
@@ -41,7 +41,7 @@ class ActionSilence(
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val seconds = it.nextParsedAction()
-            ActionSilence(seconds, it.selectorAction())
+            ActionSilence(seconds, it.nextSelectorOrNull())
         }
 
         @SubscribeEvent(EventPriority.LOWEST)

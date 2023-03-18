@@ -1,7 +1,8 @@
-package com.bh.planners.core.selector
+package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.selector.Selector
 import java.util.concurrent.CompletableFuture
 
 object Job : Selector {

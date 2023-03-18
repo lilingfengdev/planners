@@ -22,13 +22,9 @@ object DamageableDispatcher {
     fun initModels() {
         models.clear()
         files("damageable", listOf("example.yml")) {
-            models[it.nameWithoutExtension] = DamageableModel(it).apply {
-                info(this.attackStreams)
-                info(this.defendStreams)
-            }
+            models[it.nameWithoutExtension] = DamageableModel(it)
 
         }
-        info("Loaded damageable model ${models.size}")
     }
 
     @SubscribeEvent
@@ -64,6 +60,9 @@ object DamageableDispatcher {
             info("  |- Damage count: ${context.countDamage}")
             info("  |- Cancel meta: ${context.metaCancel != null}")
             info("  |---- Timing: ${timing(context.timing)}/s")
+        }.exceptionally {
+            it.printStackTrace()
+            null
         }
 
     }
@@ -99,10 +98,7 @@ object DamageableDispatcher {
             DamageableActionType.ACTION -> DamageableScript.invokeMetaScript(stream.actionBuffer, context, meta)
         }
         metaFuture.thenAccept {
-            runMetaActions(context, type, future, index + 1).exceptionally {
-                it.printStackTrace()
-                null
-            }
+            runMetaActions(context, type, future, index + 1)
         }
         return future
     }
@@ -117,9 +113,6 @@ object DamageableDispatcher {
         DamageableScript.createScriptStream(context, stream).thenAccept {
             context.metas[context.metaIndex++] = it
             runStreams(context, index + 1, future, streams)
-        }.exceptionally {
-            it.printStackTrace()
-            null
         }
         return future
     }

@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.game.item
 
 import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.selectorAction
+import com.bh.planners.core.kether.nextSelectorOrNull
 import com.bh.planners.core.kether.tryGet
 import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.KetherParser
@@ -30,16 +30,16 @@ object ItemOperator {
                         it.nextParsedAction(),
                         it.nextParsedAction(),
                         it.tryGet(arrayOf("max", "maximum"), Int.MAX_VALUE)!!,
-                        it.selectorAction()
+                        it.nextSelectorOrNull()
                     )
 
-                    "get" -> ActionItemCountGet(it.nextParsedAction(), it.nextParsedAction(), it.selectorAction())
+                    "get" -> ActionItemCountGet(it.nextParsedAction(), it.nextParsedAction(), it.nextSelectorOrNull())
 
                     "set" -> ActionItemCountSet(
                         it.nextParsedAction(),
                         it.nextParsedAction(),
                         it.nextParsedAction(),
-                        it.selectorAction()
+                        it.nextSelectorOrNull()
                     )
 
                     else -> error("error of case!")
@@ -47,11 +47,11 @@ object ItemOperator {
             }
 
             case("name", "display") {
-                ActionItemName(it.nextParsedAction(), it.selectorAction())
+                ActionItemName(it.nextParsedAction(), it.nextSelectorOrNull())
             }
 
             case("lore") {
-                ActionItemLore(it.nextParsedAction(), it.selectorAction())
+                ActionItemLore(it.nextParsedAction(), it.nextSelectorOrNull())
             }
         }
     }

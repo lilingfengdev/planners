@@ -15,10 +15,8 @@ class ActionGermAnimation(val state: String, val remove: Boolean, val selector: 
     fun execute(entity: Entity, state: String, remove: Boolean) {
         Bukkit.getOnlinePlayers().forEach {
             if (remove) {
-                info("${entity.name} stop animation $state")
                 GermPacketAPI.stopModelAnimation(it, entity.entityId, state)
             } else {
-                info("${entity.name} send animation $state")
                 GermPacketAPI.sendModelAnimation(it, entity.entityId, state)
             }
         }

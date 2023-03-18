@@ -62,6 +62,9 @@ class DataContainer {
      * 修改数据
      */
     operator fun set(key: String, value: Data) {
+        if (value.survivalStamp <= -1) {
+            value.survivalStamp = -1
+        }
         map[key] = value.change()
     }
 

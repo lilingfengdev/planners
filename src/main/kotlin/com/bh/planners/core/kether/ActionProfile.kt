@@ -1,5 +1,7 @@
 package com.bh.planners.core.kether
 
+import com.bh.planners.api.EntityAPI.getDataContainer
+import com.bh.planners.api.EntityAPI.getFlag
 import com.bh.planners.api.ManaCounter.addMana
 import com.bh.planners.api.ManaCounter.setMana
 import com.bh.planners.api.ManaCounter.takeMana
@@ -26,6 +28,22 @@ import java.util.concurrent.CompletableFuture
 
 class ActionProfile {
 
+
+    class DataGet(val action: ParsedAction<*>, val default: ParsedAction<*>) : ScriptAction<Any>() {
+
+        override fun run(frame: ScriptFrame): CompletableFuture<Any> {
+
+            val future = CompletableFuture<Any>()
+            frame.run(action).str { id ->
+                frame.run(default).thenAccept { def ->
+                    future.complete(frame.bukkitPlayer()?.getFlag(id)?.data ?: def)
+                }
+            }
+            return future
+        }
+
+    }
+
     class DataSet(val action: ParsedAction<*>, val value: ParsedAction<*>, val time: ParsedAction<*>) :
         ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
@@ -41,8 +59,7 @@ class ActionProfile {
 
     }
 
-    class DataAdd(val action: ParsedAction<*>, val value: ParsedAction<*>) :
-        ScriptAction<Void>() {
+    class DataAdd(val action: ParsedAction<*>, val value: ParsedAction<*>) : ScriptAction<Void>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(action).run<Any>().thenAccept {
                 val key = it.toString()
@@ -125,15 +142,18 @@ class ActionProfile {
                     try {
                         mark()
                         when (expects("take", "-=", "set", "=", "add", "+=")) {
-                            "take", "-=" -> actionProfileTake(it.nextParsedAction()) { value,profile ->
+                            "take", "-=" -> actionProfileTake(it.nextParsedAction()) { value, profile ->
                                 profile.addPoint(-Coerce.toInteger(value))
                             }
-                            "set", "=" -> actionProfileTake(it.nextParsedAction()) { value,profile ->
+
+                            "set", "=" -> actionProfileTake(it.nextParsedAction()) { value, profile ->
                                 profile.setPoint(Coerce.toInteger(value))
                             }
-                            "add", "+=" -> actionProfileTake(it.nextParsedAction()) { value,profile ->
+
+                            "add", "+=" -> actionProfileTake(it.nextParsedAction()) { value, profile ->
                                 profile.addPoint(Coerce.toInteger(value))
                             }
+
                             else -> error("out of case")
                         }
                     } catch (e: Throwable) {
@@ -172,18 +192,14 @@ class ActionProfile {
                                 DataSet(key, it.nextParsedAction(), it.tryGet(arrayOf("timeout"), -1L)!!)
                             }
 
-                            "get" -> actionProfileNow(key) { value,profile ->
-                                profile.getFlag(value.toString())?.data
-                            }
+                            "get" -> DataGet(key, it.tryGet(arrayOf("def", "--def"), "null")!!)
                             "add" -> DataAdd(key, it.nextParsedAction())
                             "has" -> DataHas(key)
                             else -> error("error of case!")
                         }
                     } catch (_: Throwable) {
                         reset()
-                        actionProfileNow(key) { value, profile ->
-                            profile.getFlag(value.toString())?.data
-                        }
+                        DataGet(key, it.tryGet(arrayOf("def", "--def"), "null")!!)
                     }
                 }
 
@@ -191,6 +207,5 @@ class ActionProfile {
         }
 
     }
-
 
 }

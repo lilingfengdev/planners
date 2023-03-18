@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.catchRunning
 import com.bh.planners.core.kether.execPlayer
-import com.bh.planners.core.kether.selectorAction
+import com.bh.planners.core.kether.nextSelectorOrNull
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import taboolib.library.kether.ParsedAction
@@ -57,7 +57,7 @@ class ActionSound(val sound: String, val volume: Float, val pitch: Float, val se
             } catch (ignored: Exception) {
                 it.reset()
             }
-            ActionSound(sound, volume, pitch, it.selectorAction())
+            ActionSound(sound, volume, pitch, it.nextSelectorOrNull())
         }
     }
 }

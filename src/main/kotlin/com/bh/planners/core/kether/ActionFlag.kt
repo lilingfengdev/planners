@@ -8,6 +8,7 @@ import com.bh.planners.api.EntityAPI.updateFlag
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.setFlag
 import com.bh.planners.core.pojo.data.Data
+import com.skillw.pouvoir.api.manager.sub.ContainerManager.Companion.getData
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -15,14 +16,19 @@ import java.util.concurrent.CompletableFuture
 
 class ActionFlag {
 
-    class DataGet(val action: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Any>() {
+    class DataGet(val action: ParsedAction<*>, val default: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Any>() {
+
         override fun run(frame: ScriptFrame): CompletableFuture<Any> {
-            return frame.newFrame(action).run<Any>().thenApply {
-                val key = it.toString()
-                frame.containerOrSender(selector).thenApply {
-                    it.firstEntityTarget()?.getFlag(key)?.data
+
+            val future = CompletableFuture<Any>()
+            frame.run(action).str { id ->
+                frame.run(default).thenAccept { def ->
+                    frame.containerOrSender(selector).thenApply {
+                        future.complete(it.firstEntityTarget()?.getDataContainer()?.get(id)?.data ?: def)
+                    }
                 }
             }
+            return future
         }
 
     }
@@ -42,7 +48,7 @@ class ActionFlag {
                                 if (value == null) {
                                     deleteFlag(key)
                                 } else {
-                                    setFlag(key, Data(value, time * 50))
+                                    setFlag(key, Data(value, survivalStamp = time * 50))
                                 }
                             }
                         }
@@ -94,18 +100,18 @@ class ActionFlag {
                 when (it.expects("add", "set", "get", "to")) {
                     "set", "to" -> {
                         val value = it.nextParsedAction()
-                        DataSet(key, value, it.tryGet(arrayOf("timeout"), -1)!!, it.selectorAction())
+                        DataSet(key, value, it.tryGet(arrayOf("timeout"), -1)!!, it.nextSelectorOrNull())
                     }
 
-                    "get" -> DataGet(key, it.selectorAction())
+                    "get" -> DataGet(key, it.tryGet(arrayOf("def", "--def"), "null")!!, it.nextSelectorOrNull())
 
-                    "add" -> DataAdd(key, it.nextParsedAction(), it.selectorAction())
+                    "add" -> DataAdd(key, it.nextParsedAction(), it.nextSelectorOrNull())
 
                     else -> error("error of case!")
                 }
             } catch (_: Throwable) {
                 it.reset()
-                DataGet(key, it.selectorAction())
+                DataGet(key, it.tryGet(arrayOf("def", "--def"), "null")!!, it.nextSelectorOrNull())
             }
         }
 

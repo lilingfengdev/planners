@@ -62,7 +62,7 @@ class ActionTeleport(val action: ParsedAction<*>, val selector: ParsedAction<*>?
         @KetherParser(["teleport", "tp"], shared = true)
         fun parser() = scriptParser {
             val parsedAction = it.nextParsedAction()
-            ActionTeleport(parsedAction, it.selectorAction())
+            ActionTeleport(parsedAction, it.nextSelectorOrNull())
         }
     }
 

@@ -1,5 +1,6 @@
-package com.bh.planners.core.selector
+package com.bh.planners.core.selector.bukkit
 
+import com.bh.planners.core.selector.Selector
 import java.util.concurrent.CompletableFuture
 
 /**

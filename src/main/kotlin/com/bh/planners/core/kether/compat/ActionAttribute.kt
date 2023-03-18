@@ -13,8 +13,7 @@ import java.util.concurrent.CompletableFuture
 
 class ActionAttribute {
 
-    class AttributeAdd(val source: ParsedAction<*>, val timeout: ParsedAction<*>, val list: ParsedAction<*>, val selector: ParsedAction<*>?) :
-        ScriptAction<Void>() {
+    class AttributeAdd(val source: ParsedAction<*>, val timeout: ParsedAction<*>, val list: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
         fun execute(entity: LivingEntity, source: String, timeout: Long, list: List<String>) {
             AttributeBridge.INSTANCE?.addAttributes(source, entity.uniqueId, timeout * 50, list)
@@ -22,39 +21,33 @@ class ActionAttribute {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-            return frame.newFrame(source).run<Any>().thenAccept {
-                val source = it.toString()
-                frame.newFrame(timeout).run<Any>().thenAccept {
-                    val timeout = Coerce.toLong(it)
-                    frame.newFrame(list).run<Any>().thenAccept {
-                        val list = it.toString().split(",")
-                        if (selector != null) {
-                            frame.execLivingEntity(selector) { execute(this, source, timeout, list) }
-                        } else {
-                            execute(frame.bukkitPlayer() ?: return@thenAccept, source, timeout, list)
+            frame.run(source).str { source ->
+                frame.run(timeout).long { tick ->
+                    frame.run(list).str {
+                        val list = it.split(",")
+                        frame.containerOrSender(selector).thenAccept {
+                            it.forEachLivingEntity { execute(this, source, tick, list) }
                         }
                     }
                 }
             }
+            return CompletableFuture.completedFuture(null)
         }
     }
 
-    class AttributeTake(val source: ParsedAction<*>, val selector: ParsedAction<*>?) :
-        ScriptAction<Void>() {
+    class AttributeTake(val source: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
         fun execute(entity: LivingEntity, source: String) {
             AttributeBridge.INSTANCE?.removeAttributes(entity.uniqueId, source)
             AttributeBridge.INSTANCE?.update(entity.uniqueId)
         }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(source).run<Any>().thenAccept {
-                val source = it.toString()
-                if (selector != null) {
-                    frame.execLivingEntity(selector) { execute(this, source) }
-                } else {
-                    execute(frame.bukkitPlayer() ?: return@thenAccept, source)
+            frame.run(source).str { source ->
+                frame.containerOrSender(selector).thenAccept {
+                    it.forEachLivingEntity { execute(this, source) }
                 }
             }
+            return CompletableFuture.completedFuture(null)
         }
     }
 
@@ -65,10 +58,8 @@ class ActionAttribute {
         }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            if (selector != null) {
-                frame.execLivingEntity(selector) { execute(this) }
-            } else {
-                execute(frame.bukkitPlayer() ?: return CompletableFuture.completedFuture(null))
+            frame.containerOrSender(selector).thenAccept {
+                it.forEachLivingEntity { execute(this) }
             }
             return CompletableFuture.completedFuture(null)
         }
@@ -101,17 +92,17 @@ class ActionAttribute {
                         it.nextParsedAction(),
                         it.nextParsedAction(),
                         it.nextParsedAction(),
-                        it.selectorAction()
+                        it.nextSelectorOrNull()
                     )
                 }
                 case("take", "-=") {
-                    AttributeTake(it.nextParsedAction(), it.selectorAction())
+                    AttributeTake(it.nextParsedAction(), it.nextSelectorOrNull())
                 }
                 case("update", "refresh") {
-                    AttributeUpdate(it.selectorAction())
+                    AttributeUpdate(it.nextSelectorOrNull())
                 }
                 other {
-                    AttributeGet(it.selector())
+                    AttributeGet(it.nextSelector())
                 }
             }
         }

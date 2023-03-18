@@ -45,7 +45,7 @@ class ActionMythicMob {
         fun parser() = scriptParser {
             it.switch {
                 case("spawn") {
-                    MythicMobSpawn(it.nextParsedAction(), selectorAction())
+                    MythicMobSpawn(it.nextParsedAction(), nextSelectorOrNull())
                 }
             }
         }

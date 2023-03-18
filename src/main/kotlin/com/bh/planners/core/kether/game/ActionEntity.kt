@@ -26,14 +26,14 @@ class ActionEntity {
                 }
 
                 case("spawn") {
-                    ActionEntitySpawn(it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(), it.selectorAction())
+                    ActionEntitySpawn(it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(), it.nextSelectorOrNull())
                 }
 
                 other {
                     try {
                         it.mark()
                         val expect = it.expects(*EntityField.fields().toTypedArray())
-                        ActionEntityFieldGet(EntityField.valueOf(expect.uppercase()),it.selectorAction() ?: error("the lack of 'they' cite target"))
+                        ActionEntityFieldGet(EntityField.valueOf(expect.uppercase()),it.nextSelectorOrNull() ?: error("the lack of 'they' cite target"))
                     }catch (_: Throwable) {
                         it.reset()
                         error("error of case!")

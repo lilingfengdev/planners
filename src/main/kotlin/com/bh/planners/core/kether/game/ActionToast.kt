@@ -79,7 +79,7 @@ class ActionToast(
             val message = it.nextParsedAction()
             val data = it.tryGet(arrayOf("data", "nbt"), "{}")!!
             val frame = it.tryGet(arrayOf("frame"), "challenge")!!
-            ActionToast(material, message, data, frame, it.selectorAction())
+            ActionToast(material, message, data, frame, it.nextSelectorOrNull())
         }
 
     }

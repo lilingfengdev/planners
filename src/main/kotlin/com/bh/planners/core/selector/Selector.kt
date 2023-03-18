@@ -5,7 +5,7 @@ import com.bh.planners.api.common.Plugin
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.EffectOption
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.selector.Visual.isNon
+import com.bh.planners.core.selector.bukkit.Visual.isNon
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import taboolib.common.LifeCycle
@@ -16,43 +16,6 @@ import taboolib.common5.Coerce
 import java.util.concurrent.CompletableFuture
 
 interface Selector {
-
-    class Transfer(val context: Context, val demand: Demand, val container: Target.Container) {
-
-        private val selectorKeys = demand.dataMap.filter { it.key[0] == '@' }.entries.toMutableList()
-
-        fun run(): CompletableFuture<Void> {
-            val future = CompletableFuture<Void>()
-            if (selectorKeys.isNotEmpty()) {
-                process(0, future)
-            } else {
-                future.complete(null)
-            }
-            return future
-        }
-
-        fun process(index: Int, future: CompletableFuture<Void>) {
-            val selectorEntry = selectorKeys[index]
-            val namespace = selectorEntry.key.substring(1)
-            selectorEntry.value.forEachIndexed { optionIndex, s ->
-                val data = Data(namespace, s, context, container)
-                getSelector(namespace).check(data).thenAccept {
-
-                    // 如果是最后一个 才检索
-                    if (optionIndex == selectorEntry.value.size - 1) {
-                        if (index < selectorKeys.size - 1) {
-                            process(index + 1, future)
-                        } else {
-                            future.complete(null)
-                        }
-                    }
-
-
-                }
-            }
-        }
-
-    }
 
     companion object {
 
@@ -67,7 +30,7 @@ interface Selector {
         }
 
         fun check(context: Context, demand: Demand, container: Target.Container): CompletableFuture<Void> {
-            return Transfer(context, demand, container).run()
+            return SelectorTransfer(context, demand.source, container).run()
         }
 
         @Awake(LifeCycle.LOAD)
@@ -80,10 +43,7 @@ interface Selector {
                             return@forEach
                         }
                     }
-
-                    (it.getInstance()?.get() as? Selector)?.let { selector ->
-                        selectors += selector
-                    }
+                    selectors += (it.getInstance()?.get() as? Selector) ?: return@forEach
                 }
             }
         }
@@ -144,7 +104,5 @@ interface Selector {
         }
 
     }
-
-    class Key(val name: String,val option: String)
 
 }

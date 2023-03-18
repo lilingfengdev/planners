@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.common.SimpleTimeoutTask
+import com.bh.planners.api.common.SimpleUniqueTask
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.*
 import org.bukkit.Location
@@ -22,6 +23,7 @@ class ActionBlock : ScriptAction<List<Target>>() {
     var selector: ParsedAction<*>? = null
 
     fun execute(location: Location, material: Material, data: Byte, ticks: Long) {
+
         // 如果上一次的任务还未结束 则提前结束
         if (cache.containsKey(location)) {
             SimpleTimeoutTask.cancel(cache[location]!!)
@@ -38,14 +40,8 @@ class ActionBlock : ScriptAction<List<Target>>() {
         frame.run(material).material { material ->
             frame.run(timeout).long { timeout ->
                 frame.run(data).byte { data ->
-                    if (selector != null) {
-                        frame.createContainer(selector!!).thenAccept {
-                            submit { it.forEachLocation { execute(this, material, data, timeout) } }
-                        }
-                    } else {
-                        submit {
-                            execute(frame.origin().value, material, data, timeout)
-                        }
+                    frame.containerOrOrigin(selector).thenAccept {
+                        it.forEachLocation { execute(this, material, data, timeout) }
                     }
                 }
             }
@@ -54,8 +50,7 @@ class ActionBlock : ScriptAction<List<Target>>() {
         return CompletableFuture.completedFuture(null)
     }
 
-    class BlockSimpleTask(val location: Location, var to: Material, val data: Byte, tick: Long) :
-        SimpleTimeoutTask(tick) {
+    class BlockSimpleTask(val location: Location, var to: Material, val data: Byte, tick: Long) : SimpleTimeoutTask(tick) {
 
         val world = location.world!!
         var block = location.block
@@ -97,7 +92,7 @@ class ActionBlock : ScriptAction<List<Target>>() {
             actionBlock.material = it.nextParsedAction()
             actionBlock.timeout = it.nextParsedAction()
             actionBlock.data = it.tryGet(arrayOf("data"), "0")!!
-            actionBlock.selector = it.selectorAction()
+            actionBlock.selector = it.nextSelectorOrNull()
             actionBlock
         }
 

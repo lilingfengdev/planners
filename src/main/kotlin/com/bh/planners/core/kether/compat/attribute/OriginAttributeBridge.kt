@@ -7,6 +7,12 @@ import ac.github.oa.internal.core.attribute.AttributeData
 import ac.github.oa.internal.core.attribute.AttributeManager
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
+import taboolib.common.OpenResult
+import taboolib.common5.cint
+import taboolib.module.kether.KetherLoader
+import taboolib.module.kether.KetherProperty
+import taboolib.module.kether.ScriptProperty
+import taboolib.module.kether.isInt
 import java.util.*
 import kotlin.math.max
 
@@ -14,6 +20,22 @@ class OriginAttributeBridge : AttributeBridge {
 
     val cache = mutableMapOf<String, Int>()
 
+    init {
+        KetherLoader.registerProperty(object : ScriptProperty<AttributeData.Data>("attributedata.operator") {
+            override fun read(instance: AttributeData.Data, key: String): OpenResult {
+                return when {
+                    key == "random" -> OpenResult.successful(instance.random())
+                    key.isInt() -> OpenResult.successful(instance.get(key.cint))
+                    else -> OpenResult.failed()
+                }
+            }
+
+            override fun write(instance: AttributeData.Data, key: String, value: Any?): OpenResult {
+                return OpenResult.failed()
+            }
+
+        },AttributeData.Data::class.java,false)
+    }
 
     override fun addAttributes(uuid: UUID, timeout: Long, reads: List<String>) {
         addAttributes(UUID.randomUUID().toString(), uuid, timeout, reads)
@@ -38,7 +60,7 @@ class OriginAttributeBridge : AttributeBridge {
     }
 
     override fun get(uuid: UUID, keyword: String): Any {
-        return get(Bukkit.getEntity(uuid) as LivingEntity,keyword)
+        return get(Bukkit.getEntity(uuid) as LivingEntity, keyword)
     }
 
     fun getEntities(attribute: Attribute): MutableList<Attribute.Entry> {

@@ -23,6 +23,7 @@ import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.scriptParser
 import taboolib.platform.BukkitPlugin
+import taboolib.platform.util.getMeta
 import taboolib.platform.util.hasMeta
 import taboolib.platform.util.setMeta
 import java.util.concurrent.CompletableFuture
@@ -47,9 +48,9 @@ class ActionEntityProjectile {
                 val entity = it.bukkitLivingEntity ?: return@forEach
                 val projectile = entity.launchProjectile(type.clazz)
                 if (event != "none") {
-                    projectile.setMetadata("owner", FixedMetadataValue(BukkitPlugin.getInstance(), it))
-                    projectile.setMetadata("event", FixedMetadataValue(BukkitPlugin.getInstance(), event))
-                    projectile.setMetadata("context", FixedMetadataValue(BukkitPlugin.getInstance(), context))
+                    projectile.setMeta("owner",entity)
+                    projectile.setMeta("event",event)
+                    projectile.setMeta("context",context)
                 }
 
                 projectile.setMeta("@Planners:Projectile", true)
@@ -127,8 +128,8 @@ class ActionEntityProjectile {
                 it.tryGet(arrayOf("rotateX"), 0.0)!!,
                 it.tryGet(arrayOf("rotateY"), 0.0)!!,
                 it.tryGet(arrayOf("rotateZ"), 0.0)!!,
-                it.tryGet(arrayOf("oncapture"), "none")!!,
-                it.selectorAction()
+                it.tryGet(arrayOf("oncapture","onhit"), "none")!!,
+                it.nextSelectorOrNull()
             )
         }
 
@@ -142,9 +143,9 @@ class ActionEntityProjectile {
         @SubscribeEvent(ignoreCancelled = true)
         fun e(e: ProjectileHitEvent) {
             if (e.hitEntity != null) {
-                val owner = e.entity.getMetadata("owner").getOrNull(0)?.value() as? LivingEntity ?: return
-                val context = e.entity.getMetadata("context").getOrNull(0)?.value() as? Session ?: return
-                val event = e.entity.getMetadata("event").getOrNull(0)?.asString() ?: return
+                val owner = e.entity.getMeta("owner").getOrNull(0)?.value() as? LivingEntity ?: return
+                val context = e.entity.getMeta("context").getOrNull(0)?.value() as? Session ?: return
+                val event = e.entity.getMeta("event").getOrNull(0)?.asString() ?: return
                 context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!, e))
 
             }

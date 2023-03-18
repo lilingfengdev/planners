@@ -32,7 +32,7 @@ class ActionFreeze(val ticks: ParsedAction<*>, val selector: ParsedAction<*>?) :
         @KetherParser(["freeze"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val power = it.nextParsedAction()
-            ActionFreeze(power, it.selectorAction())
+            ActionFreeze(power, it.nextSelectorOrNull())
         }
     }
 }

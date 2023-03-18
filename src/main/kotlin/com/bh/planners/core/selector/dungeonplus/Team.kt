@@ -1,10 +1,10 @@
-package com.bh.planners.core.selector
+package com.bh.planners.core.selector.dungeonplus
 
 import com.bh.planners.api.common.Plugin
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.selector.Selector
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.serverct.ersha.dungeon.DungeonPlus

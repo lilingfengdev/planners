@@ -24,17 +24,8 @@ class Demand(val source: String,val starts : Array<Char> = arrayOf(':')) {
             var dataKey : String? = null
             val dataValues = mutableListOf<String>()
             args.forEachIndexed { index, s ->
-
-                // 参数优先权重 @ 不用忽略@
-                if (s[0] == '@') {
-                    if (dataKey != null) {
-                        put(dataKey!!,dataValues.joinToString(" "))
-                    }
-                    dataKey = s
-                    dataValues.clear()
-                }
                 // 次要权重 starts
-                else if (s[0] in starts) {
+                if (s[0] in starts) {
                     if (dataKey != null) {
                         put(dataKey!!,dataValues.joinToString(" "))
                     }
@@ -53,30 +44,8 @@ class Demand(val source: String,val starts : Array<Char> = arrayOf(':')) {
             namespace = "EMPTY"
         }
 
-
-
     }
 
-    private fun List<String>.sub(start: Int, prefix: String, suffix: String): List<String> {
-        val subList = this.subList(start + 1, this.size)
-        var counter = 0
-        var mark = -1
-        subList.forEachIndexed { index, it ->
-            if (it == prefix) {
-                counter++
-            }
-            if (it == suffix) {
-                if (counter > 0) {
-                    counter--
-                } else {
-                    mark = index
-                }
-            }
-        }
-        return this.subList(start + 1, start + 1 + mark)
-    }
-
-    fun has(key: String) = dataMap.containsKey(key)
 
     private fun put(key: String, value: String) {
         dataMap.computeIfAbsent(key) { mutableListOf() } += value

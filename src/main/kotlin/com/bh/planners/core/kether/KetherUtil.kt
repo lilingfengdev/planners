@@ -23,6 +23,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.Parser
 import taboolib.library.kether.QuestContext
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
@@ -30,9 +31,6 @@ import taboolib.platform.type.BukkitPlayer
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-const val DAMAGEABLE_NAMESPACE = "damageable"
-
-val damageableNamespaces = listOf(DAMAGEABLE_NAMESPACE)
 
 const val NAMESPACE = "Planners"
 
@@ -63,20 +61,8 @@ fun ScriptFrame.bukkitPlayer(): Player? {
 }
 
 fun ScriptFrame.skill(): PlayerJob.Skill {
-    return getSkill()
+    return (getContext() as? Context.Impl)?.playerSkill ?: error("Error running environment !")
 }
-
-fun ScriptFrame.getSkill(): PlayerJob.Skill {
-
-    val context = getContext()
-
-    if (context is Context.Impl) {
-        return context.playerSkill
-    }
-
-    error("Error running environment !")
-}
-
 
 fun ScriptFrame.origin(): Target.Location {
     return getContext().origin as Target.Location
@@ -97,16 +83,6 @@ fun Any?.increaseAny(any: Any): Any {
     return StringNumber(toString()).add(any.toString()).get()
 }
 
-fun evalKether(player: Player, action: String, skill: PlayerJob.Skill): String? {
-    return try {
-        KetherShell.eval(action, sender = adaptPlayer(player), namespace = namespaces) {
-        }.get()?.toString()
-    } catch (e: Throwable) {
-        e.printKetherErrorMessage()
-        return null
-    }
-}
-
 fun Any.toLocation(): Location {
     return when (this) {
         is Location -> this
@@ -125,7 +101,7 @@ fun Any.toLocation(): Location {
 }
 
 fun Location.toLocal(): String {
-    return "${world!!.name},$x,$y,$z"
+    return "${world!!.name} $x $y $z"
 }
 
 fun ScriptFrame.exec(selector: ParsedAction<*>, call: Target.() -> Unit) {
@@ -244,7 +220,7 @@ fun ScriptFrame.container(action: ParsedAction<*>?, default: Entity?): Completab
     return container(action, default?.toTarget())
 }
 
-fun ScriptFrame.container(action: ParsedAction<*>?, default: Target?): CompletableFuture<Target.Container> {
+fun ScriptFrame.container(action: ParsedAction<*>?, default: Target? = null): CompletableFuture<Target.Container> {
     if (action != null) {
         return createContainer(action)
     } else {
@@ -258,12 +234,38 @@ fun ScriptFrame.container(action: ParsedAction<*>?, default: Target?): Completab
     }
 }
 
+//fun ScriptFrame.parseTargetContainer(value: Any): CompletableFuture<Target.Container> {
+//    val future = CompletableFuture<Target.Container>()
+//    when (value) {
+//
+//        is Target.Container -> future.complete(value)
+//
+//        is List<*> -> {
+//
+//        }
+//
+//
+//    }
+//}
+//
+//fun ScriptFrame.parseTargetContainer(action: ParsedAction<*>): CompletableFuture<Target.Container> {
+//    val future = CompletableFuture<Target.Container>()
+//    this.run(action).thenAccept {
+//
+//    }
+//
+//}
+
+
 fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Target.Container> {
     val future = CompletableFuture<Target.Container>()
     this.newFrame(selector).run<Any>().thenAccept {
         val container = Target.Container()
 
         when (it) {
+
+            is Target.Container -> future.complete(it)
+
             is List<*> -> {
                 container += it.mapNotNull { entry ->
                     when (entry) {
@@ -272,11 +274,6 @@ fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Ta
                         else -> error("Transfer $entry to target failed")
                     }
                 }
-                future.complete(container)
-            }
-
-            is Target.Container -> {
-                container += it
                 future.complete(container)
             }
 
@@ -301,14 +298,11 @@ fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Ta
             }
 
             else -> {
-                catchRunning {
-                    Selector.check(getContext(), it.toString().toDemand(), container).thenAccept {
-                        future.complete(container)
-                    }
+                Selector.check(getContext(), it.toString().toDemand(), container).thenAccept {
+                    future.complete(container)
                 }
             }
         }
-
     }
     return future
 }
@@ -331,6 +325,21 @@ fun QuestReader.get(array: Array<String>): ParsedAction<*> {
     return tryGet(array, null) ?: error("the lack of '${array.map { it }}' cite target")
 }
 
+fun QuestReader.nextParsedActionOrNull(array: Array<out String>): ParsedAction<*>? {
+    return try {
+        mark()
+        expects(*array)
+        this.nextParsedAction()
+    } catch (e: Exception) {
+        reset()
+        null
+    }
+}
+
+fun QuestReader.nextParsedAction(array: Array<out String>, def: Any?): ParsedAction<*>? {
+    return nextParsedActionOrNull(array) ?: if (def == null) null else literalAction(def)
+}
+
 fun QuestReader.tryGet(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
     return try {
         mark()
@@ -344,10 +353,12 @@ fun QuestReader.tryGet(array: Array<out String>, def: Any? = null): ParsedAction
     }
 }
 
-fun QuestReader.selector(): ParsedAction<*> = get(arrayOf("they", "the"))
+fun QuestReader.nextSelector(): ParsedAction<*> {
+    return this.nextSelectorOrNull() ?: error("Selector law")
+}
 
-fun QuestReader.selectorAction(): ParsedAction<*>? {
-    return tryGet(arrayOf("they", "the"), null)
+fun QuestReader.nextSelectorOrNull(): ParsedAction<*>? {
+    return this.nextParsedActionOrNull(arrayOf("they", "the", "at"))
 }
 
 fun <T> CompletableFuture<Any?>.material(then: (Material) -> T): CompletableFuture<T> {

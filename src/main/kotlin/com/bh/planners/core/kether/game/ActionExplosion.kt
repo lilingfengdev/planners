@@ -2,7 +2,7 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.exec
-import com.bh.planners.core.kether.selectorAction
+import com.bh.planners.core.kether.nextSelectorOrNull
 import com.bh.planners.core.kether.origin
 import org.bukkit.Location
 import taboolib.common5.Coerce
@@ -51,7 +51,7 @@ class ActionExplosion(
         @KetherParser(["explosion"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val power = it.nextParsedAction()
-            ActionExplosion(power, it.selectorAction())
+            ActionExplosion(power, it.nextSelectorOrNull())
         }
     }
 }

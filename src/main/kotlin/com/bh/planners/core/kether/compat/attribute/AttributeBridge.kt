@@ -91,10 +91,8 @@ interface AttributeBridge {
             val attributes = getSkillAttributes(skill)
             try {
                 val script = ScriptLoader.createFunctionScript(context, attributes)
-                info("Debug $script")
                 bridge.addAttributes("Skill:${skill.key}", player.uniqueId, -1, script)
             } catch (ex: Exception) {
-                info(attributes)
                 ex.printKetherErrorMessage()
             }
         }

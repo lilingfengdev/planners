@@ -97,7 +97,7 @@ interface Target {
 
     }
 
-    open class Container : ArrayList<Target>() {
+    open class Container : LinkedHashSet<Target>() {
 
         override fun forEach(action: Consumer<in Target>) {
             super.forEach {

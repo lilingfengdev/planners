@@ -12,12 +12,8 @@ class GermTip {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
             frame.run(message).str { message ->
-                if (selector != null) {
-                    frame.execPlayer(selector) {
-                        GermTip.send(this, message)
-                    }
-                } else {
-                    GermTip.send(frame.bukkitPlayer() ?: return@str, message)
+                frame.containerOrSender(selector).thenAccept {
+                    it.forEachPlayer { GermTip.send(this,message) }
                 }
             }
 
@@ -30,7 +26,7 @@ class GermTip {
 
         @KetherParser(["tip"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            Send(it.nextParsedAction(), it.selectorAction())
+            Send(it.nextParsedAction(), it.nextSelectorOrNull())
         }
 
     }

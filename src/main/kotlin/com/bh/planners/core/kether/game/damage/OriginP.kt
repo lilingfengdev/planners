@@ -3,6 +3,7 @@ package com.bh.planners.core.kether.game.damage
 import ac.github.oa.api.OriginAttributeAPI
 import ac.github.oa.api.event.entity.ProxyDamageEvent
 import ac.github.oa.internal.base.enums.PriorityEnum
+import ac.github.oa.internal.core.attribute.impl.Damage
 import com.bh.planners.api.common.Demand
 import com.bh.planners.core.kether.game.ActionDamage
 import io.lumine.xikage.mythicmobs.MythicMobs
@@ -14,6 +15,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import taboolib.common5.Coerce
+import taboolib.common5.cdouble
 
 class OriginP : AttackProvider {
 
@@ -34,7 +36,14 @@ class OriginP : AttackProvider {
         demand.dataMap.forEach {
             context.labels[it.key] = it.value.firstOrNull() ?: return@forEach
         }
-        context.addDamage("@Planners", Coerce.toDouble(demand.get("damage")))
+
+        if (event.customCause == "physics") {
+            context.addDamage(Damage.physical, demand.get("damage").cdouble)
+        } else if (event.customCause == "magic") {
+            context.addDamage(Damage.magic, demand.get("damage").cdouble)
+        } else {
+            context.addDamage(event.customCause,demand.get("damage").cdouble)
+        }
 
         if (ac.github.oa.api.event.entity.EntityDamageEvent(context, PriorityEnum.PRE).call()) {
             OriginAttributeAPI.callDamage(context)
@@ -43,7 +52,7 @@ class OriginP : AttackProvider {
                 // 兼容onDamage
                 if (isMythicMobs) {
                     val mob = MythicMobs.inst().mobManager.getMythicMobInstance(entity) ?: return
-                    TriggeredSkill(SkillTrigger.DAMAGED,mob, BukkitAdapter.adapt(entity))
+                    TriggeredSkill(SkillTrigger.DAMAGED, mob, BukkitAdapter.adapt(entity))
                 }
             }
         }

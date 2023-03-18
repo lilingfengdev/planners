@@ -119,11 +119,11 @@ class ActionPotion {
                         it.nextParsedAction(),
                         it.nextParsedAction(),
                         it.nextParsedAction(),
-                        it.selectorAction()
+                        it.nextSelectorOrNull()
                     )
                 }
-                case("clear") { Clear(it.selectorAction()) }
-                case("remove") { Remove(it.nextParsedAction(), it.selectorAction()) }
+                case("clear") { Clear(it.nextSelectorOrNull()) }
+                case("remove") { Remove(it.nextParsedAction(), it.nextSelectorOrNull()) }
             }
         }
     }

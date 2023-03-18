@@ -57,7 +57,7 @@ class ActionHealth {
                 "take" -> Operator.TAKE
                 else -> error("error of case!")
             }
-            HealthOperation(operator, it.nextParsedAction(), it.selectorAction())
+            HealthOperation(operator, it.nextParsedAction(), it.nextSelectorOrNull())
         }
 
     }

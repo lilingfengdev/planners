@@ -2,8 +2,7 @@ package com.bh.planners.core.kether.compat.germplugin
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.execPlayer
-import com.bh.planners.core.kether.namespaces
-import com.bh.planners.core.kether.selector
+import com.bh.planners.core.kether.nextSelector
 import com.germ.germplugin.api.GermPacketAPI
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -46,10 +45,10 @@ class ActionGermLock {
         fun parser() = scriptParser {
             it.switch {
                 case("lock") {
-                    LockPlayer(it.nextParsedAction(),it.selector())
+                    LockPlayer(it.nextParsedAction(),it.nextSelector())
                 }
                 case("unlock") {
-                    UnLockPlayer(it.selector())
+                    UnLockPlayer(it.nextSelector())
                 }
             }
         }

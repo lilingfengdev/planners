@@ -2,12 +2,11 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.createContainer
-import com.bh.planners.core.kether.selector
+import com.bh.planners.core.kether.nextSelector
 import com.bh.planners.core.kether.origin
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
@@ -33,7 +32,7 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
          */
         @KetherParser(["drag"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionDrag(it.nextParsedAction(), it.nextParsedAction(), it.selector())
+            ActionDrag(it.nextParsedAction(), it.nextParsedAction(), it.nextSelector())
         }
 
     }

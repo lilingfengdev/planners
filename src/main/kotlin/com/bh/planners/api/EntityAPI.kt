@@ -14,7 +14,6 @@ object EntityAPI {
 
     private val map = Collections.synchronizedMap(mutableMapOf<UUID, DataContainer>())
 
-
     fun Entity.getDataContainer(): DataContainer {
         return if (this is Player) {
             plannersProfile.flags

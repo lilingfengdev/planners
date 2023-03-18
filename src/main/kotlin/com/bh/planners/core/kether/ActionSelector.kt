@@ -142,8 +142,8 @@ class ActionSelector {
                     "size" -> ActionTargetContainerGetSize(key)
                     "list" -> ActionTargetContainerList(key)
                     "get" -> ActionTargetContainerGet(key)
-                    "merge" -> ActionTargetContainerMerge(key, it.selectorAction()!!)
-                    "unmerge" -> ActionTargetContainerUnmerge(key, it.selectorAction()!!)
+                    "merge" -> ActionTargetContainerMerge(key, it.nextSelectorOrNull()!!)
+                    "unmerge" -> ActionTargetContainerUnmerge(key, it.nextSelectorOrNull()!!)
                     else -> ActionTargetContainerList(key)
                 }
             } catch (_: Exception) {
@@ -158,22 +158,13 @@ class ActionSelector {
 
             override fun read(instance: Target.Container, key: String): OpenResult {
                 return when {
-                    key.isInt() -> OpenResult.successful(instance[key.toInt()])
                     key == "length" || key == "size" -> OpenResult.successful(instance.size)
                     else -> OpenResult.failed()
                 }
             }
 
             override fun write(instance: Target.Container, key: String, value: Any?): OpenResult {
-                return if (key.isInt()) {
-                    val target = (value as? Target.Container)?.firstTarget()
-                    if (target != null) {
-                        instance[key.toInt()] = target
-                    }
-                    OpenResult.successful()
-                } else {
-                    OpenResult.failed()
-                }
+                return OpenResult.failed()
             }
         }
 

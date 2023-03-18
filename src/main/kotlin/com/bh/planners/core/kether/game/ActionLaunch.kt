@@ -27,22 +27,12 @@ class ActionLaunch(
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.newFrame(x).run<Any>().thenApply {
-            val x = Coerce.toDouble(it)
-            frame.newFrame(y).run<Any>().thenApply {
-                val y = Coerce.toDouble(it)
-                frame.newFrame(z).run<Any>().thenApply {
-                    val z = Coerce.toDouble(it)
-                    if (selector != null) {
-                        frame.exec(selector) {
-                            if (this is Target.Entity) {
-                                execute(this.proxy,x, y, z)
-                            }
-                        }
-                    } else {
-                        execute(ProxyBukkitEntity(frame.bukkitPlayer()!!), x, y, z)
+        frame.run(x).double { x ->
+            frame.run(y).double { y ->
+                frame.run(z).double { z ->
+                    frame.containerOrSender(selector).thenAccept {
+                        it.forEachProxyEntity { execute(this,x, y, z) }
                     }
-
                 }
             }
         }
@@ -62,7 +52,7 @@ class ActionLaunch(
             val x = it.nextParsedAction()
             val y = it.nextParsedAction()
             val z = it.nextParsedAction()
-            ActionLaunch(x, y, z, it.selectorAction())
+            ActionLaunch(x, y, z, it.nextSelectorOrNull())
         }
     }
 }

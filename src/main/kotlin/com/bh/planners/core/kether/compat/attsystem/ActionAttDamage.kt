@@ -20,20 +20,22 @@ class ActionAttDamage {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(value).run<Any>().thenAccept { key ->
                 val player = frame.bukkitPlayer() ?: return@thenAccept
-                frame.execLivingEntity(selector) {
-                    catchRunning {
-                        this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
-                        val data = FightData(player, this).apply {
-                            frame.variables().run {
-                                forEach {(key,value)-> this@apply.put(key,value) }
+                frame.container(selector).thenAccept {
+                    it.forEachLivingEntity {
+                        catchRunning {
+                            this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
+                            val data = FightData(player, this).apply {
+                                frame.variables().run {
+                                    forEach {(key,value)-> this@apply.put(key,value) }
+                                }
                             }
+                            val damage =
+                                AttributeSystem.attributeSystemAPI.runFight(key.toString(),data , true)
+                            AttributeSystem.attributeSystemAPI.skipNextDamageCal()
+                            this.damage(damage, player)
+                            this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
+                            this.noDamageTicks = 0
                         }
-                        val damage =
-                            AttributeSystem.attributeSystemAPI.runFight(key.toString(),data , true)
-                        AttributeSystem.attributeSystemAPI.skipNextDamageCal()
-                        this.damage(damage, player)
-                        this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
-                        this.noDamageTicks = 0
                     }
                 }
             }
@@ -49,7 +51,7 @@ class ActionAttDamage {
          */
         @KetherParser(["as-attack"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            Attack(it.nextParsedAction(), it.selector())
+            Attack(it.nextParsedAction(), it.nextSelector())
         }
 
     }

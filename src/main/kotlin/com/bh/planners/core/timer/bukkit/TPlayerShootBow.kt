@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityShootBowEvent
 import taboolib.module.kether.ScriptContext
 
 object TPlayerShootBow : AbstractTimer<EntityShootBowEvent>() {
+
     override val name: String
         get() = "player shoot"
     override val eventClazz: Class<EntityShootBowEvent>

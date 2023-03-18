@@ -17,26 +17,7 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.type.BukkitProxyEvent
 import java.util.UUID
 
-class ProxyDamageEvent(
-    val damager: Entity,
-    val entity: Entity,
-    val cause: DamageCause?,
-    var damage: Double,
-    var memory: Any? = null
-) : BukkitProxyEvent() {
-
-    var event: EntityDamageByEntityEvent? = null
-
-    val realDamage: Double
-        get() = (memory as? DamageMemory)?.totalDamage ?: this.damage
-
-    fun addDamage(double: Double) {
-        if (memory != null) {
-            (memory as? DamageMemory)?.addDamage(UUID.randomUUID().toString(), double)
-        } else {
-            this.damage += double
-        }
-    }
+open class ProxyDamageEvent(damager: Entity, entity: Entity, cause: DamageCause?, damage: Double) : AbstractProxyDamageEvent(damager, entity, cause, damage) {
 
     companion object {
 
@@ -54,6 +35,7 @@ class ProxyDamageEvent(
             }
         }
 
+
         @SubscribeEvent(
             bind = "ac.github.oa.api.event.entity.EntityDamageEvent",
             ignoreCancelled = true,
@@ -65,7 +47,8 @@ class ProxyDamageEvent(
                 val memory = e.damageMemory
                 val damager = e.damageMemory.event.damager
                 val damageEvent =
-                    ProxyDamageEvent(damager, memory.injured, memory.event.bukkitCause, memory.totalDamage, memory)
+                    ProxyDamageEvent(damager, memory.injured, memory.event.bukkitCause, memory.totalDamage)
+                damageEvent.data["@OriginAttribute:Memory"] = memory
                 damageEvent.event = e.damageMemory.event.origin
                 damageEvent.call()
 
@@ -78,7 +61,7 @@ class ProxyDamageEvent(
         @SubscribeEvent
         fun e(e: EntityEvents.DamageByEntity) {
             if (e.damager != null) {
-                val damageEvent = ProxyDamageEvent(e.damager, e.entity, DamageCause.CUSTOM, e.value, null)
+                val damageEvent = ProxyDamageEvent(e.damager, e.entity, DamageCause.CUSTOM, e.value)
                 e.value = damageEvent.realDamage
                 if (!damageEvent.call()) {
                     damageEvent.isCancelled = true
@@ -87,13 +70,6 @@ class ProxyDamageEvent(
 
         }
 
-    }
-
-    fun getPlayer(entity: Entity): Player? {
-        if (entity is Projectile) {
-            return entity.shooter as? Player ?: return null
-        }
-        return entity as? Player
     }
 
 

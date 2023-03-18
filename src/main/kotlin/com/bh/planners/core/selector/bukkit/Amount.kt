@@ -1,6 +1,6 @@
-package com.bh.planners.core.selector
+package com.bh.planners.core.selector.bukkit
 
-import taboolib.common5.Coerce
+import com.bh.planners.core.selector.Selector
 import java.util.concurrent.CompletableFuture
 
 /**

@@ -97,7 +97,7 @@ class ActionGlowing : ScriptAction<Void>() {
                 this.tick = it.tryGet(arrayOf("tick", "time", "timeout"), -1)!!
                 this.value = it.tryGet(arrayOf("value"), true)!!
                 this.color = it.tryGet(arrayOf("color"), ChatColor.WHITE)!!
-                this.selector = it.selectorAction()
+                this.selector = it.nextSelectorOrNull()
             }
         }
 

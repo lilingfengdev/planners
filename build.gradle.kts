@@ -41,6 +41,11 @@ repositories {
 
     mavenCentral()
     mavenLocal()
+
+    maven {
+        url = uri("http://ptms.ink:8081/repository/releases/")
+        isAllowInsecureProtocol = true
+    }
 //    maven {
 //        url = uri("http://nexus.okkero.com/repository/maven-releases/")
 //        isAllowInsecureProtocol = true
@@ -58,6 +63,8 @@ dependencies {
     compileOnly("com.google.code.gson:gson:2.8.5")
     compileOnly("com.google.guava:guava:21.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
+
+    compileOnly("com.mojang:datafixerupper:4.0.26")
 
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))

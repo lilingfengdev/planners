@@ -47,7 +47,6 @@ class DamageableModel(val file: File) {
                 builder.append("${System.lineSeparator()}}")
             }
             actionBuffer = builder.toString()
-            info(actionBuffer)
         }
 
 

@@ -34,7 +34,7 @@ class ActionFireTicks(val ticks: ParsedAction<*>, val selector: ParsedAction<*>?
         @KetherParser(["fireTicks"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val power = it.nextParsedAction()
-            ActionFireTicks(power, it.selectorAction())
+            ActionFireTicks(power, it.nextSelectorOrNull())
         }
     }
 }

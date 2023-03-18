@@ -1,9 +1,10 @@
-package com.bh.planners.core.selector
+package com.bh.planners.core.selector.loop
 
 import com.bh.planners.core.kether.catchRunning
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.rootVariables
+import com.bh.planners.core.selector.Selector
 import java.util.concurrent.CompletableFuture
 
 /**

@@ -46,24 +46,11 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         frame.read<String>(command).thenAccept { command ->
-            if (selector != null) {
-                frame.createContainer(selector).thenAccept { container ->
-                    submitAsync {
-                        container.forEachPlayer {
-                            execute(this, this@ActionCommand.type, command)
-                        }
-                    }
-                }
-            } else {
-                submit {
-                    execute(frame.bukkitPlayer() ?: return@submit, this@ActionCommand.type, command)
-                }
+            frame.containerOrSender(selector).thenAccept {
+                it.forEachPlayer { execute(this, this@ActionCommand.type, command) }
             }
         }
-
         return CompletableFuture.completedFuture(null)
-
-
     }
 
     internal object Parser {
@@ -84,7 +71,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type, val selector: 
                 it.reset()
                 Type.PLAYER
             }
-            ActionCommand(command, by, it.selectorAction())
+            ActionCommand(command, by, it.nextSelectorOrNull())
         }
     }
 }

@@ -1,14 +1,14 @@
-package com.bh.planners.core.selector
+package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.ifEntity
 import com.bh.planners.core.effect.Target.Companion.ifLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.selector.Selector
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
-import taboolib.common5.Coerce
 import java.util.concurrent.CompletableFuture
 import kotlin.math.floor
 
@@ -88,9 +88,9 @@ object BlockAt : Selector {
         val oy = if (dir.y > 0) 1 else 0
         val oz = if (dir.z > 0) 1 else 0
         while (start.block.type in AIR_BLOCKS && maxRange > 0) {
-            val dxt: Double = com.bh.planners.core.selector.BlockAt.computeWeight(start.x, dir.x, ox)
-            val dyt: Double = com.bh.planners.core.selector.BlockAt.computeWeight(start.y, dir.y, oy)
-            val dzt: Double = com.bh.planners.core.selector.BlockAt.computeWeight(start.z, dir.z, oz)
+            val dxt: Double = computeWeight(start.x, dir.x, ox)
+            val dyt: Double = computeWeight(start.y, dir.y, oy)
+            val dzt: Double = computeWeight(start.z, dir.z, oz)
             val t = dxt.coerceAtMost(dyt.coerceAtMost(dzt.coerceAtMost(maxRange))) + 1E-5
             start.add(dir.clone().multiply(t))
             maxRange -= t

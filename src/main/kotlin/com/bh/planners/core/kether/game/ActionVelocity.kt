@@ -71,7 +71,7 @@ class ActionVelocity(
             val x = it.nextParsedAction()
             val y = it.nextParsedAction()
             val z = it.nextParsedAction()
-            ActionVelocity(mode, x, y, z, it.selectorAction())
+            ActionVelocity(mode, x, y, z, it.nextSelectorOrNull())
         }
     }
 }

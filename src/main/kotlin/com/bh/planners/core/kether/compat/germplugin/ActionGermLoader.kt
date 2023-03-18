@@ -1,9 +1,6 @@
 package com.bh.planners.core.kether.compat.germplugin
 
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.selector
-import com.bh.planners.core.kether.selectorAction
-import com.bh.planners.core.kether.tryGet
+import com.bh.planners.core.kether.*
 import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.expects
@@ -29,6 +26,7 @@ object ActionGermLoader {
      * 特效移动动画
      * germ effect move [name: action] <selector>
      *
+     * germ cooldown <slot> <tick> <selector>
      *
      */
     @KetherParser(["germengine", "germ", "germplugin"], namespace = NAMESPACE, shared = true)
@@ -37,15 +35,18 @@ object ActionGermLoader {
             case("animation") {
                 when (it.expects("send", "stop")) {
                     "send" -> {
-                        ActionGermAnimation(it.nextToken(), false, it.selector())
+                        ActionGermAnimation(it.nextToken(), false, it.nextSelector())
                     }
 
                     "stop" -> {
-                        ActionGermAnimation(it.nextToken(), true, it.selector())
+                        ActionGermAnimation(it.nextToken(), true, it.nextSelector())
                     }
 
                     else -> error("out of case")
                 }
+            }
+            case("cooldown") {
+                ActionGermItemCooldown(it.nextParsedAction(),it.nextParsedAction(),it.nextSelectorOrNull())
             }
             case("sound") {
                 ActionGermSound(
@@ -53,7 +54,7 @@ object ActionGermLoader {
                     it.tryGet(arrayOf("soundtype", "type"), "MASTER")!!,
                     it.tryGet(arrayOf("volume"), 1)!!,
                     it.tryGet(arrayOf("pitch"), 1)!!,
-                    it.selector()
+                    it.nextSelector()
                 )
             }
 //            case("look") {
@@ -74,7 +75,7 @@ object ActionGermLoader {
                     ActionGermParticle(
                         it.nextParsedAction(),
                         it.tryGet(arrayOf("animation"), "__none__")!!,
-                        it.selectorAction()
+                        it.nextSelectorOrNull()
                     )
                 }
 

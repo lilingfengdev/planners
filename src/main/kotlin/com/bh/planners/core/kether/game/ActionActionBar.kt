@@ -13,18 +13,12 @@ import java.util.concurrent.CompletableFuture
 class ActionActionBar(val message: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        return frame.newFrame(message).run<Any>().thenAccept { message ->
-            if (selector != null) {
-                frame.newFrame(selector).run<Any>().thenAccept {
-                    frame.execPlayer(selector) {
-                        this.sendActionBar(message.toString().trimIndent().replace("@sender", this.name))
-                    }
-                }
-            } else {
-                val player = frame.bukkitPlayer() ?: return@thenAccept
-                player.sendActionBar(message.toString().trimIndent().replace("@sender", player.name))
+        frame.run(message).str { message ->
+            frame.containerOrSender(selector).thenAccept {
+                it.forEachPlayer { sendActionBar(message.trimIndent().replace("@sender", this.name)) }
             }
         }
+        return CompletableFuture.completedFuture(null)
     }
 
 
@@ -32,7 +26,7 @@ class ActionActionBar(val message: ParsedAction<*>, val selector: ParsedAction<*
 
         @KetherParser(["actionbar"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionActionBar(it.nextParsedAction(), it.selectorAction())
+            ActionActionBar(it.nextParsedAction(), it.nextSelectorOrNull())
         }
     }
 }

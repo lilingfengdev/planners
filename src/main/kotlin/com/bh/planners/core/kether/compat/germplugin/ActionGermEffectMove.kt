@@ -11,6 +11,8 @@ import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.run
+import taboolib.module.kether.str
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -20,7 +22,6 @@ class ActionGermEffectMove(val name: ParsedAction<*>, val pos1: ParsedAction<*>,
     override fun run(frame: ScriptFrame): CompletableFuture<IEffectAnimation> {
         val future = CompletableFuture<IEffectAnimation>()
         frame.readAccept<String>(name) { name ->
-
             frame.getLocation(pos1).thenAccept { pos1 ->
                 frame.getLocation(pos2).thenAccept { pos2 ->
                     future.complete(EffectMove(name, pos1, pos2))

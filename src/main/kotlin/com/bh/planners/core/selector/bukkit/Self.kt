@@ -1,10 +1,8 @@
-package com.bh.planners.core.selector
+package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.getLocation
-import com.bh.planners.core.effect.Target.Companion.toTarget
-import taboolib.common5.Coerce
-import taboolib.platform.type.BukkitPlayer
+import com.bh.planners.core.selector.Selector
 import java.util.concurrent.CompletableFuture
 
 /**

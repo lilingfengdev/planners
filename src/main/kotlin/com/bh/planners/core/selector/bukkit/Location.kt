@@ -1,7 +1,8 @@
-package com.bh.planners.core.selector
+package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.toLocation
+import com.bh.planners.core.selector.Selector
 import java.util.concurrent.CompletableFuture
 
 /**

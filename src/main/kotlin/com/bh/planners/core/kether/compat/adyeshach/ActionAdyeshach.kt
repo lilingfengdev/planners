@@ -27,17 +27,17 @@ object ActionAdyeshach {
                     this.type = it.nextParsedAction()
                     this.name = it.nextParsedAction()
                     this.timeout = it.nextParsedAction()
-                    this.selector = it.selectorAction()
+                    this.selector = it.nextSelectorOrNull()
                 }
             }
             case("follow") {
                 ActionAdyeshachFollow(it.nextParsedAction(), it.nextParsedAction(), it.tryGet(arrayOf("option","params"),"EMPTY")!!)
             }
             case("script") {
-                ActionAdyeshachScript(it.nextParsedAction(), it.next(ArgTypes.listOf(ArgTypes.ACTION)),it.selectorAction())
+                ActionAdyeshachScript(it.nextParsedAction(), it.next(ArgTypes.listOf(ArgTypes.ACTION)),it.nextSelectorOrNull())
             }
             case("remove") {
-                ActionAdyeshachRemove(it.selector())
+                ActionAdyeshachRemove(it.nextSelector())
             }
         }
 

@@ -1,14 +1,14 @@
-package com.bh.planners.core.selector
+package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.ifEntity
 import com.bh.planners.core.effect.Target.Companion.ifLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.selector.Selector
 import com.bh.planners.util.entityAt
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import taboolib.common.platform.function.submit
-import taboolib.common5.Coerce
 import java.util.concurrent.CompletableFuture
 import kotlin.math.floor
 

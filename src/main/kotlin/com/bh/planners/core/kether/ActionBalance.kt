@@ -7,6 +7,8 @@ import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import taboolib.platform.compat.VaultService
+import taboolib.platform.compat.getBalance
+import taboolib.platform.compat.withdrawBalance
 import java.util.concurrent.CompletableFuture
 
 class ActionBalance {

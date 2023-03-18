@@ -1,9 +1,11 @@
 package com.bh.planners.core.feature.damageable
 
+import com.bh.planners.api.ContextAPI
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.isPlayer
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.rootVariables
+import com.bh.planners.core.pojo.Context
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.module.kether.KetherShell
@@ -13,7 +15,7 @@ import java.util.concurrent.CompletableFuture
 
 object DamageableScript {
 
-    val NAMESPACE = "damageable"
+    const val NAMESPACE = "damageable"
     val NAMESPACES = listOf(NAMESPACE)
 
     fun createScriptStream(context: Damageable,stream: DamageableModel.Stream): CompletableFuture<DamageableMeta> {
@@ -35,6 +37,7 @@ object DamageableScript {
             this.rootFrame().setDamageable(context)
             this.rootFrame().setDamageableMeta(meta)
             this.rootFrame().variables()["data"] = meta.data
+            this.rootFrame().variables()["@Context"] = object : Context(meta.sender.toTarget()) {  }
             block(this)
         }.thenApply {
             // 结束流
@@ -42,12 +45,12 @@ object DamageableScript {
                 context.metaCancel = meta
             }
             it
-        }
+        }.exceptionally { it.printStackTrace() }
     }
 
     fun invokeScript(script: String, sender: Target.Entity,block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {
         return runKether {
-            KetherShell.eval(script, namespace = NAMESPACES) {
+            KetherShell.eval(script, namespace = listOf(NAMESPACE,"Planners")) {
                 val entity = sender.bukkitLivingEntity!!
                 if (entity is Player) {
                     this.sender = adaptPlayer(entity)
