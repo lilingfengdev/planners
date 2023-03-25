@@ -189,17 +189,17 @@ class ActionProfile {
                         mark()
                         when (expects("add", "set", "get", "to", "has")) {
                             "set", "to" -> {
-                                DataSet(key, it.nextParsedAction(), it.nextParsedAction(arrayOf("timeout"), -1L)!!)
+                                DataSet(key, it.nextParsedAction(), it.nextArgumentAction(arrayOf("timeout"), -1L)!!)
                             }
 
-                            "get" -> DataGet(key, it.nextParsedAction(arrayOf("def", "--def"), "null")!!)
+                            "get" -> DataGet(key, it.nextArgumentAction(arrayOf("def", "--def"), "null")!!)
                             "add" -> DataAdd(key, it.nextParsedAction())
                             "has" -> DataHas(key)
                             else -> error("error of case!")
                         }
                     } catch (_: Throwable) {
                         reset()
-                        DataGet(key, it.nextParsedAction(arrayOf("def", "--def"), "null")!!)
+                        DataGet(key, it.nextArgumentAction(arrayOf("def", "--def"), "null")!!)
                     }
                 }
 

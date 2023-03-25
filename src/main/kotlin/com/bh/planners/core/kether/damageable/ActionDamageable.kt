@@ -18,7 +18,7 @@ class ActionDamageable {
         @KetherParser(["papi", "placeholder"], namespace = DamageableScript.NAMESPACE)
         fun actionPlaceholder() = scriptParser {
             val str = it.nextParsedAction()
-            val defaultValue = it.nextParsedAction(arrayOf("def", "default"), null)!!
+            val defaultValue = it.nextArgumentAction(arrayOf("def", "default"), null)!!
             actionTake {
                 run(str).str { s ->
                     run(defaultValue).thenApply {

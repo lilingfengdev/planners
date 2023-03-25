@@ -4,7 +4,7 @@ import com.bh.planners.api.event.proxy.AbstractProxyDamageEvent.Companion.damage
 import com.bh.planners.api.event.proxy.ProxyDamageEvent
 import com.bh.planners.core.kether.ActionEvent.Companion.event
 import com.bh.planners.core.kether.eventParser
-import com.bh.planners.core.kether.nextParsedAction
+import com.bh.planners.core.kether.nextArgumentAction
 import taboolib.common.platform.function.info
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction

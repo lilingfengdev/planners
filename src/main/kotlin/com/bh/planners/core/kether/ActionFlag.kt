@@ -100,10 +100,10 @@ class ActionFlag {
                 when (it.expects("add", "set", "get", "to")) {
                     "set", "to" -> {
                         val value = it.nextParsedAction()
-                        DataSet(key, value, it.nextParsedAction(arrayOf("timeout"), -1)!!, it.nextSelectorOrNull())
+                        DataSet(key, value, it.nextArgumentAction(arrayOf("timeout"), -1)!!, it.nextSelectorOrNull())
                     }
 
-                    "get" -> DataGet(key, it.nextParsedAction(arrayOf("def", "--def"), "null")!!, it.nextSelectorOrNull())
+                    "get" -> DataGet(key, it.nextArgumentAction(arrayOf("def", "--def"), "null")!!, it.nextSelectorOrNull())
 
                     "add" -> DataAdd(key, it.nextParsedAction(), it.nextSelectorOrNull())
 
@@ -111,7 +111,7 @@ class ActionFlag {
                 }
             } catch (_: Throwable) {
                 it.reset()
-                DataGet(key, it.nextParsedAction(arrayOf("def", "--def"), "null")!!, it.nextSelectorOrNull())
+                DataGet(key, it.nextArgumentAction(arrayOf("def", "--def"), "null")!!, it.nextSelectorOrNull())
             }
         }
 

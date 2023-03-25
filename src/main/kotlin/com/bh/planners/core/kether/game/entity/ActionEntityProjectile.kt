@@ -124,11 +124,11 @@ class ActionEntityProjectile {
             ActionLaunch(
                 it.nextParsedAction(),
                 it.nextParsedAction(),
-                it.nextParsedAction(arrayOf("step"), 0.4)!!,
-                it.nextParsedAction(arrayOf("rotateX"), 0.0)!!,
-                it.nextParsedAction(arrayOf("rotateY"), 0.0)!!,
-                it.nextParsedAction(arrayOf("rotateZ"), 0.0)!!,
-                it.nextParsedAction(arrayOf("oncapture","onhit"), "none")!!,
+                it.nextArgumentAction(arrayOf("step"), 0.4)!!,
+                it.nextArgumentAction(arrayOf("rotateX"), 0.0)!!,
+                it.nextArgumentAction(arrayOf("rotateY"), 0.0)!!,
+                it.nextArgumentAction(arrayOf("rotateZ"), 0.0)!!,
+                it.nextArgumentAction(arrayOf("oncapture","onhit"), "none")!!,
                 it.nextSelectorOrNull()
             )
         }

@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.event
 import com.bh.planners.core.kether.ActionEvent.Companion.event
 import com.bh.planners.core.kether.eventParser
 import com.bh.planners.core.kether.read
-import com.bh.planners.core.kether.nextParsedAction
+import com.bh.planners.core.kether.nextArgumentAction
 import org.bukkit.event.Cancellable
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -33,7 +33,7 @@ class ActionEventCancel(val action: ParsedAction<*>) : ScriptAction<Void>() {
 
         @KetherParser(["cancel"])
         fun parser() = eventParser {
-            ActionEventCancel(it.nextParsedAction(arrayOf("to"),true)!!)
+            ActionEventCancel(it.nextArgumentAction(arrayOf("to"),true)!!)
         }
 
     }

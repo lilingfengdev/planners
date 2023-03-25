@@ -88,7 +88,7 @@ class ActionDamage {
          */
         @KetherParser(["damage"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            Damage(it.nextParsedAction(), it.nextSelector(), it.nextParsedAction(arrayOf("source")))
+            Damage(it.nextParsedAction(), it.nextSelector(), it.nextArgumentAction(arrayOf("source")))
         }
 
         /**
@@ -101,7 +101,7 @@ class ActionDamage {
             val action = it.nextParsedAction()
             Attack(
                 action,
-                it.nextParsedAction(arrayOf("option", "data", "opt"), "EMPTY")!!,
+                it.nextArgumentAction(arrayOf("option", "data", "opt"), "EMPTY")!!,
                 it.nextSelector()
             )
         }

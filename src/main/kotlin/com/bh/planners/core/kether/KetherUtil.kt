@@ -322,10 +322,10 @@ fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParse
 }
 
 fun QuestReader.get(array: Array<String>): ParsedAction<*> {
-    return nextParsedAction(array, null) ?: error("the lack of '${array.map { it }}' cite target")
+    return nextArgumentAction(array, null) ?: error("the lack of '${array.map { it }}' cite target")
 }
 
-fun QuestReader.nextParsedActionOrNull(array: Array<out String>): ParsedAction<*>? {
+fun QuestReader.nextArgumentActionOrNull(array: Array<out String>): ParsedAction<*>? {
     return try {
         mark()
         expects(*array)
@@ -336,8 +336,17 @@ fun QuestReader.nextParsedActionOrNull(array: Array<out String>): ParsedAction<*
     }
 }
 
-fun QuestReader.nextParsedAction(array: Array<out String>, def: Any?): ParsedAction<*>? {
-    return nextParsedActionOrNull(array) ?: if (def == null) null else literalAction(def)
+fun QuestReader.argumentActionOrNull(array: Array<out String>): ParsedAction<*>? {
+    return nextArgumentActionOrNull(array)
+}
+
+fun QuestReader.argumentAction(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
+    return nextArgumentAction(array, def)
+}
+
+// nextArgumentAction
+fun QuestReader.nextArgumentAction(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
+    return nextArgumentActionOrNull(array) ?: if (def == null) null else literalAction(def)
 }
 
 fun QuestReader.nextSelector(): ParsedAction<*> {
@@ -345,7 +354,7 @@ fun QuestReader.nextSelector(): ParsedAction<*> {
 }
 
 fun QuestReader.nextSelectorOrNull(): ParsedAction<*>? {
-    return this.nextParsedActionOrNull(arrayOf("they", "the", "at"))
+    return this.nextArgumentActionOrNull(arrayOf("they", "the", "at"))
 }
 
 fun <T> CompletableFuture<Any?>.material(then: (Material) -> T): CompletableFuture<T> {

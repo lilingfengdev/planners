@@ -39,17 +39,17 @@ object ActionDragonLoader {
             case("sound") {
                 ActionDragonSound(
                     it.nextParsedAction(),
-                    it.nextParsedAction(arrayOf("volume"), 1.0f)!!,
-                    it.nextParsedAction(arrayOf("pitch"), 1.0f)!!,
-                    it.nextParsedAction(arrayOf("loop"), false)!!,
+                    it.nextArgumentAction(arrayOf("volume"), 1.0f)!!,
+                    it.nextArgumentAction(arrayOf("pitch"), 1.0f)!!,
+                    it.nextArgumentAction(arrayOf("loop"), false)!!,
                     it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
                 )
             }
             case("particle", "effect") {
                 ActionDragonEffect(
                     it.nextParsedAction(),
-                    it.nextParsedAction(arrayOf("rotation"), "0,0,0")!!,
-                    it.nextParsedAction(arrayOf("time"), 100)!!,
+                    it.nextArgumentAction(arrayOf("rotation"), "0,0,0")!!,
+                    it.nextArgumentAction(arrayOf("time"), 100)!!,
                     it.nextSelectorOrNull()
                 )
             }

@@ -51,14 +51,14 @@ object ActionGermLoader {
             case("sound") {
                 ActionGermSound(
                     it.nextParsedAction(),
-                    it.nextParsedAction(arrayOf("soundtype", "type"), "MASTER")!!,
-                    it.nextParsedAction(arrayOf("volume"), 1)!!,
-                    it.nextParsedAction(arrayOf("pitch"), 1)!!,
+                    it.nextArgumentAction(arrayOf("soundtype", "type"), "MASTER")!!,
+                    it.nextArgumentAction(arrayOf("volume"), 1)!!,
+                    it.nextArgumentAction(arrayOf("pitch"), 1)!!,
                     it.nextSelector()
                 )
             }
 //            case("look") {
-//                ActionGermLook(it.nextParsedAction(),it.nextParsedAction(arrayOf("at"))!!)
+//                ActionGermLook(it.nextParsedAction(),it.nextArgumentAction(arrayOf("at"))!!)
 //            }
             case("effect") {
 
@@ -68,13 +68,13 @@ object ActionGermLoader {
                     ActionGermEffectMove(
                         it.nextParsedAction(),
                         it.nextParsedAction(),
-                        it.nextParsedAction(arrayOf("to")) ?: error("lack 'to'")
+                        it.nextArgumentAction(arrayOf("to")) ?: error("lack 'to'")
                     )
                 } catch (e: Exception) {
                     it.reset()
                     ActionGermParticle(
                         it.nextParsedAction(),
-                        it.nextParsedAction(arrayOf("animation"), "__none__")!!,
+                        it.nextArgumentAction(arrayOf("animation"), "__none__")!!,
                         it.nextSelectorOrNull()
                     )
                 }

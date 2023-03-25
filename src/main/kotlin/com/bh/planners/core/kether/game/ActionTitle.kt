@@ -53,7 +53,7 @@ class ActionTitle(
         fun parser() = scriptParser {
             val title = it.nextParsedAction()
             it.mark()
-            val subTitle = it.nextParsedAction(arrayOf("subtitle"),"")!!
+            val subTitle = it.nextArgumentAction(arrayOf("subtitle"),"")!!
             var fadeIn: ParsedAction<*> = literalAction(0)
             var stay: ParsedAction<*> = literalAction(20)
             var fadeOut: ParsedAction<*> = literalAction(0)
