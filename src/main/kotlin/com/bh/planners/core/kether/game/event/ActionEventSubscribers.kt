@@ -4,7 +4,7 @@ import com.bh.planners.core.feature.presskey.Emitter
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.get
 import com.bh.planners.core.kether.nextSelectorOrNull
-import com.bh.planners.core.kether.tryGet
+import com.bh.planners.core.kether.nextParsedAction
 import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.scriptParser
@@ -21,7 +21,7 @@ class ActionEventSubscribers {
                 case("keypress") {
                     ActionKeyPress(
                         it.nextParsedAction(),
-                        it.tryGet(arrayOf("timeout"), Emitter.timeout / 50)!!,
+                        it.nextParsedAction(arrayOf("timeout"), Emitter.timeout / 50)!!,
                         it.nextSelectorOrNull(),
                         it.get(arrayOf("then"))
                     )

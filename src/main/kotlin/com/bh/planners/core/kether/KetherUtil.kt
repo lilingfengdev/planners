@@ -322,7 +322,7 @@ fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParse
 }
 
 fun QuestReader.get(array: Array<String>): ParsedAction<*> {
-    return tryGet(array, null) ?: error("the lack of '${array.map { it }}' cite target")
+    return nextParsedAction(array, null) ?: error("the lack of '${array.map { it }}' cite target")
 }
 
 fun QuestReader.nextParsedActionOrNull(array: Array<out String>): ParsedAction<*>? {
@@ -338,19 +338,6 @@ fun QuestReader.nextParsedActionOrNull(array: Array<out String>): ParsedAction<*
 
 fun QuestReader.nextParsedAction(array: Array<out String>, def: Any?): ParsedAction<*>? {
     return nextParsedActionOrNull(array) ?: if (def == null) null else literalAction(def)
-}
-
-fun QuestReader.tryGet(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
-    return try {
-        mark()
-        expects(*array)
-        this.nextParsedAction()
-    } catch (e: Exception) {
-        reset()
-        if (def == null) {
-            null
-        } else literalAction(def)
-    }
 }
 
 fun QuestReader.nextSelector(): ParsedAction<*> {

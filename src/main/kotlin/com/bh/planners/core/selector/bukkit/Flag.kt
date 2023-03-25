@@ -2,6 +2,7 @@ package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.api.EntityAPI.getDataContainer
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.getLivingEntity
 import com.bh.planners.core.selector.Selector
 import java.util.concurrent.CompletableFuture
 
@@ -10,7 +11,7 @@ import java.util.concurrent.CompletableFuture
  */
 object Flag : Selector {
     override val names: Array<String>
-        get() = arrayOf("flag","!flag")
+        get() = arrayOf("flag", "!flag")
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
 
@@ -18,9 +19,12 @@ object Flag : Selector {
             val split = it.split("=")
             val key = split[0]
             val value = split[1]
-            data.container.removeIf {
-                (it as? Target.Entity)?.bukkitEntity?.getDataContainer()?.get(key)?.toString() != value
+            if (data.isNon) {
+                data.container.removeIf { it.getLivingEntity()?.getDataContainer()?.get(key)?.toString() == value }
+            } else {
+                data.container.removeIf { it.getLivingEntity()?.getDataContainer()?.get(key)?.toString() != value }
             }
+
         }
 
 

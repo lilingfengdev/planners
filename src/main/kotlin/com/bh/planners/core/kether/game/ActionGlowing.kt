@@ -94,9 +94,9 @@ class ActionGlowing : ScriptAction<Void>() {
         @KetherParser(["glowing"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             ActionGlowing().apply {
-                this.tick = it.tryGet(arrayOf("tick", "time", "timeout"), -1)!!
-                this.value = it.tryGet(arrayOf("value"), true)!!
-                this.color = it.tryGet(arrayOf("color"), ChatColor.WHITE)!!
+                this.tick = it.nextParsedAction(arrayOf("tick", "time", "timeout"), -1)!!
+                this.value = it.nextParsedAction(arrayOf("value"), true)!!
+                this.color = it.nextParsedAction(arrayOf("color"), ChatColor.WHITE)!!
                 this.selector = it.nextSelectorOrNull()
             }
         }

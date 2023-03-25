@@ -77,8 +77,8 @@ class ActionToast(
         fun parser() = scriptParser {
             val material = it.nextParsedAction()
             val message = it.nextParsedAction()
-            val data = it.tryGet(arrayOf("data", "nbt"), "{}")!!
-            val frame = it.tryGet(arrayOf("frame"), "challenge")!!
+            val data = it.nextParsedAction(arrayOf("data", "nbt"), "{}")!!
+            val frame = it.nextParsedAction(arrayOf("frame"), "challenge")!!
             ActionToast(material, message, data, frame, it.nextSelectorOrNull())
         }
 

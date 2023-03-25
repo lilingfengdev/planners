@@ -75,11 +75,11 @@ class ActionGlobalVariable {
                 when (it.expects("get", "set", "to", "=", "keys")) {
                     "to", "set", "=" -> {
                         val value = it.nextParsedAction()
-                        Set(key, value, it.tryGet(arrayOf("timeout","time"),-1)!!)
+                        Set(key, value, it.nextParsedAction(arrayOf("timeout","time"),-1)!!)
                     }
 
                     "keys" -> {
-                        Keys(it.tryGet(arrayOf("check"),"*")!!)
+                        Keys(it.nextParsedAction(arrayOf("check"),"*")!!)
                     }
 
                     "get" -> Get(key)

@@ -84,20 +84,20 @@ class ActionSkill {
                         "reset" -> Operator.RESET
                         else -> error("error of case")
                     }
-                    CooldownOperator(operator, it.nextParsedAction(), it.tryGet(arrayOf("of", "the")))
+                    CooldownOperator(operator, it.nextParsedAction(), it.nextParsedAction(arrayOf("of", "the")))
                 }
                 case("level") {
-                    actionSkillNow(tryGet(arrayOf("of","the"))) { it.level }
+                    actionSkillNow(nextParsedAction(arrayOf("of","the"))) { it.level }
                 }
                 case("level-cap","max-level","level-max") {
-                    actionSkillNow(tryGet(arrayOf("of","the"))) { it.maxLevel }
+                    actionSkillNow(nextParsedAction(arrayOf("of","the"))) { it.maxLevel }
                 }
                 case("name") {
-                    actionSkillNow(tryGet(arrayOf("of","the"))) { it.name }
+                    actionSkillNow(nextParsedAction(arrayOf("of","the"))) { it.name }
                 }
                 other {
                     val varKey = nextToken()
-                    actionSkillNow(tryGet(arrayOf("of","the"))) {
+                    actionSkillNow(nextParsedAction(arrayOf("of","the"))) {
                         val variable = it.instance.option.variables.firstOrNull { it.key == varKey } ?: error("No variable ${varKey} define.")
                         val context = ContextAPI.create(bukkitPlayer()!!, it)
                         ScriptLoader.createScript(context,variable.expression)

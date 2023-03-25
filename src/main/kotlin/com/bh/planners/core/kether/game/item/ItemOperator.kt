@@ -2,7 +2,7 @@ package com.bh.planners.core.kether.game.item
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.nextSelectorOrNull
-import com.bh.planners.core.kether.tryGet
+import com.bh.planners.core.kether.nextParsedAction
 import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.expects
@@ -29,7 +29,7 @@ object ItemOperator {
                         it.nextParsedAction(),
                         it.nextParsedAction(),
                         it.nextParsedAction(),
-                        it.tryGet(arrayOf("max", "maximum"), Int.MAX_VALUE)!!,
+                        it.nextParsedAction(arrayOf("max", "maximum"), Int.MAX_VALUE)!!,
                         it.nextSelectorOrNull()
                     )
 

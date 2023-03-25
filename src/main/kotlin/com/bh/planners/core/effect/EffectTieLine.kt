@@ -10,7 +10,7 @@ import com.bh.planners.core.kether.game.ActionEffect
 import com.bh.planners.core.kether.game.ActionEffect.maps
 import com.bh.planners.core.kether.getContext
 import com.bh.planners.core.kether.origin
-import com.bh.planners.core.kether.tryGet
+import com.bh.planners.core.kether.nextParsedAction
 import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
@@ -60,8 +60,8 @@ object EffectTieLine : Effect(), EffectParser {
 
     override fun parser(reader: QuestReader): ScriptAction<*> {
         val option = reader.nextParsedAction()
-        val pos1 = reader.tryGet(arrayOf("pos1"),"@self")!!
-        val pos2 = reader.tryGet(arrayOf("pos2"),"@self")!!
+        val pos1 = reader.nextParsedAction(arrayOf("pos1"),"@self")!!
+        val pos2 = reader.nextParsedAction(arrayOf("pos2"),"@self")!!
         val events = reader.maps()
         return Action(EffectTieLine, option).also {
             it.events += events

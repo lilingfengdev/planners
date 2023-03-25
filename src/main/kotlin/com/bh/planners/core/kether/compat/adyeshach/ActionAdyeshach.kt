@@ -31,7 +31,7 @@ object ActionAdyeshach {
                 }
             }
             case("follow") {
-                ActionAdyeshachFollow(it.nextParsedAction(), it.nextParsedAction(), it.tryGet(arrayOf("option","params"),"EMPTY")!!)
+                ActionAdyeshachFollow(it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(arrayOf("option","params"),"EMPTY")!!)
             }
             case("script") {
                 ActionAdyeshachScript(it.nextParsedAction(), it.next(ArgTypes.listOf(ArgTypes.ACTION)),it.nextSelectorOrNull())

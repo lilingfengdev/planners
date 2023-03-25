@@ -15,7 +15,7 @@ class SelectorTransfer(val context: Context, val source: String, val container: 
         var id: String? = null
         var at = false
         split.forEachIndexed { index, s ->
-            if (s[0] == '@' || s[1] == '@') {
+            if (s.getOrNull(0) == '@' || s.getOrNull(1) == '@') {
                 // 保留上一条缓存
                 if (at) {
                     selectorParsed += ParsedSelector(id!!, values.joinToString(" "))

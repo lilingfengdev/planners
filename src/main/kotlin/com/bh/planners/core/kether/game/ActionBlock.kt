@@ -83,15 +83,15 @@ class ActionBlock : ScriptAction<List<Target>>() {
         val cache = mutableMapOf<Location, BlockSimpleTask>()
 
         /**
-         * block material timeout(tick) <selector>
-         * block STONE 60 they "-@self"
+         * block material timeout(tick) <data: action(0)> <selector>
+         * block STONE 60 they "@self"
          */
         @KetherParser(["block"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val actionBlock = ActionBlock()
             actionBlock.material = it.nextParsedAction()
             actionBlock.timeout = it.nextParsedAction()
-            actionBlock.data = it.tryGet(arrayOf("data"), "0")!!
+            actionBlock.data = it.nextParsedAction(arrayOf("data"), "0")!!
             actionBlock.selector = it.nextSelectorOrNull()
             actionBlock
         }
