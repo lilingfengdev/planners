@@ -10,9 +10,9 @@ import com.bh.planners.util.eval
 import org.bukkit.entity.LivingEntity
 import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.platform.function.submit
+import taboolib.library.kether.ParsedAction
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.setProperty
-import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import taboolib.module.nms.MinecraftVersion
 import taboolib.platform.BukkitPlugin
@@ -22,7 +22,8 @@ import java.util.concurrent.CompletableFuture
 
 class ActionDamage {
 
-    class Damage(val value: ParsedAction<*>, val selector: ParsedAction<*>, val source: ParsedAction<*>?) : ScriptAction<Void>() {
+    class Damage(val value: ParsedAction<*>, val selector: ParsedAction<*>, val source: ParsedAction<*>?) :
+        ScriptAction<Void>() {
 
         fun execute(entity: LivingEntity, source: LivingEntity?, damage: String) {
             val result = damage.eval(entity.maxHealth)
@@ -47,7 +48,8 @@ class ActionDamage {
         }
     }
 
-    class Attack(val value: ParsedAction<*>, var data: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
+    class Attack(val value: ParsedAction<*>, var data: ParsedAction<*>, val selector: ParsedAction<*>) :
+        ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             val source = frame.getContext().sender.getLivingEntity() ?: return CompletableFuture.completedFuture(null)
@@ -65,9 +67,15 @@ class ActionDamage {
                                 // 默认攻击
                                 else {
                                     this.noDamageTicks = 0
-                                    this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), true))
+                                    this.setMetadata(
+                                        "Planners:Attack",
+                                        FixedMetadataValue(BukkitPlugin.getInstance(), true)
+                                    )
                                     AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.maxHealth), source, demand)
-                                    this.setMetadata("Planners:Attack", FixedMetadataValue(BukkitPlugin.getInstance(), false))
+                                    this.setMetadata(
+                                        "Planners:Attack",
+                                        FixedMetadataValue(BukkitPlugin.getInstance(), false)
+                                    )
                                 }
 
                             }

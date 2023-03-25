@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("io.izzel.taboolib") version "1.50"
+    id("io.izzel.taboolib") version "1.56"
     id("org.jetbrains.kotlin.jvm") version "1.5.10"
 //    kotlin("jvm") version "1.0.0"
 }
@@ -80,7 +80,7 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 tasks.withType<Jar> {
-    destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
+//    destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
 //    destinationDir = file("F:/Server/purpur 1.18.2/plugins")
 }
 configure<JavaPluginConvention> {
