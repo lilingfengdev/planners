@@ -5,8 +5,8 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 限制选中数量
- * -@amount 1
- * -@size 1
+ * @amount 1
+ * @size 1
  */
 object Amount : Selector {
     override val names: Array<String>

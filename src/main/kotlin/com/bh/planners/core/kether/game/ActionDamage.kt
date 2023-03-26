@@ -102,7 +102,7 @@ class ActionDamage {
         /**
          * 对selector目标攻击,
          * attack [damage] [selector]
-         * attack 10.0 they "-@aline 10"
+         * attack 10.0 they "@aline 10"
          */
         @KetherParser(["attack"], namespace = NAMESPACE, shared = true)
         fun parser2() = scriptParser {

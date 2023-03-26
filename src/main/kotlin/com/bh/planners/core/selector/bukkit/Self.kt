@@ -7,10 +7,10 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 选中自己
- * -@self
- * -@this
+ * @self
+ * @this
  * 选中自己脚下坐标
- * -@self m keepVisual(false)
+ * @self m keepVisual(false)
  */
 object Self : Selector {
 

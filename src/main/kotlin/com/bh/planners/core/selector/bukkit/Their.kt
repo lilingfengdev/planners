@@ -5,8 +5,8 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 选中非释放者的实体 反面意思是过滤自己
- * -@their
- * -@filterthis
+ * @their
+ * @filterthis
  */
 object Their : Selector {
     override val names: Array<String>

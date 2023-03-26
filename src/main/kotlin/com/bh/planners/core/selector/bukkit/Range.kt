@@ -9,8 +9,8 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 选中根据原点来定义的范围实体
- * -@range 10
- * -@range 5 5 5
+ * @range 10
+ * @range 5 5 5
  */
 object Range : Selector {
 

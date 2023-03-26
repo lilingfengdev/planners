@@ -14,9 +14,9 @@ import kotlin.math.floor
 
 /**
  * 视角所看向的方块
- * -@blockAt [距离] [x偏移] [y偏移] [z偏移]
- * -@blockAt 10,0,0,0
- * -@blockAt 13.5,0.3,3.6,0.5
+ * @blockAt [距离] [x偏移] [y偏移] [z偏移]
+ * @blockAt 10,0,0,0
+ * @blockAt 13.5,0.3,3.6,0.5
  */
 object BlockAt : Selector {
 

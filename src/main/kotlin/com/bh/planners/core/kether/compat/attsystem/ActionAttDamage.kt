@@ -47,7 +47,7 @@ class ActionAttDamage {
         /**
          * 对selector目标进行AS战斗机制组攻击,
          * as-attack [战斗机制组id] [selector]
-         * as-attack "Example-Skill" "-@aline 10"
+         * as-attack "Example-Skill" "@aline 10"
          */
         @KetherParser(["as-attack"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

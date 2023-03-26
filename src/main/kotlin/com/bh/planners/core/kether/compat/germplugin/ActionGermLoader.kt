@@ -18,7 +18,7 @@ object ActionGermLoader {
      * 音效播放
      * germ sound name <type: action(master)> <volume: action(1)> <pitch: action(1)> <selector>
      *
-     * germ sound name type master volume 1.0 pitch 1.0 they "-@self"
+     * germ sound name type master volume 1.0 pitch 1.0 they "@self"
      *
      * 例子播放
      * germ effect [name: action] <selector>

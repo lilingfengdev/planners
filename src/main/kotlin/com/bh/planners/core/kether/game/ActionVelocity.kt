@@ -56,7 +56,7 @@ class ActionVelocity(
         /**
          * 为目标设置 "固定" 向量 (不跟随视角方向)
          * velocity [mode] [x] [y] [z] [selector]
-         * velocity add 1 1 0 "-@self"
+         * velocity add 1 1 0 "@self"
          */
         @KetherParser(["velocity"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

@@ -76,13 +76,13 @@ class ActionAttribute {
 
         /**
          * attribute [add/+=] [source] [timeout] [attribute: action(,分割)] [selector]
-         * test: attribute add def0 60000 "攻击力 +10,生命 +20" they "-@self"
+         * test: attribute add def0 60000 "攻击力 +10,生命 +20" they "@self"
          *
          * attribute [take/-=] [source] [selector]
-         * test: attribute take def0 they  "-@self"
+         * test: attribute take def0 they  "@self"
          *
          * attribute update [selector]
-         * test: attribute update they  "-@self"
+         * test: attribute update they  "@self"
          */
         @KetherParser(["attribute"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

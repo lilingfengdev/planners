@@ -44,8 +44,8 @@ class ActionLaunch(
         /**
          * 为目标添加一个基于视角方向的向量 (即冲刺)
          * launch [x] [y] [z] [selector]
-         * launch -2 0.5 0 "-@self"  -  使自己向后跳跃
-         * launch 2 0.5 0 "-@self"   -  使自己向前跳跃
+         * launch -2 0.5 0 "@self"  -  使自己向后跳跃
+         * launch 2 0.5 0 "@self"   -  使自己向前跳跃
          */
         @KetherParser(["launch"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

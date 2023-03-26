@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 根据entity id来选中特殊实体
- * -@entity 230
+ * @entity 230
  */
 object EntityId : Selector {
     override val names: Array<String>

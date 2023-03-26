@@ -10,17 +10,17 @@ import java.util.concurrent.CompletableFuture
 /**
  * 选中世界内的实体
  * 世界:类型限制
- * -@inWorld world PLAYER ZOMBIE
- * -@inworld world PLAYER ZOMBIE
- * -@iw world PLAYER ZOMBIE
- * -@piw world PLAYER ZOMBIE
+ * @inWorld world PLAYER ZOMBIE
+ * @inworld world PLAYER ZOMBIE
+ * @iw world PLAYER ZOMBIE
+ * @piw world PLAYER ZOMBIE
  */
 object InWorld : Selector {
 
     override val names: Array<String>
         get() = arrayOf("inWorld", "inworld", "iw", "piw")
 
-    // -@inWorld world:PLAYER,ZOMBIE
+    // @inWorld world:PLAYER,ZOMBIE
     override fun check(data: Selector.Data): CompletableFuture<Void> {
 
         val worldName = data.read<String>(0,data.origin.getLocation()?.world?.name ?: error("InWorld no world args"))

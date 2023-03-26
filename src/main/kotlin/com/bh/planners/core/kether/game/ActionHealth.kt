@@ -45,9 +45,9 @@ class ActionHealth {
     companion object {
 
         /**
-         * health add 10 <they "-@range 3">
-         * health take 10 <they "-@range 3">
-         * health set 10 <they "-@range 3">
+         * health add 10 <they "@range 3">
+         * health take 10 <they "@range 3">
+         * health set 10 <they "@range 3">
          */
         @KetherParser(["health"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

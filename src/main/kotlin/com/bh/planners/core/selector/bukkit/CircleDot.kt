@@ -9,8 +9,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- * -@c-dot radius y angle keepVisual(false)
- * -@c-dot 2
+ * @c-dot radius y angle keepVisual(false)
+ * @c-dot 2
  */
 object CircleDot : Selector {
 

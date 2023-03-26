@@ -45,9 +45,9 @@ class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: 
         /**
          * 操作目标法力值
          * mana [mode] [amount] [selector]
-         * mana add 100 "-@self"
-         * mana take 20 "-@self"
-         * mana set 114514 "-@self"
+         * mana add 100 "@self"
+         * mana take 20 "@self"
+         * mana set 114514 "@self"
          */
         @KetherParser(["mana"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

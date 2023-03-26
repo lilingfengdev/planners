@@ -108,7 +108,7 @@ class ActionSelector {
         /**
          * 缓存目标容器
          * selector [key: action] to [selector]
-         * selector g0 to "-@range 10 10 10"
+         * selector g0 to "@range 10 10 10"
          *
          * 删除
          * selector [key: action] remove

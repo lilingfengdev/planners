@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 合并目标容器
- * -@fetch t0
+ * @fetch t0
  */
 object Fetch : Selector {
 

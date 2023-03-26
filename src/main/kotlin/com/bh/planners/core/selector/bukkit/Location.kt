@@ -7,9 +7,9 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 选中具体坐标
- * -@loc world 0 0 0
- * -@location world 0 0 0
- * -@l world 0 0 0
+ * @loc world 0 0 0
+ * @location world 0 0 0
+ * @l world 0 0 0
  */
 object Location : Selector {
     override val names: Array<String>

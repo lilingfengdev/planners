@@ -56,7 +56,7 @@ object ActionEffect {
 
     /**
      * effect 【loader: action】 [option: string>]
-     * effect line "FLAME 0 0 0 -speed 1.0 -count 10 -@self" ontick
+     * effect line "FLAME 0 0 0 -speed 1.0 -count 10 @self" ontick
      */
     @KetherParser(["effect"], namespace = NAMESPACE, shared = true)
     fun parser() = scriptParser {
