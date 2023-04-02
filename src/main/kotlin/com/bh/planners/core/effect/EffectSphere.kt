@@ -1,8 +1,10 @@
 package com.bh.planners.core.effect
 
 import com.bh.planners.api.common.ParticleFrame
+import com.bh.planners.api.common.ParticleFrame.Companion.new
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target.Companion.createContainer
+import com.bh.planners.core.kether.forEachLocation
 import com.bh.planners.core.kether.game.ActionEffect
 import org.bukkit.Location
 import kotlin.math.cos
@@ -19,14 +21,11 @@ object EffectSphere : Effect() {
 
     override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {
         val effectSpawner = EffectSpawner(option)
-        val sample = option.sample
-        val radius = option.radius
-        val period = option.period
-        option.createContainer(context).thenAccept {
-            it.forEachLocation {
-                val builder = Builder(this, sample, radius, effectSpawner)
-                ParticleFrame.create(period, builder, response)
-            }
+        option.createContainer(context).forEachLocation {
+            ParticleFrame.create(ParticleFrame.FrameBuilder().new {
+                time(option.period)
+                builder(Builder(this@forEachLocation, option.sample, option.radius, effectSpawner))
+            })
         }
     }
 

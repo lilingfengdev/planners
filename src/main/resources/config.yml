@@ -10,7 +10,10 @@ database:
 options:
   scope-threshold: [ 1.0,1.0,1.0 ]
   auto-save-flag-period: 60000
+  # 覆盖原版等级
   level-cover: true
+  # 吸收原版经验球增加经验
+  minecraft-exp-absorption: true
   minecraft-grid: false
   presskey-patch:
     timeout: 1000

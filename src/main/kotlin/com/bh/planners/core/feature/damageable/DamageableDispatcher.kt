@@ -1,6 +1,11 @@
 package com.bh.planners.core.feature.damageable
 
+import com.bh.planners.api.common.Demand
 import com.bh.planners.api.event.PluginReloadEvent
+import com.bh.planners.api.event.entity.EntityDamageableEvent
+import com.bh.planners.core.kether.game.ActionDamage
+import com.bh.planners.core.pojo.data.Data
+import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
 import com.bh.planners.util.files
 import com.bh.planners.util.timing
 import org.bukkit.entity.LivingEntity
@@ -56,10 +61,21 @@ object DamageableDispatcher {
             info("Damageable model executed ${context.model.id}")
             info("  |- Attacker: ${context.attacker.name}")
             info("  |- Defender: ${context.victim.name}")
+            info("  |- Data")
+            context.data.map.forEach {
+                info("    - ${it.key} : ${it.value.data}")
+            }
             info("  |- Meta size ${context.metas.size}")
+            info("  |- Damage source")
+            context.damageSources.forEach {
+                info("    - ${it.key} : ${it.value.value}")
+            }
             info("  |- Damage count: ${context.countDamage}")
             info("  |- Cancel meta: ${context.metaCancel != null}")
             info("  |---- Timing: ${timing(context.timing)}/s")
+            if (EntityDamageableEvent(context).call()) {
+                ActionDamage.doDamage(context.attacker, context.victim, context.countDamage)
+            }
         }.exceptionally {
             it.printStackTrace()
             null
@@ -67,13 +83,17 @@ object DamageableDispatcher {
 
     }
 
-    fun submitDamageable(id: String, attacker: LivingEntity, victim: LivingEntity) {
+    fun submitDamageable(id: String, attacker: LivingEntity, victim: LivingEntity, demand: Demand) {
         val damageableModel = getModel(id)
         if (damageableModel == null) {
             warning("Damageable model $id not found.")
             return
         }
         val damageable = Damageable(attacker, victim, damageableModel)
+        // 合并
+        demand.dataMap.forEach {
+            damageable.data[it.key] = it.value.first().unsafeData()
+        }
         invokeDamageable(damageable)
 
     }

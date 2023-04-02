@@ -172,6 +172,17 @@ fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {
 
 }
 
+fun PlayerProfile.clearShortcut(slot: IKeySlot) {
+    val skill = getSkill(slot) ?: return
+    if (skill.shortcutKey != null) {
+        bind(skill, skill.keySlot!!)
+    }
+}
+
+fun PlayerProfile.clearShortcut(id: String) {
+    clearShortcut(PlannersAPI.getKeySlot(id) ?: return)
+}
+
 fun Condition.consumeTo(viewer: Player) {
     ScriptLoader.createScript(ContextAPI.create(viewer), this.consume ?: return) { }
 }

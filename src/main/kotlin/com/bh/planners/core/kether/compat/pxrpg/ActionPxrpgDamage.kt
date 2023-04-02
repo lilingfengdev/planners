@@ -3,10 +3,7 @@ package com.bh.planners.core.kether.compat.pxrpg
 import com.bh.planners.api.event.compat.PxrpxEvents
 import com.bh.planners.core.kether.*
 import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 class ActionPxrpgMark(val id: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
@@ -16,14 +13,15 @@ class ActionPxrpgMark(val id: ParsedAction<*>, val selector: ParsedAction<*>) : 
 
         val future = CompletableFuture<Void>()
 
-        frame.readAccept<String>(id) { id ->
-            frame.createContainer(selector).thenAccept { container ->
-                container.forEachLivingEntity {
-                    PxrpxEvents.Mark(id,frame.skill(), player, this).call()
+        frame.run(id).str { id ->
+            frame.container(selector).thenAccept {
+                it.forEachLivingEntity {
+                    PxrpxEvents.Mark(id,frame.skill(),player,this).call()
                     future.complete(null)
                 }
             }
         }
+
         return future
     }
 

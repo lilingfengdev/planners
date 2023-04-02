@@ -3,6 +3,7 @@ package com.bh.planners.core.kether
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.common.Demand.Companion.toDemand
+import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.event.ActionEventParser
@@ -378,3 +379,24 @@ fun <T> CompletableFuture<Any?>.materialOrNull(then: (Material?) -> T): Completa
         then(material)
     }
 }
+
+fun CompletableFuture<Target.Container>.forEachLocation(block: Location.(index: Int) -> Unit) {
+    thenAccept { it.forEachLocation(block) }
+}
+
+fun CompletableFuture<Target.Container>.forEachLivingEntity(block: LivingEntity.(index: Int) -> Unit) {
+    thenAccept { it.forEachLivingEntity(block) }
+}
+
+fun CompletableFuture<Target.Container>.forEachPlayer(block: Player.(index: Int) -> Unit) {
+    thenAccept { it.forEachPlayer(block) }
+}
+
+fun CompletableFuture<Target.Container>.forEachProxyEntity(block: ProxyEntity.(index: Int) -> Unit) {
+    thenAccept { it.forEachProxyEntity(block) }
+}
+
+fun CompletableFuture<Target.Container>.forEachEntity(block: Entity.(index: Int) -> Unit) {
+    thenAccept { it.forEachEntity(block) }
+}
+

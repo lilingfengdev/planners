@@ -15,6 +15,16 @@ class ActionDamageable {
 
     companion object {
 
+        @KetherParser(["arg", "argument"], namespace = DamageableScript.NAMESPACE)
+        fun actionArgument() = combinationParser {
+            it.group(text()).apply(it) { id ->
+                now {
+                    val damageable = getDamageable()
+                    damageable.data[id]?.data
+                }
+            }
+        }
+
         @KetherParser(["papi", "placeholder"], namespace = DamageableScript.NAMESPACE)
         fun actionPlaceholder() = scriptParser {
             val str = it.nextParsedAction()
@@ -73,7 +83,7 @@ class ActionDamageable {
                     "cancel", "cancel-meta" -> OpenResult.successful(instance.metaCancel)
                     "damage-source", "source" -> OpenResult.successful(instance.damageSources[split[1]]?.value)
                     "attacker" -> OpenResult.successful(instance.attacker)
-                    "defender","victim" -> OpenResult.successful(instance.victim)
+                    "defender", "victim" -> OpenResult.successful(instance.victim)
                     else -> OpenResult.failed()
                 }
             }

@@ -38,12 +38,44 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
         }
     }
 
+    class FrameBuilder {
+
+        lateinit var time: String
+        lateinit var builder: Builder
+        lateinit var response: ActionEffect.Response
+        var task: ParticleFrame.() -> Unit = {}
+
+        fun time(time: String) {
+            this.time = time
+        }
+
+        fun builder(builder: Builder) {
+            this.builder = builder
+        }
+
+        fun response(response: ActionEffect.Response) {
+            this.response = response
+        }
+
+        fun task(task: ParticleFrame.() -> Unit) {
+            this.task = task
+        }
+
+    }
 
     companion object {
 
         val cancelableList = CancelableList()
 
-        fun create(time: String, builder: Builder,response: ActionEffect.Response, task: ParticleFrame.() -> Unit = {}): ParticleFrame {
+        fun FrameBuilder.new(block: FrameBuilder.() -> Unit): FrameBuilder {
+            return FrameBuilder().apply(block)
+        }
+
+        fun create(builder: FrameBuilder): ParticleFrame {
+            return create(builder.time, builder.builder, builder.response, builder.task)
+        }
+
+        fun create(time: String, builder: Builder, response: ActionEffect.Response, task: ParticleFrame.() -> Unit = {}): ParticleFrame {
 
             val duration = if (time.endsWith("s")) {
                 Coerce.toLong(Coerce.toDouble(time.substring(0, time.lastIndex)) * 1000)
@@ -98,7 +130,7 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
 
         abstract fun next(): Location?
 
-        fun nexts() : List<Location> {
+        fun nexts(): List<Location> {
             return emptyList()
         }
 

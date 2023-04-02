@@ -60,13 +60,16 @@ object PlannersCommand {
     val skill = PlannersSkillCommand
 
     @CommandBody
+    val shortcut = PlannersShortcutCommand
+
+    @CommandBody
     val info = subCommand {
         dynamic("player") {
             suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
 
             execute<ProxyCommandSender> { sender, context, argument ->
                 val playerExact = Bukkit.getPlayerExact(argument) ?: return@execute
-                ScriptLoader.createFunctionScript(ContextAPI.create(playerExact),PlannersOption.infos).forEach {
+                ScriptLoader.createFunctionScript(ContextAPI.create(playerExact), PlannersOption.infos).forEach {
                     sender.sendMessage(it.colored())
                 }
             }

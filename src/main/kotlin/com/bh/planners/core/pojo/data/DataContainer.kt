@@ -17,7 +17,7 @@ import java.util.function.Function
  */
 class DataContainer {
 
-    private val map = ConcurrentHashMap<String, Data>()
+    val map = ConcurrentHashMap<String, Data>()
     private var locked = false
 
     /**

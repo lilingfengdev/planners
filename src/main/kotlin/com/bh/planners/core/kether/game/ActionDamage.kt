@@ -62,7 +62,7 @@ class ActionDamage {
                             container.forEachLivingEntity {
                                 // 跳转到战斗模型
                                 if (damageableModelId != "EMPTY") {
-                                    DamageableDispatcher.submitDamageable(damageableModelId, source, this)
+                                    DamageableDispatcher.submitDamageable(damageableModelId, source, this, demand)
                                 }
                                 // 默认攻击
                                 else {

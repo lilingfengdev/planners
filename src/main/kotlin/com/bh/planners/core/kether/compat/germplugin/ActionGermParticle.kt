@@ -73,7 +73,6 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<GermEffectPart<*>> {
-        val future = CompletableFuture<GermEffectPart<*>>()
         frame.run(name).str { name ->
             val effectParticle = create(name)
 
@@ -95,17 +94,15 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
                 if (selector != null) {
                     frame.createContainer(selector).thenAccept {
                         it.forEach { execute(it, animations, effectParticle) }
-                        future.complete(effectParticle)
                     }
                 } else {
                     execute(frame.origin(), animations, effectParticle)
-                    future.complete(effectParticle)
                 }
 
             }
 
         }
-        return future
+        return CompletableFuture.completedFuture(null)
     }
 
 

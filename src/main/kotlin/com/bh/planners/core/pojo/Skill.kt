@@ -19,6 +19,8 @@ open class Skill(val key: String, val config: ConfigurationSection) {
         open val isNatural = root.getBoolean("natural", false)
         open val attribute = Attribute(root.getConfigurationSection("attribute") ?: Configuration.empty())
 
+        open val flags = root.getStringList("flags")
+
         open val upgradeConditions = root.getMapList("upgrade-condition").map {
             UpgradeCondition(Configuration.fromMap(it))
         }
@@ -47,11 +49,11 @@ open class Skill(val key: String, val config: ConfigurationSection) {
             return null
         }
 
-        fun getOrDefault(index: String) : List<String>? {
+        fun getOrDefault(index: String): List<String>? {
             return get(index) ?: default
         }
 
-        fun getOrDefaultOrEmpty(index: String) : List<String> {
+        fun getOrDefaultOrEmpty(index: String): List<String> {
             return getOrDefault(index) ?: emptyList()
         }
 
@@ -66,7 +68,7 @@ open class Skill(val key: String, val config: ConfigurationSection) {
 
     class Empty : Skill("", Configuration.empty()) {
 
-        override val script: ScriptFactor = ScriptFactor(ActionMode.SIMPLE,"")
+        override val script: ScriptFactor = ScriptFactor(ActionMode.SIMPLE, "")
 
         override val option: Option = EmptyOption()
 

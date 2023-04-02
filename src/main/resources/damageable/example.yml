@@ -1,10 +1,12 @@
-
+##########################
+#
+# 物理伤害逻辑
+#
+##########################
 
 stream-attack:
-  - data: $ "物理攻击"
-    pre-action: ""
-    action: |-
-      set &damageable[source.test1] to &data[random]
+  - action: |-
+      set &damageable[source.test1] to arg "物理伤害"
 stream-defend:
   - data: $ "物理防御"
     action: |-

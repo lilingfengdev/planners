@@ -4,6 +4,7 @@ import com.bh.planners.api.common.ParticleFrame
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.effect.Target.Companion.createContainer
 import com.bh.planners.core.effect.common.PlayerFrontCoordinate
+import com.bh.planners.core.kether.forEachLocation
 import com.bh.planners.core.kether.game.ActionEffect
 import org.bukkit.Location
 import org.bukkit.util.Vector
@@ -30,13 +31,11 @@ object EffectArc : Effect() {
         val rotateAxisY = option.rotateAxisY
         val rotateAxisZ = option.rotateAxisZ
 
-        option.createContainer(context).thenAccept { container ->
-            container.forEachLocation {
-                val builder = Builder(this, spread, angle, radius, step, slope, start,rotateAxisX, rotateAxisY, rotateAxisZ, spawner)
-                ParticleFrame.create(option.period, builder, response)
-            }
-
+        option.createContainer(context).forEachLocation {
+            val builder = Builder(this, spread, angle, radius, step, slope, start, rotateAxisX, rotateAxisY, rotateAxisZ, spawner)
+            ParticleFrame.create(option.period, builder, response)
         }
+
     }
 
     class Builder(

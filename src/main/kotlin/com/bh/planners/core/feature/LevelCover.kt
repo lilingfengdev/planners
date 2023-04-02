@@ -18,43 +18,45 @@ import taboolib.common5.Coerce
 
 object LevelCover {
 
-    val isEnable: Boolean
+    val minecraftCover: Boolean
         get() = PlannersOption.root.getBoolean("level-cover")
+
+    val minecraftExpAbsorption: Boolean
+        get() = PlannersOption.root.getBoolean("minecraft-exp-absorption", false)
 
     @SubscribeEvent
     fun e(e: PlayerExpChangeEvent) {
-        if (isEnable && e.amount > 0) {
-            if (e.player.plannersProfileIsLoaded && e.player.hasJob) {
-                e.player.plannersProfile.addExperience(e.amount)
-            }
+
+        if (minecraftExpAbsorption && e.amount > 0 && e.player.plannersProfileIsLoaded && e.player.hasJob) {
+            e.player.plannersProfile.addExperience(e.amount)
             e.amount = 0
         }
     }
 
     @SubscribeEvent
     fun e(e: PlayerLevelChangeEvent) {
-        if (isEnable) {
+        if (minecraftCover) {
             update(e.player)
         }
     }
 
     @SubscribeEvent(ignoreCancelled = true)
     fun e(e: PlayerGetExperienceEvent) {
-        if (isEnable) {
+        if (minecraftCover) {
             update(e.player)
         }
     }
 
     @SubscribeEvent
     fun e(e: PlayerInitializeEvent) {
-        if (isEnable) {
+        if (minecraftCover) {
             update(e.player)
         }
     }
 
     @SubscribeEvent
     fun e(e: PlayerSelectedJobEvent) {
-        if (isEnable) {
+        if (minecraftCover) {
             update(e.profile.player)
         }
     }

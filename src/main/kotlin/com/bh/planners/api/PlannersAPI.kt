@@ -125,7 +125,7 @@ object PlannersAPI {
         // 优先判定技能点
         return playerSkill.getNeedPoints(player).thenApply { points ->
             if (profile.point < points) {
-                player.sendLang("player-points-law",points,profile.point)
+                player.sendLang("player-points-law", points, profile.point)
                 return@thenApply UpgradeResult.LAW_POINTS
             }
 
@@ -148,8 +148,8 @@ object PlannersAPI {
 
     }
 
-    fun resetSkillPoint(profile: PlayerProfile,skill: PlayerJob.Skill) {
-        if (PlayerSkillResetEvent.Pre(profile,skill).call()) {
+    fun resetSkillPoint(profile: PlayerProfile, skill: PlayerJob.Skill) {
+        if (PlayerSkillResetEvent.Pre(profile, skill).call()) {
             skill.level = 0
             PlayerSkillResetEvent.Post(profile, skill).call()
             submitAsync {
@@ -177,9 +177,9 @@ object PlannersAPI {
         return checkCondition(Context.Impl(player.toTarget(), playerSkill.instance), it)
     }
 
-    fun checkCondition(player: Player,condition: Condition): Boolean {
+    fun checkCondition(player: Player, condition: Condition): Boolean {
         return runKether {
-            ScriptLoader.createScript(ContextAPI.create(player),condition.condition) {
+            ScriptLoader.createScript(ContextAPI.create(player), condition.condition) {
 
             }.thenApply { Coerce.toBoolean(it) }.get()
         } ?: false
@@ -189,6 +189,10 @@ object PlannersAPI {
         return runKether {
             ScriptLoader.createScript(context, condition.condition) { }.thenApply { Coerce.toBoolean(it) }.get()
         } ?: false
+    }
+
+    fun getKeySlot(id: String): IKeySlot? {
+        return keySlots.firstOrNull { it.key == id }
     }
 
     fun hasJob(key: String) = key in jobs.map { it.key }

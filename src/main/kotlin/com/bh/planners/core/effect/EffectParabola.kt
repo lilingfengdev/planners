@@ -1,7 +1,9 @@
 package com.bh.planners.core.effect
 
 import com.bh.planners.api.common.ParticleFrame
+import com.bh.planners.api.common.ParticleFrame.Companion.new
 import com.bh.planners.core.effect.Target.Companion.createContainer
+import com.bh.planners.core.kether.forEachLocation
 import com.bh.planners.core.kether.game.ActionEffect
 import com.bh.planners.core.pojo.Context
 import org.bukkit.Location
@@ -15,37 +17,35 @@ object EffectParabola : Effect() {
 
 
     val EffectOption.height: Double
-        get() = Coerce.toDouble(demand.get(listOf("height","h"), "2.0"))
+        get() = Coerce.toDouble(demand.get(listOf("height", "h"), "2.0"))
 
     val EffectOption.power: Double
-        get() = Coerce.toDouble(demand.get(listOf("power","p"), "2.0"))
+        get() = Coerce.toDouble(demand.get(listOf("power", "p"), "2.0"))
 
     val EffectOption.step: Double
-        get() = Coerce.toDouble(demand.get(listOf("step","s"), "0.05"))
+        get() = Coerce.toDouble(demand.get(listOf("step", "s"), "0.05"))
 
     val EffectOption.threshold: Double
-        get() = Coerce.toDouble(demand.get(listOf("threshold","t"), "1"))
+        get() = Coerce.toDouble(demand.get(listOf("threshold", "t"), "1"))
 
 
     override fun sendTo(target: Target?, option: EffectOption, context: Context, response: ActionEffect.Response) {
-        val step = option.step
 
-        val height = option.height
-        val power = option.power
-        val period = option.period
-        val threshold = option.threshold
         val spawner = EffectSpawner(option)
-        option.createContainer(context).thenAccept { container ->
-            container.forEachLocation {
-                ParticleFrame.create(period,Builder(this,height,power,step,threshold,spawner),response)
-            }
+        option.createContainer(context).forEachLocation {
+            ParticleFrame.create(ParticleFrame.FrameBuilder().new {
+                time(option.period)
+                builder(Builder(this@forEachLocation, option.height, option.power, option.step, option.threshold, spawner))
+                response(response)
+            })
         }
+
     }
 
-    fun getMidpoint(p0: Location,p1: Location) : Location {
+    fun getMidpoint(p0: Location, p1: Location): Location {
         val x = (p0.x + p1.x) / 2
         val z = (p0.z + p1.z) / 2
-        return Location(p0.world,x, p0.y, z)
+        return Location(p0.world, x, p0.y, z)
     }
 
     fun Location.resetPitch(): Location {
@@ -53,13 +53,13 @@ object EffectParabola : Effect() {
         return this
     }
 
-    class Builder(origin: Location, height: Double, power: Double,val step : Double,val threshold: Double, spawner: EffectSpawner) : ParticleFrame.Builder(spawner) {
+    class Builder(origin: Location, height: Double, power: Double, val step: Double, val threshold: Double, spawner: EffectSpawner) : ParticleFrame.Builder(spawner) {
 
         val direction = origin.resetPitch().direction
 
         val p0 = origin.clone()
         val p2 = p0.clone().add(direction.multiply(power))
-        val p1 = getMidpoint(p0,p2).add(0.0,height,0.0)
+        val p1 = getMidpoint(p0, p2).add(0.0, height, 0.0)
 
         var t = 0.0
 

@@ -18,7 +18,7 @@ class Damageable(val attacker: LivingEntity, val victim: LivingEntity, val model
     var metaIndex = 0
 
     val countDamage : Double
-        get() = damageSources.values.subByDouble { it.value }
+        get() = damageSources.values.sumByDouble { it.value }
 
     val metas = Array<DamageableMeta?>(model.streamSize) { null }
 

@@ -132,7 +132,11 @@ class ActionProfile {
                 }
                 case("mana-percent") {
                     actionProfileNow {
-                        it.toCurrentMana() / it.toMaxMana()
+                        try {
+                            it.toCurrentMana() / it.toMaxMana()
+                        } catch (_: Exception) {
+                            0.0
+                        }
                     }
                 }
                 case("max-mana") {
@@ -176,7 +180,13 @@ class ActionProfile {
                 }
 
                 case("exp-percent") {
-                    actionProfileNow { it.experience / it.maxExperience }
+                    actionProfileNow {
+                        try {
+                            it.experience / it.maxExperience
+                        } catch (_: Exception) {
+                            0.0
+                        }
+                    }
                 }
 
                 case("max-exp", "max-experience") {
