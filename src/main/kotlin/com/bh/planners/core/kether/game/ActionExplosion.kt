@@ -19,7 +19,7 @@ class ActionExplosion(
 ) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.newFrame(power).run<Any>().thenApply {
+        frame.newFrame(power).run<Any>().thenApply { power ->
             frame.containerOrOrigin(selector).thenAccept {
                 it.forEach {
                     val loc = when (it) {
@@ -27,7 +27,7 @@ class ActionExplosion(
                         is Target.Location -> it.value
                         else -> return@forEach
                     }
-                    createExplosion(loc, Coerce.toFloat(it))
+                    createExplosion(loc, Coerce.toFloat(power))
                 }
             }
 
