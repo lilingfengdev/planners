@@ -17,6 +17,7 @@ import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.common5.Coerce
+import taboolib.common5.cdouble
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.kether.runKether
@@ -27,10 +28,9 @@ object RegainMana {
 
     fun regainManaValue(player: Player): Double {
         val expression = getManaExpression(player) ?: return 0.0
-        return runKether {
-            ScriptLoader.createScript(ContextAPI.create(player), expression)
-                .thenApply { Coerce.toDouble(it) }.getNow(0.0)
-        } ?: 0.0
+        return runKether(0.0) {
+            ScriptLoader.createScript(ContextAPI.create(player), expression).cdouble
+        }!!
     }
 
     fun nextRegainMana(player: Player): Double {

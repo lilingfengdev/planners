@@ -1,11 +1,13 @@
 package com.bh.planners.core.kether
 
+import com.bh.planners.api.runVariable
 import com.bh.planners.core.pojo.data.Data
 import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestAction
 import taboolib.module.kether.*
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class ActionLazyVariable {
@@ -14,10 +16,7 @@ class ActionLazyVariable {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Any> {
             return frame.newFrame(action).run<Any>().thenApply {
-                val optional = frame.rootVariables().get<Data>(it.toString())
-                if (optional.isPresent) {
-                    optional.get().toLazyGetter().get()
-                } else "empty $it"
+                frame.runVariable(it.toString())
             }
         }
     }
@@ -33,6 +32,21 @@ class ActionLazyVariable {
     }
 
     companion object {
+
+        fun ScriptFrame.runVariable(id: String): Any? {
+            return if (rootVariables().keys().contains("__${id}_VARIABLE")) {
+                rootVariables().get<Any>("__${id}_VARIABLE").get()
+            } else {
+                val optional = rootVariables().get<Data>(id)
+                if (optional.isPresent) {
+                    optional.get().toLazyGetter().get().also {
+                        this.rootVariables()["__${id}_VARIABLE"] = it
+                    }
+                } else error("Not found variable $id")
+            }
+
+
+        }
 
         /**
          * 在技能释放环境食用

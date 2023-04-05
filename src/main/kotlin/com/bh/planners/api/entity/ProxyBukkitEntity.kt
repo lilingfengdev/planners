@@ -10,6 +10,15 @@ import java.util.*
 
 class ProxyBukkitEntity(val instance: Entity) : ProxyEntity {
 
+    companion object {
+
+        fun ProxyEntity.getBukkitEntity() : Entity? {
+            return (this as? ProxyBukkitEntity)?.instance
+        }
+        fun ProxyEntity.getBukkitLivingEntity() : LivingEntity? {
+            return (this as? ProxyBukkitEntity)?.instance as? LivingEntity
+        }
+    }
     override val isDead: Boolean
         get() = instance.isDead
 

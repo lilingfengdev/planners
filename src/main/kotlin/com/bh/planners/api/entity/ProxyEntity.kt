@@ -1,13 +1,16 @@
 package com.bh.planners.api.entity
 
+import ink.ptms.adyeshach.core.entity.EntityInstance
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import java.util.UUID
 
 interface ProxyEntity {
+
 
     val uniqueId: UUID
 

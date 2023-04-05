@@ -1,6 +1,8 @@
 package com.bh.planners.core.kether.game.entity
 
 import com.bh.planners.api.entity.ProxyAdyeshachEntity
+import com.bh.planners.api.entity.ProxyBukkitEntity.Companion.getBukkitEntity
+import com.bh.planners.api.entity.ProxyBukkitEntity.Companion.getBukkitLivingEntity
 import com.bh.planners.api.entity.ProxyEntity
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Entity
@@ -26,15 +28,15 @@ enum class EntityField(val get: ProxyEntity.() -> Any?) {
 
     LOCATION({ location }),
 
-    MOVE_SPEED({ (this as? LivingEntity)?.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.value }),
+    MOVE_SPEED({ getBukkitLivingEntity()?.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.value }),
 
-    HEALTH({ (this as? LivingEntity)?.health }),
+    HEALTH({ getBukkitLivingEntity()?.health }),
 
     VEHICLE({ this.vehicle }),
 
-    BODY_IN_ARROW({ (this as? LivingEntity)?.arrowsInBody }),
+    BODY_IN_ARROW({ getBukkitLivingEntity()?.arrowsInBody }),
 
-    MAX_HEALTH({ (this as? LivingEntity)?.maxHealth });
+    MAX_HEALTH({ getBukkitLivingEntity()?.maxHealth });
 
 
     companion object {

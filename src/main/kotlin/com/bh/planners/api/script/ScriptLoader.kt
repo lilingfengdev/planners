@@ -8,7 +8,7 @@ import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.timer.Template
 import com.bh.planners.core.timer.TimerDrive
-import com.bh.planners.core.timer.TimerRegistry
+import com.bh.planners.util.runKetherThrow
 import com.google.common.collect.MultimapBuilder
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
@@ -16,7 +16,6 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.kether.*
 import java.nio.charset.StandardCharsets
-import java.sql.PreparedStatement
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
@@ -125,18 +124,18 @@ object ScriptLoader {
     }
 
     fun load(skill: Skill) {
-        runKether {
+        runKetherThrow("Skill: ${skill.key}") {
             scripts[skill.key] = ketherScriptLoader.load(ScriptService, skill.key, getBytes(skill), namespaces)
         }
     }
 
     fun load(template: Template) {
-        runKether {
-            scripts[template.id] = ketherScriptLoader.load(ScriptService,template.id, getBytes(template.script.action))
+        runKetherThrow("Timer: ${template.id}") {
+            scripts[template.id] = ketherScriptLoader.load(ScriptService, template.id, getBytes(template.script.action))
         }
     }
 
-    fun getBytes(text: String) : ByteArray {
+    fun getBytes(text: String): ByteArray {
         val texts = text.split("\n")
         return texts.mapNotNull { if (it.trim().startsWith("#")) null else it }.joinToString("\n").toByteArray(
             StandardCharsets.UTF_8

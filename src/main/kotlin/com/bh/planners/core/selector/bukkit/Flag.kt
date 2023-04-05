@@ -16,9 +16,8 @@ object Flag : Selector {
     override fun check(data: Selector.Data): CompletableFuture<Void> {
 
         data.values.forEach {
-            val split = it.split("=")
-            val key = split[0]
-            val value = split[1]
+            val key = data.read<String>(0, "__null__")
+            val value = data.read<String>(1, "__null__")
             if (data.isNon) {
                 data.container.removeIf { it.getLivingEntity()?.getDataContainer()?.get(key)?.toString() == value }
             } else {

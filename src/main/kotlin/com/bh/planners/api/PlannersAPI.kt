@@ -14,11 +14,13 @@ import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.storage.Storage
+import com.bh.planners.util.runKetherThrow
 import com.google.gson.Gson
 import org.bukkit.entity.Player
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submitAsync
 import taboolib.common5.Coerce
+import taboolib.common5.cbool
 import taboolib.module.kether.runKether
 import taboolib.platform.util.sendLang
 import java.util.*
@@ -80,7 +82,10 @@ object PlannersAPI {
 
     fun PlayerProfile.cast(skill: Skill, mark: Boolean = true): ExecuteResult {
 
-        if (!hasCast(skill)) return ExecuteResult.LEVEL_ZERO
+        if (!hasCast(skill)) {
+            PlayerCastSkillEvents.Failure(player, skill, ExecuteResult.LEVEL_ZERO).call()
+            return ExecuteResult.LEVEL_ZERO
+        }
 
         val session = ContextAPI.createSession(player, skill)
         // 不计入任何标记
@@ -91,12 +96,21 @@ object PlannersAPI {
         }
 
         val preEvent = PlayerCastSkillEvents.Pre(player, skill).apply { call() }
-        if (preEvent.isCancelled) return ExecuteResult.CANCELED
+        if (preEvent.isCancelled) {
+            PlayerCastSkillEvents.Failure(player, skill, ExecuteResult.CANCELED).call()
+            return ExecuteResult.CANCELED
+        }
 
-        if (!Counting.hasNext(player, skill)) return ExecuteResult.COOLING
+        if (!Counting.hasNext(player, skill)) {
+            PlayerCastSkillEvents.Failure(player, skill, ExecuteResult.COOLING).call()
+            return ExecuteResult.COOLING
+        }
 
         val mana = Coerce.toDouble(session.mpCost.get())
-        if (toCurrentMana() < mana) return ExecuteResult.MANA_NOT_ENOUGH
+        if (toCurrentMana() < mana) {
+            PlayerCastSkillEvents.Failure(player, skill, ExecuteResult.MANA_NOT_ENOUGH).call()
+            return ExecuteResult.MANA_NOT_ENOUGH
+        }
 
         Counting.reset(player, session)
         takeMana(mana)
@@ -186,8 +200,8 @@ object PlannersAPI {
     }
 
     fun checkCondition(context: Context.Impl, condition: Condition): Boolean {
-        return runKether {
-            ScriptLoader.createScript(context, condition.condition) { }.thenApply { Coerce.toBoolean(it) }.get()
+        return runKetherThrow(context.id) {
+            ScriptLoader.createScript(context, condition.condition).get().cbool
         } ?: false
     }
 

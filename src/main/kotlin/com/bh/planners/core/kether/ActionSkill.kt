@@ -1,13 +1,11 @@
 package com.bh.planners.core.kether
 
-import com.bh.planners.api.ContextAPI
-import com.bh.planners.api.PlannersAPI
+import com.bh.planners.api.*
 import com.bh.planners.api.common.Operator
-import com.bh.planners.api.Counting
 import com.bh.planners.api.PlannersAPI.plannersProfile
-import com.bh.planners.api.maxLevel
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.kether.ActionLazyVariable.Companion.runVariable
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.player.PlayerJob
@@ -59,6 +57,37 @@ class ActionSkill {
 
     }
 
+    class ActionSkillVariable(val id: ParsedAction<*>, val level: ParsedAction<*>, val skill: ParsedAction<*>?) : ScriptAction<Any?>() {
+
+        override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
+            val player = frame.bukkitPlayer() ?: return CompletableFuture.completedFuture(null)
+            val future = CompletableFuture<Any?>()
+            frame.run(id).str { id ->
+                frame.run(level).int { level ->
+                    if (skill == null) {
+                        // 自动指定当前作用域技能
+                        future.complete(frame.runVariable(id))
+                    }
+                    // 指定技能
+                    else {
+                        frame.run(skill).str { skillId ->
+                            var skill = player.plannersProfile.getSkill(skillId)
+                            if (skill == null) {
+                                skill = PlayerJob.Skill(-1, skillId, level, null)
+                            }
+                            skill.runVariable(player, id).thenAccept { future.complete(it) }
+                        }
+                    }
+
+                }
+            }
+
+            return future
+        }
+
+
+    }
+
     companion object {
 
         /**
@@ -87,20 +116,27 @@ class ActionSkill {
                     CooldownOperator(operator, it.nextParsedAction(), it.nextArgumentAction(arrayOf("of", "the")))
                 }
                 case("level") {
-                    actionSkillNow(nextArgumentAction(arrayOf("of","the"))) { it.level }
+                    actionSkillNow(nextArgumentAction(arrayOf("of", "the"))) { it.level }
                 }
-                case("level-cap","max-level","level-max") {
-                    actionSkillNow(nextArgumentAction(arrayOf("of","the"))) { it.maxLevel }
+                case("level-cap", "max-level", "level-max") {
+                    actionSkillNow(nextArgumentAction(arrayOf("of", "the"))) { it.maxLevel }
                 }
                 case("name") {
-                    actionSkillNow(nextArgumentAction(arrayOf("of","the"))) { it.name }
+                    actionSkillNow(nextArgumentAction(arrayOf("of", "the"))) { it.name }
+                }
+                case("variable", "var") {
+                    ActionSkillVariable(
+                        it.nextParsedAction(),
+                        it.nextArgumentAction(arrayOf("level"), 0)!!,
+                        it.nextArgumentActionOrNull(arrayOf("of"))
+                    )
                 }
                 other {
                     val varKey = nextToken()
-                    actionSkillNow(nextArgumentAction(arrayOf("of","the"))) {
+                    actionSkillNow(nextArgumentAction(arrayOf("of", "the"))) {
                         val variable = it.instance.option.variables.firstOrNull { it.key == varKey } ?: error("No variable ${varKey} define.")
                         val context = ContextAPI.create(bukkitPlayer()!!, it)
-                        ScriptLoader.createScript(context,variable.expression)
+                        ScriptLoader.createScript(context, variable.expression)
                     }
                 }
 

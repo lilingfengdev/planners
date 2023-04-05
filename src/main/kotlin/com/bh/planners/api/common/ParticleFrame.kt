@@ -1,11 +1,13 @@
 package com.bh.planners.api.common
 
 import com.bh.planners.core.effect.EffectSpawner
+import com.bh.planners.core.effect.Target
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import com.bh.planners.core.kether.game.ActionEffect
+import com.bh.planners.core.pojo.Context
 import taboolib.common.platform.function.submitAsync
 import taboolib.common5.Coerce
 import taboolib.platform.BukkitPlugin
@@ -42,7 +44,12 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
 
         lateinit var time: String
         lateinit var builder: Builder
-        lateinit var response: ActionEffect.Response
+        var response: ActionEffect.Response = ActionEffect.Response(object : Context.SourceImpl(Target.consoleTarget) {
+
+            override val sourceId: String
+                get() = "EMPTY"
+
+        }, emptyMap())
         var task: ParticleFrame.() -> Unit = {}
 
         fun time(time: String) {

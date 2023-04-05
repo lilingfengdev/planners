@@ -3,15 +3,19 @@ package com.bh.planners.util
 import com.bh.planners.api.ContextAPI
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.getPlayer
+import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.ScriptFactor
 import com.bh.planners.core.pojo.Skill
+import com.bh.planners.core.timer.TimerContext
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.warning
 import taboolib.common.util.random
 import taboolib.common5.Coerce
+import taboolib.module.kether.printKetherErrorMessage
 import kotlin.random.Random
 
 fun Target.toProxyCommandSender(): ProxyCommandSender? {
@@ -20,6 +24,23 @@ fun Target.toProxyCommandSender(): ProxyCommandSender? {
 
 fun Location.entityAt(): MutableList<LivingEntity> {
     return world!!.getNearbyEntities(this, 1.0, 1.0, 1.0).filterIsInstance<LivingEntity>().toMutableList()
+}
+
+
+fun <T> runKetherThrow(context: Context, el: T? = null, function: () -> T?) : T? {
+    return runKetherThrow(context.stackId, el, function)
+}
+
+fun <T> runKetherThrow(stack: String?, el: T? = null, function: () -> T): T? {
+    try {
+        return function()
+    } catch (ex: Exception) {
+        if (stack != null) {
+            warning("Track the error by the '$stack' source")
+        }
+        ex.printKetherErrorMessage()
+    }
+    return el
 }
 
 fun generatorId(): Long {
@@ -63,5 +84,5 @@ fun timing(): Long {
 }
 
 fun timing(start: Long): Double {
-    return Coerce.format((System.currentTimeMillis() - start) / 100.0,2)
+    return Coerce.format((System.currentTimeMillis() - start) / 100.0, 2)
 }

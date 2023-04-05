@@ -7,6 +7,13 @@ import taboolib.platform.util.sendLang
 
 enum class ExecuteResult {
 
+    NONE {
+        override val handler: Player.(Skill) -> Unit
+            get() = {
+
+            }
+    },
+
     WAITING {
         override val handler: Player.(Skill) -> Unit
             get() = {

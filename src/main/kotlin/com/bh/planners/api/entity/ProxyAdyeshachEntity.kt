@@ -9,7 +9,16 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import java.util.*
 
-class ProxyAdyeshachEntity(val instance: EntityInstance): ProxyEntity {
+class ProxyAdyeshachEntity(val instance: EntityInstance) : ProxyEntity {
+
+    companion object {
+
+
+        fun ProxyEntity.getAdyeshachEntity(): EntityInstance? {
+            return (this as? ProxyAdyeshachEntity)?.instance
+        }
+
+    }
 
     val id: String
         get() = instance.id
@@ -52,12 +61,13 @@ class ProxyAdyeshachEntity(val instance: EntityInstance): ProxyEntity {
 
     override val eyeLocation: Location
         get() = location
+
     fun delete() {
         instance.delete()
     }
 
     override var velocity: Vector
-        get() = Vector(0,0,0)
+        get() = Vector(0, 0, 0)
         set(value) {
             val vector = ink.ptms.adyeshach.taboolib.common.util.Vector(value.x, value.y, value.z)
             instance.sendVelocity(vector)

@@ -49,9 +49,14 @@ class PlayerProfile(val player: Player, val id: Long) {
         if (playerSkill != null) {
             return playerSkill
         }
-        val skill = PlannersAPI.skills.firstOrNull { it.key == key } ?: error("Skill '$key' not found.")
-        return Storage.INSTANCE.createPlayerSkill(player, job!!, skill).get().also {
-            job!!.skills += it
+        // 判断技能属不属于职业
+        if (job!!.instance.skills.contains(key)) {
+            val skill = PlannersAPI.skills.firstOrNull { it.key == key } ?: error("Skill '$key' not found.")
+            return Storage.INSTANCE.createPlayerSkill(player, job!!, skill).get().also {
+                job!!.skills += it
+            }
         }
+
+        return null
     }
 }

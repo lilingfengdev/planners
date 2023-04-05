@@ -5,18 +5,16 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.getLivingEntity
-import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.kether.LazyGetter
-import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.data.DataContainer
 import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
+import com.bh.planners.util.runKetherThrow
 import com.bh.planners.util.toProxyCommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
-import taboolib.common.platform.function.submit
 import taboolib.module.kether.*
 import java.util.*
 
@@ -44,9 +42,11 @@ abstract class Context(val sender: Target) {
 
     val variables = DataContainer()
 
+    open var stackId = "Unknown"
+
     protected fun toLazyVariable(variable: Skill.Variable): LazyGetter<*> {
         return LazyGetter {
-            runKether {
+            runKetherThrow(stackId) {
                 ScriptLoader.createScript(this, variable.expression) { }.get()
             }
         }
@@ -55,6 +55,7 @@ abstract class Context(val sender: Target) {
     abstract class SourceImpl(sender: Target) : Context(sender) {
 
         abstract val sourceId: String
+
 
     }
 
@@ -70,6 +71,8 @@ abstract class Context(val sender: Target) {
         val scriptMode = script.mode
 
         val scriptAction = script.action
+
+        override var stackId: String = "Skill: $id"
 
         init {
             skill.option.variables.forEach {

@@ -24,6 +24,7 @@ object EffectSphere : Effect() {
         option.createContainer(context).forEachLocation {
             ParticleFrame.create(ParticleFrame.FrameBuilder().new {
                 time(option.period)
+                response(response)
                 builder(Builder(this@forEachLocation, option.sample, option.radius, effectSpawner))
             })
         }

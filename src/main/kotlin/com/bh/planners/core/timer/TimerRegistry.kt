@@ -4,8 +4,8 @@ import com.bh.planners.api.common.Plugin
 import com.bh.planners.api.event.ISource
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Skill
+import com.bh.planners.util.runKetherThrow
 import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import taboolib.common.LifeCycle
@@ -77,20 +77,16 @@ object TimerRegistry {
 
     fun <E : Event> callTimerAction(timer: Timer<E>, template: Template, sender: Target, event: E) {
 
-        val context = object : Context.SourceImpl(sender) {
-
-            override val sourceId: String = template.id
-
-        }
+        val context = TimerContext(sender, template)
         if (template.script.mode == Skill.ActionMode.SIMPLE) {
-            runKether {
+            runKetherThrow(context) {
                 ScriptLoader.createScript(context, template.script.action) {
                     rootFrame().variables()["@Event"] = event
                     timer.onStart(this, template, event)
                 }
             }
         } else {
-            runKether {
+            runKetherThrow(context) {
                 ScriptLoader.runScript(context) {
                     it.rootFrame().variables()["@Event"] = event
                     timer.onStart(it, template, event)

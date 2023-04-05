@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerRespawnEvent
 import taboolib.module.kether.ScriptContext
 
 object TPlayerRespawn : AbstractTimer<PlayerRespawnEvent>() {
+
     override val name: String
         get() = "player respawn"
     override val eventClazz: Class<PlayerRespawnEvent>
