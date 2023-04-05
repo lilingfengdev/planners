@@ -2,10 +2,7 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.getLocation
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.exec
-import com.bh.planners.core.kether.nextSelectorOrNull
-import com.bh.planners.core.kether.origin
+import com.bh.planners.core.kether.*
 import org.bukkit.Location
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
@@ -23,17 +20,15 @@ class ActionExplosion(
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         frame.newFrame(power).run<Any>().thenApply {
-            if (selector != null) {
-                frame.exec(selector) {
-                    val loc = when (this) {
-                        is Target.Entity -> this.proxy.location
-                        is Target.Location -> this.value
-                        else -> return@exec
+            frame.containerOrOrigin(selector).thenAccept {
+                it.forEach {
+                    val loc = when (it) {
+                        is Target.Entity -> it.proxy.location
+                        is Target.Location -> it.value
+                        else -> return@forEach
                     }
                     createExplosion(loc, Coerce.toFloat(it))
                 }
-            } else {
-                createExplosion(frame.origin(), Coerce.toFloat(it))
             }
 
         }
