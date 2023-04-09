@@ -3,6 +3,7 @@ package com.bh.planners.core.effect
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
+import kotlin.math.acos
 
 
 /**
@@ -52,7 +53,7 @@ fun isPointInEntitySector(target: Location, location: Location, radius: Double, 
     val v1 = location.direction
     val v2 = target.clone().subtract(location).toVector()
     val cosTheta = v1.dot(v2) / (v1.length() * v2.length())
-    val degree = Math.toDegrees(Math.acos(cosTheta))
+    val degree = Math.toDegrees(acos(cosTheta))
     // 距离判断
     return if (target.distance(location) < radius) {
         // 向量夹角判断

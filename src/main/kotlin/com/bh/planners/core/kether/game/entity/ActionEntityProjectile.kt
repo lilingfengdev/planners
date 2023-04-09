@@ -18,10 +18,8 @@ import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.scriptParser
+import taboolib.library.kether.Parser
+import taboolib.module.kether.*
 import taboolib.platform.BukkitPlugin
 import taboolib.platform.util.getMeta
 import taboolib.platform.util.hasMeta
@@ -30,55 +28,21 @@ import java.util.concurrent.CompletableFuture
 
 class ActionEntityProjectile {
 
-    class ActionLaunch(
-        val action: ParsedAction<*>,
-        val name: ParsedAction<*>,
-        val step: ParsedAction<*>,
-        val rotateX: ParsedAction<*>,
-        val rotateY: ParsedAction<*>,
-        val rotateZ: ParsedAction<*>,
-        val event: ParsedAction<*>,
-        val selector: ParsedAction<*>?,
-    ) :
+    class ActionLaunch(val action: ParsedAction<*>, val name: ParsedAction<*>, val step: ParsedAction<*>, val rotateX: ParsedAction<*>, val rotateY: ParsedAction<*>, val rotateZ: ParsedAction<*>, val event: ParsedAction<*>, val selector: ParsedAction<*>?, ) :
         ScriptAction<Target.Container>() {
 
-        fun execute(context: Context, name: String, owners: List<Target.Entity>, type: Type, step: Double, event: String, rotateX: Double, rotateY: Double, rotateZ: Double): List<Projectile> {
-            val listOf = mutableListOf<Projectile>()
-            owners.forEach {
-                val entity = it.bukkitLivingEntity ?: return@forEach
-                val projectile = entity.launchProjectile(type.clazz)
-                if (event != "none") {
-                    projectile.setMeta("owner",entity)
-                    projectile.setMeta("event",event)
-                    projectile.setMeta("context",context)
-                }
-
-                projectile.setMeta("@Planners:Projectile", true)
-                projectile.customName = name
-                projectile.isCustomNameVisible = false
-                val velocity = projectile.velocity
-
-                // 处理向量旋转
-                rotateAroundX(velocity, rotateX)
-                rotateAroundY(velocity, rotateY)
-                rotateAroundZ(velocity, rotateZ)
-
-                projectile.velocity = velocity.multiply(step);
-                listOf += projectile
-            }
-            return listOf
-        }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
 
             val future = CompletableFuture<Target.Container>()
-            frame.readAccept<Type>(action) { type ->
-                frame.readAccept<String>(name) { name ->
-                    frame.readAccept<Double>(step) { step ->
-                        frame.readAccept<Double>(rotateX) { rotateX ->
-                            frame.readAccept<Double>(rotateY) { rotateY ->
-                                frame.readAccept<Double>(rotateZ) { rotateZ ->
-                                    frame.readAccept<String>(event) { event ->
+            frame.run(action).str {
+                val type = Type.valueOf(it.toUpperCase())
+                frame.run(name).str { name ->
+                    frame.run(step).double { step ->
+                        frame.run(rotateX).double { rotateX ->
+                            frame.run(rotateY).double { rotateY ->
+                                frame.run(rotateZ).double { rotateZ ->
+                                    frame.run(event).str { event ->
                                         val context = frame.getContext()
                                         val container = Target.Container()
                                         frame.containerOrSender(selector).thenAccept {
@@ -133,6 +97,22 @@ class ActionEntityProjectile {
             )
         }
 
+        /**
+         * it.group(
+        text(), text(),
+        command("step", then = double()).option(),
+        command("rotateX", then = double()).option(),
+        command("rotateY", then = double()).option(),
+        command("rotateZ", then = double()).option(),
+        command("oncapture", then = double()).option()
+        ).apply(it) { type,name,step,rotateX,rotateY,rotateZ,oncapture ->
+        now {
+        execute(getContext(),step,)
+        }
+        }
+         *
+         */
+
         @SubscribeEvent
         fun e(e: EntityDamageByEntityEvent) {
             if (e.damager is Projectile && e.damager.hasMeta("@Planners:Projectile")) {
@@ -158,6 +138,32 @@ class ActionEntityProjectile {
         }
 
 
+        fun execute(context: Context, name: String, owners: List<Target.Entity>, type: Type, step: Double, event: String, rotateX: Double, rotateY: Double, rotateZ: Double): List<Projectile> {
+            val listOf = mutableListOf<Projectile>()
+            owners.forEach {
+                val entity = it.bukkitLivingEntity ?: return@forEach
+                val projectile = entity.launchProjectile(type.clazz)
+                if (event != "none") {
+                    projectile.setMeta("owner", entity)
+                    projectile.setMeta("event", event)
+                    projectile.setMeta("context", context)
+                }
+
+                projectile.setMeta("@Planners:Projectile", true)
+                projectile.customName = name
+                projectile.isCustomNameVisible = false
+                val velocity = projectile.velocity
+
+                // 处理向量旋转
+                rotateAroundX(velocity, rotateX)
+                rotateAroundY(velocity, rotateY)
+                rotateAroundZ(velocity, rotateZ)
+
+                projectile.velocity = velocity.multiply(step);
+                listOf += projectile
+            }
+            return listOf
+        }
     }
 
 }
