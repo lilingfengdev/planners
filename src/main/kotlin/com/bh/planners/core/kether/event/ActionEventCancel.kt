@@ -5,6 +5,7 @@ import com.bh.planners.core.kether.eventParser
 import com.bh.planners.core.kether.read
 import com.bh.planners.core.kether.nextArgumentAction
 import org.bukkit.event.Cancellable
+import org.bukkit.event.entity.ProjectileHitEvent
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture

@@ -33,17 +33,21 @@ class OriginP : AttackProvider {
         val context = event.createDamageContext()
         // 兼容力度
         context.vigor = damage
+        context.cause = event.customCause
         demand.dataMap.forEach {
             context.labels[it.key] = it.value.firstOrNull() ?: return@forEach
         }
 
-        if (event.customCause == "physics") {
-            context.addDamage(Damage.physical, demand.get("damage").cdouble)
-        } else if (event.customCause == "magic") {
-            context.addDamage(Damage.magic, demand.get("damage").cdouble)
-        } else {
-            context.addDamage(event.customCause,demand.get("damage").cdouble)
+        if (demand.dataMap.containsKey("damage")) {
+            if (event.customCause == "physics") {
+                context.addDamage(Damage.physical, demand.get("damage").cdouble)
+            } else if (event.customCause == "magic") {
+                context.addDamage(Damage.magic, demand.get("damage").cdouble)
+            } else {
+                context.addDamage(event.customCause,demand.get("damage").cdouble)
+            }
         }
+
 
         if (ac.github.oa.api.event.entity.EntityDamageEvent(context, PriorityEnum.PRE).call()) {
             OriginAttributeAPI.callDamage(context)

@@ -27,7 +27,7 @@ class ActionInvoke(val func: ParsedAction<*>, val using: List<ParsedAction<*>>) 
             val skill = frame.skill().instance
             if (skill.script.mode == Skill.ActionMode.DEFAULT) {
 
-                ScriptLoader.invokeFunction(ContextAPI.createSession(frame.bukkitPlayer()!!, skill), func) { context ->
+                ScriptLoader.invokeFunction(ContextAPI.createSession(frame.bukkitTarget(), skill), func) { context ->
                     args.forEachIndexed { index, any ->
                         context.rootFrame().rootVariables()["arg$index"] = any
                     }

@@ -21,8 +21,12 @@ object ContextAPI {
         return adaptPlayer(player)
     }
 
-    fun create(player: Player,skill: PlayerJob.Skill): Context.Impl1 {
-        return create(player, skill.instance,skill.level)!!
+    fun create(target: Target, skill: Skill, level: Int = 1): Context.Impl1 {
+        return Context.Impl1(target, skill, level)
+    }
+
+    fun create(player: Player, skill: PlayerJob.Skill): Context.Impl1 {
+        return create(player, skill.instance, skill.level)!!
     }
 
     // 创建释放上下文
@@ -44,13 +48,13 @@ object ContextAPI {
         return null
     }
 
-    fun createSession(target: Target,skill: Skill,consume: Consumer<Session>? = null) : Session {
+    fun createSession(target: Target, skill: Skill, consume: Consumer<Session>? = null): Session {
         return Session(target, skill).also { consume?.accept(it) }
     }
 
     // 创建释放环境 Session
     fun createSession(player: Player, skill: Skill, consume: Consumer<Session>? = null): Session {
-        return createSession(player.toTarget(),skill, consume)
+        return createSession(player.toTarget(), skill, consume)
     }
 
 

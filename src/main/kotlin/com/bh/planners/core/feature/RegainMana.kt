@@ -2,6 +2,8 @@ package com.bh.planners.core.feature
 
 import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.ManaCounter.addMana
+import com.bh.planners.api.ManaCounter.toCurrentMana
+import com.bh.planners.api.ManaCounter.toMaxMana
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.PlannersOption
@@ -29,7 +31,7 @@ object RegainMana {
     fun regainManaValue(player: Player): Double {
         val expression = getManaExpression(player) ?: return 0.0
         return runKether(0.0) {
-            ScriptLoader.createScript(ContextAPI.create(player), expression).cdouble
+            ScriptLoader.createScript(ContextAPI.create(player), expression).get().cdouble
         }!!
     }
 
@@ -53,7 +55,10 @@ object RegainMana {
     @Awake(LifeCycle.ENABLE)
     fun runTask() {
         actionbarPlatformTask = submit(period = PlannersOption.regainManaPeriod, async = true) {
-            Bukkit.getOnlinePlayers().forEach(RegainMana::nextRegainMana)
+            Bukkit.getOnlinePlayers().forEach { player ->
+                if (player.toMaxMana() == player.toCurrentMana()) return@forEach
+                nextRegainMana(player)
+            }
         }
     }
 

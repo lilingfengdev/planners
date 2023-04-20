@@ -8,6 +8,7 @@ import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.game.damage.AttackProvider
 import com.bh.planners.util.eval
 import org.bukkit.entity.LivingEntity
+import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
@@ -121,6 +122,7 @@ class ActionDamage {
             // 如果实体血量 - 预计伤害值 < 0 提前设置击杀者
             if (source != null && entity.health - damage <= 0) {
                 entity.setKiller(source)
+//                EntityDeathEvent(entity, emptyList())
             }
             entity.damage(damage)
             entity.removeMeta("Planners:Damage")

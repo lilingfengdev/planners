@@ -40,10 +40,8 @@ class ActionVelocity(
             frame.newFrame(y).run<Any>().thenApply { y ->
                 frame.newFrame(z).run<Any>().thenApply { z ->
                     val toVector = Vector(Coerce.toDouble(x), Coerce.toDouble(y), Coerce.toDouble(z))
-                    if (selector != null) {
-                        frame.execEntity(selector) { execute(this, mode, toVector) }
-                    } else {
-                        execute(frame.bukkitPlayer()!!, mode, toVector)
+                    frame.containerOrSender(selector).thenAccept {
+                        it.forEachEntity { execute(this,mode,toVector) }
                     }
                 }
             }

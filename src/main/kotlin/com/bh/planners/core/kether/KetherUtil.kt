@@ -54,6 +54,10 @@ fun ProxyCommandSender.bukkitPlayer(): Player? {
     return null
 }
 
+fun ScriptFrame.bukkitTarget() : Target {
+    return getContext().sender
+}
+
 fun ScriptFrame.bukkitPlayer(): Player? {
     return getContext().player
 }
@@ -207,7 +211,7 @@ fun ScriptFrame.containerOrOrigin(action: ParsedAction<*>?): CompletableFuture<T
 }
 
 fun ScriptFrame.containerOrSender(action: ParsedAction<*>?): CompletableFuture<Target.Container> {
-    return container(action, bukkitPlayer())
+    return container(action, bukkitTarget())
 }
 
 fun ScriptFrame.container(action: ParsedAction<*>?, default: Location?): CompletableFuture<Target.Container> {

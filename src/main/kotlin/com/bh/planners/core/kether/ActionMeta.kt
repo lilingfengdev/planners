@@ -6,6 +6,7 @@ import com.bh.planners.api.Counting
 import com.bh.planners.api.maxLevel
 import com.bh.planners.api.optAsync
 import com.bh.planners.api.optVariables
+import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.meta.ActionMetaOrigin
@@ -43,7 +44,7 @@ class ActionMeta {
                         "level" -> actionSkillNow { it.level }
                         "level-cap", "level-max", "maxlevel", "max-level" -> actionSkillNow { it.maxLevel }
                         "shortcut" -> actionSkillNow { it.keySlot?.name ?: "暂无" }
-                        "countdown" -> actionSkillNow { Counting.getCountdown(bukkitPlayer()!!, it.instance) }
+                        "countdown" -> actionSkillNow { Counting.getCountdown(bukkitPlayer() ?: return@actionSkillNow -1, it.instance) }
                         else -> actionNow { "error" }
                     }
 
@@ -52,8 +53,8 @@ class ActionMeta {
                 case("executor") {
                     when (expects("name", "uuid", "loc", "location", "mana", "max-mana")) {
                         "name" -> actionNow { executor().name }
-                        "uuid" -> actionNow { bukkitPlayer()!!.uniqueId.toString() }
-                        "loc", "location" -> actionNow { bukkitPlayer()!!.location.clone() }
+                        "uuid" -> actionNow { bukkitTarget().getEntity()?.uniqueId }
+                        "loc", "location" -> actionNow { bukkitTarget().getEntity()?.location?.clone() }
                         "mana" -> actionProfileNow { it.toCurrentMana() }
                         "max-mana", "maxmana" -> actionProfileNow { it.toMaxMana() }
                         else -> actionNow { "error" }
@@ -62,12 +63,12 @@ class ActionMeta {
                 case("origin") {
                     try {
                         mark()
-                        expects("to", "set", "=","bind")
+                        expects("to", "set", "=", "bind")
                         try {
                             it.mark()
-                            expects("they","the")
+                            expects("they", "the")
                             ActionMetaOrigin.Set(it.nextParsedAction())
-                        }catch (_:Throwable) {
+                        } catch (_: Throwable) {
                             it.reset()
                             ActionMetaOrigin.Set(it.nextParsedAction())
                         }

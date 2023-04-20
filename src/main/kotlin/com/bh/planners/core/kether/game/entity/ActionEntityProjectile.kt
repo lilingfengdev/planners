@@ -15,6 +15,7 @@ import org.bukkit.entity.*
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.metadata.FixedMetadataValue
+import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
@@ -113,7 +114,7 @@ class ActionEntityProjectile {
          *
          */
 
-        @SubscribeEvent
+        @SubscribeEvent(priority = EventPriority.LOW)
         fun e(e: EntityDamageByEntityEvent) {
             if (e.damager is Projectile && e.damager.hasMeta("@Planners:Projectile")) {
                 e.isCancelled = true

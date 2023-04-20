@@ -135,7 +135,7 @@ class ActionSkill {
                     val varKey = nextToken()
                     actionSkillNow(nextArgumentAction(arrayOf("of", "the"))) {
                         val variable = it.instance.option.variables.firstOrNull { it.key == varKey } ?: error("No variable ${varKey} define.")
-                        val context = ContextAPI.create(bukkitPlayer()!!, it)
+                        val context = ContextAPI.create(bukkitTarget(), it.instance)
                         ScriptLoader.createScript(context, variable.expression)
                     }
                 }
