@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.compat.germplugin
 
 import ac.github.oa.taboolib.common.reflect.Reflex.Companion.invokeMethod
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.kether.containerOrOrigin
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.origin
 import com.germ.germplugin.api.GermSrcManager
@@ -73,6 +74,7 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<GermEffectPart<*>> {
+        val future = CompletableFuture<GermEffectPart<*>>()
         frame.run(name).str { name ->
             val effectParticle = create(name)
 
@@ -90,19 +92,14 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
                     else -> emptyList()
 
                 }
-
-                if (selector != null) {
-                    frame.createContainer(selector).thenAccept {
-                        it.forEach { execute(it, animations, effectParticle) }
-                    }
-                } else {
-                    execute(frame.origin(), animations, effectParticle)
+                frame.containerOrOrigin(selector).thenAccept {
+                    it.forEach { execute(it, animations, effectParticle) }
+                    future.complete(effectParticle)
                 }
 
             }
-
         }
-        return CompletableFuture.completedFuture(null)
+        return future
     }
 
 

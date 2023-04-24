@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.warning
+import taboolib.library.xseries.XItemStack
 import taboolib.library.xseries.parseToMaterial
 import taboolib.module.chat.colored
 import taboolib.module.kether.KetherFunction
@@ -50,33 +51,16 @@ class SkillIcon(val player: Player, skillKey: String, val level: Int, conceal: B
 
     val icon = option.root.getConfigurationSection("icon")!!
 
-    val material = try {
-        Material.valueOf(icon.getString("material","STONE")!!.toUpperCase())
-    }catch (e: Exception) {
-        warning("Material ${icon.getString("material")} not found.")
-        Material.STONE
-    }
-
-    val modelData = icon.getInt("model-data",-1)
-
-    val name = icon.getString("name","")!!
-
-    val lore = icon.getStringList("lore")
-
-    val damage = icon.getInt("damage",0)
-
     fun build(): ItemStack {
-        return buildItem(material) {
-            name = format(this@SkillIcon.name)
-            lore += this@SkillIcon.lore.map { format(it) }
-            damage = this@SkillIcon.damage
-            customModelData = this@SkillIcon.modelData
+        return buildItem(XItemStack.deserialize(icon)) {
+            name = format(name ?: "")
+            lore.forEachIndexed { index, s -> lore[index] = format(s) }
         }
     }
 
     fun format(str: String): String {
         return runKether {
-            ScriptLoader.createFunctionScript(context,str).colored()
+            ScriptLoader.createFunctionScript(context, str).colored()
         } ?: "&cError: $str".colored()
     }
 

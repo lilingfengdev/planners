@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture
  * germ stop <action(effect|?)>
  */
 class ActionGermStop(val action: ParsedAction<*>) : ScriptAction<Void>() {
+
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         return frame.run(action).thenAccept {
             if (it is GermEffectPart<*>) {

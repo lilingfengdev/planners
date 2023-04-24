@@ -16,9 +16,10 @@ class SelectorTransfer(val context: Context, val source: String, val container: 
         var at = false
         split.forEachIndexed { index, s ->
             if (s.getOrNull(0) == '@' || s.getOrNull(1) == '@') {
-                // 保留上一条缓存
+                // 保留上一条缓存 并且清除上一级的参数
                 if (at) {
                     selectorParsed += ParsedSelector(id!!, values.joinToString(" "))
+                    values.clear()
                 }
                 at = true
                 id = s.substring(s.indexOfFirst { it == '@' } + 1)
