@@ -29,7 +29,7 @@ class ActionFireTicks(val ticks: ParsedAction<*>, val selector: ParsedAction<*>?
 
         /**
          * 使目标点燃
-         * explosion [ticks] [selector]
+         * fireTicks [ticks] [selector]
          */
         @KetherParser(["fireTicks"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

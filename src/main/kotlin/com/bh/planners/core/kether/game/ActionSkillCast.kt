@@ -61,7 +61,7 @@ class ActionSkillCast {
          * 满足冷却条件
          * 满足拥有该技能条件
          *
-         * try-cast "def0" "@self"
+         * try-cast "def0" they "@self"
          */
         @KetherParser(["try-cast"], namespace = NAMESPACE, shared = true)
         fun parser1() = scriptParser {
@@ -72,7 +72,7 @@ class ActionSkillCast {
          * 为目标玩家释放技能
          * 不参与任何条件限制 直接指定等级释放
          *
-         * direct-cast "def0" 1 "@self"
+         * direct-cast "def0" 1 they "@self"
          */
         @KetherParser(["direct-cast"], namespace = NAMESPACE, shared = true)
         fun parser2() = scriptParser {

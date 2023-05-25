@@ -32,11 +32,10 @@ class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: 
     fun execute(player: Player, mode: Operator, amount: Double) {
         if (!player.plannersProfileIsLoaded) return
         val profile = player.plannersProfile
-        val value = Coerce.toDouble(amount)
         when (mode) {
-            Operator.ADD -> profile.addMana(value)
-            Operator.TAKE -> profile.takeMana(value)
-            Operator.SET -> profile.setMana(value)
+            Operator.ADD -> profile.addMana(amount)
+            Operator.TAKE -> profile.takeMana(amount)
+            Operator.SET -> profile.setMana(amount)
         }
     }
 
@@ -45,9 +44,9 @@ class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: 
         /**
          * 操作目标法力值
          * mana [mode] [amount] [selector]
-         * mana add 100 "@self"
-         * mana take 20 "@self"
-         * mana set 114514 "@self"
+         * mana add 100 they "@self"
+         * mana take 20 they "@self"
+         * mana set 114514 they "@self"
          */
         @KetherParser(["mana"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
