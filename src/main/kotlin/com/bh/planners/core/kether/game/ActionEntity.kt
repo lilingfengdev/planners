@@ -1,12 +1,15 @@
 package com.bh.planners.core.kether.game
 
-import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.game.entity.*
-import taboolib.library.kether.ArgTypes
-import taboolib.module.kether.*
+import com.bh.planners.core.kether.nextSelector
+import com.bh.planners.core.kether.nextSelectorOrNull
+import taboolib.module.kether.KetherParser
+import taboolib.module.kether.expects
+import taboolib.module.kether.scriptParser
+import taboolib.module.kether.switch
 
 class ActionEntity {
-
 
 
     companion object {
@@ -16,6 +19,8 @@ class ActionEntity {
          * entity loc [entity : action]
          * entity health [entity : action]
          * entity spawn type name health tick
+         * entity set [yaw : action] [pitch : action] [selector]
+         * entity remove [selector]
          */
         @KetherParser(["entity"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
@@ -26,15 +31,38 @@ class ActionEntity {
                 }
 
                 case("spawn") {
-                    ActionEntitySpawn(it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(), it.nextParsedAction(), it.nextSelectorOrNull())
+                    ActionEntitySpawn(
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
+                        it.nextSelectorOrNull()
+                    )
+                }
+
+                case("set") {
+                    ActionEntitySet(
+                        it.nextParsedAction(),
+                        it.nextParsedAction(),
+                        it.nextSelector()
+                    )
+                }
+
+                case("remove") {
+                    ActionEntityRemove(
+                        it.nextSelector()
+                    )
                 }
 
                 other {
                     try {
                         it.mark()
                         val expect = it.expects(*EntityField.fields().toTypedArray())
-                        ActionEntityFieldGet(EntityField.valueOf(expect.uppercase()),it.nextSelectorOrNull() ?: error("the lack of 'they' cite target"))
-                    }catch (_: Throwable) {
+                        ActionEntityFieldGet(
+                            EntityField.valueOf(expect.toUpperCase()),
+                            it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
+                        )
+                    } catch (_: Throwable) {
                         it.reset()
                         error("error of case!")
                     }
