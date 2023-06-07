@@ -2,6 +2,7 @@ package com.bh.planners.api
 
 import com.bh.planners.api.ManaCounter.takeMana
 import com.bh.planners.api.ManaCounter.toCurrentMana
+import com.bh.planners.api.PlannersLoader.toYamlName
 import com.bh.planners.api.common.ExecuteResult
 import com.bh.planners.api.enums.UpgradeResult
 import com.bh.planners.api.event.PlayerCastSkillEvents
@@ -10,9 +11,9 @@ import com.bh.planners.api.event.PlayerSkillResetEvent
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.*
-import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
+import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
 import com.bh.planners.util.runKetherThrow
 import com.google.gson.Gson
@@ -21,8 +22,10 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submitAsync
 import taboolib.common5.Coerce
 import taboolib.common5.cbool
+import taboolib.module.configuration.Configuration
 import taboolib.module.kether.runKether
 import taboolib.platform.util.sendLang
+import java.io.File
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -127,6 +130,13 @@ object PlannersAPI {
         return skills.firstOrNull { it.key == skillName }
     }
 
+    fun regSkill(file: File): Skill {
+        val skill = Skill(file.toYamlName(), Configuration.loadFromFile(file))
+        skills += skill
+        ScriptLoader.autoLoad()
+        return skill
+    }
+
     fun checkUpgrade(player: Player, playerSkill: PlayerJob.Skill): Boolean {
         val conditions = getUpgradeConditions(playerSkill)
         return conditions.isEmpty() || conditions.any { return checkCondition(player, playerSkill, it) }
@@ -156,7 +166,7 @@ object PlannersAPI {
             }
             // 优先扣除技能点
             profile.addPoint(-points)
-            profile.next(playerSkill)
+            profile.add(playerSkill, 1)
             return@thenApply UpgradeResult.SUCCESS
         }
 

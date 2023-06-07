@@ -16,7 +16,7 @@ fun files(path: String, defs: List<String>, callback: (File) -> Unit) {
 fun getFiles(file: File): List<File> {
     val listOf = mutableListOf<File>()
     when (file.isDirectory) {
-        true -> listOf += file.listFiles().flatMap { getFiles(it) }
+        true -> listOf += file.listFiles()!!.flatMap { getFiles(it) }
         false -> {
             if (file.name.endsWith(".yml")) {
                 listOf += file
