@@ -7,7 +7,6 @@ import com.bh.planners.core.kether.nextSelectorOrNull
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common5.Coerce
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
@@ -18,13 +17,13 @@ import java.util.concurrent.CompletableFuture
 
 class ActionSilence(
     val seconds: ParsedAction<*>,
-    val selector: ParsedAction<*>?
+    val selector: ParsedAction<*>?,
 ) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         frame.newFrame(seconds).run<Any>().thenApply {
             frame.execPlayer(selector!!) {
-                silenceMap[uniqueId] = (System.currentTimeMillis() + Coerce.toDouble(it) * 1000).toLong()
+                silenceMap[uniqueId] = (System.currentTimeMillis() + Coerce.toDouble(it) * 50).toLong()
             }
         }
         return CompletableFuture.completedFuture(null)
@@ -33,10 +32,11 @@ class ActionSilence(
     companion object {
 
         private val silenceMap = mutableMapOf<UUID, Long>()
+
         /**
          * 沉默目标 使对方在一定时间内无法释放技能
          *  *** 暂时无效 等PlayerCastSkillEvents完善即可
-         * silence [seconds] [selector]
+         * silence [ticks] [selector]
          */
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

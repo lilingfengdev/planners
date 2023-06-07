@@ -10,9 +10,9 @@ import com.bh.planners.api.event.PlayerSkillResetEvent
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.*
-import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
+import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
 import com.bh.planners.util.runKetherThrow
 import com.google.gson.Gson
@@ -156,7 +156,7 @@ object PlannersAPI {
             }
             // 优先扣除技能点
             profile.addPoint(-points)
-            profile.next(playerSkill)
+            profile.add(playerSkill, 1)
             return@thenApply UpgradeResult.SUCCESS
         }
 
