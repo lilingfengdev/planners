@@ -1,8 +1,0 @@
-__option__:
-  triggers: [ player attack ]
-  async: true
-
-action: |-
-  if all [ check inventory offhand is "minecraft:stone[name=骷髅之魂]" check random 1 > 0.5 ] then {
-    attribute add 1000 "骷髅之魂" [ "物伤提升 +5%" ]
-  }

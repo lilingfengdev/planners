@@ -1,8 +1,0 @@
-__option__:
-  name: '狂战士'
-  router: warrior
-  mana-eval: 'math player level * 2 + 50'
-
-
-skills:
-  - skill_def0
