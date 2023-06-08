@@ -64,20 +64,13 @@ class ActionAdyeshachSpawn : ScriptAction<Target.Container>() {
     override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
         val container = Target.Container()
         val future = CompletableFuture<Target.Container>()
-
-        frame.read<EntityTypes>(type).thenAccept { type ->
-            frame.read<String>(name).thenAccept { name ->
-                frame.read<Long>(timeout).thenAccept { timeout ->
-                    if (selector != null) {
-                        frame.createContainer(selector!!).thenAccept {
-                            val locations = it.filterIsInstance<Target.Location>().map { it.value }
-                            spawn(type, locations, name, timeout).thenAccept {
-                                container += it.map { it.target() }
-                                future.complete(container)
-                            }
-                        }
-                    } else {
-                        spawn(type, listOf(frame.origin().value), name, timeout).thenAccept {
+        frame.run(type).str {
+            val type = EntityTypes.valueOf(it.toUpperCase())
+            frame.run(name).str { name ->
+                frame.run(timeout).long { timeout ->
+                    frame.containerOrOrigin(selector).thenAccept {
+                        val locations = it.filterIsInstance<Target.Location>().map { it.value }
+                        spawn(type, locations, name, timeout).thenAccept {
                             container += it.map { it.target() }
                             future.complete(container)
                         }

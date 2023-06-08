@@ -10,6 +10,7 @@ import com.bh.planners.util.eval
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.metadata.FixedMetadataValue
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
 import taboolib.library.reflex.Reflex.Companion.getProperty
@@ -30,17 +31,17 @@ class ActionDamage {
             val result = damage.eval(entity.maxHealth)
             val damageByEntityEvent = EntityEvents.DamageByEntity(source, entity, result)
             if (damageByEntityEvent.call()) {
+                info("damage $entity source $source ${damageByEntityEvent.value}")
                 doDamage(source, entity, damageByEntityEvent.value)
             }
         }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-
-            frame.readAccept<String>(value) { damage ->
-                frame.container(selector).thenAccept { victim ->
+            frame.run(value).str { damage ->
+                frame.container(selector).thenAccept { victims ->
                     frame.containerOrSender(source).thenAccept { source ->
                         val sourceEntity = source.firstLivingEntityTarget() ?: return@thenAccept
-                        victim.forEachLivingEntity { execute(this, sourceEntity, damage) }
+                        victims.forEachLivingEntity { execute(this, sourceEntity, damage) }
                     }
                 }
             }

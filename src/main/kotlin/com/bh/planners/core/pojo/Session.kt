@@ -7,6 +7,7 @@ import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.effect.Target.Companion.isPlayer
 import com.bh.planners.core.kether.LazyGetter
 import com.bh.planners.util.toProxyCommandSender
+import org.bukkit.GameMode
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
 import taboolib.module.kether.ScriptContext
@@ -14,14 +15,18 @@ import taboolib.module.kether.runKether
 
 open class Session(sender: Target, skill: Skill) : Context.Impl(sender, skill) {
 
-    override val sourceId: String
-        get() = skill.key
+    override val sourceId = skill.key
 
     val cooldown = variables["cooldown"]?.toLazyGetter() ?: LazyGetter { 0 }
 
     val mpCost = variables["mp"]?.toLazyGetter() ?: LazyGetter { 0 }
 
     fun cast() {
+
+        if (sender.getPlayer()?.gameMode == GameMode.SURVIVAL) {
+            return
+        }
+
         if (skill.option.async) {
             submit(async = true) { run() }
         } else {

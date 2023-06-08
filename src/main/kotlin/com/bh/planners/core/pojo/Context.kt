@@ -61,8 +61,7 @@ abstract class Context(val sender: Target) {
 
     open class Impl(sender: Target, val skill: Skill) : SourceImpl(sender) {
 
-        open val playerSkill: PlayerJob.Skill
-            get() = profile?.getSkill(skill.key)!!
+        open val playerSkill: PlayerJob.Skill = profile?.getSkill(skill.key)!!
 
         override val sourceId: String = skill.key
 
