@@ -26,11 +26,20 @@ fun PlayerProfile.setPoint(point: Int) {
     }
 }
 
-fun PlayerProfile.next(skill: PlayerJob.Skill) {
-    if (1 + skill.level <= skill.maxLevel && PlayerSkillUpgradeEvent(player, skill).call()) {
-        skill.level++
+fun PlayerProfile.add(skill: PlayerJob.Skill, value: Int) {
+    if (value + skill.level <= skill.maxLevel && PlayerSkillUpgradeEvent(player, skill).call()) {
+        skill.level += value
         submitAsync {
-            Storage.INSTANCE.updateSkill(this@next, skill)
+            Storage.INSTANCE.updateSkill(this@add, skill)
+        }
+    }
+}
+
+fun PlayerProfile.set(skill: PlayerJob.Skill, value: Int) {
+    if (value <= skill.maxLevel && PlayerSkillUpgradeEvent(player, skill).call()) {
+        skill.level = value
+        submitAsync {
+            Storage.INSTANCE.updateSkill(this@set, skill)
         }
     }
 }

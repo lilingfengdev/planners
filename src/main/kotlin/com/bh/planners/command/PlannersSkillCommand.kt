@@ -5,15 +5,13 @@ import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.bind
 import com.bh.planners.api.hasJob
-import com.bh.planners.core.kether.game.ActionSkillCast
-import com.bh.planners.core.ui.Faceplate
+import com.bh.planners.core.kether.bukkitPlayer
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
+import taboolib.common.platform.command.player
 import taboolib.common.platform.command.subCommand
-import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
 
 @CommandHeader("plannersskill")
@@ -27,37 +25,15 @@ object PlannersSkillCommand {
             dynamic("value") {
 
                 suggestion<ProxyCommandSender> { sender, context ->
-                    val player = Bukkit.getPlayerExact(context.argument(-1))!!
+                    val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         player.plannersProfile.getSkills().map { it.key }
                     } else emptyList()
                 }
                 execute<ProxyCommandSender> { sender, context, argument ->
-                    val player = Bukkit.getPlayerExact(context.argument(-1))!!
+                    val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         PlannersAPI.cast(player, argument)
-                    }
-                }
-            }
-        }
-    }
-
-    @CommandBody
-    val upgrade = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
-            dynamic("value") {
-                suggestion<ProxyCommandSender> { sender, context ->
-                    val player = Bukkit.getPlayerExact(context.argument(-1))!!
-                    if (player.hasJob) {
-                        player.plannersProfile.getSkills().map { it.key }
-                    } else emptyList()
-                }
-                execute<ProxyCommandSender> { sender, context, argument ->
-                    val player = Bukkit.getPlayerExact(context.argument(-1))!!
-                    if (player.hasJob) {
-                        Faceplate(player, PlannersAPI.getSkill(argument) ?: return@execute).open()
                     }
                 }
             }
@@ -74,8 +50,8 @@ object PlannersSkillCommand {
                 }
                 dynamic("level") {
                     execute<ProxyCommandSender> { sender, context, argument ->
-                        val player = Bukkit.getPlayerExact(context.argument(-2))!!
-                        ContextAPI.create(player, context.argument(-1), Coerce.toInteger(argument))?.cast()
+                        val player = context.player("player").bukkitPlayer()!!
+                        ContextAPI.create(player, context["skill"], Coerce.toInteger(argument))?.cast()
                     }
                 }
 
@@ -97,8 +73,8 @@ object PlannersSkillCommand {
                         PlannersAPI.keySlots.map { it.key }
                     }
                     execute<ProxyCommandSender> { sender, context, argument ->
-                        val player = Bukkit.getPlayerExact(context.argument(-2))!!
-                        val skill = player.plannersProfile.getSkill(context.argument(-1))!!
+                        val player = context.player("player").bukkitPlayer()!!
+                        val skill = player.plannersProfile.getSkill(context["skill"])!!
                         player.plannersProfile.bind(skill, PlannersAPI.keySlots.firstOrNull { it.key == argument }!!)
                     }
                 }
@@ -123,18 +99,21 @@ object PlannersSkillCommand {
                 }
 
                 execute<ProxyCommandSender> { sender, context, argument ->
-                    val player = Bukkit.getPlayerExact(context.argument(-1))!!
+                    val player = context.player("player").bukkitPlayer()!!
                     val profile = player.plannersProfile
                     if (argument == "*") {
-                        profile.getSkills().forEach { PlannersAPI.resetSkillPoint(profile,it) }
+                        profile.getSkills().forEach { PlannersAPI.resetSkillPoint(profile, it) }
                     } else {
                         val skill = profile.getSkill(argument) ?: return@execute
-                        PlannersAPI.resetSkillPoint(profile,skill)
+                        PlannersAPI.resetSkillPoint(profile, skill)
                     }
                 }
 
             }
         }
     }
+
+    @CommandBody
+    val upgrade = PlannersSkillUpgradeCommand
 
 }
