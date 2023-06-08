@@ -1,6 +1,5 @@
 package com.bh.planners.core.storage
 
-import com.bh.planners.api.hasJob
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.data.DataContainer
@@ -13,7 +12,7 @@ import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common5.Coerce
 import taboolib.module.configuration.Configuration
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class StorageLocal : Storage {
@@ -38,7 +37,7 @@ class StorageLocal : Storage {
 
     override fun getJob(player: Player, jobId: Long): PlayerJob {
         val config = getProfileFile(player)
-        val jobKey = config.getString("job.${jobId}.key")!!
+        val jobKey = config.getString("job.${jobId}.job")!!
         val level = config.getInt("job.${jobId}.level")
         val experience = config.getInt("job.${jobId}.experience")
         val points = config.getInt("job.${jobId}.points")
