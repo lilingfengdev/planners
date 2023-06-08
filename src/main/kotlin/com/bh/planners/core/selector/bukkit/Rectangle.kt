@@ -14,6 +14,8 @@ import kotlin.math.sin
  * Long 长
  * wide 宽
  * high 高
+ * 
+ * @rectangle Long wide high
  */
 object Rectangle : Selector {
 

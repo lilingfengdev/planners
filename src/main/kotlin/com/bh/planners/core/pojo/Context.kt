@@ -15,7 +15,7 @@ import com.bh.planners.util.toProxyCommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
-import taboolib.module.kether.*
+import taboolib.module.kether.ScriptContext
 import java.util.*
 
 abstract class Context(val sender: Target) {
@@ -61,7 +61,8 @@ abstract class Context(val sender: Target) {
 
     open class Impl(sender: Target, val skill: Skill) : SourceImpl(sender) {
 
-        open val playerSkill: PlayerJob.Skill = profile?.getSkill(skill.key)!!
+        open val playerSkill: PlayerJob.Skill
+            get() = profile?.getSkill(skill.key)!!
 
         override val sourceId: String = skill.key
 
