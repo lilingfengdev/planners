@@ -1,0 +1,14 @@
+__option__:
+  name: '战士'
+  router: warrior
+  mana-eval: 'math player level * 2 + 50'
+  actionbar: '124'
+
+  attribute:
+    default:
+      - 攻击力 +{{ player level }}
+    1: [ ]
+
+skills:
+  - skill_def0
+
