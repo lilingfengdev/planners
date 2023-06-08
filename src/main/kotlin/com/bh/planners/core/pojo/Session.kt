@@ -23,7 +23,7 @@ open class Session(sender: Target, skill: Skill) : Context.Impl(sender, skill) {
 
     fun cast() {
 
-        if (sender.getPlayer()?.gameMode == GameMode.SURVIVAL) {
+        if (sender.getPlayer()?.gameMode == GameMode.) {
             return
         }
 
