@@ -44,6 +44,7 @@ open class EffectOption(text: String) {
     var data: ProxyParticle.Data? = null
 
     init {
+        println(demand)
         demand.get("block")?.let {
             val args = it.split(",")
             data = ProxyParticle.BlockData(

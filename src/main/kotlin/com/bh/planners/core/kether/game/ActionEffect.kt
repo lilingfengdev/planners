@@ -6,7 +6,7 @@ import com.bh.planners.core.kether.getContext
 import com.bh.planners.core.kether.origin
 import com.bh.planners.core.pojo.Context
 import org.bukkit.Location
-import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.submitAsync
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
@@ -29,7 +29,7 @@ object ActionEffect {
 
                 val response = Response(context, events)
 
-                submit(async = true) {
+                submitAsync {
                     val effectOption = EffectOption.get(action)
                     effect.sendTo(frame.origin(), effectOption, context, response)
                 }

@@ -52,7 +52,10 @@ class Demand(val source: String, val starts: Array<Char> = arrayOf(':')) {
     }
 
     fun get(key: List<String>, def: String? = null): String? {
-        return key.firstOrNull() ?: def
+        key.forEach {
+            return get(it, def)
+        }
+        return def
     }
 
     fun get(key: String, def: String? = null): String? {

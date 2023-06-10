@@ -6,7 +6,7 @@ import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
-import taboolib.common.platform.function.submit
+import taboolib.common.util.sync
 import taboolib.common5.Coerce
 import taboolib.module.effect.math.Matrix
 import java.util.concurrent.CompletableFuture
@@ -124,7 +124,7 @@ fun Location.capture(): CompletableFuture<List<LivingEntity>> {
     if (Bukkit.isPrimaryThread()) {
         future.complete(this.getNearbyEntities())
     } else {
-        submit { future.complete(this@capture.getNearbyEntities()) }
+        sync { future.complete(this@capture.getNearbyEntities()) }
     }
     return future
 }
