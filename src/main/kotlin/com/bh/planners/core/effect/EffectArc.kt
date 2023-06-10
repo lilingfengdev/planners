@@ -65,23 +65,23 @@ object EffectArc : Effect() {
                 vector.x = (radius + abs(i) / step * spread) * cos(radians)
                 vector.z = (radius + abs(i) / step * spread) * sin(radians)
                 vector.y = abs(i) / step * slope
-                rotateAxisVector(rotateAxisX, rotateAxisY, rotateAxisZ, vector)
+                val new = rotateAxisVector(rotateAxisX, rotateAxisY, rotateAxisZ, vector)
                 if (angle <= -1) {
                     i -= step
                 } else {
                     i += step
                 }
-                return coordinate.newLocation(vector.x, vector.y, vector.z)
+                return coordinate.newLocation(new.x, new.y, new.z)
             }
             return null
         }
 
     }
 
-    fun rotateAxisVector(rotateAxisX: Double, rotateAxisY: Double, rotateAxisZ: Double, vector: Vector) {
-        rotateAroundAxisZ(vector, rotateAxisZ)
-        rotateAroundAxisX(vector, rotateAxisX)
-        rotateAroundAxisY(vector, rotateAxisY)
+    fun rotateAxisVector(rotateAxisX: Double, rotateAxisY: Double, rotateAxisZ: Double, vector: Vector): Vector {
+        val z = rotateAroundAxisZ(vector, rotateAxisZ)
+        val x = rotateAroundAxisX(z, rotateAxisX)
+        return rotateAroundAxisY(x, rotateAxisY)
     }
 
 }

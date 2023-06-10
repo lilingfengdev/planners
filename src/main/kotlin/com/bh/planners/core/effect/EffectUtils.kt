@@ -40,16 +40,13 @@ val EffectOption.slope: Double
     get() = Coerce.toDouble(this.demand.get("slope", "0.0"))
 
 val EffectOption.rotateAxisX: Double
-    get() = Coerce.toDouble(this.demand.get(listOf("rax", "rotateAxisX", "0")))
+    get() = Coerce.toDouble(this.demand.get(listOf("rax", "rotateAxisX"), "0"))
 
 val EffectOption.rotateAxisY: Double
-    get() = Coerce.toDouble(this.demand.get(listOf("ray", "rotateAxisY", "0")))
+    get() = Coerce.toDouble(this.demand.get(listOf("ray", "rotateAxisY"), "0"))
 
 val EffectOption.rotateAxisZ: Double
-    get() = Coerce.toDouble(this.demand.get(listOf("raz", "rotateAxisZ", "0")))
-
-val EffectOption.effect: String
-    get() = this.demand.get("effect", "arc")!!
+    get() = Coerce.toDouble(this.demand.get(listOf("raz", "rotateAxisZ"), "0"))
 
 val EffectOption.amount: Int
     get() = Coerce.toInteger(this.demand.get("amount", "5.0"))

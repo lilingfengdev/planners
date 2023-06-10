@@ -1,6 +1,9 @@
 package com.bh.planners.core.effect
 
 import org.bukkit.util.Vector
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 /**
@@ -10,12 +13,11 @@ import org.bukkit.util.Vector
  * @param angle 旋转角度
  * @return [Vector]
  */
-fun rotateAroundAxisX(v: Vector, angle: Double): Vector? {
+fun rotateAroundAxisX(v: Vector, angle: Double): Vector {
     if (angle == 0.0) return v
-    var angle = angle
-    angle = Math.toRadians(angle)
-    val cos = Math.cos(angle)
-    val sin = Math.sin(angle)
+    var angdeg = Math.toRadians(angle)
+    val cos = cos(angdeg)
+    val sin = sin(angdeg)
     val y = v.y * cos - v.z * sin
     val z = v.y * sin + v.z * cos
     return v.setY(y).setZ(z)
@@ -30,11 +32,9 @@ fun rotateAroundAxisX(v: Vector, angle: Double): Vector? {
  */
 fun rotateAroundAxisY(v: Vector, angle: Double): Vector {
     if (angle == 0.0) return v
-    var angle = angle
-    angle = -angle
-    angle = Math.toRadians(angle)
-    val cos = Math.cos(angle)
-    val sin = Math.sin(angle)
+    var angdeg = Math.toRadians(-angle)
+    val cos = cos(angdeg)
+    val sin = sin(angdeg)
     val x = v.x * cos + v.z * sin
     val z = v.x * -sin + v.z * cos
     return v.setX(x).setZ(z)
@@ -49,10 +49,9 @@ fun rotateAroundAxisY(v: Vector, angle: Double): Vector {
  */
 fun rotateAroundAxisZ(v: Vector, angle: Double): Vector {
     if (angle == 0.0) return v
-    var angle = angle
-    angle = Math.toRadians(angle)
-    val cos = Math.cos(angle)
-    val sin = Math.sin(angle)
+    var angdeg = Math.toRadians(angle)
+    val cos = cos(angdeg)
+    val sin = sin(angdeg)
     val x = v.x * cos - v.y * sin
     val y = v.x * sin + v.y * cos
     return v.setX(x).setY(y)
@@ -79,23 +78,17 @@ fun rotateVector(v: Vector, yawDegrees: Float, pitchDegrees: Float): Vector {
     val cosPitch = Math.cos(pitch)
     val sinYaw = Math.sin(yaw)
     val sinPitch = Math.sin(pitch)
-    var initialX: Double
-    val initialY: Double
-    val initialZ: Double
-    var x: Double
-    val y: Double
-    val z: Double
+    var initialX = v.x
+    val initialY = v.y
+    val initialZ = v.z
 
     // Z_Axis rotation (Pitch)
-    initialX = v.x
-    initialY = v.y
-    x = initialX * cosPitch - initialY * sinPitch
-    y = initialX * sinPitch + initialY * cosPitch
+    var x: Double = initialX * cosPitch - initialY * sinPitch
+    val y: Double = initialX * sinPitch + initialY * cosPitch
 
     // Y_Axis rotation (Yaw)
-    initialZ = v.z
     initialX = x
-    z = initialZ * cosYaw - initialX * sinYaw
+    val z: Double = initialZ * cosYaw - initialX * sinYaw
     x = initialZ * sinYaw + initialX * cosYaw
     return Vector(x, y, z)
 }
@@ -107,7 +100,7 @@ fun rotateVector(v: Vector, yawDegrees: Float, pitchDegrees: Float): Vector {
  * @return 是否单位化
  */
 fun isNormalized(vector: Vector): Boolean {
-    return Math.abs(vector.lengthSquared() - 1) < Vector.getEpsilon()
+    return abs(vector.lengthSquared() - 1) < Vector.getEpsilon()
 }
 
 /**
@@ -153,8 +146,8 @@ fun rotateAroundNonUnitAxis(
     val x2 = axis.x
     val y2 = axis.y
     val z2 = axis.z
-    val cosTheta = Math.cos(angle)
-    val sinTheta = Math.sin(angle)
+    val cosTheta = cos(angle)
+    val sinTheta = sin(angle)
     val dotProduct = vector.dot(axis)
     val xPrime = x2 * dotProduct * (1.0 - cosTheta) + x * cosTheta + (-z2 * y + y2 * z) * sinTheta
     val yPrime = y2 * dotProduct * (1.0 - cosTheta) + y * cosTheta + (z2 * x - x2 * z) * sinTheta
@@ -165,27 +158,27 @@ fun rotateAroundNonUnitAxis(
 
 fun rotateAroundX(vector: Vector, angle: Double): Vector {
     if (angle == 0.0) return vector
-    val angleCos = Math.cos(angle)
-    val angleSin = Math.sin(angle)
-    val y: Double = angleCos * vector.getY() - angleSin * vector.getZ()
-    val z: Double = angleSin * vector.getY() + angleCos * vector.getZ()
+    val angleCos = cos(angle)
+    val angleSin = sin(angle)
+    val y: Double = angleCos * vector.y - angleSin * vector.z
+    val z: Double = angleSin * vector.y + angleCos * vector.z
     return vector.setY(y).setZ(z)
 }
 
 fun rotateAroundY(vector: Vector, angle: Double): Vector {
     if (angle == 0.0) return vector
-    val angleCos = Math.cos(angle)
-    val angleSin = Math.sin(angle)
-    val x: Double = angleCos * vector.getX() + angleSin * vector.getZ()
-    val z: Double = -angleSin * vector.getX() + angleCos * vector.getZ()
+    val angleCos = cos(angle)
+    val angleSin = sin(angle)
+    val x: Double = angleCos * vector.x + angleSin * vector.z
+    val z: Double = -angleSin * vector.x + angleCos * vector.z
     return vector.setX(x).setZ(z)
 }
 
 fun rotateAroundZ(vector: Vector, angle: Double): Vector {
     if (angle == 0.0) return vector
-    val angleCos = Math.cos(angle)
-    val angleSin = Math.sin(angle)
-    val x: Double = angleCos * vector.getX() - angleSin * vector.getY()
-    val y: Double = angleSin * vector.getX() + angleCos * vector.getY()
+    val angleCos = cos(angle)
+    val angleSin = sin(angle)
+    val x: Double = angleCos * vector.x - angleSin * vector.y
+    val y: Double = angleSin * vector.x + angleCos * vector.y
     return vector.setX(x).setY(y)
 }

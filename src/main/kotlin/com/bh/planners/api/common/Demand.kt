@@ -52,8 +52,15 @@ class Demand(val source: String, val starts: Array<Char> = arrayOf(':')) {
     }
 
     fun get(key: List<String>, def: String? = null): String? {
-        key.forEach {
-            return get(it, def)
+        key.forEach { theKey ->
+            val info = get(theKey, def)
+            if (info == null || info == def) {
+                if (theKey == key.last()) {
+                    return info
+                }
+            } else {
+                return info
+            }
         }
         return def
     }
