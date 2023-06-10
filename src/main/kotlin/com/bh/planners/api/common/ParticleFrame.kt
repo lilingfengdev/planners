@@ -29,9 +29,7 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
         submitAsync {
             while (hasNext()) {
                 task()
-                if (duration > 50) {
-                    Thread.sleep(duration - 50)
-                }
+                Thread.sleep(duration)
             }
         }
     }
@@ -96,7 +94,7 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
             val frame = ParticleFrame(duration) {
 
                 // 单点渲染
-                if (time != "0" && time != "null") {
+                if (duration > 0) {
                     val next = builder.next()
                     if (next == null) {
                         close()

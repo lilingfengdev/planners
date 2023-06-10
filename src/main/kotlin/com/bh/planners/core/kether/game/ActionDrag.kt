@@ -6,16 +6,15 @@ import com.bh.planners.core.kether.nextSelector
 import com.bh.planners.core.kether.origin
 import org.bukkit.Location
 import org.bukkit.util.Vector
-import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val pos: ParsedAction<*>?) :
-    ScriptAction<Void>() {
+class ActionDrag(
+    val step: ParsedAction<*>,
+    val selector: ParsedAction<*>,
+    val pos: ParsedAction<*>?,
+) : ScriptAction<Void>() {
 
 
     private fun next(locA: Location, locB: Location, step: Double): Vector {
@@ -38,8 +37,7 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        return frame.newFrame(step).run<Any>().thenAccept {
-            val step = Coerce.toDouble(it)
+        frame.run(step).double { step ->
             frame.createContainer(selector).thenAccept { container ->
                 if (pos != null) {
                     frame.createContainer(pos).thenAccept {
@@ -53,9 +51,9 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
                         this.velocity = next(this.location, frame.origin().value, step)
                     }
                 }
-
             }
         }
+        return CompletableFuture.completedFuture(null)
     }
 
 

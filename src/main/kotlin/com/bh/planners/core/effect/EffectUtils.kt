@@ -12,7 +12,7 @@ import taboolib.module.effect.math.Matrix
 import java.util.concurrent.CompletableFuture
 // 粒子渲染周期间隔
 val EffectOption.period: String
-    get() = this.demand.get(listOf("period", "p"), "0")!!
+    get() = this.demand.get("period", "0")!!
 
 val EffectOption.isAnimation: Boolean
     get() = period == "0"

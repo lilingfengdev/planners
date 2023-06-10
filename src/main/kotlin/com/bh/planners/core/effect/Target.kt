@@ -6,8 +6,6 @@ import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.kether.toLocal
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.selector.Selector
-import org.bukkit.Location
-import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
