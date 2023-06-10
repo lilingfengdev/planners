@@ -5,6 +5,7 @@ import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.timer.Template
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import taboolib.module.kether.ScriptContext
 
 object TPlayerAttacked : AbstractTimerDamage() {
@@ -12,7 +13,7 @@ object TPlayerAttacked : AbstractTimerDamage() {
         get() = "player attacked"
 
     override fun check(e: ProxyDamageEvent): Target? {
-        return e.getPlayer(e.entity)?.toTarget()
+        return (e.event?.entity as? Player)?.toTarget()
     }
 
 
