@@ -29,8 +29,8 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
         submitAsync {
             while (hasNext()) {
                 task()
-                if (duration > 0) {
-                    Thread.sleep(duration)
+                if (duration > 50) {
+                    Thread.sleep(duration - 50)
                 }
             }
         }
@@ -96,7 +96,7 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
             val frame = ParticleFrame(duration) {
 
                 // 单点渲染
-                if (builder.isSingle) {
+                if (time != "0" && time != "null") {
                     val next = builder.next()
                     if (next == null) {
                         close()
@@ -134,13 +134,11 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
 
         open val run = true
 
-        val isSingle = true
+        open val isSingle = true
 
         abstract fun next(): Location?
 
-        fun nexts(): List<Location> {
-            return emptyList()
-        }
+        abstract fun nexts(): List<Location>
 
         fun cancel() = cancelableList
 

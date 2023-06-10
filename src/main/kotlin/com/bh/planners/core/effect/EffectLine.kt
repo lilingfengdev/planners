@@ -50,6 +50,17 @@ object EffectLine : Effect() {
             }
             return null
         }
+
+        override fun nexts(): List<Location> {
+            val locations = mutableListOf<Location>()
+            while (i < vectorLength) {
+                val location = locA.clone().add(vectorAB.clone().multiply(i))
+                i += step
+                locations.add(location)
+            }
+            return locations
+        }
+
     }
 
 }

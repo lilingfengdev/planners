@@ -47,6 +47,21 @@ object EffectStar : Effect() {
             return null
         }
 
+        override fun nexts(): List<Location> {
+            val locations = mutableListOf<Location>()
+            for (i in 1..5) {
+                while (index < length) {
+                    val vectorTemp: Vector = vector.clone().multiply(index)
+                    val spawnLocation = end.clone().add(vectorTemp)
+                    index += step
+                    locations.add(spawnLocation)
+                }
+                val vectorTemp: Vector = vector.clone().multiply(length)
+                end = end.clone().add(vectorTemp)
+                rotateAroundAxisY(vector, -144.0)
+            }
+            return locations
+        }
 
     }
 

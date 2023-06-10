@@ -57,6 +57,24 @@ object EffectSphere : Effect() {
             return null
         }
 
+        override fun nexts(): List<Location> {
+            val locations = mutableListOf<Location>()
+            while (index < sample) {
+                // y goes from 1 to -1
+                var y = (1 - index / (sample - 1f) * 2).toDouble()
+                // radius at y
+                val yRadius = sqrt(1 - y * y)
+                // golden angle increment
+                val theta = phi * index
+                val x = cos(theta) * radius * yRadius
+                val z = sin(theta) * radius * yRadius
+                y *= radius
+                index++
+                locations.add(location.clone().add(x, y, z))
+            }
+            return locations
+        }
+
     }
 
 }

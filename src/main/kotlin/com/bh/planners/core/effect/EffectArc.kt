@@ -52,7 +52,6 @@ object EffectArc : Effect() {
         spawner: EffectSpawner,
     ) : ParticleFrame.Builder(spawner) {
 
-
         val coordinate = PlayerFrontCoordinate(location)
 
         var i = 0.0
@@ -74,6 +73,25 @@ object EffectArc : Effect() {
                 return coordinate.newLocation(new.x, new.y, new.z)
             }
             return null
+        }
+
+        override fun nexts(): List<Location> {
+            val locations = mutableListOf<Location>()
+            while (if (angle <= -1) i > angle else i < angle) {
+                val radians = Math.toRadians(i + start)
+                val vector = Vector()
+                vector.x = (radius + abs(i) / step * spread) * cos(radians)
+                vector.z = (radius + abs(i) / step * spread) * sin(radians)
+                vector.y = abs(i) / step * slope
+                val new = rotateAxisVector(rotateAxisX, rotateAxisY, rotateAxisZ, vector)
+                if (angle <= -1) {
+                    i -= step
+                } else {
+                    i += step
+                }
+                locations.add(coordinate.newLocation(new.x, new.y, new.z))
+            }
+            return locations
         }
 
     }

@@ -41,12 +41,22 @@ object EffectProjectile : Effect() {
         var index = 0;
 
         override fun next(): Location? {
-            while (index < amount) {
+            if (index < amount) {
                 index++
                 direction.multiply(step)
                 return location.add(direction)
             }
             return null
+        }
+
+        override fun nexts(): List<Location> {
+            val locations = mutableListOf<Location>()
+            while (index < amount) {
+                index++
+                direction.multiply(step)
+                locations.add(location.add(direction))
+            }
+            return locations
         }
 
 

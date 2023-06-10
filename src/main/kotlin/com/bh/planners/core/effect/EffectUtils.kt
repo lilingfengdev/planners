@@ -10,9 +10,6 @@ import taboolib.common.util.sync
 import taboolib.common5.Coerce
 import taboolib.module.effect.math.Matrix
 import java.util.concurrent.CompletableFuture
-import kotlin.math.cos
-import kotlin.math.sin
-
 // 粒子渲染周期间隔
 val EffectOption.period: String
     get() = this.demand.get(listOf("period", "p"), "0")!!
@@ -125,16 +122,3 @@ fun Location.capture(): CompletableFuture<List<LivingEntity>> {
     }
     return future
 }
-
-
-fun Vector.rotateAroundAxisY(angle: Double): Vector {
-    var angle = angle
-    angle = -angle
-    angle = Math.toRadians(angle)
-    val cos = cos(angle)
-    val sin = sin(angle)
-    val x = this.x * cos + this.z * sin
-    val z = this.x * -sin + this.z * cos
-    return this.setX(x).setZ(z)
-}
-

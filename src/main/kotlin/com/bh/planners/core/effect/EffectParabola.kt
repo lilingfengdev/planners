@@ -92,6 +92,21 @@ object EffectParabola : Effect() {
             return null
         }
 
+        override fun nexts(): List<Location> {
+            val locations = mutableListOf<Location>()
+            while (t < threshold) {
+                val v1 = p1.clone().subtract(p0).toVector()
+                val t1 = p0.clone().add(v1.multiply(t))
+                val v2 = p2.clone().subtract(p1).toVector()
+                val t2 = p1.clone().add(v2.multiply(t))
+                val v3 = t2.clone().subtract(t1).toVector()
+                val destination = t1.clone().add(v3.multiply(t))
+                t += step
+                locations.add(destination.clone())
+            }
+            return locations
+        }
+
     }
 
 
