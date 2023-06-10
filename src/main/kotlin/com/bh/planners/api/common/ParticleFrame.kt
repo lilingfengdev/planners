@@ -29,7 +29,6 @@ class ParticleFrame(val duration: Long, val task: ParticleFrame.() -> Unit) : Ru
         submitAsync {
             while (hasNext()) {
                 task()
-                println(duration)
                 if (duration > 0) {
                     Thread.sleep(duration)
                 }

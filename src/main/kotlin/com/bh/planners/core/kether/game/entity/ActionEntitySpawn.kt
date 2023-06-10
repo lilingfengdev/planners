@@ -10,7 +10,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
-import taboolib.common.platform.function.submit
+import taboolib.common.util.sync
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptAction
@@ -43,7 +43,7 @@ class ActionEntitySpawn(
         if (Bukkit.isPrimaryThread()) {
             future.complete(locations.map { spawn(entityType, it) })
         } else {
-            submit(async = false) {
+            sync {
                 future.complete(locations.map { spawn(entityType, it) })
             }
         }

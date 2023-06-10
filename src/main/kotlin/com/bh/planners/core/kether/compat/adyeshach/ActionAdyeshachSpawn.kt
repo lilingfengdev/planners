@@ -5,14 +5,12 @@ import com.bh.planners.api.entity.ProxyAdyeshachEntity
 import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.target
-import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.containerOrOrigin
 import ink.ptms.adyeshach.api.AdyeshachAPI
-import ink.ptms.adyeshach.common.entity.EntityInstance
 import ink.ptms.adyeshach.common.entity.EntityTypes
-import org.bukkit.*
-import org.bukkit.entity.*
-import taboolib.common.platform.function.info
-import taboolib.common.platform.function.submit
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import taboolib.common.util.sync
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
@@ -38,7 +36,7 @@ class ActionAdyeshachSpawn : ScriptAction<Target.Container>() {
         if (Bukkit.isPrimaryThread()) {
             future.complete(locations.map { spawn(entityType, it) })
         } else {
-            submit(async = false) {
+            sync {
                 future.complete(locations.map { spawn(entityType, it) })
             }
         }
