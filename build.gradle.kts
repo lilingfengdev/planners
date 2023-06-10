@@ -26,6 +26,10 @@ taboolib {
     classifier = null
     version = "6.0.10-121"
     description {
+        contributors {
+            name("洋洋")
+            name{"纸杯"}
+        }
         dependencies {
             name("PlaceholderAPI").optional(true)
             name("OriginAttribute").optional(true)
