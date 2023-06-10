@@ -14,23 +14,26 @@ import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
-class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val pos: ParsedAction<*>?) :
+class ActionLeap(val step: ParsedAction<*>, val selector: ParsedAction<*>, val pos: ParsedAction<*>?) :
     ScriptAction<Void>() {
-
-
     private fun next(locA: Location, locB: Location, step: Double): Vector {
-        val vectorAB = locB.clone().subtract(locA).toVector()
+        val a = locA.clone()
+        val b = locB.clone()
+        a.y = 0.0
+        b.y = 0.0
+        val vectorAB = b.subtract(a).toVector()
         vectorAB.normalize()
         vectorAB.multiply(step)
+        println("${vectorAB.x}-${vectorAB.y}-${vectorAB.z}")
         return vectorAB
     }
 
     companion object {
 
         /**
-         * drag step selector1 selector2(1)
+         * leap step selector1 selector2(1)
          */
-        @KetherParser(["drag"], namespace = NAMESPACE, shared = true)
+        @KetherParser(["leap"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             ActionDrag(it.nextParsedAction(), it.nextParsedAction(), it.nextSelector())
         }
@@ -57,6 +60,5 @@ class ActionDrag(val step: ParsedAction<*>, val selector: ParsedAction<*>, val p
             }
         }
     }
-
-
 }
+

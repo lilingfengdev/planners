@@ -16,7 +16,7 @@ object TRunnable : AbstractTimer<TRunnable.TimerRunnableEvent>() {
     override val eventClazz: Class<TimerRunnableEvent>
         get() = TimerRunnableEvent::class.java
 
-    var pointer = 0
+    var pointer : Long = 0
 
     @Schedule(period = 1, async = true)
     fun run() {
@@ -42,7 +42,7 @@ object TRunnable : AbstractTimer<TRunnable.TimerRunnableEvent>() {
         return root.getLong("__option__.period", 1000L) / 50
     }
 
-    override fun check(e: TimerRunnableEvent): Target? {
+    override fun check(e: TimerRunnableEvent): Target {
         return e.sender
     }
 
