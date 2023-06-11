@@ -82,3 +82,7 @@ fun timing(): Long {
 fun timing(start: Long): Double {
     return Coerce.format((System.currentTimeMillis() - start) / 100.0, 2)
 }
+
+fun List<String>.upperCase(): List<String> {
+    return map { it.toUpperCase() }
+}

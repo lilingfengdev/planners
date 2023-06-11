@@ -5,6 +5,7 @@ import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.timer.AbstractTimer
 import com.bh.planners.core.timer.Template
+import com.bh.planners.util.upperCase
 import com.germ.germplugin.api.event.GermKeyDownEvent
 import taboolib.library.kether.ExitStatus
 import taboolib.module.kether.ScriptContext
@@ -33,7 +34,7 @@ object GGermKeydown : AbstractTimer<GermKeyDownEvent>() {
     }
 
     override fun condition(template: Template, event: GermKeyDownEvent): Boolean {
-        val keyId = template.keyId()
+        val keyId = template.keyId().upperCase()
         return if (keyId.isNotEmpty()) {
             keyId.contains(event.keyType.name)
         } else true
