@@ -56,8 +56,8 @@ object TimerDrive {
     private fun regKeys() {
         templates.forEach {
             if (Bukkit.getPluginManager().isPluginEnabled("GermPlugin")) {
-                if (it.root.name == "germ key up" || it.root.name == "germ key down") {
-                    it.root.getString("__option__.key")?.let { key -> germKeys.add(key) }
+                if (it.triggers.contains("germ key up") || it.triggers.contains("germ key down")) {
+                    it.root.getStringList("__option__.key").map { key -> germKeys.add(key) }
                 }
                 GermKeyAPI.getRegisteredKeys().forEach { key ->
                     germKeys.remove(key.name)
@@ -67,8 +67,8 @@ object TimerDrive {
                 }
             }
             if (Bukkit.getPluginManager().isPluginEnabled("DragonCore")) {
-                if (it.root.name == "dragon key release" || it.root.name == "dragon key press") {
-                    it.root.getString("__option__.key")?.let { key -> dragonKeys.add(key) }
+                if (it.triggers.contains("dragon key release") || it.triggers.contains("dragon key press")) {
+                    it.root.getStringList("__option__.key").map { key -> dragonKeys.add(key) }
                 }
                 dragonKeys.forEach {
                     CoreAPI.registerKey(it)

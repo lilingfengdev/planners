@@ -37,6 +37,8 @@ taboolib {
             name("AttributePlus").optional(true)
             name("SX-Attribute").optional(true)
             name("WorldGuard").optional(true)
+            name("DragonCore").optional(true)
+            name("GermPlugin").optional(true)
         }
     }
 }
