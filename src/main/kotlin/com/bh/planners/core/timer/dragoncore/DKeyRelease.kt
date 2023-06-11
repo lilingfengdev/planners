@@ -22,10 +22,6 @@ object DKeyRelease : AbstractTimer<KeyReleaseEvent>() {
         return e.player.toTarget()
     }
 
-    private fun Template.keyId(): List<String> {
-        return this.root.getStringList("__option__.key").map { it.toUpperCase() }
-    }
-
     override fun onStart(context: ScriptContext, template: Template, e: KeyReleaseEvent) {
         if (!condition(template, e)) {
             context.setExitStatus(ExitStatus.success())
@@ -33,9 +29,9 @@ object DKeyRelease : AbstractTimer<KeyReleaseEvent>() {
     }
 
     override fun condition(template: Template, event: KeyReleaseEvent): Boolean {
-        val keyId = template.keyId()
-        return if (keyId.isNotEmpty()) {
-            keyId.contains(event.key)
+        val keys = template.keys
+        return if (keys.isNotEmpty()) {
+            keys.contains(event.key)
         } else true
     }
 

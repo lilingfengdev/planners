@@ -22,10 +22,6 @@ object GGermKeyup : AbstractTimer<GermKeyUpEvent>() {
         return e.player.toTarget()
     }
 
-    private fun Template.keyId(): List<String> {
-        return this.root.getStringList("__option__.key").map { it.toUpperCase() }
-    }
-
     override fun onStart(context: ScriptContext, template: Template, e: GermKeyUpEvent) {
         if (!condition(template, e)) {
             context.setExitStatus(ExitStatus.success())
@@ -33,9 +29,9 @@ object GGermKeyup : AbstractTimer<GermKeyUpEvent>() {
     }
 
     override fun condition(template: Template, event: GermKeyUpEvent): Boolean {
-        val keyId = template.keyId()
-        return if (keyId.isNotEmpty()) {
-            keyId.contains(event.keyType.name)
+        val keys = template.keys
+        return if (keys.isNotEmpty()) {
+            keys.contains(event.keyType.name)
         } else true
     }
 
