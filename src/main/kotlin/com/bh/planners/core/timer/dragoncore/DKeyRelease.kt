@@ -23,7 +23,7 @@ object DKeyRelease : AbstractTimer<KeyReleaseEvent>() {
     }
 
     private fun Template.keyId(): List<String> {
-        return this.root.getStringList("__option__.key")
+        return this.root.getStringList("__option__.key").map { it.toUpperCase() }
     }
 
     override fun onStart(context: ScriptContext, template: Template, e: KeyReleaseEvent) {
