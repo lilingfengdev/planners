@@ -8,7 +8,7 @@ import com.bh.planners.core.timer.Template
 import eos.moe.dragoncore.api.event.KeyReleaseEvent
 
 @Plugin("DragonCore")
-class DKeyRelease : AbstractTimer<KeyReleaseEvent>() {
+object DKeyRelease : AbstractTimer<KeyReleaseEvent>() {
 
     override val name: String
         get() = "dragon key release"

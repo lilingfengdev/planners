@@ -8,7 +8,7 @@ import com.bh.planners.core.timer.Template
 import eos.moe.dragoncore.api.event.KeyPressEvent
 
 @Plugin("DragonCore")
-class DKeyPress : AbstractTimer<KeyPressEvent>() {
+object DKeyPress : AbstractTimer<KeyPressEvent>() {
 
     override val name: String
         get() = "dragon key press"

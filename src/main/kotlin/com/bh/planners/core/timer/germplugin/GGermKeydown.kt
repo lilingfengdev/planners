@@ -8,7 +8,7 @@ import com.bh.planners.core.timer.Template
 import com.germ.germplugin.api.event.GermKeyDownEvent
 
 @Plugin("GermPlugin")
-class GGermKeydown : AbstractTimer<GermKeyDownEvent>() {
+object GGermKeydown : AbstractTimer<GermKeyDownEvent>() {
 
     override val name: String
         get() = "germ key down"
