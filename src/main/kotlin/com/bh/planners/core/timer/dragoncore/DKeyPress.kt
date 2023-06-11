@@ -5,7 +5,6 @@ import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.timer.AbstractTimer
 import com.bh.planners.core.timer.Template
-import com.bh.planners.util.upperCase
 import eos.moe.dragoncore.api.event.KeyPressEvent
 import taboolib.library.kether.ExitStatus
 import taboolib.module.kether.ScriptContext
@@ -23,10 +22,6 @@ object DKeyPress : AbstractTimer<KeyPressEvent>() {
         return e.player.toTarget()
     }
 
-    private fun Template.keyId(): List<String> {
-        return root.getStringList("__option__.key")
-    }
-
     override fun onStart(context: ScriptContext, template: Template, e: KeyPressEvent) {
         if (!condition(template, e)) {
             context.setExitStatus(ExitStatus.success())
@@ -34,9 +29,9 @@ object DKeyPress : AbstractTimer<KeyPressEvent>() {
     }
 
     override fun condition(template: Template, event: KeyPressEvent): Boolean {
-        val keyId = template.keyId().upperCase()
-        return if (keyId.isNotEmpty()) {
-            keyId.contains(event.key)
+        val keys = template.keys
+        return if (keys.isNotEmpty()) {
+            keys.contains(event.key)
         } else true
     }
 
