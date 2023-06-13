@@ -7,8 +7,8 @@ object ActionDragonLoader {
 
     /**
      * 实体动画
-     * dragon animation send [name: token] [selector]
-     * dragon animation stop [name: token] [selector]
+     * dragon animation send [name: token] [transition: action] [selector]
+     * dragon animation stop [name: token] [transition: action] [selector]
      *
      * 玩家动画
      * dragon playeranimation send [name: token] [selector]
@@ -40,21 +40,8 @@ object ActionDragonLoader {
 
                     "stop" -> {
                         ActionDragonAnimation(
-                                it.nextToken(), true, it.nextParsedAction(), it.nextSelector()
+                            it.nextToken(), true, it.nextParsedAction(), it.nextSelector()
                         )
-                    }
-
-                    else -> error("out of case")
-                }
-            }
-            case("playeranimation"){
-                when (it.expects("send", "stop")) {
-                    "send" -> {
-                        ActionDragonPlayerAnimation(it.nextToken(),false,it.nextSelector())
-                    }
-
-                    "stop" -> {
-                        ActionDragonPlayerAnimation(it.nextToken(),true,it.nextSelector())
                     }
 
                     else -> error("out of case")
@@ -62,19 +49,19 @@ object ActionDragonLoader {
             }
             case("sound") {
                 ActionDragonSound(
-                        it.nextParsedAction(),
-                        it.nextArgumentAction(arrayOf("volume"), 1.0f)!!,
-                        it.nextArgumentAction(arrayOf("pitch"), 1.0f)!!,
-                        it.nextArgumentAction(arrayOf("loop"), false)!!,
-                        it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
+                    it.nextParsedAction(),
+                    it.nextArgumentAction(arrayOf("volume"), 1.0f)!!,
+                    it.nextArgumentAction(arrayOf("pitch"), 1.0f)!!,
+                    it.nextArgumentAction(arrayOf("loop"), false)!!,
+                    it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
                 )
             }
             case("particle", "effect") {
                 ActionDragonEffect(
-                        it.nextParsedAction(),
-                        it.nextArgumentAction(arrayOf("rotation"), "0,0,0")!!,
-                        it.nextArgumentAction(arrayOf("time"), 100)!!,
-                        it.nextSelectorOrNull()
+                    it.nextParsedAction(),
+                    it.nextArgumentAction(arrayOf("rotation"), "0,0,0")!!,
+                    it.nextArgumentAction(arrayOf("time"), 100)!!,
+                    it.nextSelectorOrNull()
                 )
             }
             case("bind") {

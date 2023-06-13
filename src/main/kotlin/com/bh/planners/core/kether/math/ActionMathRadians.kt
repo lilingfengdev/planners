@@ -21,7 +21,7 @@ class ActionMathRadians(val action: ParsedAction<*>) : ScriptAction<Any>() {
     companion object {
 
         /**
-         * cos [value: action]
+         * radians [value: action]
          */
         @KetherParser(["radians"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
