@@ -12,6 +12,6 @@ open class Template(val id: String, var root: ConfigurationSection) {
 
     open val script = getScriptFactor(root.getString("action", "")!!)
 
-    open val keys = root.getStringList("__option__.key").map { it.toUpperCase() }.toList()
+    open val keys = root.getStringList("__option__.key").map { it.toUpperCase() }
 
 }
