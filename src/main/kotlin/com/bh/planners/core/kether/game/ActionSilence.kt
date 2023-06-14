@@ -48,8 +48,8 @@ class ActionSilence(
          */
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val ticks = it.nextParsedAction()
             val event = it.nextArgumentAction(arrayOf("callevent"), "false")!!
+            val ticks = it.nextParsedAction()
             ActionSilence(ticks, event, it.nextSelectorOrNull())
         }
 
