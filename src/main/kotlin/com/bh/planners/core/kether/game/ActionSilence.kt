@@ -44,12 +44,12 @@ class ActionSilence(
         /**
          * 沉默目标 使对方在一定时间内无法释放技能
          *  *** 暂时无效 等PlayerCastSkillEvents完善即可
-         * silence [ticks] <是否触发事件: false> [selector]
+         * silence [ticks] <callevent: false> [selector]
          */
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val ticks = it.nextParsedAction()
-            val event = it.nextArgumentAction(arrayOf("event"), false)!!
+            val event = it.nextArgumentAction(arrayOf("callevent"), "false")!!
             ActionSilence(ticks, event, it.nextSelectorOrNull())
         }
 
