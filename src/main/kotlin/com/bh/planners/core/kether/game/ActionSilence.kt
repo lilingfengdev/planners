@@ -4,6 +4,7 @@ import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.api.event.PlayerSilenceEvent
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.execPlayer
+import com.bh.planners.core.kether.nextArgumentAction
 import com.bh.planners.core.kether.nextSelectorOrNull
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
@@ -48,7 +49,7 @@ class ActionSilence(
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             val seconds = it.nextParsedAction()
-            val event = it.nextParsedAction()
+            val event = it.nextArgumentAction(arrayOf("event"), false)!!
             ActionSilence(seconds, event, it.nextSelectorOrNull())
         }
 
