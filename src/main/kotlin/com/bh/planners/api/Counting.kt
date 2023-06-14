@@ -12,6 +12,8 @@ object Counting {
 
     val map = Collections.synchronizedMap(mutableMapOf<String, MutableSet<Baffle>>())
 
+    val silenceMap = mutableMapOf<UUID, Long>()
+
     fun reset(player: Player, session: Session) {
         val get = session.cooldown.get()
         set(player, session.skill, Coerce.toLong(get) * 50)
