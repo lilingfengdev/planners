@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.event.PlayerCastSkillEvents
+import com.bh.planners.api.event.PlayerSilenceEvent
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.nextSelectorOrNull
@@ -24,6 +25,7 @@ class ActionSilence(
         frame.newFrame(seconds).run<Any>().thenApply {
             frame.execPlayer(selector!!) {
                 silenceMap[uniqueId] = (System.currentTimeMillis() + Coerce.toDouble(it) * 50).toLong()
+                PlayerSilenceEvent(this,(Coerce.toDouble(it) * 50).toLong()).call()
             }
         }
         return CompletableFuture.completedFuture(null)
