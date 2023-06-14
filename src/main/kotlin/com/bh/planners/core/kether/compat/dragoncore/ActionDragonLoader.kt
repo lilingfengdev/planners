@@ -47,6 +47,19 @@ object ActionDragonLoader {
                     else -> error("out of case")
                 }
             }
+            case("playeranimation"){
+                when (it.expects("send", "stop")) {
+                    "send" -> {
+                        ActionDragonPlayerAnimation(it.nextToken(),false,it.nextSelector())
+                    }
+
+                    "stop" -> {
+                        ActionDragonPlayerAnimation(it.nextToken(),true,it.nextSelector())
+                    }
+
+                    else -> error("out of case")
+                }
+            }
             case("sound") {
                 ActionDragonSound(
                     it.nextParsedAction(),
