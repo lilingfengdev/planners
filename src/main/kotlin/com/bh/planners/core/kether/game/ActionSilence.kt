@@ -1,6 +1,5 @@
 package com.bh.planners.core.kether.game
 
-import com.bh.planners.api.Counting.silenceMap
 import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.execPlayer
@@ -31,6 +30,8 @@ class ActionSilence(
     }
 
     companion object {
+
+        private val silenceMap = mutableMapOf<UUID, Long>()
 
         /**
          * 沉默目标 使对方在一定时间内无法释放技能
