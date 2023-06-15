@@ -39,6 +39,7 @@ taboolib {
             name("WorldGuard").optional(true)
             name("DragonCore").optional(true)
             name("GermPlugin").optional(true)
+            name("Chemdah").optional = true
         }
     }
 }
