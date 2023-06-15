@@ -18,18 +18,18 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class ActionSilence(
-    val seconds: ParsedAction<*>,
     val event: ParsedAction<*>,
+    val ticks: ParsedAction<*>,
     val selector: ParsedAction<*>?,
 ) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.newFrame(seconds).run<Any>().thenApply { seconds ->
-            frame.newFrame(event).run<Boolean>().thenAccept { event ->
+        frame.newFrame(event).run<Boolean>().thenAccept { event ->
+            frame.newFrame(ticks).run<Any>().thenApply { ticks ->
                 frame.execPlayer(selector!!) {
-                    silenceMap[uniqueId] = (System.currentTimeMillis() + Coerce.toDouble(seconds) * 50).toLong()
+                    silenceMap[uniqueId] = (System.currentTimeMillis() + Coerce.toDouble(ticks) * 50).toLong()
                     if (event) {
-                        PlayerSilenceEvent(this, (Coerce.toDouble(seconds) * 50).toLong()).call()
+                        PlayerSilenceEvent(this, (Coerce.toDouble(ticks) * 50).toLong()).call()
                     }
                 }
             }
@@ -44,13 +44,13 @@ class ActionSilence(
         /**
          * 沉默目标 使对方在一定时间内无法释放技能
          *  *** 暂时无效 等PlayerCastSkillEvents完善即可
-         * silence [ticks] <是否触发事件: false> [selector]
+         * silence <callevent: false> [ticks] [selector]
          */
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val seconds = it.nextParsedAction()
-            val event = it.nextArgumentAction(arrayOf("event"), false)!!
-            ActionSilence(seconds, event, it.nextSelectorOrNull())
+            val event = it.nextArgumentAction(arrayOf("callevent"), "false")!!
+            val ticks = it.nextParsedAction()
+            ActionSilence(ticks, event, it.nextSelectorOrNull())
         }
 
         @SubscribeEvent(EventPriority.LOWEST)
