@@ -13,17 +13,26 @@ object ChemdahHook {
     @Awake(LifeCycle.ENABLE)
     fun reg() {
         if (Bukkit.getPluginManager().isPluginEnabled("chemdah")) {
-            reg(PlayerSelectedJob)
-            reg(PlayerCastSkill)
-            reg(PlayerSkillUpgrade)
-            reg(PlayerSkillBind)
-            reg(PlayerTransfer)
+            reg(
+                listOf<ObjectiveCountableI<*>>(
+                    PreSkillCast,
+                    PostSkillCast,
+                    RecordSkillCast,
+                    FailureSkillCast,
+                    PlayerSelectedJob,
+                    PlayerSkillUpgrade,
+                    PlayerTransfer,
+                    PlayerSkillBind
+                )
+            )
         }
     }
 
-    fun reg(cs : ObjectiveCountableI<*>) {
-        cs.register()
-        info("&6CHEM拓展注册 ${cs.name} &a成功".colored())
+    fun reg(cs : List<ObjectiveCountableI<*>>) {
+        cs.forEach {
+            it.register()
+            info("&6CHEM拓展注册 ${it.name} &a成功".colored())
+        }
     }
 
 }

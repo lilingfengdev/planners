@@ -1,10 +1,8 @@
 package com.bh.planners.api.compat.chemdah
 
 import com.bh.planners.api.event.PlayerTransferEvent
-import ink.ptms.chemdah.core.quest.objective.Dependency
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
-@Dependency("Planners")
 object PlayerTransfer : ObjectiveCountableI<PlayerTransferEvent>() {
 
     override val name = "planners transfer"

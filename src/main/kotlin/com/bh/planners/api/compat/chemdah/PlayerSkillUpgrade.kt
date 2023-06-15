@@ -1,10 +1,8 @@
 package com.bh.planners.api.compat.chemdah
 
 import com.bh.planners.api.event.PlayerSkillUpgradeEvent
-import ink.ptms.chemdah.core.quest.objective.Dependency
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
-@Dependency("Planners")
 object PlayerSkillUpgrade : ObjectiveCountableI<PlayerSkillUpgradeEvent>() {
 
     override val name = "planners skill upgrade"
