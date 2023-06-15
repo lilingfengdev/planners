@@ -6,7 +6,10 @@ import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.ScriptFactor
 import com.bh.planners.core.pojo.Skill
+import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
+import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.warning
@@ -85,4 +88,12 @@ fun timing(start: Long): Double {
 
 fun List<String>.upperCase(): List<String> {
     return map { it.toUpperCase() }
+}
+
+fun List<ObjectiveCountableI<*>>.register() {
+    map { register() }
+}
+
+fun World.isWorld(world: String): Boolean {
+    return Bukkit.getWorld(world) == this
 }
