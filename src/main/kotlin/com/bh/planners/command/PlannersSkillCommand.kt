@@ -5,19 +5,22 @@ import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.bind
 import com.bh.planners.api.hasJob
-import com.bh.planners.core.kether.game.ActionSkillCast
-import com.bh.planners.core.ui.Faceplate
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
+import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
-import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Coerce
+import taboolib.expansion.createHelper
 
 @CommandHeader("plannersskill")
 object PlannersSkillCommand {
+
+    @CommandBody
+    val main = mainCommand {
+        createHelper()
+    }
 
     @CommandBody
     val tryCast = subCommand {
@@ -42,27 +45,6 @@ object PlannersSkillCommand {
         }
     }
 
-    @CommandBody
-    val upgrade = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
-            dynamic("value") {
-                suggestion<ProxyCommandSender> { sender, context ->
-                    val player = Bukkit.getPlayerExact(context.argument(-1))!!
-                    if (player.hasJob) {
-                        player.plannersProfile.getSkills().map { it.key }
-                    } else emptyList()
-                }
-                execute<ProxyCommandSender> { sender, context, argument ->
-                    val player = Bukkit.getPlayerExact(context.argument(-1))!!
-                    if (player.hasJob) {
-                        Faceplate(player, PlannersAPI.getSkill(argument) ?: return@execute).open()
-                    }
-                }
-            }
-        }
-    }
 
     @CommandBody
     val directCast = subCommand {
@@ -78,8 +60,6 @@ object PlannersSkillCommand {
                         ContextAPI.create(player, context.argument(-1), Coerce.toInteger(argument))?.cast()
                     }
                 }
-
-
             }
         }
     }
@@ -102,8 +82,6 @@ object PlannersSkillCommand {
                         player.plannersProfile.bind(skill, PlannersAPI.keySlots.firstOrNull { it.key == argument }!!)
                     }
                 }
-
-
             }
         }
     }
@@ -136,5 +114,8 @@ object PlannersSkillCommand {
             }
         }
     }
+
+    @CommandBody
+    val upgrade = PlannersSkillUpgradeCommand
 
 }

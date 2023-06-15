@@ -8,14 +8,17 @@ import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.ui.TransferJobUI
 import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.command.CommandBody
-import taboolib.common.platform.command.CommandHeader
-import taboolib.common.platform.command.player
-import taboolib.common.platform.command.subCommand
+import taboolib.common.platform.command.*
+import taboolib.expansion.createHelper
 import taboolib.module.lang.sendLang
 
 @CommandHeader("transfer")
 object PlannersTransferCommand {
+
+    @CommandBody
+    val main = mainCommand {
+        createHelper()
+    }
 
     @CommandBody
     val open = subCommand {
