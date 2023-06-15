@@ -18,17 +18,17 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class ActionSilence(
-    val event: ParsedAction<*>,
+    val callevent: ParsedAction<*>,
     val ticks: ParsedAction<*>,
     val selector: ParsedAction<*>?,
 ) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.newFrame(event).run<Boolean>().thenAccept { event ->
+        frame.newFrame(callevent).run<Boolean>().thenAccept { callevent ->
             frame.newFrame(ticks).run<Any>().thenApply { ticks ->
                 frame.execPlayer(selector!!) {
                     silenceMap[uniqueId] = (System.currentTimeMillis() + Coerce.toDouble(ticks) * 50).toLong()
-                    if (event) {
+                    if (callevent) {
                         PlayerSilenceEvent(this, (Coerce.toDouble(ticks) * 50).toLong()).call()
                     }
                 }
@@ -48,9 +48,9 @@ class ActionSilence(
          */
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val event = it.nextArgumentAction(arrayOf("callevent"), "false")!!
+            val callevent = it.nextArgumentAction(arrayOf("callevent"), "false")!!
             val ticks = it.nextParsedAction()
-            ActionSilence(event, ticks, it.nextSelectorOrNull())
+            ActionSilence(callevent, ticks, it.nextSelectorOrNull())
         }
 
         @SubscribeEvent(EventPriority.LOWEST)
