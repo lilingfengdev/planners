@@ -7,7 +7,7 @@ import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
 object RecordSkillCast :ObjectiveCountableI<PlayerCastSkillEvents.Record>() {
     override val event: Class<PlayerCastSkillEvents.Record> = PlayerCastSkillEvents.Record::class.java
-    override val name: String= "record skill cast"
+    override val name: String= "planners record skill cast"
 
     init {
         FailureSkillCast.handler {

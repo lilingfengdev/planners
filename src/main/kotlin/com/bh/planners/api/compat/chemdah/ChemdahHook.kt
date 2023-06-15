@@ -1,5 +1,6 @@
 package com.bh.planners.api.compat.chemdah
 
+import ink.ptms.chemdah.api.ChemdahAPI
 import ink.ptms.chemdah.core.quest.QuestLoader.register
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 import org.bukkit.Bukkit
@@ -25,6 +26,8 @@ object ChemdahHook {
                     PlayerSkillBind
                 )
             )
+            //重载
+            ChemdahAPI.reloadAll()
         }
     }
 
