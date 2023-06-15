@@ -24,8 +24,8 @@ class ActionSilence(
 ) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.newFrame(ticks).run<Any>().thenApply { ticks ->
-            frame.newFrame(event).run<Boolean>().thenAccept { event ->
+        frame.newFrame(event).run<Boolean>().thenAccept { event ->
+            frame.newFrame(ticks).run<Any>().thenApply { ticks ->
                 frame.execPlayer(selector!!) {
                     silenceMap[uniqueId] = (System.currentTimeMillis() + Coerce.toDouble(ticks) * 50).toLong()
                     if (event) {
@@ -44,7 +44,7 @@ class ActionSilence(
         /**
          * 沉默目标 使对方在一定时间内无法释放技能
          *  *** 暂时无效 等PlayerCastSkillEvents完善即可
-         * silence [ticks] <callevent: false> [selector]
+         * silence <callevent: false> [ticks] [selector]
          */
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
