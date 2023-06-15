@@ -50,7 +50,7 @@ class ActionSilence(
         fun parser() = scriptParser {
             val event = it.nextArgumentAction(arrayOf("callevent"), "false")!!
             val ticks = it.nextParsedAction()
-            ActionSilence(ticks, event, it.nextSelectorOrNull())
+            ActionSilence(event, ticks, it.nextSelectorOrNull())
         }
 
         @SubscribeEvent(EventPriority.LOWEST)
