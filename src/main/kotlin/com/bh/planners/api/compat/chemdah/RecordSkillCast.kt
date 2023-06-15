@@ -6,15 +6,18 @@ import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
 object RecordSkillCast :ObjectiveCountableI<PlayerCastSkillEvents.Record>() {
-    override val event: Class<PlayerCastSkillEvents.Record> = PlayerCastSkillEvents.Record::class.java
-    override val name: String= "planners record skill cast"
+
+    override val name = "planners record skill cast"
+    override val event = PlayerCastSkillEvents.Record::class.java
+
+    override val isAsync = true
 
     init {
         FailureSkillCast.handler {
             it.player
         }
         addSimpleCondition("skill") { data, e ->
-            data.toString() == e.skill.key
+            data.toString() == e.skill.option.name
         }
         addSimpleCondition("level") { data, e ->
             e.player.plannersProfile.job!!.level >= data.toInt()
