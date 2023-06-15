@@ -84,7 +84,7 @@ class AttributePlus3Bridge : AttributeBridge {
 
     override fun get(entity: LivingEntity, keyword: String): Any {
         val data = entity.getAttributeData
-        return data.getAttributeValue(keyword)
+        return random(data.getAttributeValue(keyword)[0].cdouble, data.getAttributeValue(keyword)[1].cdouble)
     }
 
 }

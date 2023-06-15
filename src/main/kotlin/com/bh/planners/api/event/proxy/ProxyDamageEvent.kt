@@ -36,7 +36,7 @@ open class ProxyDamageEvent(damager: Entity, entity: Entity, cause: DamageCause?
             ignoreCancelled = true,
             priority = EventPriority.LOWEST
         )
-        fun e(ope: OptionalEvent) {
+        fun oa(ope: OptionalEvent) {
             val e = ope.get<EntityDamageEvent>()
             if (e.priorityEnum == PriorityEnum.POST) {
                 val memory = e.damageMemory
