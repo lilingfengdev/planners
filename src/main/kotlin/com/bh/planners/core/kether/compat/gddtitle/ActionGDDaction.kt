@@ -40,7 +40,7 @@ class ActionGDDaction(
 
 
 
-    companion object Parser {
+    companion object {
 
         @KetherParser(["gddaction"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
