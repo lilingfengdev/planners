@@ -31,7 +31,7 @@ class ActionGDDtitle(
                 frame.newFrame(stay).run<Any>().thenAccept { stay ->
                     frame.newFrame(fadeOut).run<Any>().thenAccept { fadeOut ->
                         frame.containerOrSender(selector).thenAccept {
-                            it.forEachPlayer { execute(this, title.toString(), Coerce.toInteger(fadeIn), Coerce.toInteger(stay), Coerce.toInteger(fadeOut)) }
+                            it.forEachPlayer { execute(this, title.toString(), Coerce.toInteger(fadeIn)*50, Coerce.toInteger(stay)*50, Coerce.toInteger(fadeOut)*50) }
                         }
                     }
                 }
