@@ -56,9 +56,9 @@ object ActionGermLoader {
                     it.nextSelector()
                 )
             }
-//            case("look") {
-//                ActionGermLook(it.nextParsedAction(),it.nextArgumentAction(arrayOf("at"))!!)
-//            }
+            case("look") {
+                ActionGermLook(it.nextParsedAction(),it.nextArgumentAction(arrayOf("at"))!!,it.nextParsedAction())
+            }
             case("effect") {
 
                 try {

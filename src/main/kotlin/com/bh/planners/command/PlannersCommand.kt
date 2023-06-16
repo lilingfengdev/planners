@@ -26,7 +26,7 @@ object PlannersCommand {
     @CommandBody
     val reload = subCommand {
 
-        execute<ProxyCommandSender> { sender, context, argument ->
+        execute<ProxyCommandSender> { sender, _, _ ->
             Planners.config.reload()
             PluginReloadEvent().call()
             sender.sendMessage("reload successful.")
@@ -61,9 +61,9 @@ object PlannersCommand {
     @CommandBody
     val info = subCommand {
         dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
 
-            execute<ProxyCommandSender> { sender, context, argument ->
+            execute<ProxyCommandSender> { sender, _, argument ->
                 val playerExact = Bukkit.getPlayerExact(argument) ?: return@execute
                 ScriptLoader.createFunctionScript(ContextAPI.create(playerExact), PlannersOption.infos).forEach {
                     sender.sendMessage(it.colored())

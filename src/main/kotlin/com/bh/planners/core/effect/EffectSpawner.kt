@@ -86,7 +86,7 @@ open class EffectSpawner(val option: EffectOption) {
                         itemMeta.lore = data.lore
                         try {
                             itemMeta.setCustomModelData(data.customModelData)
-                        } catch (ex: NoSuchMethodError) {
+                        } catch (_: NoSuchMethodError) {
                         }
                         item.itemMeta = itemMeta
                         if (data.data != 0) {

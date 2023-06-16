@@ -25,17 +25,17 @@ object PlannersSkillCommand {
     @CommandBody
     val tryCast = subCommand {
         dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
 
             dynamic("value") {
 
-                suggestion<ProxyCommandSender> { sender, context ->
+                suggestion<ProxyCommandSender> { _, context ->
                     val player = Bukkit.getPlayerExact(context["player"])!!
                     if (player.hasJob) {
                         player.plannersProfile.getSkills().map { it.key }
                     } else emptyList()
                 }
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = Bukkit.getPlayerExact(context["player"])!!
                     if (player.hasJob) {
                         PlannersAPI.cast(player, argument)
@@ -49,13 +49,13 @@ object PlannersSkillCommand {
     @CommandBody
     val directCast = subCommand {
         dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
             dynamic("skill") {
-                suggestion<ProxyCommandSender> { sender, context ->
+                suggestion<ProxyCommandSender> { _, _ ->
                     PlannersAPI.skills.map { it.key }
                 }
                 dynamic("level") {
-                    execute<ProxyCommandSender> { sender, context, argument ->
+                    execute<ProxyCommandSender> { _, context, argument ->
                         val player = Bukkit.getPlayerExact(context["player"])!!
                         ContextAPI.create(player, context["skill"], Coerce.toInteger(argument))?.cast()
                     }
@@ -67,16 +67,16 @@ object PlannersSkillCommand {
     @CommandBody
     val bind = subCommand {
         dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
             dynamic("skill") {
-                suggestion<ProxyCommandSender> { sender, context ->
+                suggestion<ProxyCommandSender> { _, _ ->
                     PlannersAPI.skills.map { it.key }
                 }
                 dynamic("slot") {
-                    suggestion<ProxyCommandSender> { sender, context ->
+                    suggestion<ProxyCommandSender> { _, _ ->
                         PlannersAPI.keySlots.map { it.key }
                     }
-                    execute<ProxyCommandSender> { sender, context, argument ->
+                    execute<ProxyCommandSender> { _, context, argument ->
                         val player = Bukkit.getPlayerExact(context["player"])!!
                         val skill = player.plannersProfile.getSkill(context["skill"])!!
                         player.plannersProfile.bind(skill, PlannersAPI.keySlots.firstOrNull { it.key == argument }!!)
@@ -90,17 +90,17 @@ object PlannersSkillCommand {
     val clear = subCommand {
         dynamic("player") {
 
-            suggestion<ProxyCommandSender> { sender, context ->
+            suggestion<ProxyCommandSender> { _, _ ->
                 listOf("*", *Bukkit.getOnlinePlayers().map { it.name }.toTypedArray())
             }
 
             dynamic("skill") {
 
-                suggestion<ProxyCommandSender> { sender, context ->
+                suggestion<ProxyCommandSender> { _, _ ->
                     listOf("*", *PlannersAPI.skills.map { it.key }.toTypedArray())
                 }
 
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = Bukkit.getPlayerExact(context["player"])!!
                     val profile = player.plannersProfile
                     if (argument == "*") {

@@ -23,10 +23,10 @@ object PlannersExperienceCommand {
     @CommandBody
     val give = subCommand {
         dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
 
             dynamic("value") {
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         player.plannersProfile.addExperience(Coerce.toInteger(argument))
@@ -40,10 +40,10 @@ object PlannersExperienceCommand {
     @CommandBody
     val take = subCommand {
         dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
 
             dynamic("value") {
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         player.sendLang("player-take-experience", argument, player.plannersProfile.level)

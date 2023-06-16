@@ -27,9 +27,9 @@ object PlannersJobCommand {
     @CommandBody
     val select = subCommand {
         dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
 
-            execute<ProxyCommandSender> { sender, context, argument ->
+            execute<ProxyCommandSender> { _, _, argument ->
                 val player = Bukkit.getPlayerExact(argument)!!
 
                 if (player.plannersProfile.job != null) {
@@ -47,10 +47,10 @@ object PlannersJobCommand {
     @CommandBody
     val call = subCommand {
         dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
+            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
 
             dynamic("key slot") {
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
                     PlannersAPI.callKeyById(player, argument)
                 }
@@ -85,7 +85,7 @@ object PlannersJobCommand {
         dynamic("player") {
             suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
 
-            execute<ProxyCommandSender> { _, context, argument ->
+            execute<ProxyCommandSender> { _, _, argument ->
                 val playerExact = Bukkit.getPlayerExact(argument) ?: return@execute
 
                 if (playerExact.hasJob) {
@@ -103,7 +103,7 @@ object PlannersJobCommand {
             suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
 
             dynamic("job") {
-                suggestion<ProxyCommandSender> { _, context ->
+                suggestion<ProxyCommandSender> { _, _ ->
                     PlannersAPI.routers.map { it.key }
                 }
 
