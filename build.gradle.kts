@@ -41,6 +41,7 @@ taboolib {
             name("GermPlugin").optional(true)
             name("VirtualEntitySkillModule").optional(true)
             name("Chemdah").optional(true)
+            name("GDDTitle").optional(true)
         }
     }
 }
