@@ -47,36 +47,30 @@ taboolib {
 }
 
 repositories {
-
     mavenCentral()
-    mavenLocal()
-
-    maven {
-        url = uri("http://ptms.ink:8081/repository/releases/")
-        isAllowInsecureProtocol = true
-    }
-//    maven {
-//        url = uri("http://nexus.okkero.com/repository/maven-releases/")
-//        isAllowInsecureProtocol = true
-//    }
 }
 
 dependencies {
 
-//    compileOnly("ink.ptms:nms-all:1.0.0")
     compileOnly("ink.ptms.core:v11900:11900:mapped")
     compileOnly("ink.ptms.core:v11900:11900:universal")
     compileOnly("ink.ptms.core:v11200:11200")
+    compileOnly("ink.ptms:nms-all:1.0.0")
 
     compileOnly("public:ModelEngine:2.5.1")
     compileOnly("com.google.code.gson:gson:2.8.5")
     compileOnly("com.google.guava:guava:21.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1")
 
     compileOnly("com.mojang:datafixerupper:4.0.26")
 
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
@@ -85,9 +79,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-}
+
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
