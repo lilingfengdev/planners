@@ -24,7 +24,8 @@ object ChemdahHook {
                     PlayerSkillUpgrade,
                     PlayerTransfer,
                     PlayerSkillBind,
-                    PlayerKeyDown
+                    PlayerKeyDown,
+                    PlayerLevelChange
                 )
             )
             //重载
