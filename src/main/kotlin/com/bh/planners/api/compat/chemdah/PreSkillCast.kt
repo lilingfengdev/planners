@@ -7,7 +7,7 @@ import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
 object PreSkillCast : ObjectiveCountableI<PlayerCastSkillEvents.Pre>() {
 
-    override val name = "planners pre cast skill"
+    override val name = "pre cast skill"
     override val event = PlayerCastSkillEvents.Pre::class.java
 
     override val isAsync = true

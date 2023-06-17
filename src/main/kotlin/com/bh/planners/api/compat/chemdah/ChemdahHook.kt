@@ -13,7 +13,7 @@ object ChemdahHook {
 
     @Awake(LifeCycle.ENABLE)
     fun reg() {
-        if (Bukkit.getPluginManager().isPluginEnabled("chemdah")) {
+        if (Bukkit.getPluginManager().isPluginEnabled("Chemdah")) {
             reg(
                 listOf<ObjectiveCountableI<*>>(
                     PreSkillCast,

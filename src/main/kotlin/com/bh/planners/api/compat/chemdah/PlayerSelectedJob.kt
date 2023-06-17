@@ -1,6 +1,7 @@
 package com.bh.planners.api.compat.chemdah
 
 import com.bh.planners.api.event.PlayerSelectedJobEvent
+import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
 object PlayerSelectedJob : ObjectiveCountableI<PlayerSelectedJobEvent>() {
@@ -19,6 +20,9 @@ object PlayerSelectedJob : ObjectiveCountableI<PlayerSelectedJobEvent>() {
         }
         addSimpleCondition("level") { data, it ->
             data.toInt() <= it.profile.level
+        }
+        addSimpleCondition("world") { data, it ->
+            it.profile.player.world.isWorld(data.toString())
         }
     }
 }

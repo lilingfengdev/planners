@@ -1,6 +1,8 @@
 package com.bh.planners.api.compat.chemdah
 
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.event.PlayerSkillBindEvent
+import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
 object PlayerSkillBind : ObjectiveCountableI<PlayerSkillBindEvent>() {
@@ -22,6 +24,12 @@ object PlayerSkillBind : ObjectiveCountableI<PlayerSkillBindEvent>() {
         }
         addSimpleCondition("slot") { data, it ->
             data.toString() == it.skill.keySlot?.key
+        }
+        addSimpleCondition("world") { data, it ->
+            it.player.world.isWorld(data.toString())
+        }
+        addSimpleCondition("job"){data,it->
+            it.player.plannersProfile.job?.name == data.toString()
         }
     }
 }

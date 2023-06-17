@@ -1,6 +1,8 @@
 package com.bh.planners.api.compat.chemdah
 
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.event.PlayerSkillUpgradeEvent
+import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
 object PlayerSkillUpgrade : ObjectiveCountableI<PlayerSkillUpgradeEvent>() {
@@ -19,6 +21,12 @@ object PlayerSkillUpgrade : ObjectiveCountableI<PlayerSkillUpgradeEvent>() {
         }
         addSimpleCondition("level") { data, it ->
             data.toInt() <= it.skill.level
+        }
+        addSimpleCondition("world") { data, it ->
+            it.player.world.isWorld(data.toString())
+        }
+        addSimpleCondition("job"){data,it->
+            it.player.plannersProfile.job?.name == data.toString()
         }
     }
 }

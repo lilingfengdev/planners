@@ -1,6 +1,7 @@
 package com.bh.planners.api.compat.chemdah
 
 import com.bh.planners.api.event.PlayerTransferEvent
+import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
 object PlayerTransfer : ObjectiveCountableI<PlayerTransferEvent>() {
@@ -16,6 +17,9 @@ object PlayerTransfer : ObjectiveCountableI<PlayerTransferEvent>() {
         }
         addSimpleCondition("name") { data, it ->
             data.toString() == it.target.config.name
+        }
+        addSimpleCondition("world") { data, it ->
+            it.player.world.isWorld(data.toString())
         }
     }
 }
