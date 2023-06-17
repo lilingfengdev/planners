@@ -28,7 +28,7 @@ taboolib {
     description {
         contributors {
             name("洋洋")
-            name{"纸杯"}
+            name("纸杯")
         }
         dependencies {
             name("PlaceholderAPI").optional(true)
