@@ -23,7 +23,8 @@ object ChemdahHook {
                     PlayerSelectedJob,
                     PlayerSkillUpgrade,
                     PlayerTransfer,
-                    PlayerSkillBind
+                    PlayerSkillBind,
+                    PlayerKeyDown
                 )
             )
             //重载
@@ -31,7 +32,7 @@ object ChemdahHook {
         }
     }
 
-    fun reg(cs : List<ObjectiveCountableI<*>>) {
+    fun reg(cs: List<ObjectiveCountableI<*>>) {
         cs.forEach {
             it.register()
             info("&6CHEM拓展注册 ${it.name} &a成功".colored())

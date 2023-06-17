@@ -28,7 +28,7 @@ object PlayerSkillBind : ObjectiveCountableI<PlayerSkillBindEvent>() {
         addSimpleCondition("world") { data, it ->
             it.player.world.isWorld(data.toString())
         }
-        addSimpleCondition("job"){data,it->
+        addSimpleCondition("job") { data, it ->
             it.player.plannersProfile.job?.name == data.toString()
         }
     }

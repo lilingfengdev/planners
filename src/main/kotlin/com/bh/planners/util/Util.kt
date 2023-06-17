@@ -6,6 +6,7 @@ import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.ScriptFactor
 import com.bh.planners.core.pojo.Skill
+import ink.ptms.chemdah.core.quest.QuestLoader.register
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -90,8 +91,8 @@ fun List<String>.upperCase(): List<String> {
     return map { it.toUpperCase() }
 }
 
-fun List<ObjectiveCountableI<*>>.register() {
-    map { register() }
+fun List<ObjectiveCountableI<*>>.registers() {
+    map { it.register() }
 }
 
 fun World.isWorld(world: String): Boolean {
