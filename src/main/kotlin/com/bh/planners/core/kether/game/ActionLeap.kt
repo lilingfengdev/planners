@@ -33,7 +33,7 @@ class ActionLeap(
          */
         @KetherParser(["leap"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionDrag(it.nextParsedAction(), it.nextParsedAction(), it.nextSelector())
+            ActionLeap(it.nextParsedAction(), it.nextParsedAction(), it.nextSelector())
         }
 
     }
