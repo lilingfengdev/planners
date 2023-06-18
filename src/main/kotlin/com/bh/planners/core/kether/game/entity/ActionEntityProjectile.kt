@@ -34,8 +34,7 @@ class ActionEntityProjectile {
         val rotateZ: ParsedAction<*>,
         val event: ParsedAction<*>,
         val selector: ParsedAction<*>?,
-    ) :
-        ScriptAction<Target.Container>() {
+    ) : ScriptAction<Target.Container>() {
 
 
         override fun run(frame: ScriptFrame): CompletableFuture<Target.Container> {
