@@ -19,8 +19,9 @@ class ActionEntity {
          * entity loc [entity : action]
          * entity health [entity : action]
          * entity spawn type name health tick
-         * entity set [filed: String] [yaw : action] [pitch : action] [selector]
-         * entity setto [selector]
+         * entity set view [yaw : action] [pitch : action] [selector]
+         * entity set viewto [selector] [selector]
+         * entity set arrowsInBody add/set/dec [arrows : Int] [selector]
          * entity remove [selector]
          */
         @KetherParser(["entity"], namespace = NAMESPACE, shared = true)
@@ -58,6 +59,7 @@ class ActionEntity {
                         }
                         "arrowsInBody" -> {
                             ActionEntitySetArrows(
+                                it.nextParsedAction(),
                                 it.nextParsedAction(),
                                 it.nextSelector()
                             )
