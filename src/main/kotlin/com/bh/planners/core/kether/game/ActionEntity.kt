@@ -19,7 +19,8 @@ class ActionEntity {
          * entity loc [entity : action]
          * entity health [entity : action]
          * entity spawn type name health tick
-         * entity set [yaw : action] [pitch : action] [selector]
+         * entity set [filed: String] [yaw : action] [pitch : action] [selector]
+         * entity setto [selector]
          * entity remove [selector]
          */
         @KetherParser(["entity"], namespace = NAMESPACE, shared = true)
@@ -41,11 +42,29 @@ class ActionEntity {
                 }
 
                 case("set") {
-                    ActionEntitySet(
-                        it.nextParsedAction(),
-                        it.nextParsedAction(),
-                        it.nextSelector()
-                    )
+                    when (it.expects("view", "arrowsInBody", "viewto")) {
+                        "view" -> {
+                            ActionEntitySet(
+                                it.nextParsedAction(),
+                                it.nextParsedAction(),
+                                it.nextSelector()
+                            )
+                        }
+                        "viewto" -> {
+                            ActionEntitySetto(
+                                it.nextParsedAction(),
+                                it.nextSelectorOrNull()
+                            )
+                        }
+                        "arrowsInBody" -> {
+                            ActionEntitySetArrows(
+                                it.nextParsedAction(),
+                                it.nextSelector()
+                            )
+                        }
+
+                        else -> error("out of case")
+                    }
                 }
 
                 case("remove") {
