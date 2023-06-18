@@ -28,6 +28,11 @@ object ActionDragonLoader {
      * set b to entity uuid they "@fetch jw"
      * dragon bind entity &b bindEntity &a forward 0 offsetY 0 sideways 0 bindYaw true bindPitch true they "@self"
      *
+     * 世界图片
+     * dragon worldtexture send [key: String] [rotateX: Float] [rotateY: Float] [rotateZ: Float] [path: String] [width: Float] [height: Float] [alpha: Float] [followPlayer: Boolean] [glow: Boolean] [followEntity: Boolean] [x: Float] [y: Float] [z: Float] [player: selector] [selector]
+     * dragon worldtexture stop [key: String] [selector]
+     *
+     * dragon worldtexture send "1" 0 0 0 "unknow.png" 10 5 1 true false true 0 0 0 "@server" they "@self"
      */
     @KetherParser(["dragon", "dragoncore"], namespace = NAMESPACE, shared = true)
     fun parser() = scriptParser {
@@ -88,6 +93,37 @@ object ActionDragonLoader {
                     it.nextArgumentAction(arrayOf("bindPitch"), "true")!!,
                     it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
                 )
+            }
+            case("worldtexture") {
+                when (it.expects("send", "stop")) {
+                    "send" -> {
+                        ActionDragonWorldTextureSet(
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
+                        )
+                    }
+                    "stop" -> {
+                        ActionDragonWorldTextureRemove(
+                            it.nextParsedAction(),
+                            it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
+                        )
+                    }
+                    else -> error("out of case")
+                }
             }
         }
     }
