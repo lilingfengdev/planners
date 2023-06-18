@@ -58,8 +58,8 @@ dependencies {
     compileOnly("ink.ptms:nms-all:1.0.0")
 
     compileOnly("public:ModelEngine:2.5.1")
-    compileOnly("com.google.code.gson:gson:2.8.9")
-    compileOnly("com.google.guava:guava:30.0-android")
+    compileOnly("com.google.code.gson:gson:2.8.5")
+    compileOnly("com.google.guava:guava:21.0")
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1")
 

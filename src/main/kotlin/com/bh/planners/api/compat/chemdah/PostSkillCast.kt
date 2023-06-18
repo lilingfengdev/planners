@@ -5,9 +5,9 @@ import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
-object PostSkillCast:ObjectiveCountableI<PlayerCastSkillEvents.Post>() {
+object PostSkillCast : ObjectiveCountableI<PlayerCastSkillEvents.Post>() {
 
-    override val name = "planners post skill cast"
+    override val name = "post cast skill"
     override val event = PlayerCastSkillEvents.Post::class.java
 
     override val isAsync = true
