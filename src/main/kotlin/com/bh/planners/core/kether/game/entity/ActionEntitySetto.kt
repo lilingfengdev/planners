@@ -17,15 +17,14 @@ class ActionEntitySetto(
 ) : ScriptAction<List<Entity>>() {
 
     fun faceto(face: ProxyEntity, faceto: Location) {
-        val faceloc = face.location
         val locA = face.location.clone()
-        val distance = faceloc.distance(faceto)
+        val distance = face.location.distance(faceto)
         val sub = locA.subtract(faceto)
         val pitch = Math.toDegrees(atan(sub.y/distance))
         val yaw = Math.toDegrees(atan(sub.x/sub.z))
 
-        faceloc.yaw = yaw.toFloat()
-        faceloc.pitch = pitch.toFloat()
+        face.location.yaw = yaw.toFloat()
+        face.location.pitch = pitch.toFloat()
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<Entity>> {

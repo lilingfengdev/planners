@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether.game.entity
 
+import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.execEntity
 import com.bh.planners.core.kether.runAny
 import org.bukkit.entity.Entity
@@ -20,9 +21,11 @@ class ActionEntitySet(
             val yaw = Coerce.toFloat(this)
             frame.runAny(pitch) {
                 val pitch = Coerce.toFloat(this)
-                frame.execEntity(selector) {
-                    this.location.yaw = yaw
-                    this.location.pitch = pitch
+                frame.createContainer(selector).thenAccept { container ->
+                    container.forEachProxyEntity {
+                        this.location.yaw = yaw
+                        this.location.pitch = pitch
+                    }
                 }
             }
         }
