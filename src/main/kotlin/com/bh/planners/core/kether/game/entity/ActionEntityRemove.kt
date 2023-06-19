@@ -1,8 +1,7 @@
 package com.bh.planners.core.kether.game.entity
 
-import com.bh.planners.core.kether.execEntity
+import com.bh.planners.core.kether.containerOrSender
 import org.bukkit.entity.Entity
-import org.bukkit.entity.LivingEntity
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
@@ -13,8 +12,8 @@ class ActionEntityRemove(
 ) : ScriptAction<List<Entity>>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<Entity>> {
-        frame.execEntity(selector) {
-            if (this is LivingEntity) {
+        frame.containerOrSender(selector).thenAccept {
+            it.forEachEntity {
                 this.remove()
             }
         }
