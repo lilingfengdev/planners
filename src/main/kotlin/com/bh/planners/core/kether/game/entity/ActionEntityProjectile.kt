@@ -29,6 +29,8 @@ class ActionEntityProjectile {
         val action: ParsedAction<*>,
         val name: ParsedAction<*>,
         val step: ParsedAction<*>,
+        val gravity: ParsedAction<*>,
+        val bounce: ParsedAction<*>,
         val rotateX: ParsedAction<*>,
         val rotateY: ParsedAction<*>,
         val rotateZ: ParsedAction<*>,
@@ -44,36 +46,42 @@ class ActionEntityProjectile {
                 val type = Type.valueOf(it.toUpperCase())
                 frame.run(name).str { name ->
                     frame.run(step).double { step ->
-                        frame.run(rotateX).double { rotateX ->
-                            frame.run(rotateY).double { rotateY ->
-                                frame.run(rotateZ).double { rotateZ ->
-                                    frame.run(event).str { event ->
-                                        val context = frame.getContext()
-                                        val container = Target.Container()
-                                        frame.containerOrSender(selector).thenAccept {
-                                            val entities = it.filterIsInstance<Target.Entity>()
-                                            submit {
-                                                execute(
-                                                    context,
-                                                    name,
-                                                    entities,
-                                                    type,
-                                                    step,
-                                                    event,
-                                                    rotateX,
-                                                    rotateY,
-                                                    rotateZ
-                                                ).forEach {
-                                                    container += it.toTarget()
+                        frame.run(gravity).bool { gravity ->
+                            frame.run(bounce).bool { bounce ->
+                                frame.run(rotateX).double { rotateX ->
+                                    frame.run(rotateY).double { rotateY ->
+                                        frame.run(rotateZ).double { rotateZ ->
+                                            frame.run(event).str { event ->
+                                                val context = frame.getContext()
+                                                val container = Target.Container()
+                                                frame.containerOrSender(selector).thenAccept {
+                                                    val entities = it.filterIsInstance<Target.Entity>()
+                                                    submit {
+                                                        execute(
+                                                            context,
+                                                            name,
+                                                            entities,
+                                                            type,
+                                                            step,
+                                                            gravity,
+                                                            bounce,
+                                                            event,
+                                                            rotateX,
+                                                            rotateY,
+                                                            rotateZ
+                                                        ).forEach {
+                                                            container += it.toTarget()
+                                                        }
+                                                        future.complete(container)
+                                                    }
                                                 }
-                                                future.complete(container)
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
 
+                        }
 
                     }
                 }
@@ -88,7 +96,24 @@ class ActionEntityProjectile {
 
     enum class Type(val clazz: Class<out Projectile>) {
 
-        ARROW(Arrow::class.java), FIRE_BALL(Fireball::class.java), SNOW_BALL(Snowball::class.java)
+        ARROW(Arrow::class.java),
+        DRAGON_FIRE_BALL(DragonFireball::class.java),
+        EGG(Egg::class.java),
+        ENDER_PEARL(EnderPearl::class.java),
+        FIRE_BALL(Fireball::class.java),
+        FISH_HOOK(FishHook::class.java),
+        LARGE_FIRE_BALL(LargeFireball::class.java),
+        LINGERING_POTION(LingeringPotion::class.java),
+        LLAMA_SPIT(LlamaSpit::class.java),
+        SHULKER_BULLET(ShulkerBullet::class.java),
+        SMALL_FIRE_BALL(SmallFireball::class.java),
+        SNOW_BALL(Snowball::class.java),
+        SPECTRAL_ARROW(SpectralArrow::class.java),
+        SPLASH_POTION(SplashPotion::class.java),
+        THROWN_EXP_BOTTLE(ThrownExpBottle::class.java),
+        THROWN_POTION(ThrownPotion::class.java),
+        TIPPED_ARROW(TippedArrow::class.java),
+        WITHER_SKULL(WitherSkull::class.java)
 
     }
 
@@ -96,7 +121,7 @@ class ActionEntityProjectile {
     companion object {
 
         /**
-         * projectile type name <step: action(0.4)> <rotateX: action(0.0)>  <rotateY: action(0.0)>  <rotateZ: action(0.0)> <oncapture: block> <selector>
+         * projectile type name <step: action(0.4)> <gravity: Boolean> <bounce: Boolean> <rotateX: action(0.0)>  <rotateY: action(0.0)>  <rotateZ: action(0.0)> <oncapture: block> <selector>
          */
         @KetherParser(["projectile"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
@@ -104,6 +129,8 @@ class ActionEntityProjectile {
                 it.nextParsedAction(),
                 it.nextParsedAction(),
                 it.nextArgumentAction(arrayOf("step"), 0.4)!!,
+                it.nextArgumentAction(arrayOf("gravity"), "false")!!,
+                it.nextArgumentAction(arrayOf("bounce"), "false")!!,
                 it.nextArgumentAction(arrayOf("rotateX"), 0.0)!!,
                 it.nextArgumentAction(arrayOf("rotateY"), 0.0)!!,
                 it.nextArgumentAction(arrayOf("rotateZ"), 0.0)!!,
@@ -159,6 +186,8 @@ class ActionEntityProjectile {
             owners: List<Target.Entity>,
             type: Type,
             step: Double,
+            gravity: Boolean,
+            bounce: Boolean,
             event: String,
             rotateX: Double,
             rotateY: Double,
@@ -168,6 +197,7 @@ class ActionEntityProjectile {
             owners.forEach {
                 val entity = it.bukkitLivingEntity ?: return@forEach
                 val projectile = entity.launchProjectile(type.clazz)
+
                 if (event != "none") {
                     projectile.setMeta("owner", entity)
                     projectile.setMeta("event", event)
@@ -175,6 +205,8 @@ class ActionEntityProjectile {
                 }
 
                 projectile.setMeta("@Planners:Projectile", true)
+                projectile.setGravity(gravity)
+                projectile.setBounce(bounce)
                 projectile.customName = name
                 projectile.isCustomNameVisible = false
                 val velocity = projectile.velocity
