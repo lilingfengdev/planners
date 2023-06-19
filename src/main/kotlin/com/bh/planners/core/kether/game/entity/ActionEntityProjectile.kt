@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture
 
 class ActionEntityProjectile {
 
-    class ActionLaunch(
+    class ActionProjectile(
         val action: ParsedAction<*>,
         val name: ParsedAction<*>,
         val step: ParsedAction<*>,
@@ -125,7 +125,7 @@ class ActionEntityProjectile {
          */
         @KetherParser(["projectile"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionLaunch(
+            ActionProjectile(
                 it.nextParsedAction(),
                 it.nextParsedAction(),
                 it.nextArgumentAction(arrayOf("step"), 0.4)!!,
@@ -138,22 +138,6 @@ class ActionEntityProjectile {
                 it.nextSelectorOrNull()
             )
         }
-
-        /**
-         * it.group(
-        text(), text(),
-        command("step", then = double()).option(),
-        command("rotateX", then = double()).option(),
-        command("rotateY", then = double()).option(),
-        command("rotateZ", then = double()).option(),
-        command("oncapture", then = double()).option()
-        ).apply(it) { type,name,step,rotateX,rotateY,rotateZ,oncapture ->
-        now {
-        execute(getContext(),step,)
-        }
-        }
-         *
-         */
 
         @SubscribeEvent(priority = EventPriority.LOW)
         fun e(e: EntityDamageByEntityEvent) {
@@ -169,7 +153,6 @@ class ActionEntityProjectile {
                 val context = e.entity.getMeta("context").getOrNull(0)?.value() as? Session ?: return
                 val event = e.entity.getMeta("event").getOrNull(0)?.asString() ?: return
                 context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!, e))
-
             }
 
             // 是pl实体总是删除
