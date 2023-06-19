@@ -11,21 +11,21 @@ object ActionGermLoader {
 
     /**
      * 模型/玩家动画播放
-     * germ animation send [name: token] [selector]
-     * germ animation stop [name: token] [selector]
+     * germ animation send [name: token] [they selector]
+     * germ animation stop [name: token] [they selector]
      *
      * 音效播放
-     * germ sound name <type: action(master)> <volume: action(1)> <pitch: action(1)> <selector>
+     * germ sound name <type: action(master)> <volume: action(1)> <pitch: action(1)> [they selector]
      * germ sound name type master volume 1.0 pitch 1.0 they "@self"
      *
      * 例子播放
-     * germ effect [name: action] <selector>
+     * germ effect [name: action] [they selector]
      *
      * 特效移动动画
-     * germ effect move [name: action] <selector>
+     * germ effect move [name: action] [they selector]
      *
      * 物品冷却
-     * germ cooldown <slot> <tick> <selector>
+     * germ cooldown <slot> <tick> [they selector]
      *
      * 锁定移动（客户端行为，不会产生抽搐）
      * germ move lock [duration/-1] [they selector]
