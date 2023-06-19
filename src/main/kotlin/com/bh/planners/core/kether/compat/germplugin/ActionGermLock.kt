@@ -4,13 +4,14 @@ import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.nextSelector
 import com.germ.germplugin.api.GermPacketAPI
+import com.germ.germplugin.api.ViewType
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 class ActionGermLock {
 
-    class LockPlayer(val duration: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
+    class LockPlayerMove(val duration: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.run(duration).long { duration ->
@@ -23,7 +24,7 @@ class ActionGermLock {
 
     }
 
-    class UnLockPlayer(val selector: ParsedAction<*>) : ScriptAction<Void>() {
+    class UnLockPlayerMove(val selector: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.execPlayer(selector) {
@@ -34,23 +35,54 @@ class ActionGermLock {
 
     }
 
-    companion object {
+    class LockPlayerView(val duration: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
 
-        /**
-         * 锁定移动（客户端行为，不会产生抽搐） 依赖Germ
-         * move lock [duration] [they selector]
-         * move unlock [they selector]
-         */
-        @KetherParser(["move"], namespace = NAMESPACE, shared = true)
-        fun parser() = scriptParser {
-            it.switch {
-                case("lock") {
-                    LockPlayer(it.nextParsedAction(), it.nextSelector())
-                }
-                case("unlock") {
-                    UnLockPlayer(it.nextSelector())
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.run(duration).long { duration ->
+                frame.execPlayer(selector) {
+                    GermPacketAPI.sendLockPlayerCameraRotate(this, duration)
                 }
             }
+            return CompletableFuture.completedFuture(null)
+        }
+
+    }
+
+    class UnLockPlayerView(val selector: ParsedAction<*>) : ScriptAction<Void>() {
+
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.execPlayer(selector) {
+                GermPacketAPI.sendUnlockPlayerCameraRotate(this)
+            }
+            return CompletableFuture.completedFuture(null)
+        }
+
+    }
+
+    class LockPlayerViewType(val duration: ParsedAction<*>, val type: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
+
+        val typelist = listOf(ViewType.FIRST_PERSON, ViewType.THIRD_PERSON, ViewType.THIRD_PERSON_REVERSE)
+
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.run(duration).long { duration ->
+                frame.run(type).int { type ->
+                    frame.execPlayer(selector) {
+                        GermPacketAPI.sendLockPlayerCameraView(this, typelist[type], duration)
+                    }
+                }
+            }
+            return CompletableFuture.completedFuture(null)
+        }
+
+    }
+
+    class UnLockPlayerViewType(val selector: ParsedAction<*>) : ScriptAction<Void>() {
+
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.execPlayer(selector) {
+                GermPacketAPI.sendUnlockPlayerCameraView(this)
+            }
+            return CompletableFuture.completedFuture(null)
         }
 
     }

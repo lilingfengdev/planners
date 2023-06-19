@@ -10,8 +10,11 @@ import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
 import java.util.concurrent.CompletableFuture
 
-class ActionGermAnimation(val state: String, val remove: Boolean, val selector: ParsedAction<*>) :
-    ScriptAction<Void>() {
+class ActionGermAnimation(
+    val state: String,
+    val remove: Boolean,
+    val selector: ParsedAction<*>,
+) : ScriptAction<Void>() {
 
     fun execute(entity: Entity, state: String, remove: Boolean) {
         Bukkit.getOnlinePlayers().forEach {

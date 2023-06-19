@@ -10,13 +10,12 @@ object ActionGermLoader {
 
 
     /**
+     * 模型/玩家动画播放
      * germ animation send [name: token] [selector]
-     *
      * germ animation stop [name: token] [selector]
      *
      * 音效播放
      * germ sound name <type: action(master)> <volume: action(1)> <pitch: action(1)> <selector>
-     *
      * germ sound name type master volume 1.0 pitch 1.0 they "@self"
      *
      * 例子播放
@@ -25,7 +24,21 @@ object ActionGermLoader {
      * 特效移动动画
      * germ effect move [name: action] <selector>
      *
+     * 物品冷却
      * germ cooldown <slot> <tick> <selector>
+     *
+     * 锁定移动（客户端行为，不会产生抽搐）
+     * germ move lock [duration/-1] [they selector]
+     * germ move unlock [they selector]
+     *
+     * 锁定视角（客户端行为，不会产生抽搐）
+     * germ look at [duration/-1] <selector> [they selector]
+     * germ look lock [duration/-1] [they selector]
+     * germ look unlock [they selector]
+     *
+     * 锁定视角类型
+     * germ view lock [duration/-1] [type: 1,2,3] [they selector]
+     * germ view unlock [they selector]
      *
      */
     @KetherParser(["germengine", "germ", "germplugin"], namespace = NAMESPACE, shared = true)
@@ -56,9 +69,6 @@ object ActionGermLoader {
                     it.nextSelector()
                 )
             }
-            case("look") {
-                ActionGermLook(it.nextParsedAction(),it.nextArgumentAction(arrayOf("at"))!!,it.nextParsedAction())
-            }
             case("effect") {
 
                 try {
@@ -78,6 +88,45 @@ object ActionGermLoader {
                     )
                 }
 
+            }
+
+            case("move") {
+                when (it.expects("lock", "unlock")) {
+                    "lock" -> {
+                        ActionGermLock.LockPlayerMove(it.nextParsedAction(), it.nextSelector())
+                    }
+                    "unlock" -> {
+                        ActionGermLock.UnLockPlayerMove(it.nextSelector())
+                    }
+
+                    else -> error("out of case")
+                }
+            }
+
+            case("look") {
+                when (it.expects("lock", "unlock")) {
+                    "lock" -> {
+                        ActionGermLock.LockPlayerView(it.nextParsedAction(), it.nextSelector())
+                    }
+                    "unlock" -> {
+                        ActionGermLock.UnLockPlayerView(it.nextSelector())
+                    }
+                    "at" -> {
+                        ActionGermLook(it.nextParsedAction(),it.nextArgumentAction(arrayOf("at"))!!,it.nextParsedAction())
+                    }
+                    else -> error("out of case")
+                }
+            }
+            case("view") {
+                when (it.expects("lock", "unlock")) {
+                    "lock" -> {
+                        ActionGermLock.LockPlayerViewType(it.nextParsedAction(), it.nextParsedAction(), it.nextSelector())
+                    }
+                    "unlock" -> {
+                        ActionGermLock.UnLockPlayerViewType(it.nextSelector())
+                    }
+                    else -> error("out of case")
+                }
             }
 
             case("stop") {
