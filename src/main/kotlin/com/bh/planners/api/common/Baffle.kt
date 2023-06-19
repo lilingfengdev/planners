@@ -40,8 +40,6 @@ open class Baffle(val name: Any, var millis: Long) {
 
         other as Baffle
 
-        if (name != other.name) return false
-
-        return true
+        return name == other.name
     }
 }

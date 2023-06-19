@@ -53,6 +53,6 @@ object Counting {
     }
 
 
-    fun getCache(player: Player) = map.computeIfAbsent(player.name) { mutableSetOf() }
+    fun getCache(player: Player): MutableSet<Baffle> = map.computeIfAbsent(player.name) { mutableSetOf() }
 
 }
