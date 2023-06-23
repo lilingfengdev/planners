@@ -55,7 +55,7 @@ open class EffectOption(text: String) {
             data = ProxyParticle.ItemData(it.split(":")[0], Coerce.toInteger(it.split(":").getOrElse(1) { "0" }))
         }
         demand.get("color")?.let {
-            val color = it.split("~")[0].split(",")
+            val color = it.split("~")[0].split(" ")
             data = ProxyParticle.DustData(
                 Color(
                     Coerce.toInteger(color.getOrElse(0) { "0" }),

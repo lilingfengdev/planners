@@ -232,6 +232,27 @@ object PlannersAPI {
         return (getSkill(skill.key)?.level ?: 0) > 0
     }
 
+    fun PlayerProfile.checkCast(skill: Skill): ExecuteResult {
+
+        if (!hasCast(skill)) {
+            return ExecuteResult.LEVEL_ZERO
+        }
+
+        val session = ContextAPI.createSession(player, skill)
+
+        if (!Counting.hasNext(player, skill)) {
+            return ExecuteResult.COOLING
+        }
+
+        val mana = Coerce.toDouble(session.mpCost.get())
+        if (toCurrentMana() < mana) {
+            return ExecuteResult.MANA_NOT_ENOUGH
+        }
+
+        return ExecuteResult.SUCCESS
+
+    }
+
     @SubscribeEvent
     fun e(e: PlayerKeydownEvent) {
         val player = e.player
