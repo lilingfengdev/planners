@@ -1,6 +1,8 @@
 package com.bh.planners.core.kether.compat.dragoncore
 
 import com.bh.planners.core.kether.*
+import eos.moe.dragoncore.api.CoreAPI
+import eos.moe.dragoncore.network.PacketSender
 import taboolib.module.kether.*
 
 object ActionDragonLoader {
@@ -12,7 +14,7 @@ object ActionDragonLoader {
      *
      * 玩家动画
      * dragon playeranimation send [name: token] [selector]
-     * dragon playeranimation stop [name: token] [selector]
+     * dragon playeranimation stop [selector]
      *
      * 音效播放
      * dragon sound name <volume: 1.0> <pitch: 1.0> <loop: false> [selector]
@@ -53,13 +55,13 @@ object ActionDragonLoader {
                 }
             }
             case("playeranimation"){
-                when (it.expects("send", "stop")) {
+                when (it.expects("send", "stop", "clear")) {
                     "send" -> {
                         ActionDragonPlayerAnimation(it.nextToken(),false,it.nextSelector())
                     }
 
                     "stop" -> {
-                        ActionDragonPlayerAnimation(it.nextToken(),true,it.nextSelector())
+                        ActionDragonPlayerAnimation("null",true,it.nextSelector())
                     }
 
                     else -> error("out of case")
