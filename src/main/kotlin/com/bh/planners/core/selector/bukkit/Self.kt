@@ -31,6 +31,7 @@ object Self : Selector {
                 location.pitch = 0f
                 location.yaw = 0f
             }
+            location.y -= 1.5
             data.container += Target.Location(location)
         }
         // 默认选中

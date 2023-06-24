@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture
 object OriginOffset : Selector {
 
     override val names: Array<String>
-        get() = arrayOf("offset")
+        get() = arrayOf("offset", "os")
 
     override fun check(
         data: Selector.Data,
