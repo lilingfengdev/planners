@@ -3,6 +3,7 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.api.common.Operator
 import com.bh.planners.core.kether.*
 import com.bh.planners.util.eval
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.KetherParser
@@ -17,14 +18,16 @@ class ActionHealth {
         ScriptAction<Void>() {
 
         fun execute(entity: LivingEntity, value: String) {
-            val value = value.eval(entity.maxHealth)
+            val newvalue = value.eval(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 0.0)
             val result = when (mode) {
-                Operator.ADD -> entity.health + value
-                Operator.TAKE -> entity.health - value
-                Operator.SET -> value
+                Operator.ADD -> entity.health + newvalue
+                Operator.TAKE -> entity.health - newvalue
+                Operator.SET -> newvalue
                 else -> entity.health
-            }.coerceAtLeast(0.0).coerceAtMost(entity.maxHealth)
-            entity.health = result
+            }.coerceAtLeast(0.0).coerceAtMost(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 0.0)
+            if (!entity.isDead && entity.health > 0) {
+                entity.health = result
+            }
         }
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {

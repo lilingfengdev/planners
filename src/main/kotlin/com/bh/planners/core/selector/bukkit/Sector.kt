@@ -38,7 +38,6 @@ object Sector : Selector {
                         }
                     }
                 }
-
             future.complete(null)
         }
 

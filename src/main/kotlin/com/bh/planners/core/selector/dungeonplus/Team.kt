@@ -18,14 +18,14 @@ object Team : Selector {
         get() = arrayOf("team", "!team")
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
-        val entityTarget = data.origin.getPlayer() ?: return CompletableFuture.completedFuture(null)
+        val entityTarget = data.context.sender
 
-        val player = entityTarget.player ?: return CompletableFuture.completedFuture(null)
+        val player = entityTarget.getPlayer() ?: return CompletableFuture.completedFuture(null)
 
         val team = getTeamInstance(player) ?: return CompletableFuture.completedFuture(null)
 
         if (data.name.isNon()) {
-            data.container.removeIf { it is Target.Entity && it.player in team.players }
+            data.container.removeIf { (it is Target.Entity) && team.players.contains(it.player) }
         } else {
             data.container.addAll(team.players.map { it.toTarget() })
         }
@@ -48,7 +48,7 @@ object Team : Selector {
         override val isValid = team != null
 
         override val players: List<Player>
-            get() = team?.getPlayers(PlayerStateType.ALL) ?: emptyList()
+            get() = team?.getPlayers(PlayerStateType.ONLINE) ?: emptyList()
 
     }
 
