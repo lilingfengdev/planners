@@ -43,4 +43,4 @@ options:
     enable: true
     title: true
     skill: false
-    castSkill: "禁止释放技能"
+    castSkill: ""

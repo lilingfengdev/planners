@@ -35,6 +35,10 @@ object ActionDragonLoader {
      * dragon worldtexture stop [key: String] [selector]
      *
      * dragon worldtexture send "1" 0 0 0 "unknow.png" 10 5 1 true false true 0 0 0 "@server" they "@self"
+     *
+     * 运行方法
+     * dragon runfunction default "方法.屏幕抖动(3,100,10,10);" they "@self"
+     *
      */
     @KetherParser(["dragon", "dragoncore"], namespace = NAMESPACE, shared = true)
     fun parser() = scriptParser {
@@ -126,6 +130,9 @@ object ActionDragonLoader {
                     }
                     else -> error("out of case")
                 }
+            }
+            case("runfunction") {
+                ActionDragonRunFunction(it.nextParsedAction(), it.nextToken(), it.nextSelectorOrNull())
             }
         }
     }

@@ -4,6 +4,7 @@ import com.bh.planners.api.ManaCounter.takeMana
 import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.PlannersLoader.toYamlName
 import com.bh.planners.api.common.ExecuteResult
+import com.bh.planners.api.compat.WorldGuardHook
 import com.bh.planners.api.enums.UpgradeResult
 import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.api.event.PlayerKeydownEvent
@@ -113,6 +114,11 @@ object PlannersAPI {
         if (toCurrentMana() < mana) {
             PlayerCastSkillEvents.Failure(player, skill, ExecuteResult.MANA_NOT_ENOUGH).call()
             return ExecuteResult.MANA_NOT_ENOUGH
+        }
+
+        val wg = WorldGuardHook.cast(player)
+        if (wg != null) {
+            return wg
         }
 
         Counting.reset(player, session)

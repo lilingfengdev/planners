@@ -1,6 +1,7 @@
 package com.bh.planners.api.common
 
 import com.bh.planners.api.Counting
+import com.bh.planners.api.PlannersOption
 import com.bh.planners.core.pojo.Skill
 import org.bukkit.entity.Player
 import taboolib.platform.util.sendLang
@@ -42,6 +43,14 @@ enum class ExecuteResult {
         override val handler: Player.(Skill) -> Unit
             get() = { skill ->
                 sendLang("skill-cast-level-zero", skill.option.name)
+            }
+    },
+    WorldGuardPVP {
+        override val handler: Player.(Skill) -> Unit
+            get() = {
+                if (PlannersOption.root.getBoolean("WorldGuard.title")) {
+                    sendLang("WorldGuard-title")
+                }
             }
     },
     CANCELED {
