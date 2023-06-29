@@ -4,6 +4,7 @@ import com.bh.planners.core.kether.*
 import eos.moe.dragoncore.api.CoreAPI
 import eos.moe.dragoncore.network.PacketSender
 import taboolib.module.kether.*
+import java.util.UUID
 
 object ActionDragonLoader {
 
@@ -17,27 +18,27 @@ object ActionDragonLoader {
      * dragon playeranimation stop [selector]
      *
      * 音效播放
-     * dragon sound name <volume: 1.0> <pitch: 1.0> <loop: false> [selector]
-     * t: dragon sound xxx volume 1.0 pitch 1.0 loop true [selector]
+     * dragon sound name <key: random.uuid> <type: music> <volume: 1.0> <pitch: 1.0> <loop: false> [selector]
+     * t: dragon sound xxx key 王八 type music volume 1.0 pitch 1.0 loop true [selector]
      *
      * dragon effect [scheme: action] <rotation: action(0,0,0)> <time: action(100)> <they selector>
      *
      * 实体绑定
      * dragon bind <entity: UUID> <bindEntity: UUID> <forward: Float> <offsetY: Float> <sideways: Float> <bindYaw: true> <bindPitch: true> <they selector>
      *
-     * selector jw to ady spawn ARMOR_STAND 剑舞 20 they "@offset 0 -1.5 0"
-     * set a to entity uuid they "@self"
-     * set b to entity uuid they "@fetch jw"
-     * dragon bind entity &b bindEntity &a forward 0 offsetY 0 sideways 0 bindYaw true bindPitch true they "@self"
+     * t: selector jw to ady spawn ARMOR_STAND 剑舞 20 they "@offset 0 -1.5 0"
+     * t: set a to entity uuid they "@self"
+     * t: set b to entity uuid they "@fetch jw"
+     * t: dragon bind entity &b bindEntity &a forward 0 offsetY 0 sideways 0 bindYaw true bindPitch true they "@self"
      *
      * 世界图片
      * dragon worldtexture send [key: String] [rotateX: Float] [rotateY: Float] [rotateZ: Float] [path: String] [width: Float] [height: Float] [alpha: Float] [followPlayer: Boolean] [glow: Boolean] [followEntity: Boolean] [x: Float] [y: Float] [z: Float] [player: selector] [selector]
      * dragon worldtexture stop [key: String] [selector]
      *
-     * dragon worldtexture send "1" 0 0 0 "unknow.png" 10 5 1 true false true 0 0 0 "@server" they "@self"
+     * t: dragon worldtexture send "1" 0 0 0 "unknow.png" 10 5 1 true false true 0 0 0 "@server" they "@self"
      *
      * 运行方法
-     * dragon runfunction default "方法.屏幕抖动(3,100,10,10);" they "@self"
+     * t: dragon runfunction default "方法.屏幕抖动(3,100,10,10);" they "@self"
      *
      */
     @KetherParser(["dragon", "dragoncore"], namespace = NAMESPACE, shared = true)
@@ -74,6 +75,8 @@ object ActionDragonLoader {
             case("sound") {
                 ActionDragonSound(
                     it.nextParsedAction(),
+                    it.nextArgumentAction(arrayOf("key"), UUID.randomUUID().toString())!!,
+                    it.nextArgumentAction(arrayOf("type"), "music")!!,
                     it.nextArgumentAction(arrayOf("volume"), 1.0f)!!,
                     it.nextArgumentAction(arrayOf("pitch"), 1.0f)!!,
                     it.nextArgumentAction(arrayOf("loop"), false)!!,

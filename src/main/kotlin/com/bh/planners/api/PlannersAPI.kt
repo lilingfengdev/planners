@@ -116,9 +116,9 @@ object PlannersAPI {
             return ExecuteResult.MANA_NOT_ENOUGH
         }
 
-        val wg = WorldGuardHook.cast(player)
-        if (wg != null) {
-            return wg
+        val wg = !WorldGuardHook.cast(player)
+        if (wg) {
+            return ExecuteResult.WorldGuardPVP
         }
 
         Counting.reset(player, session)
