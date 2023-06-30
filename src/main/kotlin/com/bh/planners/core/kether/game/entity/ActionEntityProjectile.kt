@@ -154,10 +154,10 @@ class ActionEntityProjectile {
             val context = e.entity.getMeta("context").getOrNull(0)?.value() as? Session ?: return
             val event = e.entity.getMeta("event").getOrNull(0)?.asString() ?: return
             if (e.hitEntity != null) {
-                context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!, e))
+                context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!, e, e.entity))
             }
             if (e.hitBlock != null) {
-                context.handleIncident(event, IncidentHitBlock(owner, e.hitBlock!!, e))
+                context.handleIncident(event, IncidentHitBlock(owner, e.hitBlock!!, e, e.entity))
             }
         }
 
