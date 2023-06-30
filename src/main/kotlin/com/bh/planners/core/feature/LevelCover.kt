@@ -70,10 +70,10 @@ object LevelCover {
     fun update(player: Player, level: Level) {
         player.sendMessage()
         player.level = level.level
-        if (level.top == Int.MAX_VALUE) {
+        if (level.top == Int.MAX_VALUE || level.experience / level.top >= 1.0) {
             player.exp = 1f
         } else {
-            player.exp = Coerce.toFloat(level.experience) / Coerce.toFloat(level.top)
+            player.exp = Coerce.toFloat(level.experience / level.top)
         }
     }
 
