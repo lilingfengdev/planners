@@ -3,6 +3,7 @@ package com.bh.planners.core.kether.game.entity
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.effect.inline.Incident.Companion.handleIncident
+import com.bh.planners.core.effect.inline.IncidentEffectHit
 import com.bh.planners.core.effect.inline.IncidentHitBlock
 import com.bh.planners.core.effect.inline.IncidentHitEntity
 import com.bh.planners.core.effect.rotateAroundX

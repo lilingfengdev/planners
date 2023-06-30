@@ -11,13 +11,17 @@ import taboolib.module.kether.ScriptContext
 
 class IncidentHitEntity(val owner: Entity, val entity: Entity, val event: Event, val project: Projectile) : Incident {
     override fun inject(context: ScriptContext) {
-        val entity = Target.Container().add(entity.toTarget())
-        val owner = Target.Container().add(owner.target())
-        val project = Target.Container().add(project.toTarget())
+        val entitys = Target.Container()
+        val owners = Target.Container()
+        val projects = Target.Container()
+
+        entitys += entity.toTarget()
+        owners += owner.target()
+        projects += project.toTarget()
 
         context.rootFrame().rootVariables()["@Event"] = event
-        context.rootFrame().rootVariables()["entity"] = entity
-        context.rootFrame().rootVariables()["owner"] = owner
-        context.rootFrame().rootVariables()["project"] = project
+        context.rootFrame().rootVariables()["entity"] = entitys
+        context.rootFrame().rootVariables()["owner"] = owners
+        context.rootFrame().rootVariables()["project"] = projects
     }
 }
