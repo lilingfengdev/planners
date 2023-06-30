@@ -7,16 +7,14 @@ import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 class ActionDragonRunFunction(
-    val ui: ParsedAction<*>,
+    val ui: String,
     val function: String,
     val selector: ParsedAction<*>?,
 ) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.run(ui).str { ui ->
-            frame.containerOrSender(selector).thenAccept {
-                it.forEachPlayer { PacketSender.sendRunFunction(player, ui, function, false) }
-            }
+        frame.containerOrSender(selector).thenAccept {
+            it.forEachPlayer { PacketSender.sendRunFunction(player, ui, function, false) }
         }
         return CompletableFuture.completedFuture(null)
     }

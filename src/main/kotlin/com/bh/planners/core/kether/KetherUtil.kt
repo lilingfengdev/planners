@@ -130,7 +130,7 @@ inline fun <reified T> ScriptFrame.read(action: ParsedAction<*>): CompletableFut
 
         if (T::class.java.isEnum) {
             catchRunning {
-                future.complete(getEnum<T>(it.toString().trim().toUpperCase().replace(".", "_")))
+                future.complete(getEnum<T>(it.toString().trim().uppercase(Locale.getDefault()).replace(".", "_")))
             }
             return@thenAccept
         }
@@ -361,7 +361,7 @@ fun QuestReader.nextSelectorOrNull(): ParsedAction<*>? {
 
 fun <T> CompletableFuture<Any?>.material(then: (Material) -> T): CompletableFuture<T> {
     return thenApply {
-        val id = it!!.toString().toUpperCase()
+        val id = it!!.toString().uppercase(Locale.getDefault())
         val material = Material.getMaterial(id) ?: error("Block type '$it' is not supported.")
         then(material)
     }
@@ -375,7 +375,7 @@ fun <T> CompletableFuture<Any?>.byte(then: (Byte) -> T): CompletableFuture<T> {
 
 fun <T> CompletableFuture<Any?>.materialOrNull(then: (Material?) -> T): CompletableFuture<T> {
     return thenApply {
-        val id = it!!.toString().toUpperCase()
+        val id = it!!.toString().uppercase(Locale.getDefault())
         if (id == "*") {
             then(null)
         }

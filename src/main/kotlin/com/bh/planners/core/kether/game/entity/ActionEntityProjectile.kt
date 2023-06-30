@@ -21,6 +21,7 @@ import taboolib.module.kether.*
 import taboolib.platform.util.getMeta
 import taboolib.platform.util.hasMeta
 import taboolib.platform.util.setMeta
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class ActionEntityProjectile {
@@ -43,7 +44,7 @@ class ActionEntityProjectile {
 
             val future = CompletableFuture<Target.Container>()
             frame.run(action).str {
-                val type = Type.valueOf(it.toUpperCase())
+                val type = Type.valueOf(it.uppercase(Locale.getDefault()))
                 frame.run(name).str { name ->
                     frame.run(step).double { step ->
                         frame.run(gravity).bool { gravity ->
@@ -153,11 +154,6 @@ class ActionEntityProjectile {
                 val context = e.entity.getMeta("context").getOrNull(0)?.value() as? Session ?: return
                 val event = e.entity.getMeta("event").getOrNull(0)?.asString() ?: return
                 context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!, e))
-            }
-
-            // 是pl实体总是删除
-            if (e.entity.hasMeta("@Planners:Projectile")) {
-                e.entity.remove()
             }
 
         }

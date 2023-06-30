@@ -19,7 +19,7 @@ object Emitter {
         get() = PlannersOption.root.getLong("presskey-patch.timeout", 1000)
 
     val globalType: String
-        get() = PlannersOption.root.getString("presskey-patch.type", "disorderly")!!.toUpperCase()
+        get() = PlannersOption.root.getString("presskey-patch.type", "disorderly")!!.uppercase(Locale.getDefault())
 
     val subscribers = Collections.synchronizedMap(mutableMapOf<Player, MutableList<Subscriber>>())
 
@@ -73,7 +73,7 @@ object Emitter {
     }
 
     val Skill.type: String
-        get() = config.getString("type", globalType)!!.toUpperCase()
+        get() = config.getString("type", globalType)!!.uppercase(Locale.getDefault())
 
 
     @SubscribeEvent

@@ -2,6 +2,7 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.PlannersAPI
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.execPlayer
@@ -42,7 +43,8 @@ class ActionSkillCast {
                             ContextAPI.create(this, skill, level)?.cast()
                         }
                     } else {
-                        ContextAPI.create(frame.bukkitPlayer() ?: return@thenAccept, skill, level)?.cast()
+                        val player = frame.bukkitPlayer() ?: return@thenAccept
+                        ContextAPI.create(player, skill, level)?.cast()
                     }
                 }
             }

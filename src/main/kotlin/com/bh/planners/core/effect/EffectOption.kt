@@ -29,7 +29,7 @@ open class EffectOption(text: String) {
     val optOffsetVector = demand.get(listOf("offset", "os"), "0 0 0")!!.split(" ").map { Coerce.toDouble(it) }
 
     val particle =
-        Enums.getIfPresent(ProxyParticle::class.java, demand.namespace.toUpperCase()).or(ProxyParticle.FLAME)!!
+        Enums.getIfPresent(ProxyParticle::class.java, demand.namespace.uppercase(Locale.getDefault())).or(ProxyParticle.FLAME)!!
     val offsetX = Coerce.toDouble(optOffsetVector.getOrElse(0) { "0" })
     val offsetY = Coerce.toDouble(optOffsetVector.getOrElse(1) { "0" })
     val offsetZ = Coerce.toDouble(optOffsetVector.getOrElse(2) { "0" })
@@ -47,7 +47,7 @@ open class EffectOption(text: String) {
         demand.get("block")?.let {
             val args = it.split(",")
             data = ProxyParticle.BlockData(
-                args.getOrElse(0) { "DIRT" }.toUpperCase(),
+                args.getOrElse(0) { "DIRT" }.uppercase(Locale.getDefault()),
                 Coerce.toInteger(args.getOrElse(1) { 0 })
             )
         }

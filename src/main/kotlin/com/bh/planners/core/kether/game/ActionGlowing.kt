@@ -11,6 +11,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class ActionGlowing : ScriptAction<Void>() {
@@ -38,7 +39,7 @@ class ActionGlowing : ScriptAction<Void>() {
         frame.run(tick).long { tick ->
             frame.run(value).bool { glowing ->
                 frame.run(color).str {
-                    val chatColor = ChatColor.valueOf(it.toUpperCase())
+                    val chatColor = ChatColor.valueOf(it.uppercase(Locale.getDefault()))
                     if (selector != null) {
                         frame.execEntity(selector!!) {
                             execute(this, glowing, chatColor, tick)

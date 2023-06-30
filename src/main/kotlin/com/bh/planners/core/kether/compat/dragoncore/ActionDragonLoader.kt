@@ -135,7 +135,7 @@ object ActionDragonLoader {
                 }
             }
             case("runfunction") {
-                ActionDragonRunFunction(it.nextParsedAction(), it.nextToken(), it.nextSelectorOrNull())
+                ActionDragonRunFunction(it.nextToken(), it.nextToken(), it.nextSelectorOrNull())
             }
         }
     }

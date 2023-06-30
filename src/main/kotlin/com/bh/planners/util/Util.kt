@@ -16,6 +16,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.warning
 import taboolib.common5.Coerce
 import taboolib.module.kether.printKetherErrorMessage
+import java.util.*
 import kotlin.random.Random
 
 fun Target.toProxyCommandSender(): ProxyCommandSender? {
@@ -88,7 +89,7 @@ fun timing(start: Long): Double {
 }
 
 fun List<String>.upperCase(): List<String> {
-    return map { it.toUpperCase() }
+    return map { it.uppercase(Locale.getDefault()) }
 }
 
 fun List<ObjectiveCountableI<*>>.registers() {

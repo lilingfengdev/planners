@@ -8,6 +8,7 @@ import taboolib.module.kether.KetherParser
 import taboolib.module.kether.expects
 import taboolib.module.kether.scriptParser
 import taboolib.module.kether.switch
+import java.util.*
 
 class ActionEntity {
 
@@ -80,7 +81,7 @@ class ActionEntity {
                         it.mark()
                         val expect = it.expects(*EntityField.fields().toTypedArray())
                         ActionEntityFieldGet(
-                            EntityField.valueOf(expect.toUpperCase()),
+                            EntityField.valueOf(expect.uppercase(Locale.getDefault())),
                             it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
                         )
                     } catch (_: Throwable) {

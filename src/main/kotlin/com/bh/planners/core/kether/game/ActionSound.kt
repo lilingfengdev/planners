@@ -9,6 +9,7 @@ import org.bukkit.entity.Player
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
 import taboolib.module.kether.*
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -34,7 +35,7 @@ class ActionSound(val sound: String, val volume: Float, val pitch: Float, val se
             player.playSound(player.location, sound.substring("resource:".length), volume, pitch)
         } else {
             catchRunning {
-                player.playSound(player.location, Sound.valueOf(sound.replace('.', '_').toUpperCase()), volume, pitch)
+                player.playSound(player.location, Sound.valueOf(sound.replace('.', '_').uppercase(Locale.getDefault())), volume, pitch)
             }
         }
     }

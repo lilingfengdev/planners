@@ -13,6 +13,7 @@ import org.bukkit.Location
 import taboolib.common.util.sync
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class ActionAdyeshachSpawn : ScriptAction<Target.Container>() {
@@ -63,7 +64,7 @@ class ActionAdyeshachSpawn : ScriptAction<Target.Container>() {
         val container = Target.Container()
         val future = CompletableFuture<Target.Container>()
         frame.run(type).str {
-            val type = EntityTypes.valueOf(it.toUpperCase())
+            val type = EntityTypes.valueOf(it.uppercase(Locale.getDefault()))
             frame.run(name).str { name ->
                 frame.run(timeout).long { timeout ->
                     frame.containerOrOrigin(selector).thenAccept {

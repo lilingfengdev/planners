@@ -2,6 +2,7 @@ package com.bh.planners.core.timer
 
 import com.bh.planners.util.getScriptFactor
 import taboolib.library.configuration.ConfigurationSection
+import java.util.*
 
 
 open class Template(val id: String, var root: ConfigurationSection) {
@@ -12,6 +13,6 @@ open class Template(val id: String, var root: ConfigurationSection) {
 
     open val script = getScriptFactor(root.getString("action", "")!!)
 
-    open val keys = root.getStringList("__option__.key").map { it.toUpperCase() }
+    open val keys = root.getStringList("__option__.key").map { it.uppercase(Locale.getDefault()) }
 
 }
