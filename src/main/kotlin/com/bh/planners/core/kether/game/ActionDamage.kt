@@ -24,8 +24,11 @@ import java.util.concurrent.CompletableFuture
 
 class ActionDamage {
 
-    class Damage(val value: ParsedAction<*>, val selector: ParsedAction<*>, val source: ParsedAction<*>?) :
-        ScriptAction<Void>() {
+    class Damage(
+        val value: ParsedAction<*>,
+        val selector: ParsedAction<*>,
+        val source: ParsedAction<*>?
+    ) : ScriptAction<Void>() {
 
         fun execute(entity: LivingEntity, source: LivingEntity?, damage: String) {
             val result = damage.eval(entity.maxHealth)
@@ -50,8 +53,11 @@ class ActionDamage {
         }
     }
 
-    class Attack(val value: ParsedAction<*>, var data: ParsedAction<*>, val selector: ParsedAction<*>) :
-        ScriptAction<Void>() {
+    class Attack(
+        val value: ParsedAction<*>,
+        var data: ParsedAction<*>,
+        val selector: ParsedAction<*>
+    ) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             val source = frame.getContext().sender.getLivingEntity() ?: return CompletableFuture.completedFuture(null)
