@@ -78,7 +78,7 @@ class ActionPassenger {
 
         /**
          * passengers add selector1 [selector]
-         * passengers set selector1 [selector]
+         * passengers remove selector1 [selector]
          * passengers get [selector]
          */
         @KetherParser(["passengers"], namespace = NAMESPACE, shared = true)
