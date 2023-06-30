@@ -3,6 +3,7 @@ package com.bh.planners.core.kether.game.entity
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.effect.inline.Incident.Companion.handleIncident
+import com.bh.planners.core.effect.inline.IncidentHitBlock
 import com.bh.planners.core.effect.inline.IncidentHitEntity
 import com.bh.planners.core.effect.rotateAroundX
 import com.bh.planners.core.effect.rotateAroundY
@@ -147,15 +148,17 @@ class ActionEntityProjectile {
             }
         }
 
-        @SubscribeEvent(ignoreCancelled = true)
+        @SubscribeEvent
         fun e(e: ProjectileHitEvent) {
+            val owner = e.entity.getMeta("owner").getOrNull(0)?.value() as? LivingEntity ?: return
+            val context = e.entity.getMeta("context").getOrNull(0)?.value() as? Session ?: return
+            val event = e.entity.getMeta("event").getOrNull(0)?.asString() ?: return
             if (e.hitEntity != null) {
-                val owner = e.entity.getMeta("owner").getOrNull(0)?.value() as? LivingEntity ?: return
-                val context = e.entity.getMeta("context").getOrNull(0)?.value() as? Session ?: return
-                val event = e.entity.getMeta("event").getOrNull(0)?.asString() ?: return
                 context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!, e))
             }
-
+            if (e.hitBlock != null) {
+                context.handleIncident(event, IncidentHitBlock(owner, e.hitBlock!!, e))
+            }
         }
 
 
