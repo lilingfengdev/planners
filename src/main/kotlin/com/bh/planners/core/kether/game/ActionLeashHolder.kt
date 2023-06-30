@@ -18,7 +18,7 @@ class ActionLeashHolder {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.createContainer(selector).thenAccept { container ->
                 frame.containerOrSender(holder).thenAccept {
-                    val holder = it.firstLivingEntityTarget()
+                    val holder = it.firstEntityTarget()
                     container.forEachLivingEntity {
                         setLeashHolder(holder)
                     }

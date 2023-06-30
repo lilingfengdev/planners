@@ -1,4 +1,4 @@
-package com.bh.planners.core.selector.dungeonplus
+package com.bh.planners.core.selector.compat.dungeonplus
 
 import com.bh.planners.api.common.Plugin
 import com.bh.planners.core.effect.Target

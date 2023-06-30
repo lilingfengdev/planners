@@ -1,4 +1,4 @@
-package com.bh.planners.core.selector.mypet
+package com.bh.planners.core.selector.compat.mypet
 
 import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.effect.Target.Companion.toTarget

@@ -1,5 +1,6 @@
 package com.bh.planners.core.selector.bukkit
 
+import com.bh.planners.core.effect.Target.Companion.getDirection
 import com.bh.planners.core.effect.Target.Companion.ifEntity
 import com.bh.planners.core.effect.Target.Companion.ifLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
@@ -42,7 +43,7 @@ object Visual : Selector {
      * by SkillAPI
      */
     private fun getTargetLocation(start: Location, dir: Vector, maxRange: Double): Set<LivingEntity> {
-        var maxRange = maxRange
+        var maxrange = maxRange
         val list = mutableSetOf<LivingEntity>()
         if (dir.x == 0.0) {
             dir.x = java.lang.Double.MIN_NORMAL
@@ -56,13 +57,13 @@ object Visual : Selector {
         val ox = if (dir.x > 0) 1 else 0
         val oy = if (dir.y > 0) 1 else 0
         val oz = if (dir.z > 0) 1 else 0
-        while (maxRange > 0) {
+        while (maxrange > 0) {
             val dxt: Double = computeWeight(start.x, dir.x, ox)
             val dyt: Double = computeWeight(start.y, dir.y, oy)
             val dzt: Double = computeWeight(start.z, dir.z, oz)
-            val t = dxt.coerceAtMost(dyt.coerceAtMost(dzt.coerceAtMost(maxRange))) + 1E-5
+            val t = dxt.coerceAtMost(dyt.coerceAtMost(dzt.coerceAtMost(maxrange))) + 1E-5
             start.add(dir.clone().multiply(t))
-            maxRange -= t
+            maxrange -= t
             list += start.entityAt()
         }
         return list
