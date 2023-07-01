@@ -8,23 +8,30 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Projectile
 import org.bukkit.event.Event
+import taboolib.library.kether.QuestContext
 import taboolib.module.kether.ScriptContext
 
-class IncidentHitBlock(val owner: Entity, val block: Block, val event: Event, val project: Projectile) : Incident {
+class IncidentHitBlock(val owner: Entity, val block: Block, val event: Event, val project: Projectile, val vars: QuestContext.VarTable) : Incident {
     override fun inject(context: ScriptContext) {
         val locs = Target.Container()
         val owners = Target.Container()
         val projects = Target.Container()
 
+        val rootVariables = context.rootFrame().rootVariables()
+
         locs += block.location.toTarget()
         owners += owner.target()
         projects += project.toTarget()
 
-        context.rootFrame().rootVariables()["@Event"] = event
-        context.rootFrame().rootVariables()["owner"] = owners
-        context.rootFrame().rootVariables()["loc"] = locs
-        context.rootFrame().rootVariables()["location"] = locs
-        context.rootFrame().rootVariables()["block"] = block
-        context.rootFrame().rootVariables()["project"] = projects
+        vars.toMap().map {
+            rootVariables[it.key] = it.value
+        }
+
+        rootVariables["@Event"] = event
+        rootVariables["owner"] = owners
+        rootVariables["loc"] = locs
+        rootVariables["location"] = locs
+        rootVariables["block"] = block
+        rootVariables["project"] = projects
     }
 }

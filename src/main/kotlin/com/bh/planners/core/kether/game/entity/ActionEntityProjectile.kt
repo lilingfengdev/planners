@@ -19,6 +19,7 @@ import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestContext
 import taboolib.module.kether.*
 import taboolib.platform.util.getMeta
 import taboolib.platform.util.hasMeta
@@ -61,6 +62,7 @@ class ActionEntityProjectile {
                                                     val entities = it.filterIsInstance<Target.Entity>()
                                                     submit {
                                                         execute(
+                                                            frame.variables(),
                                                             context,
                                                             name,
                                                             entities,
@@ -154,16 +156,18 @@ class ActionEntityProjectile {
             val owner = e.entity.getMeta("owner").getOrNull(0)?.value() as? LivingEntity ?: return
             val context = e.entity.getMeta("context").getOrNull(0)?.value() as? Session ?: return
             val event = e.entity.getMeta("event").getOrNull(0)?.asString() ?: return
+            val vars = e.entity.getMeta("vars").getOrNull(0)?.value() as? QuestContext.VarTable ?: return
             if (e.hitEntity != null) {
-                context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!, e, e.entity))
+                context.handleIncident(event, IncidentHitEntity(owner, e.hitEntity!!, e, e.entity, vars))
             }
             if (e.hitBlock != null) {
-                context.handleIncident(event, IncidentHitBlock(owner, e.hitBlock!!, e, e.entity))
+                context.handleIncident(event, IncidentHitBlock(owner, e.hitBlock!!, e, e.entity, vars))
             }
         }
 
 
         fun execute(
+            vars: QuestContext.VarTable,
             context: Context,
             name: String,
             owners: List<Target.Entity>,
@@ -185,6 +189,7 @@ class ActionEntityProjectile {
                     projectile.setMeta("owner", entity)
                     projectile.setMeta("event", event)
                     projectile.setMeta("context", context)
+                    projectile.setMeta("vars", vars)
                 }
 
                 projectile.setMeta("@Planners:Projectile", true)

@@ -25,7 +25,7 @@ object Fetch : Selector {
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
         catchRunning {
-            data.container.merge(data.context.getTargetContainer(data.read(0, "")))
+            data.container += data.context.getTargetContainer(data.read(0, "")).map { target -> target }
         }
         return CompletableFuture.completedFuture(null)
     }

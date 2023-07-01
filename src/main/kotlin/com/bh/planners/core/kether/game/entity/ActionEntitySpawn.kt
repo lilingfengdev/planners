@@ -5,6 +5,10 @@ import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.origin
 import com.bh.planners.core.kether.runAny
+import io.lumine.xikage.mythicmobs.MythicMobs
+import io.lumine.xikage.mythicmobs.adapters.AbstractLocation
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob
+import io.lumine.xikage.mythicmobs.mobs.MythicMob
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -31,9 +35,28 @@ class ActionEntitySpawn(
         entityType: EntityType, locations: List<Location>, name: String, health: Double, tick: Long,
     ): CompletableFuture<List<Entity>> {
         val future = CompletableFuture<List<Entity>>()
-        spawn(entityType, locations).thenAccept {
-            it.forEach { register(it, name, health, tick) }
-            future.complete(it)
+        if (name.startsWith("mm:")) {
+            spawn(name.removePrefix("mm:"), locations).thenAccept {
+                it.forEach { register(it, tick) }
+                future.complete(it)
+            }
+        } else {
+            spawn(entityType, locations).thenAccept {
+                it.forEach { register(it, name, health, tick) }
+                future.complete(it)
+            }
+        }
+        return future
+    }
+
+    fun spawn(mob: String, locations: List<Location>): CompletableFuture<List<Entity>> {
+        val future = CompletableFuture<List<Entity>>()
+        if (Bukkit.isPrimaryThread()) {
+            future.complete(locations.map { MythicMobs.inst().mobManager.spawnMob(mob, it, 1.0).entity.bukkitEntity })
+        } else {
+            sync {
+                future.complete(locations.map { MythicMobs.inst().mobManager.spawnMob(mob, it, 1.0).entity.bukkitEntity })
+            }
         }
         return future
     }
@@ -61,6 +84,14 @@ class ActionEntitySpawn(
             entity.maxHealth = health
             entity.health = health
         }
+        // 注册销毁任务
+        SimpleTimeoutTask.createSimpleTask(tick, false) {
+            entity.remove()
+        }
+        return entity.uniqueId
+    }
+
+    fun register(entity: Entity, tick: Long): UUID {
         // 注册销毁任务
         SimpleTimeoutTask.createSimpleTask(tick, false) {
             entity.remove()
