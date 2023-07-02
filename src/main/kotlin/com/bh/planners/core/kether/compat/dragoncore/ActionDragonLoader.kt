@@ -40,7 +40,7 @@ object ActionDragonLoader {
      * 运行方法
      * t: dragon runfunction default "方法.屏幕抖动(3,100,10,10);" they "@self"
      *
-     * 渲染一根绳索
+     * 渲染一根绳索、无效
      * dragon rope send [key: token] [path: token] [time: Tick] selector1 selector2
      * dragon rope stop [key: token]
      *
