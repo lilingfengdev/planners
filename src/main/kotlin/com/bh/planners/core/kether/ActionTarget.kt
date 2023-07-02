@@ -26,7 +26,7 @@ class ActionTarget {
         }
     }
 
-    class ActionTargetLocation() : ScriptAction<Location>() {
+    class ActionTargetLocation : ScriptAction<Location>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Location> {
             return CompletableFuture.completedFuture(frame.getTarget()?.toLocation())
         }

@@ -1,6 +1,8 @@
 package com.bh.planners.core.feature.presskey
 
 import com.bh.planners.api.PlannersAPI
+import com.bh.planners.api.compat.WorldGuardHook
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.messaging.PluginMessageListener
@@ -18,6 +20,10 @@ object Loader {
 
     @Awake(LifeCycle.ENABLE)
     fun e() {
+        val worldGuard = WorldGuardHook
+        if (worldGuard.worldGuardPlugin==null){
+            worldGuard.worldGuardPlugin = WorldGuardPlugin()
+        }
         Bukkit.getMessenger()
             .registerIncomingPluginChannel(BukkitPlugin.getInstance(), CHANNEL_NAME, Handler())
     }
