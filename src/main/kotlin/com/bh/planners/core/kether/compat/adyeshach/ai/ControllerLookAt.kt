@@ -20,7 +20,7 @@ class ControllerLookAt(val target: Target.Location) : Controller() {
     }
 
     override fun shouldExecute(): Boolean {
-        if (entity!!.getTag("isFreeze") == "true" || !entity!!.isControllerMoving()) {
+        if (entity!!.getTag("isFreeze") == "true" || !entity.isControllerMoving()) {
             if (random(0.01)) {
                 look = random(10, 60)
             }
@@ -35,7 +35,7 @@ class ControllerLookAt(val target: Target.Location) : Controller() {
     override fun onTick() {
 
         if (entity!!.getLocation().safeDistance(location) < distance) {
-            entity!!.controllerLook(location, smooth = true)
+            entity.controllerLook(location, smooth = true)
         }
 
     }
