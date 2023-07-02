@@ -74,7 +74,13 @@ class ActionEntitySpawn(
     }
 
     fun spawn(entityType: EntityType, location: Location): Entity {
-        return location.world!!.spawnEntity(location, entityType)
+        return if (entityType == EntityType.ARMOR_STAND) {
+            location.world!!.spawnEntity(location, entityType).apply {
+                this.isInvulnerable = true
+            }
+        } else {
+            location.world!!.spawnEntity(location, entityType)
+        }
     }
 
 

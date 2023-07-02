@@ -32,13 +32,17 @@ object ActionDragonLoader {
      * t: dragon bind entity &b bindEntity &a forward 0 offsetY 0 sideways 0 bindYaw true bindPitch true they "@self"
      *
      * 世界图片
-     * dragon worldtexture send [key: String] [rotateX: Float] [rotateY: Float] [rotateZ: Float] [path: String] [width: Float] [height: Float] [alpha: Float] [followPlayer: Boolean] [glow: Boolean] [followEntity: Boolean] [x: Float] [y: Float] [z: Float] [player: selector] [selector]
+     * dragon worldtexture send [key: String] [rotateX: Float] [rotateY: Float] [rotateZ: Float] [path: String] [width: Float] [height: Float] [alpha: Float] [followPlayer: Boolean] [glow: Boolean] [followEntity: Boolean] [x: Float] [y: Float] [z: Float] [player: selector]
      * dragon worldtexture stop [key: String] [selector]
      *
      * t: dragon worldtexture send "1" 0 0 0 "unknow.png" 10 5 1 true false true 0 0 0 "@server" they "@self"
      *
      * 运行方法
      * t: dragon runfunction default "方法.屏幕抖动(3,100,10,10);" they "@self"
+     *
+     * 渲染一根绳索
+     * dragon rope send [key: token] [path: token] [time: Tick] selector1 selector2
+     * dragon rope stop [key: token]
      *
      */
     @KetherParser(["dragon", "dragoncore"], namespace = NAMESPACE, shared = true)
@@ -136,6 +140,15 @@ object ActionDragonLoader {
             }
             case("runfunction") {
                 ActionDragonRunFunction(it.nextToken(), it.nextToken(), it.nextSelectorOrNull())
+            }
+            case("rope") {
+                when (it.expects("send", "stop")) {
+                    "send" -> {
+                        ActionDragonRopeSend(it.nextToken(), it.nextToken(), it.nextParsedAction(), it.nextParsedAction(), it.nextSelectorOrNull())
+                    }
+                    "stop" -> ActionDragonRopeStop(it.nextToken())
+                    else -> error("out of case")
+                }
             }
         }
     }

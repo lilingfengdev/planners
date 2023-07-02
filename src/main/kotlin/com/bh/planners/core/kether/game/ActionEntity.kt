@@ -24,6 +24,7 @@ class ActionEntity {
          * entity set viewto [selector] [selector]
          * entity set arrowsInBody add/set/dec [arrows : Int] [selector]
          * entity remove [selector]
+         * entity gravity [gravity: bool] [selector]
          */
         @KetherParser(["entity"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
@@ -72,6 +73,13 @@ class ActionEntity {
 
                 case("remove") {
                     ActionEntityRemove(
+                        it.nextSelector()
+                    )
+                }
+
+                case("gravity") {
+                    ActionEntityGravity(
+                        it.nextParsedAction(),
                         it.nextSelector()
                     )
                 }
