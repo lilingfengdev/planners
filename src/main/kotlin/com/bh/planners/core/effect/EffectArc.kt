@@ -8,6 +8,7 @@ import com.bh.planners.core.kether.game.ActionEffect
 import com.bh.planners.core.pojo.Context
 import org.bukkit.Location
 import org.bukkit.util.Vector
+import taboolib.common5.mirrorNow
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -57,41 +58,45 @@ object EffectArc : Effect() {
         var i = 0.0
 
         override fun next(): Location? {
-
-            if (if (angle <= -1) i > angle else i < angle) {
-                val radians = Math.toRadians(i + start)
-                val vector = Vector()
-                vector.x = (radius + abs(i) / step * spread) * cos(radians)
-                vector.z = (radius + abs(i) / step * spread) * sin(radians)
-                vector.y = abs(i) / step * slope
-                val new = rotateAxisVector(rotateAxisX, rotateAxisY, rotateAxisZ, vector)
-                if (angle <= -1) {
-                    i -= step
+            return mirrorNow("渲染粒子Arc") {
+                if (if (angle <= -1) i > angle else i < angle) {
+                    val radians = Math.toRadians(i + start)
+                    val vector = Vector()
+                    vector.x = (radius + abs(i) / step * spread) * cos(radians)
+                    vector.z = (radius + abs(i) / step * spread) * sin(radians)
+                    vector.y = abs(i) / step * slope
+                    val new = rotateAxisVector(rotateAxisX, rotateAxisY, rotateAxisZ, vector)
+                    if (angle <= -1) {
+                        i -= step
+                    } else {
+                        i += step
+                    }
+                    coordinate.newLocation(new.x, new.y, new.z)
                 } else {
-                    i += step
+                    null
                 }
-                return coordinate.newLocation(new.x, new.y, new.z)
             }
-            return null
         }
 
         override fun nexts(): List<Location> {
-            val locations = mutableListOf<Location>()
-            while (if (angle <= -1) i > angle else i < angle) {
-                val radians = Math.toRadians(i + start)
-                val vector = Vector()
-                vector.x = (radius + abs(i) / step * spread) * cos(radians)
-                vector.z = (radius + abs(i) / step * spread) * sin(radians)
-                vector.y = abs(i) / step * slope
-                val new = rotateAxisVector(rotateAxisX, rotateAxisY, rotateAxisZ, vector)
-                if (angle <= -1) {
-                    i -= step
-                } else {
-                    i += step
+            return mirrorNow("渲染粒子Arc") {
+                val locations = mutableListOf<Location>()
+                while (if (angle <= -1) i > angle else i < angle) {
+                    val radians = Math.toRadians(i + start)
+                    val vector = Vector()
+                    vector.x = (radius + abs(i) / step * spread) * cos(radians)
+                    vector.z = (radius + abs(i) / step * spread) * sin(radians)
+                    vector.y = abs(i) / step * slope
+                    val new = rotateAxisVector(rotateAxisX, rotateAxisY, rotateAxisZ, vector)
+                    if (angle <= -1) {
+                        i -= step
+                    } else {
+                        i += step
+                    }
+                    locations.add(coordinate.newLocation(new.x, new.y, new.z))
                 }
-                locations.add(coordinate.newLocation(new.x, new.y, new.z))
+                locations
             }
-            return locations
         }
 
     }

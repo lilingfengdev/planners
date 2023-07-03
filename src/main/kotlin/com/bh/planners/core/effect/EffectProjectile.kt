@@ -6,6 +6,7 @@ import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.kether.game.ActionEffect
 import com.bh.planners.core.pojo.Context
 import org.bukkit.Location
+import taboolib.common5.mirrorNow
 
 object EffectProjectile : Effect() {
     override val name: String
@@ -41,22 +42,27 @@ object EffectProjectile : Effect() {
         var index = 0;
 
         override fun next(): Location? {
-            if (index < amount) {
-                index++
-                direction.multiply(step)
-                return location.add(direction)
+            return mirrorNow("渲染粒子Projectile") {
+                if (index < amount) {
+                    index++
+                    direction.multiply(step)
+                    location.add(direction)
+                } else {
+                    null
+                }
             }
-            return null
         }
 
         override fun nexts(): List<Location> {
-            val locations = mutableListOf<Location>()
-            while (index < amount) {
-                index++
-                direction.multiply(step)
-                locations.add(location.add(direction))
+            return mirrorNow("渲染粒子Projectile") {
+                val locations = mutableListOf<Location>()
+                while (index < amount) {
+                    index++
+                    direction.multiply(step)
+                    locations.add(location.add(direction))
+                }
+                locations
             }
-            return locations
         }
 
 

@@ -6,6 +6,7 @@ import com.bh.planners.core.kether.game.ActionEffect
 import com.bh.planners.core.pojo.Context
 import org.bukkit.Location
 import org.bukkit.util.Vector
+import taboolib.common5.mirrorNow
 import kotlin.math.cos
 
 object EffectStar : Effect() {
@@ -32,35 +33,39 @@ object EffectStar : Effect() {
         var index = 0.0
 
         override fun next(): Location? {
-
-            for (i in 1..5) {
-                if (index < length) {
-                    val vectorTemp: Vector = vector.clone().multiply(index)
-                    val spawnLocation = end.clone().add(vectorTemp)
-                    index += step
-                    return spawnLocation
+            var locations: Location? = null
+            return mirrorNow("渲染粒子Star") {
+                for (i in 1..5) {
+                    if (index < length) {
+                        val vectorTemp: Vector = vector.clone().multiply(index)
+                        val spawnLocation = end.clone().add(vectorTemp)
+                        index += step
+                        locations = spawnLocation
+                    }
+                    val vectorTemp: Vector = vector.clone().multiply(length)
+                    end = end.clone().add(vectorTemp)
+                    rotateAroundAxisY(vector, -144.0)
                 }
-                val vectorTemp: Vector = vector.clone().multiply(length)
-                end = end.clone().add(vectorTemp)
-                rotateAroundAxisY(vector, -144.0)
+                locations
             }
-            return null
         }
 
         override fun nexts(): List<Location> {
-            val locations = mutableListOf<Location>()
-            for (i in 1..5) {
-                while (index < length) {
-                    val vectorTemp: Vector = vector.clone().multiply(index)
-                    val spawnLocation = end.clone().add(vectorTemp)
-                    index += step
-                    locations.add(spawnLocation)
+            return mirrorNow("渲染粒子Star") {
+                val locations = mutableListOf<Location>()
+                for (i in 1..5) {
+                    while (index < length) {
+                        val vectorTemp: Vector = vector.clone().multiply(index)
+                        val spawnLocation = end.clone().add(vectorTemp)
+                        index += step
+                        locations.add(spawnLocation)
+                    }
+                    val vectorTemp: Vector = vector.clone().multiply(length)
+                    end = end.clone().add(vectorTemp)
+                    rotateAroundAxisY(vector, -144.0)
                 }
-                val vectorTemp: Vector = vector.clone().multiply(length)
-                end = end.clone().add(vectorTemp)
-                rotateAroundAxisY(vector, -144.0)
+                locations
             }
-            return locations
         }
 
     }

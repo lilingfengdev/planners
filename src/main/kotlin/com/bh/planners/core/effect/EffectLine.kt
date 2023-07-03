@@ -7,6 +7,7 @@ import com.bh.planners.core.kether.forEachLocation
 import com.bh.planners.core.kether.game.ActionEffect
 import com.bh.planners.core.pojo.Context
 import org.bukkit.Location
+import taboolib.common5.mirrorNow
 
 object EffectLine : Effect() {
 
@@ -43,22 +44,27 @@ object EffectLine : Effect() {
         }
 
         override fun next(): Location? {
-            if (i < vectorLength) {
-                val location = locA.clone().add(vectorAB.clone().multiply(i))
-                i += step
-                return location
+            return mirrorNow("渲染粒子Line") {
+                if (i < vectorLength) {
+                    val location = locA.clone().add(vectorAB.clone().multiply(i))
+                    i += step
+                    location
+                } else {
+                    null
+                }
             }
-            return null
         }
 
         override fun nexts(): List<Location> {
-            val locations = mutableListOf<Location>()
-            while (i < vectorLength) {
-                val location = locA.clone().add(vectorAB.clone().multiply(i))
-                i += step
-                locations.add(location)
+            return mirrorNow("渲染粒子Line") {
+                val locations = mutableListOf<Location>()
+                while (i < vectorLength) {
+                    val location = locA.clone().add(vectorAB.clone().multiply(i))
+                    i += step
+                    locations.add(location)
+                }
+                locations
             }
-            return locations
         }
 
     }

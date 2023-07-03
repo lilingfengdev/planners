@@ -6,12 +6,12 @@ import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.api.script.ScriptLoader
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
+import taboolib.common5.Mirror
 import taboolib.expansion.createHelper
 import taboolib.module.chat.colored
 
@@ -73,8 +73,10 @@ object PlannersCommand {
     }
 
     @CommandBody
-    val test = subCommand {
-        execute<Player> { sender, context, argument ->
+    val report = subCommand {
+        execute<ProxyCommandSender> { sender, _, _ ->
+            // 打印统计结果
+            Mirror.report(sender)
         }
     }
 

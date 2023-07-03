@@ -159,7 +159,6 @@ object BukkitGrid {
             e.isCancelled = true
             val skill = get(player, grid) ?: return
             PlannersAPI.cast(player, skill).handler(e.player, skill.instance)
-
         }
     }
 

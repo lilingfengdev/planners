@@ -23,6 +23,7 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submitAsync
 import taboolib.common5.Coerce
 import taboolib.common5.cbool
+import taboolib.common5.mirrorNow
 import taboolib.module.configuration.Configuration
 import taboolib.module.kether.runKether
 import taboolib.platform.util.sendLang
@@ -56,7 +57,7 @@ object PlannersAPI {
     }
 
     fun cast(player: Player, skill: Skill, mark: Boolean = true): ExecuteResult {
-        return player.plannersProfile.cast(skill, mark)
+        return player.plannersProfile.castInMirror(skill, mark)
     }
 
     fun cast(player: Player, skill: PlayerJob.Skill, mark: Boolean = true): ExecuteResult {
@@ -64,7 +65,7 @@ object PlannersAPI {
     }
 
     fun PlayerProfile.cast(skillName: String, mark: Boolean = true): ExecuteResult {
-        return cast(skills.firstOrNull { it.key == skillName } ?: error("Skill '${skillName}' not found."), mark)
+        return castInMirror(skills.firstOrNull { it.key == skillName } ?: error("Skill '${skillName}' not found."), mark)
     }
 
     fun getRouter(routerKey: String): Router {
@@ -83,6 +84,12 @@ object PlannersAPI {
         PlayerKeydownEvent(player, slot).call()
     }
 
+    fun PlayerProfile.castInMirror(skill: Skill, mark: Boolean = true): ExecuteResult {
+        return mirrorNow("释放技能") {
+            // 该方法体的运行结果会返回给 mirrorNow 方法
+            cast(skill, mark)
+        }
+    }
 
     fun PlayerProfile.cast(skill: Skill, mark: Boolean = true): ExecuteResult {
 
