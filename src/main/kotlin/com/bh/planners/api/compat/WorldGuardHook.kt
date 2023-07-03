@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 
 object WorldGuardHook {
 
-    private val worldGuard = Bukkit.getPluginManager().isPluginEnabled("WorldGuard")
+    val worldGuard = Bukkit.getPluginManager().isPluginEnabled("WorldGuard")
     lateinit var worldGuardPlugin: WorldGuardPlugin
 
     fun cast(player: Player) : Boolean {

@@ -20,7 +20,7 @@ object Loader {
 
     @Awake(LifeCycle.ENABLE)
     fun e() {
-        WorldGuardHook.worldGuardPlugin = WorldGuardPlugin()
+        if (WorldGuardHook.worldGuard) WorldGuardHook.worldGuardPlugin = WorldGuardPlugin()
         Bukkit.getMessenger()
             .registerIncomingPluginChannel(BukkitPlugin.getInstance(), CHANNEL_NAME, Handler())
     }
