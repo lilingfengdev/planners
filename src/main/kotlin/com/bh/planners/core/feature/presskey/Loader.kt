@@ -19,10 +19,7 @@ object Loader {
     val packets = LinkedList<Packet>()
 
     @Awake(LifeCycle.ENABLE)
-    fun e() {
-        if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-            WorldGuardHook.worldGuardPlugin = WorldGuardPlugin()
-        }
+    fun enable() {
         Bukkit.getMessenger()
             .registerIncomingPluginChannel(BukkitPlugin.getInstance(), CHANNEL_NAME, Handler())
     }

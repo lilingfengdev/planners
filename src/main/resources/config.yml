@@ -41,5 +41,5 @@ options:
   #wg兼容 禁止pvp地方无法释放技能
   WorldGuard:
     enable: true
-    skill: false
-    castSkill: ""
+    skill: true
+    castSkill: "禁止释放"
