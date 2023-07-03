@@ -1,0 +1,5 @@
+__option__:
+  name: '禁止释放'
+  async: true
+action: |-
+  title colored "&c禁止释放技能"

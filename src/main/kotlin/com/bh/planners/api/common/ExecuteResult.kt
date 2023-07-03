@@ -1,7 +1,9 @@
 package com.bh.planners.api.common
 
+import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.Counting
 import com.bh.planners.api.PlannersOption
+import com.bh.planners.api.compat.WorldGuardHook
 import com.bh.planners.core.pojo.Skill
 import org.bukkit.entity.Player
 import taboolib.platform.util.sendLang
@@ -48,8 +50,8 @@ enum class ExecuteResult {
     WorldGuardPVP {
         override val handler: Player.(Skill) -> Unit
             get() = {
-                if (PlannersOption.root.getBoolean("WorldGuard.title")) {
-                    sendLang("WorldGuard-title")
+                if (WorldGuardHook.cast) {
+                    ContextAPI.create(this, WorldGuardHook.skill, 1)?.cast()
                 }
             }
     },

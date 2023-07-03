@@ -33,7 +33,7 @@ object PlannersLoader {
     @Awake(LifeCycle.ENABLE)
     fun loadSkills() {
         PlannersAPI.skills.clear()
-        files("skill", listOf("skill_def0.yml")) {
+        files("skill", listOf("skill_def0.yml", "skill_def1.yml", "禁止释放.yml")) {
             PlannersAPI.skills += Skill(it.toYamlName(), Configuration.loadFromFile(it))
         }
         ScriptLoader.autoLoad()
