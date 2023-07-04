@@ -40,6 +40,9 @@ object ActionDragonLoader {
      * 运行方法
      * t: dragon runfunction default "方法.屏幕抖动(3,100,10,10);" they "@self"
      *
+     * 运行实体控制方法
+     * t: dragon entityfun "方法.设置动画变量('名字', 变量值);" "@fetch t" they "@self"
+     *
      * 渲染一根绳索、无效
      * dragon rope send [key: token] [path: token] [time: Tick] selector1 selector2
      * dragon rope stop [key: token]
@@ -140,6 +143,9 @@ object ActionDragonLoader {
             }
             case("runfunction") {
                 ActionDragonRunFunction(it.nextToken(), it.nextToken(), it.nextSelectorOrNull())
+            }
+            case("entityfun") {
+                ActionDragonEntityRunFunction(it.nextToken(), it.nextParsedAction(), it.nextSelectorOrNull())
             }
             case("rope") {
                 when (it.expects("send", "stop")) {
