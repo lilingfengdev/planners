@@ -28,10 +28,10 @@ object Visual : Selector {
         val future = CompletableFuture<Void>()
         submit {
             data.origin.ifLocation {
-                data.container += getTargetLocation(this.value, this.value.direction, range).map { it.toTarget() }
+                data.container += getTargetLocation(this.value, this.value.direction, range).map { it.toTarget() }.reversed()
             }
             data.origin.ifEntity {
-                data.container += getTargetLocation(value, value.direction, range).map { it.toTarget() }
+                data.container += getTargetLocation(value, value.direction, range).map { it.toTarget() }.reversed()
             }
             future.complete(null)
         }
