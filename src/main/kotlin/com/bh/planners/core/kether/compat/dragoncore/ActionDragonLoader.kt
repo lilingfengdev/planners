@@ -47,6 +47,8 @@ object ActionDragonLoader {
      * dragon rope send [key: token] [path: token] [time: Tick] selector1 selector2
      * dragon rope stop [key: token]
      *
+     * dragon stopmove <time: long> <they selector>
+     * dragon stopmove 0 they <they selector>
      */
     @KetherParser(["dragon", "dragoncore"], namespace = NAMESPACE, shared = true)
     fun parser() = scriptParser {
@@ -155,6 +157,9 @@ object ActionDragonLoader {
                     "stop" -> ActionDragonRopeStop(it.nextToken())
                     else -> error("out of case")
                 }
+            }
+            case("stopmove") {
+                ActionDragonStopMove(it.nextParsedAction(), it.nextSelectorOrNull())
             }
         }
     }
