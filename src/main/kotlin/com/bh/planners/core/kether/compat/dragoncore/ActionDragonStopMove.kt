@@ -22,7 +22,7 @@ class ActionDragonStopMove(
                     if (duration.toInt() == 0) {
                         StopMoveEnd(this)
                     } else {
-                        StopMove(this, duration)
+                        StopMove(this, duration * 50)
                     }
                 }
             }

@@ -42,6 +42,7 @@ taboolib {
             name("VirtualEntitySkillModule").optional(true)
             name("Chemdah").optional(true)
             name("GDDTitle").optional(true)
+            name("Antikey").optional(true)
         }
     }
 }
