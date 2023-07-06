@@ -6,6 +6,7 @@ import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.origin
 import com.bh.planners.core.kether.runAny
+import com.bh.planners.core.kether.senderPlannerProfile
 import io.lumine.xikage.mythicmobs.MythicMobs
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -128,9 +129,9 @@ class ActionEntitySpawn(
                                     val locations = it.filterIsInstance<Target.Location>().map { it.value }
                                     val vector =
                                         if (vec) {
-                                            it.filterIsInstance<Target.Entity>().map { it.bukkitEntity?.velocity ?: Vector(0, 0, 0) }
+                                            it.filterIsInstance<Target.Location>().map { frame.senderPlannerProfile()?.player?.velocity ?: Vector(0, 0, 0) }
                                         } else {
-                                            it.filterIsInstance<Target.Entity>().map { Vector(0, 0, 0) }
+                                            it.filterIsInstance<Target.Location>().map { Vector(0, 0, 0) }
                                         }
                                     spawn(entityType, locations, name, health, tick, vector).thenAccept {
                                         future.complete(it)
@@ -139,7 +140,7 @@ class ActionEntitySpawn(
                             } else {
                                 val vector =
                                     if (vec) {
-                                        frame.origin().getEntity()?.velocity ?: Vector(0, 0, 0)
+                                        frame.senderPlannerProfile()?.player?.velocity ?: Vector(0, 0, 0)
                                     } else {
                                         Vector(0, 0, 0)
                                     }
