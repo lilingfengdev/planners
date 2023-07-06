@@ -2,11 +2,7 @@ package com.bh.planners.core.kether.game.entity
 
 import com.bh.planners.api.common.SimpleTimeoutTask
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.effect.Target.Companion.getEntity
-import com.bh.planners.core.kether.createContainer
-import com.bh.planners.core.kether.origin
-import com.bh.planners.core.kether.runAny
-import com.bh.planners.core.kether.senderPlannerProfile
+import com.bh.planners.core.kether.*
 import io.lumine.xikage.mythicmobs.MythicMobs
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -38,7 +34,7 @@ class ActionEntitySpawn(
         name: String,
         health: Double,
         tick: Long,
-        vector: List<Vector>
+        vector: Vector
     ): CompletableFuture<List<Entity>> {
         val future = CompletableFuture<List<Entity>>()
         if (name.startsWith("mm:")) {
@@ -67,13 +63,13 @@ class ActionEntitySpawn(
         return future
     }
 
-    fun spawn(entityType: EntityType, locations: List<Location>, vector: List<Vector>): CompletableFuture<List<Entity>> {
+    fun spawn(entityType: EntityType, locations: List<Location>, vector: Vector): CompletableFuture<List<Entity>> {
         val future = CompletableFuture<List<Entity>>()
         if (Bukkit.isPrimaryThread()) {
-            future.complete(locations.mapIndexed { index, location -> spawn(entityType, location, vector[index]) })
+            future.complete(locations.map { location -> spawn(entityType, location, vector) })
         } else {
             sync {
-                future.complete(locations.mapIndexed { index, location -> spawn(entityType, location, vector[index]) })
+                future.complete(locations.map { location -> spawn(entityType, location, vector) })
             }
         }
         return future
@@ -86,7 +82,9 @@ class ActionEntitySpawn(
                 velocity = vector
             }
         } else {
-            location.world!!.spawnEntity(location, entityType)
+            location.world!!.spawnEntity(location, entityType).apply {
+                velocity = vector
+            }
         }
     }
 
@@ -124,33 +122,27 @@ class ActionEntitySpawn(
                         val tick = Coerce.toLong(this)
                         frame.runAny(vector) {
                             val vec = Coerce.toBoolean(this)
+                            val vector =
+                                if (vec) {
+                                    frame.bukkitPlayer()?.velocity ?: Vector(0, 0, 0)
+                                } else {
+                                    Vector(0, 0, 0)
+                                }
                             if (selector != null) {
                                 frame.createContainer(selector).thenAccept {
                                     val locations = it.filterIsInstance<Target.Location>().map { it.value }
-                                    val vector =
-                                        if (vec) {
-                                            it.filterIsInstance<Target.Location>().map { frame.senderPlannerProfile()?.player?.velocity ?: Vector(0, 0, 0) }
-                                        } else {
-                                            it.filterIsInstance<Target.Location>().map { Vector(0, 0, 0) }
-                                        }
                                     spawn(entityType, locations, name, health, tick, vector).thenAccept {
                                         future.complete(it)
                                     }
                                 }
                             } else {
-                                val vector =
-                                    if (vec) {
-                                        frame.senderPlannerProfile()?.player?.velocity ?: Vector(0, 0, 0)
-                                    } else {
-                                        Vector(0, 0, 0)
-                                    }
                                 spawn(
                                     entityType,
                                     listOf(frame.origin().value),
                                     name,
                                     health,
                                     tick,
-                                    listOf(vector)
+                                    vector
                                 ).thenAccept {
                                     future.complete(it)
                                 }
