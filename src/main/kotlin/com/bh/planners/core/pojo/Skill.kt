@@ -17,6 +17,7 @@ open class Skill(val key: String, val config: ConfigurationSection) {
         open val async = root.getBoolean("async", false)
         open val isBind = root.getBoolean("bind", false)
         open val isNatural = root.getBoolean("natural", false)
+        open val naturalLevel = root.getInt("natural-level", 1)
         open val attribute = Attribute(root.getConfigurationSection("attribute") ?: Configuration.empty())
 
         open val flags = root.getStringList("flags")

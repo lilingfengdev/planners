@@ -2,18 +2,17 @@ package com.bh.planners.core.kether.game.entity
 
 import com.bh.planners.api.common.SimpleTimeoutTask
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.origin
 import com.bh.planners.core.kether.runAny
 import io.lumine.xikage.mythicmobs.MythicMobs
-import io.lumine.xikage.mythicmobs.adapters.AbstractLocation
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob
-import io.lumine.xikage.mythicmobs.mobs.MythicMob
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
+import org.bukkit.util.Vector
 import taboolib.common.util.sync
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
@@ -27,12 +26,18 @@ class ActionEntitySpawn(
     val name: ParsedAction<*>,
     val health: ParsedAction<*>,
     val tick: ParsedAction<*>,
+    val vector: ParsedAction<*>,
     val selector: ParsedAction<*>?,
 ) : ScriptAction<List<Entity>>() {
 
 
     fun spawn(
-        entityType: EntityType, locations: List<Location>, name: String, health: Double, tick: Long,
+        entityType: EntityType,
+        locations: List<Location>,
+        name: String,
+        health: Double,
+        tick: Long,
+        vector: List<Vector>
     ): CompletableFuture<List<Entity>> {
         val future = CompletableFuture<List<Entity>>()
         if (name.startsWith("mm:")) {
@@ -41,7 +46,7 @@ class ActionEntitySpawn(
                 future.complete(it)
             }
         } else {
-            spawn(entityType, locations).thenAccept {
+            spawn(entityType, locations, vector).thenAccept {
                 it.forEach { register(it, name, health, tick) }
                 future.complete(it)
             }
@@ -61,22 +66,23 @@ class ActionEntitySpawn(
         return future
     }
 
-    fun spawn(entityType: EntityType, locations: List<Location>): CompletableFuture<List<Entity>> {
+    fun spawn(entityType: EntityType, locations: List<Location>, vector: List<Vector>): CompletableFuture<List<Entity>> {
         val future = CompletableFuture<List<Entity>>()
         if (Bukkit.isPrimaryThread()) {
-            future.complete(locations.map { spawn(entityType, it) })
+            future.complete(locations.mapIndexed { index, location -> spawn(entityType, location, vector[index]) })
         } else {
             sync {
-                future.complete(locations.map { spawn(entityType, it) })
+                future.complete(locations.mapIndexed { index, location -> spawn(entityType, location, vector[index]) })
             }
         }
         return future
     }
 
-    fun spawn(entityType: EntityType, location: Location): Entity {
+    fun spawn(entityType: EntityType, location: Location, vector: Vector): Entity {
         return if (entityType == EntityType.ARMOR_STAND) {
             location.world!!.spawnEntity(location, entityType).apply {
                 this.isInvulnerable = true
+                velocity = vector
             }
         } else {
             location.world!!.spawnEntity(location, entityType)
@@ -115,18 +121,38 @@ class ActionEntitySpawn(
                     val health = Coerce.toDouble(this)
                     frame.runAny(tick) {
                         val tick = Coerce.toLong(this)
-                        if (selector != null) {
-                            frame.createContainer(selector).thenAccept {
-                                val locations = it.filterIsInstance<Target.Location>().map { it.value }
-                                spawn(entityType, locations, name, health, tick).thenAccept {
+                        frame.runAny(vector) {
+                            val vec = Coerce.toBoolean(this)
+                            if (selector != null) {
+                                frame.createContainer(selector).thenAccept {
+                                    val locations = it.filterIsInstance<Target.Location>().map { it.value }
+                                    val vector =
+                                        if (vec) {
+                                            it.filterIsInstance<Target.Entity>().map { it.bukkitEntity?.velocity ?: Vector(0, 0, 0) }
+                                        } else {
+                                            it.filterIsInstance<Target.Entity>().map { Vector(0, 0, 0) }
+                                        }
+                                    spawn(entityType, locations, name, health, tick, vector).thenAccept {
+                                        future.complete(it)
+                                    }
+                                }
+                            } else {
+                                val vector =
+                                    if (vec) {
+                                        frame.origin().getEntity()?.velocity ?: Vector(0, 0, 0)
+                                    } else {
+                                        Vector(0, 0, 0)
+                                    }
+                                spawn(
+                                    entityType,
+                                    listOf(frame.origin().value),
+                                    name,
+                                    health,
+                                    tick,
+                                    listOf(vector)
+                                ).thenAccept {
                                     future.complete(it)
                                 }
-                            }
-                        } else {
-                            spawn(
-                                entityType, listOf(frame.origin().value), name, health, tick
-                            ).thenAccept {
-                                future.complete(it)
                             }
                         }
 

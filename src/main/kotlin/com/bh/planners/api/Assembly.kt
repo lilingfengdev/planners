@@ -78,7 +78,7 @@ object Assembly {
     fun e(e: PlayerSelectedJobEvent) {
         if (e.profile.hasJob) {
             e.profile.getSkills().filter { it.level == 0 && it.instance.option.isNatural }.forEach {
-                it.level = 1
+                it.level = it.instance.option.naturalLevel
                 Storage.INSTANCE.updateSkill(e.profile, it)
             }
         }

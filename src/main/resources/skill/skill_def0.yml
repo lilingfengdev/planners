@@ -4,6 +4,7 @@ __option__:
   bind: true
   level-cap: 10
   natural: true
+  natural-level: 1
   upgrade-condition:
     - $: 0
       if: check profile level >= 1
