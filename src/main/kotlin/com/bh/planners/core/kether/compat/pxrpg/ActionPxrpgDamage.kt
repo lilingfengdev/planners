@@ -6,7 +6,11 @@ import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionPxrpgMark(val id: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
+class ActionPxrpgDamage(
+    val id: ParsedAction<*>,
+    val damage: ParsedAction<*>,
+    val selector: ParsedAction<*>?
+) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         val player = frame.bukkitPlayer() ?: return CompletableFuture.completedFuture(null)
@@ -14,10 +18,14 @@ class ActionPxrpgMark(val id: ParsedAction<*>, val selector: ParsedAction<*>) : 
         val future = CompletableFuture<Void>()
 
         frame.run(id).str { id ->
-            frame.container(selector).thenAccept {
-                it.forEachLivingEntity {
-                    PxrpxEvents.Mark(id, frame.skill(), player, this).call()
-                    future.complete(null)
+            frame.run(damage).double { damage ->
+                frame.container(selector).thenAccept {
+                    it.forEachLivingEntity {
+                        val event = PxrpxEvents.Mark(id, frame.skill(), player, this)
+                        event.amount = damage
+                        event.call()
+                        future.complete(null)
+                    }
                 }
             }
         }
@@ -34,7 +42,7 @@ class ActionPxrpgMark(val id: ParsedAction<*>, val selector: ParsedAction<*>) : 
          */
         @KetherParser(["px", "pxrpg"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionPxrpgMark(it.nextParsedAction(), it.nextSelector())
+            ActionPxrpgDamage(it.nextParsedAction(), it.nextParsedAction(), it.nextSelectorOrNull())
         }
 
     }
