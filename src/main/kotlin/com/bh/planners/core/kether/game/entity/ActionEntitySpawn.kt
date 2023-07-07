@@ -97,7 +97,7 @@ class ActionEntitySpawn(
         }
         // 注册销毁任务
         SimpleTimeoutTask.createSimpleTask(tick, false) {
-            if (!entity.isEmpty) {
+            if (entity.isValid) {
                 entity.remove()
             }
         }
@@ -107,7 +107,7 @@ class ActionEntitySpawn(
     fun register(entity: Entity, tick: Long): UUID {
         // 注册销毁任务
         SimpleTimeoutTask.createSimpleTask(tick, false) {
-            if (!entity.isEmpty) {
+            if (entity.isValid) {
                 entity.remove()
             }
         }
