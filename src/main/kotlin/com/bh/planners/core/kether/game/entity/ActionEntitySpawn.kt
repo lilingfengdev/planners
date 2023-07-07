@@ -97,7 +97,9 @@ class ActionEntitySpawn(
         }
         // 注册销毁任务
         SimpleTimeoutTask.createSimpleTask(tick, false) {
-            entity.remove()
+            if (!entity.isEmpty) {
+                entity.remove()
+            }
         }
         return entity.uniqueId
     }
@@ -105,7 +107,9 @@ class ActionEntitySpawn(
     fun register(entity: Entity, tick: Long): UUID {
         // 注册销毁任务
         SimpleTimeoutTask.createSimpleTask(tick, false) {
-            entity.remove()
+            if (!entity.isEmpty) {
+                entity.remove()
+            }
         }
         return entity.uniqueId
     }
