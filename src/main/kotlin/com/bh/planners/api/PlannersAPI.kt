@@ -61,6 +61,9 @@ object PlannersAPI {
     val Player.plannersProfileIsLoaded: Boolean
         get() = profiles.containsKey(uniqueId)
 
+    fun directCast(player: Player, skillName: String, level: Int) {
+        ContextAPI.create(player, skillName, level)?.cast()
+    }
 
     fun cast(player: Player, skillName: String, mark: Boolean = true): ExecuteResult {
         return player.plannersProfile.cast(skillName, mark)
