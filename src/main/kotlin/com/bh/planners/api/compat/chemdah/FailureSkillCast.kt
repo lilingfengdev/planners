@@ -5,6 +5,7 @@ import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
+@LoadQuest("failure")
 object FailureSkillCast : ObjectiveCountableI<PlayerCastSkillEvents.Failure>() {
 
     override val name = "failure cast skill"

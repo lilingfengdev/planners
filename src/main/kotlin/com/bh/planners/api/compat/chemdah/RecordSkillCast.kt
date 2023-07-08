@@ -4,7 +4,7 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
-
+@LoadQuest("record")
 object RecordSkillCast : ObjectiveCountableI<PlayerCastSkillEvents.Record>() {
 
     override val name = "record cast skill"
