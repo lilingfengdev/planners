@@ -3,7 +3,7 @@ package com.bh.planners.api.compat.chemdah
 import com.bh.planners.api.event.PlayerTransferEvent
 import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
-
+@LoadQuest("transfer")
 object PlayerTransfer : ObjectiveCountableI<PlayerTransferEvent>() {
 
     override val name = "planners transfer"

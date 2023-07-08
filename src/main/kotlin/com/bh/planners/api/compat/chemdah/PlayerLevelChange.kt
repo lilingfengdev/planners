@@ -6,6 +6,7 @@ import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 import kotlin.math.abs
 
+@LoadQuest("levelChange")
 object PlayerLevelChange : ObjectiveCountableI<PlayerLevelChangeEvent>() {
     override val event: Class<PlayerLevelChangeEvent> = PlayerLevelChangeEvent::class.java
     override val name: String = "player level change"

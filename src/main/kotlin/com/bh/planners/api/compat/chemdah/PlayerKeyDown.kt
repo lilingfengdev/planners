@@ -5,6 +5,7 @@ import com.bh.planners.api.event.PlayerKeydownEvent
 import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
 
+@LoadQuest("keyDown")
 object PlayerKeyDown : ObjectiveCountableI<PlayerKeydownEvent>() {
 
     override val event: Class<PlayerKeydownEvent> = PlayerKeydownEvent::class.java

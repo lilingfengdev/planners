@@ -4,7 +4,7 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.util.isWorld
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
-
+@LoadQuest("pre")
 object PreSkillCast : ObjectiveCountableI<PlayerCastSkillEvents.Pre>() {
 
     override val name = "pre cast skill"
