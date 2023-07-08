@@ -6,6 +6,9 @@ import com.bh.planners.core.pojo.Context
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.module.kether.KetherShell
+import taboolib.module.kether.KetherShell.eval
+import taboolib.module.kether.ScriptContext
+import taboolib.module.kether.ScriptOptions
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.platform.compat.PlaceholderExpansion
 import java.util.*
@@ -21,9 +24,9 @@ object PlaceholderKetherSimple : PlaceholderExpansion {
 
     override fun onPlaceholderRequest(player: Player?, args: String): String {
         return try {
-            KetherShell.eval(args, sender = adaptPlayer(player!!), namespace = namespaces) {
+            eval(args, ScriptOptions.builder().namespace(namespace = namespaces).sender(sender = adaptPlayer(player!!)).context {
                 rootFrame().variables()["@Context"] = getContext(player)
-            }.get().toString()
+            }.build()).get().toString()
         } catch (e: Throwable) {
             e.printKetherErrorMessage()
             "none-error"

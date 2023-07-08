@@ -2,7 +2,8 @@ package com.bh.planners.core.pojo.level
 
 import taboolib.common5.Coerce
 import taboolib.library.configuration.ConfigurationSection
-import taboolib.module.kether.KetherShell
+import taboolib.module.kether.KetherShell.eval
+import taboolib.module.kether.ScriptOptions
 import taboolib.module.kether.printKetherErrorMessage
 import java.util.concurrent.CompletableFuture
 
@@ -17,9 +18,9 @@ class AlgorithmKether(val section: ConfigurationSection) : Algorithm() {
 
     override fun getExp(level: Int): CompletableFuture<Int> {
         return try {
-            KetherShell.eval(section.getString("experience").toString()) {
+            eval(section.getString("experience").toString(), ScriptOptions.builder().namespace(emptyList()).context {
                 rootFrame().variables().set("level", level)
-            }.thenApply {
+            }.build()).thenApply {
                 Coerce.toInteger(it)
             }
         } catch (ex: Exception) {

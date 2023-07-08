@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.kether.*
+import taboolib.module.kether.KetherShell.eval
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -87,17 +88,17 @@ object ScriptLoader {
     }
 
     fun createScript(context: Context, script: String, block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {
-        return KetherShell.eval(script, sender = context.proxySender, namespace = namespaces) {
+        return eval(script, ScriptOptions.builder().namespace(namespace = namespaces).sender(sender = context.proxySender).context {
             context.ketherScriptContext = this
-            this.id = UUID.randomUUID().toString()
-            this.rootFrame().rootVariables()["@Context"] = context
+            id = UUID.randomUUID().toString()
+            rootFrame().rootVariables()["@Context"] = context
             if (context is Context.Impl) {
                 context.variables.forEach {
-                    this.rootFrame().variables()[it.key] = it.value
+                    rootFrame().variables()[it.key] = it.value
                 }
             }
             block(this)
-        }
+        }.build())
     }
 
     @SubscribeEvent
