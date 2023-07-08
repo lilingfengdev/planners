@@ -5,9 +5,7 @@ import com.bh.planners.core.kether.namespaces
 import com.bh.planners.core.pojo.Context
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.adaptPlayer
-import taboolib.module.kether.KetherShell
 import taboolib.module.kether.KetherShell.eval
-import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.ScriptOptions
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.platform.compat.PlaceholderExpansion

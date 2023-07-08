@@ -3,6 +3,7 @@ package com.bh.planners.core.kether
 import taboolib.common.platform.function.info
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
+import taboolib.module.kether.KetherFunction.parse
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -15,9 +16,9 @@ class ActionFunction(val source: ParsedAction<*>) : ScriptAction<String>() {
         val vars = frame.deepVars()
         return frame.newFrame(source).run<Any>().thenApply {
             try {
-                KetherFunction.parse(it.toString().trimIndent(), namespace = namespaces) {
+                parse(it.toString().trimIndent(), ScriptOptions.builder().namespace(namespace = namespaces).context {
                     vars.forEach { (k, v) -> rootFrame().variables().set(k, v) }
-                }
+                }.build())
             } catch (e: Exception) {
                 e.printKetherErrorMessage()
                 info("Error kether script = $it")

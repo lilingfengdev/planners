@@ -22,6 +22,9 @@ import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.xseries.getItemStack
 import taboolib.module.chat.colored
 import taboolib.module.kether.KetherFunction
+import taboolib.module.kether.KetherFunction.parse
+import taboolib.module.kether.ScriptContext
+import taboolib.module.kether.ScriptOptions
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Linked
@@ -97,9 +100,9 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
 
     fun toPlaceholder(string: String): String {
         return try {
-            KetherFunction.parse(string, sender = adaptPlayer(viewer), namespace = namespaces) {
+            parse(string, ScriptOptions.builder().namespace(namespace = namespaces).sender(sender = adaptPlayer(viewer)).context {
                 rootFrame().rootVariables()["level"] = playerSkill.level
-            }
+            }.build())
         } catch (e: Throwable) {
             e.printKetherErrorMessage()
             "&cError $string"

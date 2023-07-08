@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.kether.*
+import taboolib.module.kether.KetherFunction.parse
 import taboolib.module.kether.KetherShell.eval
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -75,16 +76,16 @@ object ScriptLoader {
     }
 
     fun createFunctionScript(context: Context, input: String, block: ScriptContext.() -> Unit = {}): String {
-        return KetherFunction.parse(input, sender = context.proxySender, namespace = namespaces) {
+        return parse(input, ScriptOptions.builder().namespace(namespace = namespaces).sender(sender = context.proxySender).context {
             context.ketherScriptContext = this
-            this.rootFrame().rootVariables()["@Context"] = context
+            rootFrame().rootVariables()["@Context"] = context
             if (context is Context.Impl) {
                 context.variables.forEach {
-                    this.rootFrame().variables()[it.key] = it.value
+                    rootFrame().variables()[it.key] = it.value
                 }
             }
             block(this)
-        }
+        }.build())
     }
 
     fun createScript(context: Context, script: String, block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {

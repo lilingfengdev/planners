@@ -15,6 +15,8 @@ import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.xseries.getItemStack
 import taboolib.module.chat.colored
 import taboolib.module.kether.KetherFunction
+import taboolib.module.kether.KetherFunction.parse
+import taboolib.module.kether.ScriptOptions
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Linked
@@ -131,7 +133,7 @@ class TransferJobUI(viewer: Player) : IUI(viewer) {
 
     fun toPlaceholder(string: String): String {
         return try {
-            KetherFunction.parse(string, sender = adaptPlayer(viewer), namespace = namespaces)
+            parse(string, ScriptOptions.builder().namespace(namespace = namespaces).sender(sender = adaptPlayer(viewer)).build())
         } catch (e: Throwable) {
             e.printKetherErrorMessage()
             "&cError $string"
