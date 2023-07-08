@@ -15,17 +15,17 @@ import taboolib.module.chat.colored
 object ChemdahHook {
 
     // 禁止哪些任务加载,根据注解参数来判断
-    private fun listQuest():List<String>{
+    private fun listQuest(): List<String> {
         return listOf()
     }
+
     @Awake(LifeCycle.ENABLE)
     fun reg() {
         runningClasses.forEach {
             if (Objective::class.java.isAssignableFrom(it) && it.isAnnotationPresent(LoadQuest::class.java)) {
-                val result =it.getAnnotation(LoadQuest::class.java)
-                if (!listQuest().contains(result.questName)) {
-                    (it.getInstance()?.get() as ObjectiveCountableI<*>).register()
-                }
+                val result = it.getAnnotation(LoadQuest::class.java)
+                if (listQuest().contains(result.questName)) return@forEach
+                (it.getInstance()?.get() as ObjectiveCountableI<*>).register()
             }
         }
 //        if (Bukkit.getPluginManager().isPluginEnabled("Chemdah")) {
