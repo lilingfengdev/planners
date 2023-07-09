@@ -193,8 +193,8 @@ class ActionEntityProjectile {
                 val projectile = entity.launchProjectile(type.clazz)
                 // 注册销毁任务
                 SimpleTimeoutTask.createSimpleTask(tick, false) {
-                    if (entity.isValid) {
-                        entity.remove()
+                    if (projectile.isValid) {
+                        projectile.remove()
                     }
                 }
 
