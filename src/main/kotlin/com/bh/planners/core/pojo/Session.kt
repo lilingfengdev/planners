@@ -1,5 +1,6 @@
 package com.bh.planners.core.pojo
 
+import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.getPlayer
@@ -7,6 +8,7 @@ import com.bh.planners.core.kether.LazyGetter
 import org.bukkit.GameMode
 import taboolib.common.platform.function.submit
 import taboolib.module.kether.ScriptContext
+import taboolib.module.kether.ScriptService
 import taboolib.module.kether.runKether
 
 open class Session(sender: Target, skill: Skill) : Context.Impl(sender, skill) {
@@ -36,6 +38,7 @@ open class Session(sender: Target, skill: Skill) : Context.Impl(sender, skill) {
         if (scriptMode == Skill.ActionMode.SIMPLE) {
             runKether {
                 ScriptLoader.createScript(this) {
+                    player?.plannersProfile?.runningScripts?.set(skill.key, this)
                     open(this)
                 }
             }
@@ -43,6 +46,7 @@ open class Session(sender: Target, skill: Skill) : Context.Impl(sender, skill) {
         // 常规模式运行
         else {
             ScriptLoader.runScript(this) {
+                player?.plannersProfile?.runningScripts?.set(skill.key, it)
                 open(it)
             }
         }

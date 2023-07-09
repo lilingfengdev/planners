@@ -5,12 +5,15 @@ import com.bh.planners.core.pojo.data.DataContainer
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.storage.Storage
 import org.bukkit.entity.Player
+import taboolib.module.kether.ScriptContext
 
 class PlayerProfile(val player: Player, val id: Long) {
 
     var job: PlayerJob? = null
 
     val flags = DataContainer()
+
+    val runningScripts = mutableMapOf<String, ScriptContext>()
 
     var point: Int = 0
         get() = job?.point ?: 0

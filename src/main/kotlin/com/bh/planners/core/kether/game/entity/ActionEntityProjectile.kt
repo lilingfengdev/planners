@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether.game.entity
 
+import com.bh.planners.api.common.SimpleTimeoutTask
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.effect.inline.Incident.Companion.handleIncident
@@ -38,6 +39,7 @@ class ActionEntityProjectile {
         val rotateX: ParsedAction<*>,
         val rotateY: ParsedAction<*>,
         val rotateZ: ParsedAction<*>,
+        val tick: ParsedAction<*>,
         val event: ParsedAction<*>,
         val selector: ParsedAction<*>?,
     ) : ScriptAction<Target.Container>() {
@@ -55,29 +57,32 @@ class ActionEntityProjectile {
                                 frame.run(rotateX).double { rotateX ->
                                     frame.run(rotateY).double { rotateY ->
                                         frame.run(rotateZ).double { rotateZ ->
-                                            frame.run(event).str { event ->
-                                                val context = frame.getContext()
-                                                val container = Target.Container()
-                                                frame.containerOrSender(selector).thenAccept {
-                                                    val entities = it.filterIsInstance<Target.Entity>()
-                                                    submit {
-                                                        execute(
-                                                            frame.variables(),
-                                                            context,
-                                                            name,
-                                                            entities,
-                                                            type,
-                                                            step,
-                                                            gravity,
-                                                            bounce,
-                                                            event,
-                                                            rotateX,
-                                                            rotateY,
-                                                            rotateZ
-                                                        ).forEach {
-                                                            container += it.toTarget()
+                                            frame.run(tick).long { tick ->
+                                                frame.run(event).str { event ->
+                                                    val context = frame.getContext()
+                                                    val container = Target.Container()
+                                                    frame.containerOrSender(selector).thenAccept {
+                                                        val entities = it.filterIsInstance<Target.Entity>()
+                                                        submit {
+                                                            execute(
+                                                                frame.variables(),
+                                                                context,
+                                                                name,
+                                                                entities,
+                                                                type,
+                                                                step,
+                                                                gravity,
+                                                                bounce,
+                                                                event,
+                                                                rotateX,
+                                                                rotateY,
+                                                                rotateZ,
+                                                                tick
+                                                            ).forEach {
+                                                                container += it.toTarget()
+                                                            }
+                                                            future.complete(container)
                                                         }
-                                                        future.complete(container)
                                                     }
                                                 }
                                             }
@@ -126,7 +131,7 @@ class ActionEntityProjectile {
     companion object {
 
         /**
-         * projectile type name <step: action(0.4)> <gravity: Boolean> <bounce: Boolean> <rotateX: action(0.0)>  <rotateY: action(0.0)>  <rotateZ: action(0.0)> <oncapture: block> <selector>
+         * projectile type name <step: action(0.4)> <gravity: Boolean> <bounce: Boolean> <rotateX: action(0.0)>  <rotateY: action(0.0)>  <rotateZ: action(0.0)> <timeout: 20> <oncapture: block> <selector>
          */
         @KetherParser(["projectile"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
@@ -139,6 +144,7 @@ class ActionEntityProjectile {
                 it.nextArgumentAction(arrayOf("rotateX"), 0.0)!!,
                 it.nextArgumentAction(arrayOf("rotateY"), 0.0)!!,
                 it.nextArgumentAction(arrayOf("rotateZ"), 0.0)!!,
+                it.nextArgumentAction(arrayOf("timeout"), 20)!!,
                 it.nextArgumentAction(arrayOf("oncapture", "onhit"), "none")!!,
                 it.nextSelectorOrNull()
             )
@@ -179,11 +185,18 @@ class ActionEntityProjectile {
             rotateX: Double,
             rotateY: Double,
             rotateZ: Double,
+            tick: Long,
         ): List<Projectile> {
             val listOf = mutableListOf<Projectile>()
             owners.forEach {
                 val entity = it.bukkitLivingEntity ?: return@forEach
                 val projectile = entity.launchProjectile(type.clazz)
+                // 注册销毁任务
+                SimpleTimeoutTask.createSimpleTask(tick, false) {
+                    if (entity.isValid) {
+                        entity.remove()
+                    }
+                }
 
                 if (event != "none") {
                     projectile.setMeta("owner", entity)

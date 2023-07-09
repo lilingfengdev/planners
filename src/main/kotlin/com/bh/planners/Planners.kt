@@ -8,6 +8,7 @@ import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common5.Mirror
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.Configuration
+import taboolib.module.kether.ScriptService
 import taboolib.module.metrics.Metrics
 import taboolib.platform.BukkitPlugin
 

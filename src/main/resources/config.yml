@@ -12,6 +12,8 @@ options:
   auto-save-flag-period: 60000
   # 覆盖原版等级
   level-cover: true
+  # 是否玩家死亡后终止技能
+  skill-stop: true
   # 吸收原版经验球增加经验
   minecraft-exp-absorption: true
   minecraft-grid: false
