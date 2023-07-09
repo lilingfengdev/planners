@@ -21,7 +21,11 @@ object WorldGuardHook {
     @Awake(LifeCycle.ACTIVE)
     fun active() {
         if (enable) {
-            worldGuardPlugin = WorldGuardPlugin.inst()
+            try {
+                worldGuardPlugin = WorldGuardPlugin.inst()
+            } catch (_: Throwable) {
+                error("缺少wg，请不要开启config中的worldGuard功能")
+            }
         }
     }
 

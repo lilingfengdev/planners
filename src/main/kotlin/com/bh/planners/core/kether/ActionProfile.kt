@@ -171,8 +171,8 @@ class ActionProfile {
                 case("exp-percent") {
                     actionProfileNow {
                         try {
-                            it.experience / it.maxExperience
-                        } catch (_: Exception) {
+                            (it.experience.toDouble() / it.maxExperience.toDouble())
+                        } catch (_: Throwable) {
                             0.0
                         }
                     }
