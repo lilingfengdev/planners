@@ -129,7 +129,13 @@ class ActionProfile {
                     }
                 }
                 case("max-mana") {
-                    actionProfileNow { it.toMaxMana() }
+                    actionProfileNow {
+                        try {
+                            it.toMaxMana()
+                        } catch (_: Exception) {
+                            0.0
+                        }
+                    }
                 }
                 case("point") {
                     try {
@@ -156,10 +162,10 @@ class ActionProfile {
 
                 }
                 case("job") {
-                    actionProfileNow { it.job?.name }
+                    actionProfileNow { it.job?.name ?: "暂无" }
                 }
                 case("level") {
-                    actionProfileNow { it.job?.level }
+                    actionProfileNow { it.job?.level ?: 0 }
                 }
                 case("level-length") {
                     actionProfileNow { it.job?.level?.toString()?.length ?: 0 }
