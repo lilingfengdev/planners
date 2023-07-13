@@ -13,6 +13,8 @@ import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 import taboolib.common5.Coerce
 import taboolib.expansion.createHelper
+import taboolib.module.chat.ComponentText
+import taboolib.module.chat.colored
 
 @CommandHeader("plannersskill")
 object PlannersSkillCommand {
@@ -111,6 +113,16 @@ object PlannersSkillCommand {
                     }
                 }
 
+            }
+        }
+    }
+
+    @CommandBody
+    val list = subCommand {
+        execute<ProxyCommandSender> { sender, _, _ ->
+            PlannersAPI.skills.forEachIndexed { index, skill ->
+                val chatText = ComponentText.of("&d${index+1}&7.&b${skill.option.name}".colored()).hoverText("&e左键释放此技能&c(1级)".colored()).clickRunCommand("/pl skill directCast ${sender.name} ${skill.key} 1")
+                chatText.sendTo(sender)
             }
         }
     }

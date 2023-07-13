@@ -43,6 +43,7 @@ taboolib {
             name("Chemdah").optional(true)
             name("GDDTitle").optional(true)
             name("Antikey").optional(true)
+            name("DragonCollect").optional(true)
         }
     }
 }
