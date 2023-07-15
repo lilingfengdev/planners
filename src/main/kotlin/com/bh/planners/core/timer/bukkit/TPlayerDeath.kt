@@ -41,7 +41,7 @@ object TPlayerDeath : AbstractTimer<ProxyDamageEvent>() {
         if (e.damager is Projectile) {
             context.rootFrame().variables()["projectile"] = e.damager
         }
-
+        context.rootFrame().variables()["type"] = e.type
         context.rootFrame().variables()["entity"] = e.entity
         context.rootFrame().variables()["cause"] = e.cause
         context.rootFrame().variables()["damage"] = e.damage

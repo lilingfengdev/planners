@@ -1,6 +1,7 @@
 package com.bh.planners.api.event.proxy
 
 import ac.github.oa.internal.base.event.impl.DamageMemory
+import com.bh.planners.core.kether.game.damage.DamageType
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
@@ -14,6 +15,7 @@ abstract class AbstractProxyDamageEvent(
     val entity: Entity,
     val cause: EntityDamageEvent.DamageCause?,
     var damage: Double,
+    val type: DamageType
 ) : BukkitProxyEvent() {
 
     val data = mutableMapOf<String, Any>()

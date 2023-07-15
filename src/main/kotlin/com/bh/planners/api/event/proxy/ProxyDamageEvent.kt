@@ -13,8 +13,7 @@ import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.OptionalEvent
 import taboolib.common.platform.event.SubscribeEvent
 
-open class ProxyDamageEvent(damager: Entity, entity: Entity, cause: DamageCause?, damage: Double, type: DamageType) :
-    AbstractProxyDamageEvent(damager, entity, cause, damage) {
+open class ProxyDamageEvent(damager: Entity, entity: Entity, cause: DamageCause?, damage: Double,type: DamageType) : AbstractProxyDamageEvent(damager, entity, cause, damage, type) {
 
     companion object {
 
