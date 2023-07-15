@@ -21,7 +21,7 @@ abstract class AbstractTimerDamage : AbstractTimer<ProxyDamageEvent>() {
         context.rootFrame().variables()["isSkillDamage"] =
             e.entity.getMetaFirstOrNull("Planners:Attack")?.asBoolean() == true
 
-        context.rootFrame().variables()["type"] = e.type
+        context.rootFrame().variables()["type"] = e.type.name
         context.rootFrame().variables()["entity"] = e.entity
         context.rootFrame().variables()["cause"] = e.cause
         context.rootFrame().variables()["damage"] = e.damage
