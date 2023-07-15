@@ -40,7 +40,6 @@ taboolib {
             name("DragonCore").optional(true)
             name("GermPlugin").optional(true)
             name("VirtualEntitySkillModule").optional(true)
-            name("Chemdah").optional(true)
             name("GDDTitle").optional(true)
             name("Antikey").optional(true)
             name("DragonCollect").optional(true)
