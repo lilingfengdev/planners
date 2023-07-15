@@ -48,7 +48,7 @@ class ActionDamage {
                         frame.run(type).str { type ->
                             val sourceEntity = source.firstLivingEntityTarget() ?: return@str
                             if (sourceEntity.world.name in worlds) return@str
-                            victims.forEachLivingEntity { execute(this, sourceEntity, damage, DamageType.valueOf(type)) }
+                            victims.forEachLivingEntity { execute(this, sourceEntity, damage, DamageType.valueOf(type.uppercase())) }
                         }
                     }
                 }
