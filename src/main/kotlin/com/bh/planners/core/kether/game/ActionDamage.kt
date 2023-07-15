@@ -7,6 +7,7 @@ import com.bh.planners.core.effect.Target.Companion.getLivingEntity
 import com.bh.planners.core.feature.damageable.DamageableDispatcher
 import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.game.damage.AttackProvider
+import com.bh.planners.core.kether.game.damage.DamageType
 import com.bh.planners.util.eval
 import org.bukkit.entity.LivingEntity
 import org.bukkit.metadata.FixedMetadataValue
@@ -27,14 +28,15 @@ class ActionDamage {
     class Damage(
         val value: ParsedAction<*>,
         val selector: ParsedAction<*>,
-        val source: ParsedAction<*>?
+        val source: ParsedAction<*>?,
+        val type: ParsedAction<*>
     ) : ScriptAction<Void>() {
 
-        fun execute(entity: LivingEntity, source: LivingEntity?, damage: String) {
+        fun execute(entity: LivingEntity, source: LivingEntity?, damage: String, type: DamageType) {
             val result = damage.eval(entity.maxHealth)
-            val damageByEntityEvent = EntityEvents.DamageByEntity(source, entity, result)
+            val damageByEntityEvent = EntityEvents.DamageByEntity(source, entity, result, type)
             if (damageByEntityEvent.call()) {
-                info("damage $entity source $source ${damageByEntityEvent.value}")
+                info("damage $entity source $source ${damageByEntityEvent.value} type $type")
                 doDamage(source, entity, damageByEntityEvent.value)
             }
         }
@@ -43,9 +45,11 @@ class ActionDamage {
             frame.run(value).str { damage ->
                 frame.container(selector).thenAccept { victims ->
                     frame.containerOrSender(source).thenAccept { source ->
-                        val sourceEntity = source.firstLivingEntityTarget() ?: return@thenAccept
-                        if (sourceEntity.world.name in worlds) return@thenAccept
-                        victims.forEachLivingEntity { execute(this, sourceEntity, damage) }
+                        frame.run(type).str { type ->
+                            val sourceEntity = source.firstLivingEntityTarget() ?: return@str
+                            if (sourceEntity.world.name in worlds) return@str
+                            victims.forEachLivingEntity { execute(this, sourceEntity, damage, DamageType.valueOf(type)) }
+                        }
                     }
                 }
             }
@@ -108,7 +112,12 @@ class ActionDamage {
          */
         @KetherParser(["damage"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            Damage(it.nextParsedAction(), it.nextSelector(), it.nextArgumentAction(arrayOf("source")))
+            Damage(
+                it.nextParsedAction(),
+                it.nextSelector(),
+                it.nextArgumentAction(arrayOf("source")),
+                it.nextArgumentAction(arrayOf("type"), "MAGIC")!!
+            )
         }
 
         /**
