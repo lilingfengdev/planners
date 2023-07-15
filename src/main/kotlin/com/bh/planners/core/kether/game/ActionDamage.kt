@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether.game
 
+import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.common.Demand
 import com.bh.planners.api.event.EntityEvents
 import com.bh.planners.core.effect.Target.Companion.getLivingEntity
@@ -8,7 +9,6 @@ import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.game.damage.AttackProvider
 import com.bh.planners.util.eval
 import org.bukkit.entity.LivingEntity
-import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
@@ -44,6 +44,7 @@ class ActionDamage {
                 frame.container(selector).thenAccept { victims ->
                     frame.containerOrSender(source).thenAccept { source ->
                         val sourceEntity = source.firstLivingEntityTarget() ?: return@thenAccept
+                        if (sourceEntity.world.name in worlds) return@thenAccept
                         victims.forEachLivingEntity { execute(this, sourceEntity, damage) }
                     }
                 }
@@ -61,6 +62,7 @@ class ActionDamage {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             val source = frame.getContext().sender.getLivingEntity() ?: return CompletableFuture.completedFuture(null)
+            if (source.world.name in worlds) return CompletableFuture.completedFuture(null)
             frame.run(value).str { damage ->
                 frame.run(data).str { data ->
                     val demand = Demand(data)
@@ -96,6 +98,8 @@ class ActionDamage {
     }
 
     companion object {
+
+        val worlds = PlannersOption.root.getStringList("WorldGuard.ignore-damage-world")
 
         /**
          * 对selector目标造成伤害

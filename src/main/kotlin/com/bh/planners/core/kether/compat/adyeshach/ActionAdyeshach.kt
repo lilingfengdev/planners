@@ -48,7 +48,6 @@ object ActionAdyeshach {
                 ActionAdyeshachRemove(it.nextSelector())
             }
         }
-
     }
 
     fun Target.Container.foreachAdyEntity(block: ProxyAdyeshachEntity.() -> Unit) {
