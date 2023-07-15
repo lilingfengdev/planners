@@ -32,6 +32,7 @@ interface AttributeBridge {
             },
             Inspect(arrayOf("OriginAttribute"), OriginAttributeBridge::class.java) { isEnable },
             Inspect(arrayOf("AttributeSystem"), AttributeSystemBridge::class.java) { isEnable },
+            Inspect(arrayOf("MonsterItem"), MonsterItemBridge::class.java) { isEnable },
         )
 
         val INSTANCE: AttributeBridge? by lazy { createBridge() }
@@ -87,6 +88,7 @@ interface AttributeBridge {
             val attributes = getSkillAttributes(skill)
             try {
                 val script = ScriptLoader.createFunctionScript(context, attributes)
+                info("skill attribute $script")
                 bridge.addAttributes("Skill:${skill.key}", player.uniqueId, -1, script)
             } catch (ex: Exception) {
                 ex.printKetherErrorMessage()
@@ -102,12 +104,9 @@ interface AttributeBridge {
             val context = ContextAPI.create(profile.player)
 
             runKether {
-                bridge.addAttributes(
-                    "Job",
-                    profile.player.uniqueId,
-                    -1,
-                    ScriptLoader.createFunctionScript(context, getJobAttribute(profile))
-                )
+                val script = ScriptLoader.createFunctionScript(context, getJobAttribute(profile))
+                info("job attribute $script")
+                bridge.addAttributes("Job", profile.player.uniqueId, -1, script)
                 INSTANCE?.update(profile.player)
             }
 

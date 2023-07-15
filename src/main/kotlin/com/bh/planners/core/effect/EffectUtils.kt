@@ -17,7 +17,6 @@ val EffectOption.period: String
 val EffectOption.isAnimation: Boolean
     get() = period == "0"
 
-
 val EffectOption.startAngle: Double
     get() = Coerce.toDouble(this.demand.get("start", "0.0"))
 
