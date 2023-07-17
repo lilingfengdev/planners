@@ -2,7 +2,10 @@ package com.bh.planners.core.kether.game.entity
 
 import com.bh.planners.api.common.SimpleTimeoutTask
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.bukkitPlayer
+import com.bh.planners.core.kether.createContainer
+import com.bh.planners.core.kether.origin
+import com.bh.planners.core.kether.runAny
 import io.lumine.xikage.mythicmobs.MythicMobs
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -21,8 +24,8 @@ import java.util.concurrent.CompletableFuture
 class ActionEntitySpawn(
     val type: ParsedAction<*>,
     val name: ParsedAction<*>,
-    val health: ParsedAction<*>,
     val tick: ParsedAction<*>,
+    val health: ParsedAction<*>,
     val vector: ParsedAction<*>,
     val selector: ParsedAction<*>?,
 ) : ScriptAction<List<Entity>>() {
@@ -32,8 +35,8 @@ class ActionEntitySpawn(
         entityType: EntityType,
         locations: List<Location>,
         name: String,
-        health: Double,
         tick: Long,
+        health: Double,
         vector: Vector
     ): CompletableFuture<List<Entity>> {
         val future = CompletableFuture<List<Entity>>()
@@ -92,8 +95,10 @@ class ActionEntitySpawn(
     fun register(entity: Entity, name: String, health: Double, tick: Long): UUID {
         entity.customName = name
         if (entity is LivingEntity) {
-            entity.maxHealth = health
-            entity.health = health
+            if (health > 1) {
+                entity.maxHealth = health
+                entity.health = health
+            }
         }
         // 注册销毁任务
         SimpleTimeoutTask.createSimpleTask(tick, false) {
@@ -135,7 +140,7 @@ class ActionEntitySpawn(
                             if (selector != null) {
                                 frame.createContainer(selector).thenAccept {
                                     val locations = it.filterIsInstance<Target.Location>().map { it.value }
-                                    spawn(entityType, locations, name, health, tick, vector).thenAccept {
+                                    spawn(entityType, locations, name, tick, health, vector).thenAccept {
                                         future.complete(it)
                                     }
                                 }
@@ -144,8 +149,8 @@ class ActionEntitySpawn(
                                     entityType,
                                     listOf(frame.origin().value),
                                     name,
-                                    health,
                                     tick,
+                                    health,
                                     vector
                                 ).thenAccept {
                                     future.complete(it)

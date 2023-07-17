@@ -17,7 +17,7 @@ object ActionEntity {
      * entity of [uuid: action]
      * entity loc [entity : action]
      * entity health [entity : action]
-     * entity spawn type name health tick <vector: bool;def: false>
+     * entity spawn type name tick <health: health> <vector: bool;def: false>
      * entity set view [yaw : action] [pitch : action] [selector]
      * entity set viewto [selector] [selector]
      * entity set arrowsInBody add/set/dec [arrows : Int] [selector]
@@ -37,7 +37,7 @@ object ActionEntity {
                     it.nextParsedAction(),
                     it.nextParsedAction(),
                     it.nextParsedAction(),
-                    it.nextParsedAction(),
+                    it.nextArgumentAction(arrayOf("health","h"), "0")!!,
                     it.nextArgumentAction(arrayOf("vector","v"), "false")!!,
                     it.nextSelectorOrNull()
                 )
