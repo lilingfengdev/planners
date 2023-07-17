@@ -73,7 +73,7 @@ open class ProxyDamageEvent(damager: Entity, entity: Entity, cause: DamageCause?
                 val memory = e.damageMemory
                 val damager = e.damageMemory.event.damager
                 val damageEvent =
-                    ProxyDamageEvent(damager, memory.injured, memory.event.bukkitCause, memory.totalDamage, DamageType.PHYSICS)
+                    ProxyDamageEvent(damager, memory.injured, memory.event.bukkitCause, memory.totalDamage, if (e.damageMemory.cause == "magic") DamageType.MAGIC else DamageType.PHYSICS)
                 damageEvent.data["@OriginAttribute:Memory"] = memory
                 damageEvent.event = e.damageMemory.event.origin
                 damageEvent.call()
