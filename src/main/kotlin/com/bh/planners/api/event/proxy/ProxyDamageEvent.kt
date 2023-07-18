@@ -88,12 +88,13 @@ open class ProxyDamageEvent(damager: Entity, entity: Entity, cause: DamageCause?
         fun e(e: EntityEvents.DamageByEntity) {
             if (e.damager != null) {
                 val damageEvent = ProxyDamageEvent(e.damager, e.entity, CUSTOM, e.value, e.damageType)
+                damageEvent.call()
                 e.value = damageEvent.realDamage
-                if (!damageEvent.call()) {
-                    damageEvent.isCancelled = true
+                
+                if (damageEvent.isCancelled) {
+                    e.isCancelled = true
                 }
             }
-
         }
 
     }
