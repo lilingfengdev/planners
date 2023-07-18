@@ -11,7 +11,6 @@ import com.bh.planners.core.kether.game.damage.DamageType
 import com.bh.planners.util.eval
 import org.bukkit.entity.LivingEntity
 import org.bukkit.metadata.FixedMetadataValue
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
 import taboolib.library.reflex.Reflex.Companion.getProperty
@@ -36,7 +35,6 @@ class ActionDamage {
             val result = damage.eval(entity.maxHealth)
             val damageByEntityEvent = EntityEvents.DamageByEntity(source, entity, result, type)
             if (damageByEntityEvent.call()) {
-                info("damage $entity source $source ${damageByEntityEvent.value} type $type")
                 doDamage(source, entity, damageByEntityEvent.value)
             }
         }
@@ -108,7 +106,7 @@ class ActionDamage {
         /**
          * 对selector目标造成伤害
          * damage [damage] [selector]
-         * damage 10.0 they ":@aline 10" source ":@self"
+         * damage 10.0 they ":@aline 10" source ":@self" type "PHYSICS"
          */
         @KetherParser(["damage"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
