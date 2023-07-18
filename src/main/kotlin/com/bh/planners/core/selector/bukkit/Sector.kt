@@ -7,6 +7,8 @@ import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * radius(半径) angle(角度) ignoreOrigin(忽略远点,默认true) yaw(偏航角偏移)
@@ -25,9 +27,9 @@ object Sector : Selector {
         location.yaw += yaw
         val future = CompletableFuture<Void>()
         submit(async = false) {
-            location.world?.getNearbyEntities(location, radius, radius, radius)?.filterIsInstance<LivingEntity>()
+            location.world?.getNearbyEntities(location, radius+1, radius+1, radius+1)?.filterIsInstance<LivingEntity>()
                 ?.forEach {
-                    if (isPointInEntitySector(it.location, location, radius, angle)) {
+                    if (isPointInEntitySector(it.location, location, radius+sqrt(it.width.pow(2.0)*2), angle)) {
                         if (data.isNon) {
                             data.container.removeIf { t -> t == it }
                         }
