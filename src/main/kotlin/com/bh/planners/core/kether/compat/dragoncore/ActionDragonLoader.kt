@@ -1,10 +1,8 @@
 package com.bh.planners.core.kether.compat.dragoncore
 
 import com.bh.planners.core.kether.*
-import eos.moe.dragoncore.api.CoreAPI
-import eos.moe.dragoncore.network.PacketSender
 import taboolib.module.kether.*
-import java.util.UUID
+import java.util.*
 
 object ActionDragonLoader {
 
@@ -43,7 +41,7 @@ object ActionDragonLoader {
      * 运行实体控制方法
      * t: dragon entityfun "方法.设置动画变量('名字', 变量值);" "@fetch t" they "@self"
      *
-     * 渲染一根绳索、无效
+     * 渲染一根绳索、未完成
      * dragon rope send [key: token] [path: token] [time: Tick] selector1 selector2
      * dragon rope stop [key: token]
      *
@@ -85,7 +83,7 @@ object ActionDragonLoader {
                 ActionDragonSound(
                     it.nextParsedAction(),
                     it.nextArgumentAction(arrayOf("key"), UUID.randomUUID().toString())!!,
-                    it.nextArgumentAction(arrayOf("type"), "music")!!,
+                    it.nextArgumentAction(arrayOf("type"), "VOICE")!!,
                     it.nextArgumentAction(arrayOf("volume"), 1.0f)!!,
                     it.nextArgumentAction(arrayOf("pitch"), 1.0f)!!,
                     it.nextArgumentAction(arrayOf("loop"), false)!!,

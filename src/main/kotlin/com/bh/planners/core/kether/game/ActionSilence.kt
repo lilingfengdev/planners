@@ -37,7 +37,6 @@ class ActionSilence(
 
         /**
          * 沉默目标 使对方在一定时间内无法释放技能
-         *  *** 暂时无效 等PlayerCastSkillEvents完善即可
          * silence <callevent> [ticks] [selector]
          */
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
