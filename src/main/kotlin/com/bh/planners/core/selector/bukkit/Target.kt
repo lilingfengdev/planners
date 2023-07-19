@@ -1,5 +1,6 @@
 package com.bh.planners.core.selector.bukkit
 
+import com.bh.planners.core.effect.Target.Companion.getLivingEntity
 import com.bh.planners.core.effect.Target.Companion.ifEntity
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.selector.Selector
@@ -24,12 +25,12 @@ object Target : Selector {
         val range = data.read<Int>(0, "1")
         val blocked = data.read<Boolean>(1, "false")
         val point = data.read<Boolean>(2, "false")
-        data.context.sender.ifEntity {
-            submit {
+        data.origin.ifEntity {
+            submit(async = false) {
                 val blocks = if (point) {
-                    listOf(bukkitLivingEntity?.getTargetBlock(if (blocked) setOf(Material.AIR) else allMaterials, range) ?: return@submit)
+                    listOf(data.origin.getLivingEntity()?.getTargetBlock(if (blocked) setOf(Material.AIR) else allMaterials, range) ?: return@submit)
                 } else {
-                    bukkitLivingEntity?.getLineOfSight(if (blocked) setOf(Material.AIR) else allMaterials, range) ?: return@submit
+                    data.origin.getLivingEntity()?.getLineOfSight(if (blocked) setOf(Material.AIR) else allMaterials, range) ?: return@submit
                 }
                 val entitys = mutableSetOf<Entity>()
                 blocks.forEach {
