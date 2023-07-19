@@ -6,6 +6,7 @@ import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.selector.Selector
 import org.bukkit.Material
 import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 
@@ -46,7 +47,9 @@ object Target : Selector {
                 }
             }
             entitys.forEach{
-                data.container += it.toTarget()
+                if (it is LivingEntity) {
+                    data.container += it.toTarget()
+                }
                 data.origin.getPlayer()?.sendMessage(it.toString() + it.name)
             }
         }
