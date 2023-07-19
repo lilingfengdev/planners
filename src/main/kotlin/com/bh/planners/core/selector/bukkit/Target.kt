@@ -45,7 +45,11 @@ object Target : Selector {
                     entitys.add(entity)
                 }
             }
-            data.container += entitys.filterIsInstance<LivingEntity>().map { it.toTarget() }
+            entitys.forEach {
+                if (it is LivingEntity) {
+                    data.container += it.toTarget()
+                }
+            }
         }
         future.complete(null)
         return future
