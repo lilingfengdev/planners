@@ -1,12 +1,10 @@
 package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.getLivingEntity
-import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.selector.Selector
 import org.bukkit.Material
 import org.bukkit.entity.Entity
-import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 
@@ -46,18 +44,10 @@ object Target : Selector {
                     entitys.add(entity)
                 }
             }
-            entitys.forEach{
-                if (it is LivingEntity) {
-                    data.container += it.toTarget()
-                }
-                data.origin.getPlayer()?.sendMessage(it.toString() + it.name)
-            }
+            data.container += entitys.map { it.toTarget() }
         }
-
         future.complete(null)
-
         return future
-
     }
 
 }
