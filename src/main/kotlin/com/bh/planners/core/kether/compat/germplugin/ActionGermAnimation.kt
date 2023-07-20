@@ -13,8 +13,8 @@ import java.util.concurrent.CompletableFuture
 class ActionGermAnimation(
     val state: String,
     val remove: Boolean,
-    val speed: Float,
-    val reverse: Boolean,
+    val speed: ParsedAction<*>,
+    val reverse: ParsedAction<*>,
     val selector: ParsedAction<*>,
 ) : ScriptAction<Void>() {
 
@@ -37,9 +37,15 @@ class ActionGermAnimation(
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.execEntity(selector) {
-            execute(this, state, remove, speed, reverse)
+        frame.run(speed).float {
+            val speed = it
+            frame.run(reverse).bool {
+                frame.execEntity(selector) {
+                    execute(this, state, remove, speed, it)
+                }
+            }
         }
+
         return CompletableFuture.completedFuture(null)
     }
 }

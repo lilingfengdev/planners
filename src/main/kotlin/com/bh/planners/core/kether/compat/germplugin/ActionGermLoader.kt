@@ -1,6 +1,9 @@
 package com.bh.planners.core.kether.compat.germplugin
 
-import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.nextArgumentAction
+import com.bh.planners.core.kether.nextSelector
+import com.bh.planners.core.kether.nextSelectorOrNull
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.expects
 import taboolib.module.kether.scriptParser
@@ -11,7 +14,7 @@ object ActionGermLoader {
 
     /**
      * 模型/玩家动画播放
-     * germ animation send [name: token] [speed: Float] [reverse: false] [they selector]
+     * germ animation send [name: token] <speed: Float> <reverse: false> [they selector]
      * germ animation stop [name: token] [they selector]
      *
      * 音效播放
@@ -47,10 +50,20 @@ object ActionGermLoader {
             case("animation") {
                 when (it.expects("send", "stop")) {
                     "send" -> {
-                        ActionGermAnimation(it.nextToken(), false, it.nextToken().toFloat(), it.nextToken().toBoolean(), it.nextSelector())
+                        ActionGermAnimation(
+                            it.nextToken(),
+                            false,
+                            it.nextArgumentAction(arrayOf("speed"), "1.0")!!,
+                            it.nextArgumentAction(arrayOf("reverse"), "false")!!,
+                            it.nextSelector())
                     }
                     "stop" -> {
-                        ActionGermAnimation(it.nextToken(), true, 1.0f, false, it.nextSelector())
+                        ActionGermAnimation(
+                            it.nextToken(),
+                            true,
+                            it.nextArgumentAction(arrayOf("speed"), "1.0")!!,
+                            it.nextArgumentAction(arrayOf("reverse"), "false")!!,
+                            it.nextSelector())
                     }
                     else -> error("out of case")
                 }
