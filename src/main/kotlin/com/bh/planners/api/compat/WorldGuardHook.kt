@@ -16,7 +16,9 @@ object WorldGuardHook {
 
     val skill = PlannersOption.root.getString("WorldGuard.castSkill") ?: "禁止释放"
     val cast = PlannersOption.root.getBoolean("WorldGuard.skill")
-    val enable = if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) (PlannersOption.root.getBoolean("WorldGuard.enable")) else false
+
+    val enable
+        get() = if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) (PlannersOption.root.getBoolean("WorldGuard.enable")) else false
 
     @Awake(LifeCycle.ACTIVE)
     fun active() {
