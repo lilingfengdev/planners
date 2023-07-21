@@ -158,6 +158,7 @@ class ActionEntityProjectile {
 
         @SubscribeEvent
         fun e(e: ProjectileHitEvent) {
+            if (e.hitEntity?.hasMeta("ignoreHit") == true) return
             val owner = e.entity.getMeta("owner").getOrNull(0)?.value() as? LivingEntity ?: return
             val context = e.entity.getMeta("context").getOrNull(0)?.value() as? Session ?: return
             val event = e.entity.getMeta("event").getOrNull(0)?.asString() ?: return

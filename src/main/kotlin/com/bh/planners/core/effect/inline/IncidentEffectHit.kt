@@ -5,24 +5,14 @@ import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.rootVariables
 import org.bukkit.entity.Entity
 import taboolib.module.kether.ScriptContext
-import taboolib.platform.util.getMeta
-import taboolib.platform.util.hasMeta
-import taboolib.platform.util.setMeta
 
 class IncidentEffectHit(val entities: List<Entity>) : Incident {
     override fun inject(context: ScriptContext) {
 
         val container = Target.Container()
+
         entities.forEach {
-            if (it.hasMeta("Planners:effectHit")) {
-                if ((it.getMeta("Planners:effectHit").getOrNull(0)?.value() as? String) != context.id) {
-                    container += it.toTarget()
-                    it.setMeta("Planners:effectHit", context.id)
-                }
-            } else {
-                container += it.toTarget()
-                it.setMeta("Planners:effectHit", context.id)
-            }
+            container += it.toTarget()
         }
 
         context.rootFrame().rootVariables()["container"] = container
