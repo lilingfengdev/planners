@@ -6,10 +6,11 @@ import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
-import taboolib.common.util.sync
+import taboolib.common.platform.function.submit
 import taboolib.common5.Coerce
 import taboolib.module.effect.math.Matrix
 import java.util.concurrent.CompletableFuture
+
 // 粒子渲染周期间隔
 val EffectOption.period: String
     get() = this.demand.get("period", "0")!!
@@ -117,7 +118,7 @@ fun Location.capture(): CompletableFuture<List<LivingEntity>> {
     if (Bukkit.isPrimaryThread()) {
         future.complete(this.getNearbyEntities())
     } else {
-        sync { future.complete(this@capture.getNearbyEntities()) }
+        submit(async = false) { future.complete(this@capture.getNearbyEntities()) }
     }
     return future
 }
