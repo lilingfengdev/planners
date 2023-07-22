@@ -9,8 +9,8 @@ import java.util.*
 class Demand(val source: String, val starts: Array<Char> = arrayOf(':')) {
 
     val namespace: String
-    val dataMap = Collections.synchronizedMap(LinkedHashMap<String, MutableList<String>>())
-    val children = Collections.synchronizedMap(LinkedHashMap<String, Demand>())
+    val dataMap: MutableMap<String, MutableList<String>> = Collections.synchronizedMap(LinkedHashMap())
+    val children: MutableMap<String, Demand> = Collections.synchronizedMap(LinkedHashMap())
 
     init {
         if (source.isNotEmpty()) {
@@ -23,7 +23,7 @@ class Demand(val source: String, val starts: Array<Char> = arrayOf(':')) {
             }
             var dataKey: String? = null
             val dataValues = mutableListOf<String>()
-            args.forEachIndexed { index, s ->
+            args.forEach { s ->
                 // 次要权重 starts
                 if (s[0] in starts) {
                     if (dataKey != null) {
@@ -77,8 +77,7 @@ class Demand(val source: String, val starts: Array<Char> = arrayOf(':')) {
         if (this === other) return true
         if (other !is Demand) return false
         if (source != other.source) return false
-        if (dataMap != other.dataMap) return false
-        return true
+        return dataMap == other.dataMap
     }
 
     override fun hashCode(): Int {
@@ -89,7 +88,7 @@ class Demand(val source: String, val starts: Array<Char> = arrayOf(':')) {
 
     companion object {
 
-        val cache = Collections.synchronizedMap(mutableMapOf<String, Demand>())
+        val cache: MutableMap<String, Demand> = Collections.synchronizedMap(mutableMapOf<String, Demand>())
 
         fun String.toDemand(): Demand {
             return cache.computeIfAbsent(this) { Demand(this) }

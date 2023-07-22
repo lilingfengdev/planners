@@ -34,9 +34,9 @@ open class Skill(val key: String, val config: ConfigurationSection) {
 
     class Attribute(val root: ConfigurationSection) {
 
-        val map = root.getKeys(false).map {
+        val map = root.getKeys(false).associate {
             it.split(",") to root.getStringList(it)
-        }.toMap()
+        }
 
         val default = get("default")
 

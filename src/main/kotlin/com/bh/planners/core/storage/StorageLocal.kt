@@ -60,7 +60,7 @@ class StorageLocal : Storage {
         } ?: emptyList()
     }
 
-    override fun getCurrentJobId(player: Player): Long? {
+    override fun getCurrentJobId(player: Player): Long {
         val config = getProfileFile(player)
         return config.getLong("current-job")
     }

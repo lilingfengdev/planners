@@ -38,12 +38,16 @@ class OriginP : AttackProvider {
         }
 
         if (demand.dataMap.containsKey("damage")) {
-            if (event.customCause == "physics") {
-                context.addDamage(Damage.physical, demand.get("damage").cdouble)
-            } else if (event.customCause == "magic") {
-                context.addDamage(Damage.magic, demand.get("damage").cdouble)
-            } else {
-                context.addDamage(event.customCause, demand.get("damage").cdouble)
+            when (event.customCause) {
+                "physics" -> {
+                    context.addDamage(Damage.physical, demand.get("damage").cdouble)
+                }
+                "magic" -> {
+                    context.addDamage(Damage.magic, demand.get("damage").cdouble)
+                }
+                else -> {
+                    context.addDamage(event.customCause, demand.get("damage").cdouble)
+                }
             }
         }
 

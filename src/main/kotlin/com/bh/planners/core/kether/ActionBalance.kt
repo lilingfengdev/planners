@@ -18,7 +18,7 @@ class ActionBalance {
         }
     }
 
-    class BalanceGet() : ScriptAction<Double>() {
+    class BalanceGet : ScriptAction<Double>() {
         override fun run(frame: ScriptFrame): CompletableFuture<Double> {
             return CompletableFuture.completedFuture(bridge.getBalance(frame.script().sender!!.cast<Player>()))
         }

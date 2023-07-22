@@ -15,7 +15,7 @@ object TPlayerSpring : Timer<PlayerToggleSprintEvent> {
     override val eventClazz: Class<PlayerToggleSprintEvent>
         get() = PlayerToggleSprintEvent::class.java
 
-    override fun check(e: PlayerToggleSprintEvent): Target? {
+    override fun check(e: PlayerToggleSprintEvent): Target {
         return e.player.toTarget()
     }
 

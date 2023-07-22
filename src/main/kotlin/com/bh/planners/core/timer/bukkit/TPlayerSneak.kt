@@ -14,7 +14,7 @@ object TPlayerSneak : Timer<PlayerToggleSneakEvent> {
     override val eventClazz: Class<PlayerToggleSneakEvent>
         get() = PlayerToggleSneakEvent::class.java
 
-    override fun check(e: PlayerToggleSneakEvent): Target? {
+    override fun check(e: PlayerToggleSneakEvent): Target {
         return e.player.toTarget()
     }
 

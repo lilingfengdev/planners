@@ -217,7 +217,7 @@ class ActionEntityProjectile {
                 rotateAroundY(velocity, rotateY)
                 rotateAroundZ(velocity, rotateZ)
 
-                projectile.velocity = velocity.multiply(step);
+                projectile.velocity = velocity.multiply(step)
                 listOf += projectile
             }
             return listOf

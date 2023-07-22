@@ -11,7 +11,7 @@ object TrPlayerMove : AbstractTimer<PlayerMoveEvent>() {
     override val eventClazz: Class<PlayerMoveEvent>
         get() = PlayerMoveEvent::class.java
 
-    override fun check(e: PlayerMoveEvent): Target? {
+    override fun check(e: PlayerMoveEvent): Target {
         return e.player.toTarget()
     }
 }

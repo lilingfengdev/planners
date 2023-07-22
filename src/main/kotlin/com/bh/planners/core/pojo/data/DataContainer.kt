@@ -167,7 +167,7 @@ class DataContainer {
 
     }
 
-    fun toJson() = toNBT().toJson()
+    fun toJson(): String = toNBT().toJson()
 
     fun isEmpty(): Boolean {
         return map.isEmpty()
@@ -191,8 +191,7 @@ class DataContainer {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is DataContainer) return false
-        if (map != other.map) return false
-        return true
+        return map == other.map
     }
 
     override fun hashCode(): Int {

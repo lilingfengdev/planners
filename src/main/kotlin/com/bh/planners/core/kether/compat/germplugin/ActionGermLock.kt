@@ -1,8 +1,6 @@
 package com.bh.planners.core.kether.compat.germplugin
 
-import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.execPlayer
-import com.bh.planners.core.kether.nextSelector
 import com.germ.germplugin.api.GermPacketAPI
 import com.germ.germplugin.api.ViewType
 import taboolib.library.kether.ParsedAction

@@ -8,7 +8,6 @@ import com.bh.planners.core.kether.LazyGetter
 import org.bukkit.GameMode
 import taboolib.common.platform.function.submit
 import taboolib.module.kether.ScriptContext
-import taboolib.module.kether.ScriptService
 import taboolib.module.kether.runKether
 
 open class Session(sender: Target, skill: Skill) : Context.Impl(sender, skill) {

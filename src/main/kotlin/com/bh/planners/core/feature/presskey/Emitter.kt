@@ -21,7 +21,7 @@ object Emitter {
     val globalType: String
         get() = PlannersOption.root.getString("presskey-patch.type", "disorderly")!!.uppercase(Locale.getDefault())
 
-    val subscribers = Collections.synchronizedMap(mutableMapOf<Player, MutableList<Subscriber>>())
+    val subscribers: MutableMap<Player, MutableList<Subscriber>> = Collections.synchronizedMap(mutableMapOf<Player, MutableList<Subscriber>>())
 
     val ORDERLY = object : Decider {
         override fun accept(player: Player, list: List<Int>): Boolean {
@@ -91,11 +91,15 @@ object Emitter {
 
     @SubscribeEvent
     fun e0(e: PressKeyEvents.Get) {
-        val prefix = if (e.packet.action == 0) {
-            "pressed"
-        } else if (e.packet.action == 1) {
-            "released"
-        } else return
+        val prefix = when (e.packet.action) {
+            0 -> {
+                "pressed"
+            }
+            1 -> {
+                "released"
+            }
+            else -> return
+        }
         PlannersAPI.callKeyByGroup(e.player, "$prefix ${e.packet.key}")
     }
 
@@ -125,7 +129,7 @@ object Emitter {
         }
     }
 
-    val units = Collections.synchronizedMap(mutableMapOf<Player, MutableList<Node>>())
+    val units: MutableMap<Player, MutableList<Node>> = Collections.synchronizedMap(mutableMapOf<Player, MutableList<Node>>())
 
     fun tryDecide(player: Player, type: Decider, list: List<Int>): Boolean {
         if (list.isEmpty()) return false

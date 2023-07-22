@@ -4,7 +4,7 @@ import com.bh.planners.core.kether.game.ActionEffect
 import com.bh.planners.core.pojo.Context
 import org.bukkit.Bukkit
 
-class EffectSnowStorm : com.bh.planners.core.effect.Effect() {
+class EffectSnowStorm : Effect() {
     override val name: String
         get() = "show storm"
 

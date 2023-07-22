@@ -12,7 +12,7 @@ object TPlayerJump : AbstractTimer<PlayerJumpEvent>() {
     override val eventClazz: Class<PlayerJumpEvent>
         get() = PlayerJumpEvent::class.java
 
-    override fun check(e: PlayerJumpEvent): Target? {
+    override fun check(e: PlayerJumpEvent): Target {
         return e.player.toTarget()
     }
 }

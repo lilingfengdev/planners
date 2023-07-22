@@ -2,7 +2,6 @@ package com.bh.planners.core.kether.compat.dragoncore
 
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.readAccept
-import eos.moe.dragoncore.api.event.KeyPressEvent
 import eos.moe.dragoncore.network.PacketSender
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptAction

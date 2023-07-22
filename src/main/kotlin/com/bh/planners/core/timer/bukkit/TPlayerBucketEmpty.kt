@@ -11,7 +11,7 @@ object TPlayerBucketEmpty : AbstractTimer<PlayerBucketEmptyEvent>() {
     override val eventClazz: Class<PlayerBucketEmptyEvent>
         get() = PlayerBucketEmptyEvent::class.java
 
-    override fun check(e: PlayerBucketEmptyEvent): Target? {
+    override fun check(e: PlayerBucketEmptyEvent): Target {
         return e.player.toTarget()
     }
 }

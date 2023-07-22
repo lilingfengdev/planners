@@ -14,7 +14,7 @@ object TPlayerGetExperience : AbstractTimer<PlayerGetExperienceEvent>() {
     override val eventClazz: Class<PlayerGetExperienceEvent>
         get() = PlayerGetExperienceEvent::class.java
 
-    override fun check(e: PlayerGetExperienceEvent): Target? {
+    override fun check(e: PlayerGetExperienceEvent): Target {
         return e.player.toTarget()
     }
 

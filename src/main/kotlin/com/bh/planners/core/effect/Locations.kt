@@ -3,6 +3,8 @@ package com.bh.planners.core.effect
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import kotlin.math.acos
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 /**
@@ -17,8 +19,8 @@ fun rotateLocationAboutPoint(location: Location, angle: Double, point: Location)
     val radians = Math.toRadians(angle)
     val dx = location.x - point.x
     val dz = location.z - point.z
-    val newX = dx * Math.cos(radians) - dz * Math.sin(radians) + point.x
-    val newZ = dz * Math.cos(radians) + dx * Math.sin(radians) + point.z
+    val newX = dx * cos(radians) - dz * sin(radians) + point.x
+    val newZ = dz * cos(radians) + dx * sin(radians) + point.z
     return Location(location.world, newX, location.y, newZ)
 }
 

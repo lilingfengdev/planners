@@ -13,7 +13,7 @@ object TToggleFlight : AbstractTimer<PlayerToggleFlightEvent>() {
     override val eventClazz: Class<PlayerToggleFlightEvent>
         get() = PlayerToggleFlightEvent::class.java
 
-    override fun check(e: PlayerToggleFlightEvent): Target? {
+    override fun check(e: PlayerToggleFlightEvent): Target {
         return e.player.toTarget()
     }
 

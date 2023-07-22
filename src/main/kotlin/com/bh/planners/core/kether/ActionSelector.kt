@@ -158,8 +158,8 @@ class ActionSelector {
         fun propertyArray() = object : ScriptProperty<Target.Container>("target.container.operator") {
 
             override fun read(instance: Target.Container, key: String): OpenResult {
-                return when {
-                    key == "length" || key == "size" -> OpenResult.successful(instance.size)
+                return when (key) {
+                    "length", "size" -> OpenResult.successful(instance.size)
                     else -> OpenResult.failed()
                 }
             }

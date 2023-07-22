@@ -223,8 +223,8 @@ fun ScriptFrame.container(action: ParsedAction<*>?, default: Entity?): Completab
 }
 
 fun ScriptFrame.container(action: ParsedAction<*>?, default: Target? = null): CompletableFuture<Target.Container> {
-    if (action != null) {
-        return createContainer(action)
+    return if (action != null) {
+        createContainer(action)
     } else {
         val future = CompletableFuture<Target.Container>()
         val container = Target.Container()
@@ -232,7 +232,7 @@ fun ScriptFrame.container(action: ParsedAction<*>?, default: Target? = null): Co
             container += default
         }
         future.complete(container)
-        return future
+        future
     }
 }
 

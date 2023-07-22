@@ -14,7 +14,7 @@ object TPlayerRespawn : AbstractTimer<PlayerRespawnEvent>() {
     override val eventClazz: Class<PlayerRespawnEvent>
         get() = PlayerRespawnEvent::class.java
 
-    override fun check(e: PlayerRespawnEvent): Target? {
+    override fun check(e: PlayerRespawnEvent): Target {
         return e.player.toTarget()
     }
 

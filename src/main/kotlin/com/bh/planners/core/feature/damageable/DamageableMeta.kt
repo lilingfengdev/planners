@@ -13,10 +13,10 @@ class DamageableMeta(val context: Damageable, val stream: DamageableModel.Stream
 
 
     fun changeSender() {
-        if (sender == context.attacker) {
-            sender = context.victim
+        sender = if (sender == context.attacker) {
+            context.victim
         } else {
-            sender = context.attacker
+            context.attacker
         }
     }
 

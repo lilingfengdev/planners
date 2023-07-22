@@ -8,7 +8,6 @@ import me.skymc.customized.monsteritem.attribute.function.FunctionProfile
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.registerBukkitListener
-import taboolib.common5.cint
 import java.util.*
 
 class MonsterItemBridge : AttributeBridge {
@@ -29,7 +28,7 @@ class MonsterItemBridge : AttributeBridge {
         val monsterItemSource = Source()
         reads.forEach {
             val split = it.split(":")
-            val id = split[0].trim().toUpperCase()
+            val id = split[0].trim().uppercase(Locale.getDefault())
             val value = split[1].trim()
             monsterItemSource.addValue(Attribute.valueOf(id), Value.read(value)!!)
         }

@@ -11,7 +11,7 @@ object TPlayerSelectedJob : AbstractTimer<PlayerSelectedJobEvent>() {
     override val eventClazz: Class<PlayerSelectedJobEvent>
         get() = PlayerSelectedJobEvent::class.java
 
-    override fun check(e: PlayerSelectedJobEvent): Target? {
+    override fun check(e: PlayerSelectedJobEvent): Target {
         return e.profile.player.toTarget()
     }
 }

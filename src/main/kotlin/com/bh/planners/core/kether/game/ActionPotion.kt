@@ -35,7 +35,7 @@ class ActionPotion {
             frame.readAccept<String>(name) { name ->
                 frame.readAccept<Int>(duration) { duration ->
                     frame.readAccept<Int>(amplifier) { amplifier ->
-                        val effectType = PotionEffectType.getByName(name.toUpperCase(Locale.getDefault()))
+                        val effectType = PotionEffectType.getByName(name.uppercase(Locale.getDefault()))
 
                         if (selector != null) {
                             frame.createContainer(selector).thenAccept {
@@ -68,7 +68,7 @@ class ActionPotion {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             frame.newFrame(name).run<Any>().thenApplyAsync({ name ->
-                val effectType = PotionEffectType.getByName(name.toString().toUpperCase(Locale.getDefault()))
+                val effectType = PotionEffectType.getByName(name.toString().uppercase(Locale.getDefault()))
 
                 if (selector != null) {
                     frame.execLivingEntity(selector) { execute(this, effectType) }

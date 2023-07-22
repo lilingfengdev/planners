@@ -8,6 +8,7 @@ import org.bukkit.Location
 import org.bukkit.util.Vector
 import taboolib.common5.mirrorNow
 import kotlin.math.cos
+import kotlin.math.sin
 
 object EffectStar : Effect() {
     override val name: String
@@ -24,9 +25,9 @@ object EffectStar : Effect() {
 
         // 转弧度制
         var radians = Math.toRadians((72 * 2).toDouble())
-        var x = radius * Math.cos(radians)
+        var x = radius * cos(radians)
         var y = 0.0
-        var z = radius * Math.sin(radians)
+        var z = radius * sin(radians)
         var end: Location = origin.getLocation()!!.clone().add(x, y, z)
         var length: Double = cos(Math.toRadians(36.0)) * radius * 2
 

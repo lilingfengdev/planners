@@ -13,7 +13,7 @@ object TPlayerDropItem : AbstractTimer<PlayerDropItemEvent>() {
     override val eventClazz: Class<PlayerDropItemEvent>
         get() = PlayerDropItemEvent::class.java
 
-    override fun check(e: PlayerDropItemEvent): Target? {
+    override fun check(e: PlayerDropItemEvent): Target {
         return e.player.toTarget()
     }
 

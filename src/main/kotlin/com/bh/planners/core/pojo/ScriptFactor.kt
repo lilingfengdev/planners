@@ -1,6 +1,3 @@
 package com.bh.planners.core.pojo
 
-class ScriptFactor(val mode: Skill.ActionMode, val action: String) {
-
-
-}
+class ScriptFactor(val mode: Skill.ActionMode, val action: String)

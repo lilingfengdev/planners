@@ -84,8 +84,7 @@ open class Data(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Data) return false
-        if (data != other.data) return false
-        return true
+        return data == other.data
     }
 
     override fun hashCode(): Int {

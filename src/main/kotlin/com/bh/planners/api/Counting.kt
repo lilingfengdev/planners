@@ -10,7 +10,7 @@ import java.util.*
 
 object Counting {
 
-    val map = Collections.synchronizedMap(mutableMapOf<String, MutableSet<Baffle>>())
+    val map: MutableMap<String, MutableSet<Baffle>> = Collections.synchronizedMap(mutableMapOf<String, MutableSet<Baffle>>())
 
     fun reset(player: Player, session: Session) {
         val get = session.cooldown.get()

@@ -42,7 +42,7 @@ class ActionMythicMob {
 
     companion object {
 
-        val api by lazy { MythicMobs.inst() }
+        val api: MythicMobs by lazy { MythicMobs.inst() }
 
         @KetherParser(["mm"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {

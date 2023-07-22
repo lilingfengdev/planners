@@ -4,6 +4,7 @@ import com.bh.planners.api.entity.ProxyAdyeshachEntity
 import com.bh.planners.api.entity.ProxyBukkitEntity.Companion.getBukkitLivingEntity
 import com.bh.planners.api.entity.ProxyEntity
 import org.bukkit.attribute.Attribute
+import java.util.*
 
 enum class EntityField(val get: ProxyEntity.() -> Any?) {
 
@@ -33,13 +34,13 @@ enum class EntityField(val get: ProxyEntity.() -> Any?) {
 
     BODY_IN_ARROW({ getBukkitLivingEntity()?.arrowsInBody }),
 
-    MAX_HEALTH({ getBukkitLivingEntity()?.maxHealth });
+    MAX_HEALTH({ getBukkitLivingEntity()?.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 0.0 });
 
 
     companion object {
 
         fun fields(): List<String> {
-            return EntityField.values().map { it.name.toLowerCase() }
+            return EntityField.values().map { it.name.lowercase(Locale.getDefault()) }
         }
 
     }

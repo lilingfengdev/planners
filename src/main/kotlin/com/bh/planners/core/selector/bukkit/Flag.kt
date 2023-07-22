@@ -14,19 +14,13 @@ object Flag : Selector {
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
 
-        data.values.forEach {
-            val key = data.read<String>(0, "__null__")
-            val value = data.read<String>(1, "__null__")
-            if (data.isNon) {
-                data.container.removeIf { it.getLivingEntity()?.getDataContainer()?.get(key)?.toString() == value }
-            } else {
-                data.container.removeIf { it.getLivingEntity()?.getDataContainer()?.get(key)?.toString() != value }
-            }
-
+        val key = data.read<String>(0, "__null__")
+        val value = data.read<String>(1, "__null__")
+        if (data.isNon) {
+            data.container.removeIf { it.getLivingEntity()?.getDataContainer()?.get(key)?.toString() == value }
+        } else {
+            data.container.removeIf { it.getLivingEntity()?.getDataContainer()?.get(key)?.toString() != value }
         }
-
-
-
 
         return CompletableFuture.completedFuture(null)
     }

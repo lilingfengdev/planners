@@ -43,7 +43,7 @@ interface Target {
         }
 
         fun ProxyEntity.target(): Entity {
-            return Target.Entity(this)
+            return Entity(this)
         }
 
         fun org.bukkit.entity.Entity.toTarget(): Entity {
@@ -51,9 +51,7 @@ interface Target {
         }
 
         fun org.bukkit.Location.toTarget(): Location {
-            return Location(this).apply {
-
-            }
+            return Location(this)
         }
 
         fun Target.isPlayer(): Boolean {

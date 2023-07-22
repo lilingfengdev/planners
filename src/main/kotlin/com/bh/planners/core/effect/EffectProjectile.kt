@@ -39,7 +39,7 @@ object EffectProjectile : Effect() {
 
         val direction = location.direction
 
-        var index = 0;
+        var index = 0
 
         override fun next(): Location? {
             return mirrorNow("渲染粒子Projectile") {

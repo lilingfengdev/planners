@@ -21,9 +21,7 @@ import taboolib.common5.Coerce
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.xseries.getItemStack
 import taboolib.module.chat.colored
-import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.KetherFunction.parse
-import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.ScriptOptions
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.ui.openMenu
@@ -158,7 +156,7 @@ class Faceplate(viewer: Player, val skill: Skill) : IUI(viewer) {
             }
 
 
-            onClick { event, element ->
+            onClick { event, _ ->
                 event.clickEvent().isCancelled = true
             }
 

@@ -55,7 +55,7 @@ object Translator {
 
     fun toNBTCompound(nbt: ItemTag, section: ConfigurationSection): ItemTag {
         for (key in section.getKeys(false)) {
-            val obj = section.get(key)
+            val obj = section[key]
             val base: ItemTagData?
             if (obj is ConfigurationSection) {
                 base = toNBTCompound(ItemTag(), section.getConfigurationSection(key)!!)

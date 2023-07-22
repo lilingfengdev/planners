@@ -26,7 +26,7 @@ object GlobalVarTable {
 
     fun keys(): List<String> = data.keys()
 
-    @Schedule(period = 20 * 60 * 30, delay = 20 * 60 * 30)
+    @Schedule(period = (20 * 60 * 30).toLong(), delay = (20 * 60 * 30).toLong())
     @Awake(LifeCycle.DISABLE)
     fun saveAll() {
         val file = File(getDataFolder(), "data.json")

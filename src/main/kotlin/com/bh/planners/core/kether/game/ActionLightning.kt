@@ -32,7 +32,7 @@ class ActionLightning(val selector: ParsedAction<*>?) : ScriptAction<Void>() {
                 lightning(loc)
             }
         } else {
-            lightning(frame.origin()?.value ?: return CompletableFuture.completedFuture(null))
+            lightning(frame.origin().value)
         }
 
         return CompletableFuture.completedFuture(null)

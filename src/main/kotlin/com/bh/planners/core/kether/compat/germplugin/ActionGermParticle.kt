@@ -24,19 +24,19 @@ class ActionGermParticle(val name: ParsedAction<*>, val animation: ParsedAction<
 
     companion object {
 
-        val cache = Collections.synchronizedMap(mutableMapOf<String, ConfigurationSection>())
+        val cache: MutableMap<String, ConfigurationSection> = Collections.synchronizedMap(mutableMapOf<String, ConfigurationSection>())
 
-        fun get(name: String, rootType: RootType = RootType.EFFECT): ConfigurationSection? {
+        fun get(name: String, rootType: RootType = RootType.EFFECT): ConfigurationSection {
             return cache.computeIfAbsent(name) {
                 val split = name.split(":")
-                GermSrcManager.getGermSrcManager().getSrc(split[0], rootType)?.getConfigurationSection(split[1])
+                GermSrcManager.getGermSrcManager().getSrc(split[0], rootType)?.getConfigurationSection(split[1]) ?: error("GermPlugin effect '$name' not found.")
             }
         }
 
         private fun create(name: String): GermEffectPart<*> {
             return GermEffectParticle.getGermEffectPart(
                 UUID.randomUUID().toString(),
-                get(name) ?: error("GermPlugin effect '$name' not found.")
+                get(name)
             )
         }
 

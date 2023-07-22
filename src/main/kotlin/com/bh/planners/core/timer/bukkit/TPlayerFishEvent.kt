@@ -13,7 +13,7 @@ object TPlayerFishEvent : AbstractTimer<PlayerFishEvent>() {
     override val eventClazz: Class<PlayerFishEvent>
         get() = PlayerFishEvent::class.java
 
-    override fun check(e: PlayerFishEvent): Target? {
+    override fun check(e: PlayerFishEvent): Target {
         return e.player.toTarget()
     }
 

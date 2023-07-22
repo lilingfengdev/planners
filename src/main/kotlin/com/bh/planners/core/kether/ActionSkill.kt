@@ -22,9 +22,9 @@ class ActionSkill {
 
             frame.readAccept<Long>(amount) { amount ->
                 if (target != null) {
-                    frame.readAccept<String>(target) {
-                        val skill = PlannersAPI.getSkill(it) ?: return@readAccept
-                        execute(frame.bukkitPlayer() ?: return@readAccept, skill, operator, amount * 50)
+                    frame.readAccept<String>(target) last@{
+                        val skill = PlannersAPI.getSkill(it) ?: return@last
+                        execute(frame.bukkitPlayer() ?: return@last, skill, operator, amount * 50)
                     }
                 } else {
                     execute(frame.bukkitPlayer() ?: return@readAccept, frame.skill().instance, operator, amount * 50)
@@ -132,7 +132,7 @@ class ActionSkill {
                     val varKey = nextToken()
                     actionSkillNow(nextArgumentAction(arrayOf("of", "the"))) {
                         val variable = it.instance.option.variables.firstOrNull { it.key == varKey }
-                            ?: error("No variable ${varKey} define.")
+                            ?: error("No variable $varKey define.")
                         val context = ContextAPI.create(bukkitTarget(), it.instance)
                         ScriptLoader.createScript(context, variable.expression)
                     }

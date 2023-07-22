@@ -2,7 +2,6 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.PlannersAPI
-import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.execPlayer
@@ -36,14 +35,14 @@ class ActionSkillCast {
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             return frame.newFrame(skill).run<Any>().thenAccept {
                 val skill = PlannersAPI.getSkill(it.toString()) ?: return@thenAccept
-                frame.newFrame(level).run<Any>().thenAccept {
+                frame.newFrame(level).run<Any>().thenAccept last@{
                     val level = Coerce.toInteger(it)
                     if (selector != null) {
                         frame.execPlayer(selector) {
                             ContextAPI.create(this, skill, level)?.cast()
                         }
                     } else {
-                        val player = frame.bukkitPlayer() ?: return@thenAccept
+                        val player = frame.bukkitPlayer() ?: return@last
                         ContextAPI.create(player, skill, level)?.cast()
                     }
                 }

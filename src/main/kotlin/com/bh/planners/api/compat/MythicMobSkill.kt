@@ -7,12 +7,14 @@ import io.lumine.xikage.mythicmobs.io.MythicLineConfig
 import io.lumine.xikage.mythicmobs.skills.INoTargetSkill
 import io.lumine.xikage.mythicmobs.skills.SkillMechanic
 import io.lumine.xikage.mythicmobs.skills.SkillMetadata
+import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderInt
+import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderString
 import taboolib.common.platform.function.warning
 
 class MythicMobSkill(line: String, config: MythicLineConfig) : SkillMechanic(line, config), INoTargetSkill {
 
-    val id = config.getPlaceholderString(arrayOf("id", "skill", "s"), "__NULL__")
-    val level = config.getPlaceholderInteger(arrayOf("level", "l"), 1)
+    val id: PlaceholderString = config.getPlaceholderString(arrayOf("id", "skill", "s"), "__NULL__")
+    val level: PlaceholderInt = config.getPlaceholderInteger(arrayOf("level", "l"), 1)
 
     override fun cast(data: SkillMetadata): Boolean {
         val skillId = id.get()

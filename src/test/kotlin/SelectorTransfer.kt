@@ -45,9 +45,6 @@ class SelectorTransfer(val source: String) {
     }
 
 
-    class ParsedSelector(val namespace: String, val value: String) {
-
-
-    }
+    class ParsedSelector(val namespace: String, val value: String)
 
 }

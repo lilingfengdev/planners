@@ -13,7 +13,7 @@ object TPlayerItemConsume : AbstractTimer<PlayerItemConsumeEvent>() {
     override val eventClazz: Class<PlayerItemConsumeEvent>
         get() = PlayerItemConsumeEvent::class.java
 
-    override fun check(e: PlayerItemConsumeEvent): Target? {
+    override fun check(e: PlayerItemConsumeEvent): Target {
         return e.player.toTarget()
     }
 

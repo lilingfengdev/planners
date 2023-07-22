@@ -11,7 +11,7 @@ object TPlayerBedLeave : AbstractTimer<PlayerBedLeaveEvent>() {
     override val eventClazz: Class<PlayerBedLeaveEvent>
         get() = PlayerBedLeaveEvent::class.java
 
-    override fun check(e: PlayerBedLeaveEvent): Target? {
+    override fun check(e: PlayerBedLeaveEvent): Target {
         return e.player.toTarget()
     }
 }

@@ -15,7 +15,7 @@ import kotlin.math.sin
  */
 fun rotateAroundAxisX(v: Vector, angle: Double): Vector {
     if (angle == 0.0) return v
-    var angdeg = Math.toRadians(angle)
+    val angdeg = Math.toRadians(angle)
     val cos = cos(angdeg)
     val sin = sin(angdeg)
     val y = v.y * cos - v.z * sin
@@ -32,7 +32,7 @@ fun rotateAroundAxisX(v: Vector, angle: Double): Vector {
  */
 fun rotateAroundAxisY(v: Vector, angle: Double): Vector {
     if (angle == 0.0) return v
-    var angdeg = Math.toRadians(-angle)
+    val angdeg = Math.toRadians(-angle)
     val cos = cos(angdeg)
     val sin = sin(angdeg)
     val x = v.x * cos + v.z * sin
@@ -49,7 +49,7 @@ fun rotateAroundAxisY(v: Vector, angle: Double): Vector {
  */
 fun rotateAroundAxisZ(v: Vector, angle: Double): Vector {
     if (angle == 0.0) return v
-    var angdeg = Math.toRadians(angle)
+    val angdeg = Math.toRadians(angle)
     val cos = cos(angdeg)
     val sin = sin(angdeg)
     val x = v.x * cos - v.y * sin
@@ -74,10 +74,10 @@ fun rotateAroundAxisZ(v: Vector, angle: Double): Vector {
 fun rotateVector(v: Vector, yawDegrees: Float, pitchDegrees: Float): Vector {
     val yaw = Math.toRadians((-1 * (yawDegrees + 90)).toDouble())
     val pitch = Math.toRadians(-pitchDegrees.toDouble())
-    val cosYaw = Math.cos(yaw)
-    val cosPitch = Math.cos(pitch)
-    val sinYaw = Math.sin(yaw)
-    val sinPitch = Math.sin(pitch)
+    val cosYaw = cos(yaw)
+    val cosPitch = cos(pitch)
+    val sinYaw = sin(yaw)
+    val sinPitch = sin(pitch)
     var initialX = v.x
     val initialY = v.y
     val initialZ = v.z

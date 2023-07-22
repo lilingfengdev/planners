@@ -1,6 +1,5 @@
 package com.bh.planners.core.selector.bukkit
 
-import com.bh.planners.core.effect.Target.Companion.getDirection
 import com.bh.planners.core.effect.Target.Companion.ifEntity
 import com.bh.planners.core.effect.Target.Companion.ifLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget

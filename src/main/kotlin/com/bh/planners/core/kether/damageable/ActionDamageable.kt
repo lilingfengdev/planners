@@ -92,7 +92,7 @@ class ActionDamageable {
                 val split = key.split(".")
                 when (split[0]) {
                     "data" -> if (value != null) {
-                        instance.data.set(key, value.unsafeData())
+                        instance.data[key] = value.unsafeData()
                     }
 
                     "damage-source", "source" -> {

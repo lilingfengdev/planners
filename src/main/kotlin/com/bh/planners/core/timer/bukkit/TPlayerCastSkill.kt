@@ -14,7 +14,7 @@ object TPlayerCastSkill : AbstractTimer<PlayerCastSkillEvents.Pre>() {
     override val eventClazz: Class<PlayerCastSkillEvents.Pre>
         get() = PlayerCastSkillEvents.Pre::class.java
 
-    override fun check(e: PlayerCastSkillEvents.Pre): Target? {
+    override fun check(e: PlayerCastSkillEvents.Pre): Target {
         return e.player.toTarget()
     }
 

@@ -56,8 +56,8 @@ class ActionGermEffectMove(val name: ParsedAction<*>, val pos1: ParsedAction<*>,
             val split = name.split(":")
 
             val configuration = ActionGermParticle.cache.computeIfAbsent(name) {
-                GermSrcManager.getGermSrcManager().getSrc(split[0], RootType.ANIMATION)
-            } ?: error("GermPlugin animation '$name' not found.")
+                GermSrcManager.getGermSrcManager().getSrc(split[0], RootType.ANIMATION) ?: error("GermPlugin animation '$name' not found.")
+            }
 
             return GermAnimationPart.getGermAnimationPart(UUID.randomUUID().toString(), split[1], configuration)
         }

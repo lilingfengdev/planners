@@ -9,6 +9,7 @@ import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.timer.Template
 import com.bh.planners.core.timer.TimerDrive
 import com.bh.planners.util.runKetherThrow
+import com.google.common.collect.ListMultimap
 import com.google.common.collect.MultimapBuilder
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
@@ -27,7 +28,7 @@ object ScriptLoader {
     val ketherScriptLoader = KetherScriptLoader()
 
     val scripts = mutableMapOf<String, Script>()
-    val runningScripts = MultimapBuilder.hashKeys().arrayListValues().build<String, ScriptData>()
+    val runningScripts: ListMultimap<String, ScriptData> = MultimapBuilder.hashKeys().arrayListValues().build()
 
     fun autoLoad() {
         scripts.clear()

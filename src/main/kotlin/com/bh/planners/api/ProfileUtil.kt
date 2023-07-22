@@ -101,9 +101,7 @@ fun PlayerProfile.getRoute(): Router.Route? {
 
 fun PlayerProfile.isTransfer(): Boolean {
     if (this.job == null) return false
-    if (getRoute() == null) return false
-
-    return true
+    return getRoute() != null
 }
 
 val Player.hasJob: Boolean

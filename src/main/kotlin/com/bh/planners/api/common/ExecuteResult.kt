@@ -2,7 +2,6 @@ package com.bh.planners.api.common
 
 import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.Counting
-import com.bh.planners.api.PlannersOption
 import com.bh.planners.api.compat.WorldGuardHook
 import com.bh.planners.core.pojo.Skill
 import org.bukkit.entity.Player

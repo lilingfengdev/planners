@@ -31,7 +31,7 @@ class ActionDragonEffect(
                             execute(id, scheme, rotation, time, this)
                         }
                     } else {
-                        execute(id, scheme, rotation, time, frame.origin() ?: return@readAccept)
+                        execute(id, scheme, rotation, time, frame.origin())
                     }
                 }
             }

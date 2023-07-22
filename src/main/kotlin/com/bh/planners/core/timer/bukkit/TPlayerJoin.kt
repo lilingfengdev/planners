@@ -12,7 +12,7 @@ object TPlayerJoin : AbstractTimer<PlayerJoinEvent>() {
     override val eventClazz: Class<PlayerJoinEvent>
         get() = PlayerJoinEvent::class.java
 
-    override fun check(e: PlayerJoinEvent): Target? {
+    override fun check(e: PlayerJoinEvent): Target {
         return e.player.toTarget()
     }
 }
