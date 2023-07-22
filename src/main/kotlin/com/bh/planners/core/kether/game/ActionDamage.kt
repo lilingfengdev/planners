@@ -101,7 +101,7 @@ class ActionDamage {
 
     companion object {
 
-        val worlds = PlannersOption.root.getStringList("WorldGuard.ignore-damage-world")
+        val worlds = PlannersOption.root.getStringList("ignore-damage-world")
 
         /**
          * 对selector目标造成伤害
