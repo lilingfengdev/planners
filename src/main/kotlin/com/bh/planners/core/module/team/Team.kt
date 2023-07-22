@@ -13,7 +13,7 @@ import java.util.function.Supplier
 
 object Team : ClassVisitor(0) {
 
-    @ConfigNode("plugin-adaptor.team", "module")
+    @ConfigNode("plugin-adaptor.team", "module.yml")
     private val loader = "__NULL__"
 
     private val loaderClassRegistry = mutableMapOf<String, Class<Adapter>>()
