@@ -89,7 +89,3 @@ fun timing(start: Long): Double {
 fun List<String>.upperCase(): List<String> {
     return map { it.uppercase(Locale.getDefault()) }
 }
-
-fun World.isWorld(world: String): Boolean {
-    return Bukkit.getWorld(world) == this
-}
