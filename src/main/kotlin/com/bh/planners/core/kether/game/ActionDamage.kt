@@ -9,6 +9,7 @@ import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.game.damage.AttackProvider
 import com.bh.planners.core.kether.game.damage.DamageType
 import com.bh.planners.util.eval
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.platform.function.submit
@@ -32,7 +33,7 @@ class ActionDamage {
     ) : ScriptAction<Void>() {
 
         fun execute(entity: LivingEntity, source: LivingEntity?, damage: String, type: DamageType) {
-            val result = damage.eval(entity.maxHealth)
+            val result = damage.eval(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 0.0)
             val damageByEntityEvent = EntityEvents.DamageByEntity(source, entity, result, type)
             if (damageByEntityEvent.call()) {
                 doDamage(source, entity, damageByEntityEvent.value)
@@ -43,9 +44,9 @@ class ActionDamage {
             frame.run(value).str { damage ->
                 frame.container(selector).thenAccept { victims ->
                     frame.containerOrSender(source).thenAccept { source ->
-                        frame.run(type).str { type ->
-                            val sourceEntity = source.firstLivingEntityTarget() ?: return@str
-                            if (sourceEntity.world.name in worlds) return@str
+                        frame.run(type).str last@{ type ->
+                            val sourceEntity = source.firstLivingEntityTarget() ?: return@last
+                            if (sourceEntity.world.name in worlds) return@last
                             victims.forEachLivingEntity { execute(this, sourceEntity, damage, DamageType.valueOf(type.uppercase())) }
                         }
                     }
@@ -83,7 +84,7 @@ class ActionDamage {
                                         "Planners:Attack",
                                         FixedMetadataValue(BukkitPlugin.getInstance(), true)
                                     )
-                                    AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.maxHealth), source, demand)
+                                    AttackProvider.INSTANCE?.doDamage(this, damage.eval(this.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 0.0), source, demand)
                                     this.setMetadata(
                                         "Planners:Attack",
                                         FixedMetadataValue(BukkitPlugin.getInstance(), false)
