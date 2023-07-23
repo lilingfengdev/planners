@@ -18,6 +18,9 @@ class ProxyAdyeshachEntity(val instance: EntityInstance) : ProxyEntity {
 
     }
 
+    override val entityId: Int
+        get() = instance.index
+
     val id: String
         get() = instance.id
 

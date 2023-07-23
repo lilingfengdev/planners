@@ -21,6 +21,9 @@ class ProxyBukkitEntity(val instance: Entity) : ProxyEntity {
         }
     }
 
+    override val entityId: Int
+        get() = instance.entityId
+
     override val isDead: Boolean
         get() = instance.isDead
 

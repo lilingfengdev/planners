@@ -53,17 +53,17 @@ object ActionGermLoader {
                         ActionGermAnimation(
                             it.nextToken(),
                             false,
-                            it.nextArgumentAction(arrayOf("speed"), "1.0")!!,
-                            it.nextArgumentAction(arrayOf("reverse"), "false")!!,
-                            it.nextSelector())
+                            it.nextArgumentAction(arrayOf("speed"), "1.0"),
+                            it.nextArgumentAction(arrayOf("reverse"), "false"),
+                            it.nextSelectorOrNull())
                     }
                     "stop" -> {
                         ActionGermAnimation(
                             it.nextToken(),
                             true,
-                            it.nextArgumentAction(arrayOf("speed"), "1.0")!!,
-                            it.nextArgumentAction(arrayOf("reverse"), "false")!!,
-                            it.nextSelector())
+                            null,
+                            null,
+                            it.nextSelectorOrNull())
                     }
                     else -> error("out of case")
                 }

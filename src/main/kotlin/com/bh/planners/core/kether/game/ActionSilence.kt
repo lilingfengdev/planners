@@ -13,7 +13,6 @@ import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 
 class ActionSilence(
@@ -52,7 +51,7 @@ class ActionSilence(
         @SubscribeEvent(EventPriority.LOWEST)
         fun onCastSkill(e: PlayerCastSkillEvents.Pre) {
             val time = silenceMap[e.player.uniqueId] ?: return
-            if (System.currentTimeMillis() > time) {
+            if (System.currentTimeMillis() >= time) {
                 silenceMap.remove(e.player.uniqueId)
             } else {
                 e.isCancelled = true
