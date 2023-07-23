@@ -4,6 +4,7 @@ import com.bh.planners.api.event.PlayerCastSkillEvents
 import com.bh.planners.api.event.PlayerSilenceEvent
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.execPlayer
+import com.bh.planners.core.kether.nextArgumentAction
 import com.bh.planners.core.kether.nextSelectorOrNull
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
@@ -12,19 +13,23 @@ import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 
 class ActionSilence(
-    val callevent: Boolean,
+    val callevent: ParsedAction<*>,
     val ticks: ParsedAction<*>,
     val selector: ParsedAction<*>?,
 ) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.newFrame(ticks).run<Any>().thenApply { ticks ->
-            frame.execPlayer(selector!!) {
-                silenceMap[uniqueId] = (System.currentTimeMillis() + Coerce.toDouble(ticks) * 50).toLong()
-                if (callevent) {
-                    PlayerSilenceEvent(this, (Coerce.toDouble(ticks) * 50).toLong()).call()
+        frame.run(callevent).bool { callevent ->
+            frame.run(ticks).double { ticks ->
+                frame.execPlayer(selector!!) {
+                    silenceMap[uniqueId] = ((System.currentTimeMillis() + (Coerce.toDouble(ticks) * 50))).toLong()
+                    if (callevent) {
+                        PlayerSilenceEvent(this, (Coerce.toDouble(ticks) * 50).toLong()).call()
+                    }
                 }
             }
         }
@@ -37,18 +42,11 @@ class ActionSilence(
 
         /**
          * 沉默目标 使对方在一定时间内无法释放技能
-         * silence <callevent> [ticks] [selector]
+         * silence <callevent：false> [ticks] [selector]
          */
         @KetherParser(["silence"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            it.switch {
-                case("callevent") {
-                    ActionSilence(true, it.nextParsedAction(), it.nextSelectorOrNull())
-                }
-                other {
-                    ActionSilence(false, it.nextParsedAction(), it.nextSelectorOrNull())
-                }
-            }
+            ActionSilence(it.nextArgumentAction(arrayOf("callevent", "call"), "false")!!, it.nextParsedAction(), it.nextSelectorOrNull())
         }
 
         @SubscribeEvent(EventPriority.LOWEST)

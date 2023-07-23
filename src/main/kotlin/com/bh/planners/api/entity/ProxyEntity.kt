@@ -33,4 +33,6 @@ interface ProxyEntity {
 
     var velocity: Vector
 
+    fun teleport(location: Location)
+
 }

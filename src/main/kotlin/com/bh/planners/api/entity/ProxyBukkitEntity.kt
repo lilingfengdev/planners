@@ -83,6 +83,10 @@ class ProxyBukkitEntity(val instance: Entity) : ProxyEntity {
         return false
     }
 
+    override fun teleport(location: Location) {
+        instance.teleport(location)
+    }
+
     override fun toString(): String {
         return instance.name
     }

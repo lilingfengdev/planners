@@ -1,8 +1,8 @@
 package com.bh.planners.core.kether.game
 
+import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.kether.bukkitPlayer
-import com.bh.planners.core.kether.execEntity
+import com.bh.planners.core.kether.containerOrSender
 import com.bh.planners.core.kether.nextSelectorOrNull
 import com.bh.planners.core.kether.toLocation
 import org.bukkit.Location
@@ -14,21 +14,19 @@ import java.util.concurrent.CompletableFuture
 class ActionTeleport(val action: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        return frame.run(action).thenAccept {
-            if (selector != null) {
-                frame.execEntity(selector) {
-                    execute(this, it!!)
+        return frame.run(action).thenAccept { action ->
+            frame.containerOrSender(selector).thenAccept {
+                it.forEachProxyEntity {
+                    execute(this, action!!)
                 }
-            } else {
-                execute(frame.bukkitPlayer() ?: return@thenAccept, it!!)
             }
         }
     }
 
-    fun execute(entity: Entity, it: Any) {
+    fun execute(entity: ProxyEntity, it: Any) {
         when (it) {
             is Entity -> {
-                entity.teleport(it)
+                entity.teleport(it.location)
             }
 
             is Location -> {
@@ -62,8 +60,7 @@ class ActionTeleport(val action: ParsedAction<*>, val selector: ParsedAction<*>?
          */
         @KetherParser(["teleport", "tp"], shared = true)
         fun parser() = scriptParser {
-            val parsedAction = it.nextParsedAction()
-            ActionTeleport(parsedAction, it.nextSelectorOrNull())
+            ActionTeleport(it.nextParsedAction(), it.nextSelectorOrNull())
         }
     }
 
