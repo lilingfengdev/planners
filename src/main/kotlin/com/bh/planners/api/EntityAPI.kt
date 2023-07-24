@@ -1,6 +1,7 @@
 package com.bh.planners.api
 
 import com.bh.planners.api.PlannersAPI.plannersProfile
+import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.pojo.data.Data
 import com.bh.planners.core.pojo.data.DataContainer
 import org.bukkit.Bukkit
@@ -20,6 +21,10 @@ object EntityAPI {
             map.computeIfAbsent(this.uniqueId) { DataContainer() }
         }
     }
+
+//    fun ProxyEntity.getDataContainer() : DataContainer {
+//
+//    }
 
     /**
      * 一小时清理一次无用实体

@@ -236,75 +236,48 @@ fun ScriptFrame.container(action: ParsedAction<*>?, default: Target? = null): Co
     }
 }
 
-//fun ScriptFrame.parseTargetContainer(value: Any): CompletableFuture<Target.Container> {
-//    val future = CompletableFuture<Target.Container>()
-//    when (value) {
-//
-//        is Target.Container -> future.complete(value)
-//
-//        is List<*> -> {
-//
-//        }
-//
-//
-//    }
-//}
-//
-//fun ScriptFrame.parseTargetContainer(action: ParsedAction<*>): CompletableFuture<Target.Container> {
-//    val future = CompletableFuture<Target.Container>()
-//    this.run(action).thenAccept {
-//
-//    }
-//
-//}
+fun parseTargetContainer(value: Any,context: Context): Target.Container {
+
+    val container = Target.Container()
+
+    when (value) {
+
+        is Target.Container -> container.addAll(value)
+
+        is List<*> -> {
+            value.filterNotNull().forEach {
+                container += parseTargetContainer(it,context)
+            }
+        }
+
+        is Target -> {
+            container += value
+        }
+
+        is Entity -> {
+            container += value.toTarget()
+        }
+
+        is Location -> {
+            container += value.toTarget()
+        }
+
+        is UUID -> {
+            Bukkit.getEntity(value)?.let { container += it.toTarget() }
+        }
+
+        else -> {
+            container += Selector.check(context, value.toString().toDemand())
+        }
+    }
+    return container
+}
 
 
 fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Target.Container> {
     val future = CompletableFuture<Target.Container>()
     this.newFrame(selector).run<Any>().thenAccept {
-        val container = Target.Container()
-
-        when (it) {
-
-            is Target.Container -> future.complete(it)
-
-            is List<*> -> {
-                container += it.mapNotNull { entry ->
-                    when (entry) {
-                        is Entity -> entry.toTarget()
-                        is String -> Bukkit.getEntity(UUID.fromString(entry.toString()))?.toTarget()
-                        else -> error("Transfer $entry to target failed")
-                    }
-                }
-                future.complete(container)
-            }
-
-            is Target -> {
-                container += it
-                future.complete(container)
-            }
-
-            is Entity -> {
-                container += it.toTarget()
-                future.complete(container)
-            }
-
-            is Location -> {
-                container += it.toTarget()
-                future.complete(container)
-            }
-
-            is UUID -> {
-                Bukkit.getEntity(it)?.let { container += it.toTarget() }
-                future.complete(container)
-            }
-
-            else -> {
-                Selector.check(getContext(), it.toString().toDemand(), container).thenAccept {
-                    future.complete(container)
-                }
-            }
-        }
+        future.complete(parseTargetContainer(it,getContext()))
     }
     return future
 }

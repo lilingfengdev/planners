@@ -6,7 +6,7 @@ import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
-import taboolib.common.platform.function.submit
+import taboolib.common.util.sync
 import taboolib.common5.Coerce
 import taboolib.module.effect.math.Matrix
 import java.util.concurrent.CompletableFuture
@@ -111,14 +111,33 @@ private fun Location.getNearbyEntities(): List<LivingEntity> {
     ).filterIsInstance<LivingEntity>()
 }
 
+fun Location.getNearbyEntities(radius: Double): List<LivingEntity> {
+    return world!!.getNearbyEntities(
+        this,
+        radius,
+        radius,
+        radius
+    ).filterIsInstance<LivingEntity>()
+}
 
-fun Location.capture(): CompletableFuture<List<LivingEntity>> {
-    val future = CompletableFuture<List<LivingEntity>>()
+fun createAwaitVoidFuture(block: () -> Unit): CompletableFuture<Void> {
+    createAwaitFuture {
+        block()
+    }
+    return CompletableFuture.completedFuture(null)
+}
+
+fun <T> createAwaitFuture(block: () -> T): CompletableFuture<T> {
+    val future = CompletableFuture<T>()
 
     if (Bukkit.isPrimaryThread()) {
-        future.complete(this.getNearbyEntities())
+        future.complete(block())
     } else {
-        submit(async = false) { future.complete(this@capture.getNearbyEntities()) }
+        sync { future.complete(block()) }
     }
     return future
+}
+
+fun Location.capture(): CompletableFuture<List<LivingEntity>> {
+    return createAwaitFuture { this.getNearbyEntities() }
 }

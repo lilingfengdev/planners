@@ -1,5 +1,12 @@
 __option__:
   name: '禁止释放'
   async: true
+  variables:
+    def-base: 10
+    map-奥术: math 1 + math papi "奥术变量" / 100 / 2
+    final-damage: math lazy def-base * lazy map-奥术
 action: |-
-  title colored "&c禁止释放技能"
+  # mode default
+  def main = {
+    damage lazy final-damage they @self
+  }

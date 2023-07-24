@@ -50,21 +50,18 @@ object ActionGermLoader {
             case("animation") {
                 when (it.expects("send", "stop")) {
                     "send" -> {
-                        ActionGermAnimation(
-                            it.nextToken(),
-                            false,
-                            it.nextArgumentAction(arrayOf("speed"), "1.0"),
-                            it.nextArgumentAction(arrayOf("reverse"), "false"),
-                            it.nextSelectorOrNull())
+                        ActionGermAnimation.Send(
+                            it.nextParsedAction(),
+                            it.nextArgumentAction(arrayOf("speed"), "1.0")!!,
+                            it.nextArgumentAction(arrayOf("reverse"), "false")!!,
+                            it.nextSelectorOrNull()
+                        )
                     }
+
                     "stop" -> {
-                        ActionGermAnimation(
-                            it.nextToken(),
-                            true,
-                            null,
-                            null,
-                            it.nextSelectorOrNull())
+                        ActionGermAnimation.Stop(it.nextParsedAction(), it.nextSelectorOrNull())
                     }
+
                     else -> error("out of case")
                 }
             }
@@ -106,6 +103,7 @@ object ActionGermLoader {
                     "lock" -> {
                         ActionGermLock.LockPlayerMove(it.nextParsedAction(), it.nextSelector())
                     }
+
                     "unlock" -> {
                         ActionGermLock.UnLockPlayerMove(it.nextSelector())
                     }
@@ -119,12 +117,15 @@ object ActionGermLoader {
                     "lock" -> {
                         ActionGermLock.LockPlayerView(it.nextParsedAction(), it.nextSelector())
                     }
+
                     "unlock" -> {
                         ActionGermLock.UnLockPlayerView(it.nextSelector())
                     }
+
                     "at" -> {
-                        ActionGermLook(it.nextParsedAction(),it.nextArgumentAction(arrayOf("at"))!!,it.nextParsedAction())
+                        ActionGermLook(it.nextParsedAction(), it.nextArgumentAction(arrayOf("at"))!!, it.nextParsedAction())
                     }
+
                     else -> error("out of case")
                 }
             }
@@ -133,9 +134,11 @@ object ActionGermLoader {
                     "lock" -> {
                         ActionGermLock.LockPlayerViewType(it.nextParsedAction(), it.nextParsedAction(), it.nextSelector())
                     }
+
                     "unlock" -> {
                         ActionGermLock.UnLockPlayerViewType(it.nextSelector())
                     }
+
                     else -> error("out of case")
                 }
             }

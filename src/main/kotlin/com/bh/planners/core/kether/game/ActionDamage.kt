@@ -60,11 +60,7 @@ class ActionDamage {
         }
     }
 
-    class Attack(
-        val value: ParsedAction<*>,
-        var data: ParsedAction<*>,
-        val selector: ParsedAction<*>
-    ) : ScriptAction<Void>() {
+    class Attack(val value: ParsedAction<*>, var data: ParsedAction<*>, val selector: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
             val source = frame.getContext().sender.getLivingEntity() ?: return CompletableFuture.completedFuture(null)

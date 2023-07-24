@@ -73,9 +73,10 @@ fun PlayerProfile.setFlag(key: String, data: Data) {
 
 fun PlayerProfile.attemptAcceptJob(job: Job): Boolean {
     if (this.job != null) return false
+    val snapshot = this.createSnapshot()
     this.job = Storage.INSTANCE.createPlayerJob(player, job).get()
     Storage.INSTANCE.updateCurrentJob(this)
-    PlayerSelectedJobEvent(this).call()
+    PlayerSelectedJobEvent(this, snapshot).call()
     return true
 }
 
@@ -89,9 +90,15 @@ fun PlayerProfile.addLevel(value: Int) {
 }
 
 fun PlayerProfile.reset() {
+    val snapshot = createSnapshot()
     job = null
     Storage.INSTANCE.updateCurrentJob(this)
-    PlayerSelectedJobEvent(this).call()
+    PlayerSelectedJobEvent(this, snapshot).call()
+}
+
+// 快捷创建快照职业
+fun PlayerProfile.createSnapshot(): Job? {
+    return this.job?.instance
 }
 
 fun PlayerProfile.getRoute(): Router.Route? {
@@ -120,6 +127,7 @@ fun PlayerProfile.transfer(target: Job): Boolean {
     if (!isTransfer()) return false
     val transferJob = getTransferJob(this.job!!.instance, target)!!
     if (PlayerTransferEvent(player, target).call()) {
+        val snapshot = this.createSnapshot()
         // 重定位职业
         this.job!!.jobKey = transferJob.jobKey
         // 删除其他技能
@@ -133,7 +141,7 @@ fun PlayerProfile.transfer(target: Job): Boolean {
             }
             Storage.INSTANCE.updateCurrentJob(this@transfer)
             Storage.INSTANCE.updateJob(player, this@transfer.job!!)
-            PlayerSelectedJobEvent(this@transfer).call()
+            PlayerSelectedJobEvent(this@transfer, snapshot).call()
         }
         return true
     } else {

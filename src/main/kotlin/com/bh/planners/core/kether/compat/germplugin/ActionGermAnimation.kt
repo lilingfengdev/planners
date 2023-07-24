@@ -10,23 +10,12 @@ import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionGermAnimation(
-    val state: String,
-    val remove: Boolean,
-    val speed: ParsedAction<*>?,
-    val reverse: ParsedAction<*>?,
-    val selector: ParsedAction<*>?,
-) : ScriptAction<Void>() {
+class ActionGermAnimation {
 
-    fun execute(entity: ProxyEntity, state: String, remove: Boolean, speed: Float, reverse: Boolean) {
-        Bukkit.getOnlinePlayers().forEach {
-            if (remove) {
-                if (entity is Player) {
-                    GermPacketAPI.sendBendClear(it, entity.entityId)
-                } else {
-                    GermPacketAPI.stopModelAnimation(it, entity.entityId, state)
-                }
-            } else {
+    class Send(val state: ParsedAction<*>, val speed: ParsedAction<*>, val reverse: ParsedAction<*>, val selector: ParsedAction<*>?, ) : ScriptAction<Void>() {
+
+        fun execute(entity: ProxyEntity, state: String, speed: Float, reverse: Boolean) {
+            Bukkit.getOnlinePlayers().forEach {
                 if (entity is Player) {
                     GermPacketAPI.sendBendAction(it, entity.entityId, AnimDataDTO(state, speed, reverse))
                 } else {
@@ -34,27 +23,48 @@ class ActionGermAnimation(
                 }
             }
         }
-    }
 
-    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        if (speed != null) {
-            frame.run(speed).float { speed ->
-                    frame.run(reverse!!).bool { reverse ->
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.run(state).str { id ->
+                frame.run(speed).float { speed ->
+                    frame.run(reverse).bool { reverse ->
                         frame.containerOrSender(selector).thenAccept {
                             it.forEachProxyEntity {
-                                execute(this, state, remove, speed, reverse)
+                                execute(this, id, speed, reverse)
                             }
                         }
                     }
                 }
-        } else {
-            frame.containerOrSender(selector).thenAccept {
-                it.forEachProxyEntity {
-                    execute(this, state, true, 1.0F, false)
+            }
+
+
+            return CompletableFuture.completedFuture(null)
+        }
+    }
+
+    class Stop(val state: ParsedAction<*>, val selector: ParsedAction<*>?, ) : ScriptAction<Void>() {
+
+        fun execute(entity: ProxyEntity, state: String) {
+            Bukkit.getOnlinePlayers().forEach {
+                if (entity is Player) {
+                    GermPacketAPI.sendBendClear(it, entity.entityId)
+                } else {
+                    GermPacketAPI.stopModelAnimation(it, entity.entityId, state)
                 }
             }
         }
 
-        return CompletableFuture.completedFuture(null)
+        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+            frame.run(state).str { id ->
+                frame.containerOrSender(selector).thenAccept {
+                    it.forEachProxyEntity {
+                        execute(this, id)
+                    }
+                }
+            }
+
+
+            return CompletableFuture.completedFuture(null)
+        }
     }
 }

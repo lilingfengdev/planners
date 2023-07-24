@@ -29,6 +29,12 @@ interface Selector {
             return check(context, option.demand, container)
         }
 
+        fun check(context: Context, demand: Demand): Target.Container {
+            val container = Target.Container()
+            check(context, demand, container).get()
+            return container
+        }
+
         fun check(context: Context, demand: Demand, container: Target.Container): CompletableFuture<Void> {
             return SelectorTransfer(context, demand.source, container).run()
         }

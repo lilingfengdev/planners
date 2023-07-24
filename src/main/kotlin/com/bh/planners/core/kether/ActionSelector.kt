@@ -153,6 +153,15 @@ class ActionSelector {
             }
         }
 
+        @KetherParser(["select"], namespace = NAMESPACE, shared = true)
+        fun parser1() = combinationParser {
+            it.group(any()).apply(it) { infer ->
+                now {
+                    parseTargetContainer(infer!!, getContext())
+                }
+            }
+        }
+
 
         @KetherProperty(bind = Target.Container::class)
         fun propertyArray() = object : ScriptProperty<Target.Container>("target.container.operator") {
