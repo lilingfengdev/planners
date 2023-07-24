@@ -1,9 +1,6 @@
 package com.bh.planners.core.kether.compat.germplugin
 
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.nextArgumentAction
-import com.bh.planners.core.kether.nextSelector
-import com.bh.planners.core.kether.nextSelectorOrNull
+import com.bh.planners.core.kether.*
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.expects
 import taboolib.module.kether.scriptParser
@@ -81,12 +78,29 @@ object ActionGermLoader {
 
                 try {
                     it.mark()
-                    it.expects("move")
-                    ActionGermEffectMove(
-                        it.nextParsedAction(),
-                        it.nextParsedAction(),
-                        it.nextArgumentAction(arrayOf("to")) ?: error("lack 'to'")
-                    )
+                    when (it.expects("move", "projectile")) {
+                        "move" -> ActionGermEffectMove(
+                            it.nextParsedAction(),
+                            it.nextParsedAction(),
+                            it.nextArgumentAction(arrayOf("to")) ?: error("lack 'to'")
+                        )
+
+                        "projectile" -> ActionGermEffectProjectile().also {
+                            it.id = nextParsedAction()
+                            it.duration = nextArgumentAction("duration", "5000")!!
+                            it.delay = nextArgumentAction("delay", "0")!!
+                            it.transition = nextArgumentAction("transition", "0")!!
+                            it.yaw = nextArgumentAction(arrayOf("yaw"), ACTION_NULL)!!
+                            it.pitch = nextArgumentAction(arrayOf("pitch"), ACTION_NULL)!!
+                            it.onhit = nextArgumentAction(arrayOf("onhit"), ACTION_NULL)!!
+                            it.collisionCount = nextArgumentAction(arrayOf("count"), "1")!!
+                            it.collisionRemove = nextArgumentAction(arrayOf("remove"), "false")!!
+                            it.selector = nextSelectorOrNull()
+                            it.to = nextArgumentAction("to")!!
+                        }
+
+                        else -> error("")
+                    }
                 } catch (e: Exception) {
                     it.reset()
                     ActionGermParticle(

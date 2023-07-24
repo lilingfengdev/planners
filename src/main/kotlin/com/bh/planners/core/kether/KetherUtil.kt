@@ -32,6 +32,8 @@ import java.util.concurrent.CompletableFuture
 
 const val NAMESPACE = "Planners"
 
+const val ACTION_NULL = "__NULL__"
+
 val namespaces = listOf(NAMESPACE, "kether")
 
 
@@ -322,6 +324,11 @@ fun QuestReader.argumentAction(array: Array<out String>, def: Any? = null): Pars
 // nextArgumentAction
 fun QuestReader.nextArgumentAction(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
     return nextArgumentActionOrNull(array) ?: if (def == null) null else literalAction(def)
+}
+
+// nextArgumentAction
+fun QuestReader.nextArgumentAction(id: String, def: Any? = null): ParsedAction<*>? {
+    return nextArgumentActionOrNull(arrayOf(id)) ?: if (def == null) null else literalAction(def)
 }
 
 fun QuestReader.nextSelector(): ParsedAction<*> {

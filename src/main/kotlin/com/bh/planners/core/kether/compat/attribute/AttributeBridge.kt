@@ -88,7 +88,6 @@ interface AttributeBridge {
             val attributes = getSkillAttributes(skill)
             try {
                 val script = ScriptLoader.createFunctionScript(context, attributes)
-                info("skill attribute $script")
                 bridge.addAttributes("Skill:${skill.key}", player.uniqueId, -1, script)
             } catch (ex: Exception) {
                 ex.printKetherErrorMessage()
@@ -105,7 +104,6 @@ interface AttributeBridge {
 
             runKether {
                 val script = ScriptLoader.createFunctionScript(context, getJobAttribute(profile))
-                info("job attribute $script")
                 bridge.addAttributes("Job", profile.player.uniqueId, -1, script)
                 INSTANCE?.update(profile.player)
             }

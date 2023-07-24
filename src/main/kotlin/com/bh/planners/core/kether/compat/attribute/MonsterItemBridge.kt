@@ -13,7 +13,6 @@ import java.util.*
 class MonsterItemBridge : AttributeBridge {
 
     val listener = registerBukkitListener(AttributeLoadedEvent.Post::class.java) { event ->
-        info("attribute loaded post")
         AttributeBridge.updateJob(event.player)
         AttributeBridge.updateSkill(event.player)
     }
@@ -23,7 +22,6 @@ class MonsterItemBridge : AttributeBridge {
     }
 
     override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>) {
-        info("add attribute pre $reads")
         val profile = FunctionProfile.getPlayerProfileByUUID(uuid) ?: return
         val monsterItemSource = Source()
         reads.forEach {
@@ -33,10 +31,8 @@ class MonsterItemBridge : AttributeBridge {
             monsterItemSource.addValue(Attribute.valueOf(id), Value.read(value)!!)
         }
         if (timeout == -1L) {
-            info("add attributes $uuid $profile $source $monsterItemSource")
             profile.putAttributeSource(source, monsterItemSource, true)
         } else {
-            info("add attributes $uuid $profile $source $timeout $monsterItemSource")
             profile.putTemporaryAttributeSource(source, monsterItemSource, timeout)
         }
     }

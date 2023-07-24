@@ -15,7 +15,6 @@ class ActionEventCrit : ScriptAction<Void>() {
         val event = frame.event()
         if (event is ProxyDamageEvent) {
             event.damageMemory()?.setLabel("@Crit", true)
-            info("暴击了")
         }
         return CompletableFuture.completedFuture(null)
     }
