@@ -1,11 +1,15 @@
 package com.bh.planners.core.selector.bukkit
 
-import com.bh.planners.core.effect.*
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.createAwaitVoidFuture
+import com.bh.planners.core.effect.getNearbyEntities
+import com.bh.planners.core.effect.isPointInEntitySector
 import com.bh.planners.core.selector.Selector
 import org.bukkit.Location
 import java.util.concurrent.CompletableFuture
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * radius(半径) angle(角度) ignoreOrigin(忽略远点,默认true) yaw(偏航角偏移)
@@ -31,7 +35,7 @@ object Sector : Selector {
         return createAwaitVoidFuture {
             val nearbyEntities = location.getNearbyEntities(radius)
             nearbyEntities.forEach { entity ->
-                if (isPointInEntitySector(entity.location, location, radius, angle)) {
+                if (isPointInEntitySector(entity.location, location, radius + sqrt( entity.width.pow( 2.0 ) * 2 ), angle)) {
                     if (data.isNon) {
                         data.container.removeIf { t -> t == entity }
                     }
