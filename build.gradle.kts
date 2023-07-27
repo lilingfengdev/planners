@@ -43,6 +43,7 @@ taboolib {
             name("GDDTitle").optional(true)
             name("Antikey").optional(true)
             name("DragonCollect").optional(true)
+            name("GlowAPI").optional(true)
         }
     }
 }
