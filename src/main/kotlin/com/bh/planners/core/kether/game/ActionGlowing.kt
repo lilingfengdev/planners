@@ -92,7 +92,7 @@ class ActionGlowing : ScriptAction<Void>() {
             ActionGlowing().apply {
                 this.tick = it.nextArgumentAction(arrayOf("tick", "time", "timeout"), -1)!!
                 this.value = it.nextArgumentAction(arrayOf("value"), true)!!
-                this.color = it.nextArgumentAction(arrayOf("color"), ChatColor.WHITE)!!
+                this.color = it.nextArgumentAction(arrayOf("color"), "WHITE")!!
                 this.selector = it.nextSelectorOrNull()
             }
         }
