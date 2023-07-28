@@ -1,12 +1,15 @@
 package com.bh.planners.core.kether.compat.mythicmobs
 
-import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.nextSelectorOrNull
+import io.lumine.xikage.mythicmobs.MythicMobs
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.scriptParser
 import taboolib.module.kether.switch
 
 object ActionMythicMobsLoader {
 
+    val api: MythicMobs by lazy { MythicMobs.inst() }
 
     /**
      * 给目标发送mm信号
@@ -19,6 +22,9 @@ object ActionMythicMobsLoader {
     @KetherParser(["mm", "mythic", "mythicmobs"], namespace = NAMESPACE, shared = true)
     fun parser() = scriptParser {
         it.switch {
+            case("spawn") {
+                ActionMythicSpawn(it.nextParsedAction(), nextSelectorOrNull())
+            }
             case("signal") {
                 ActionMythicSignal(it.nextToken(), it.nextSelectorOrNull())
             }
