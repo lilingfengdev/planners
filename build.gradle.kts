@@ -24,7 +24,7 @@ taboolib {
     install("expansion-command-helper")
     install("platform-bukkit")
     classifier = null
-    version = "6.0.11-19"
+    version = "6.0.11-31"
     description {
         contributors {
             name("洋洋")
@@ -43,6 +43,7 @@ taboolib {
             name("GDDTitle").optional(true)
             name("Antikey").optional(true)
             name("DragonCollect").optional(true)
+            name("GlowAPI").optional(true)
         }
     }
 }

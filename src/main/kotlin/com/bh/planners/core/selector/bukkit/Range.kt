@@ -2,10 +2,13 @@ package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.isPointInEntitySector
 import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * 选中根据原点来定义的范围实体
@@ -26,9 +29,19 @@ object Range : Selector {
 
         val future = CompletableFuture<Void>()
         submit(async = false) {
-            location.world?.getNearbyEntities(location, x, y, z)?.forEach {
-                if (it is LivingEntity) {
-                    data.container += it.toTarget()
+            if (x == y && y == z) {
+                location.world?.getNearbyEntities(location, x+5, x+5, x+5)?.forEach {
+                    if (isPointInEntitySector(it.location, location, x + sqrt(it.width.pow(2.0) * 2), 360.0)) {
+                        if (it is LivingEntity) {
+                            data.container += it.toTarget()
+                        }
+                    }
+                }
+            } else {
+                location.world?.getNearbyEntities(location, x, y, z)?.forEach {
+                    if (it is LivingEntity) {
+                        data.container += it.toTarget()
+                    }
                 }
             }
             future.complete(null)

@@ -1,27 +1,26 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.common.SimpleUniqueTask
-import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.core.kether.containerOrSender
+import com.bh.planners.core.kether.nextArgumentAction
+import com.bh.planners.core.kether.nextSelectorOrNull
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.entity.Entity
-import org.bukkit.scoreboard.Scoreboard
-import org.bukkit.scoreboard.Team
-import taboolib.common.LifeCycle
-import taboolib.common.platform.Awake
+import org.inventivetalent.glow.GlowAPI
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class ActionGlowing : ScriptAction<Void>() {
+class ActionGlowing(
+    val tick: ParsedAction<*>,
+    val value: ParsedAction<*>,
+    val color: ParsedAction<*>,
+    val selector: ParsedAction<*>?
+) : ScriptAction<Void>() {
 
-    lateinit var tick: ParsedAction<*>
-    lateinit var value: ParsedAction<*>
-    lateinit var color: ParsedAction<*>
-    var selector: ParsedAction<*>? = null
-
-    fun execute(entity: Entity, value: Boolean, color: ChatColor, tick: Long) {
+    fun execute(entity: Entity, value: Boolean, color: String, tick: Long) {
         if (value) {
             setColor(entity, color)
             if (tick != -1L) {
@@ -38,48 +37,42 @@ class ActionGlowing : ScriptAction<Void>() {
 
         frame.run(tick).long { tick ->
             frame.run(value).bool { glowing ->
-                frame.run(color).str {
-                    val chatColor = ChatColor.valueOf(it.uppercase(Locale.getDefault()))
-                    if (selector != null) {
-                        frame.execEntity(selector!!) {
-                            execute(this, glowing, chatColor, tick)
+                frame.run(color).str { color ->
+                    frame.containerOrSender(selector).thenAccept {
+                        it.forEachEntity {
+                            execute(this, glowing, color, tick)
                         }
-                    } else {
-                        execute(frame.bukkitPlayer() ?: return@str, glowing, chatColor, tick)
                     }
                 }
             }
         }
-
         return CompletableFuture.completedFuture(null)
     }
 
     companion object {
 
-        val colorTeams = mutableMapOf<ChatColor, Team>()
+        private val enabled: Boolean
+            get() = Bukkit.getPluginManager().isPluginEnabled("GlowAPI")
 
-        fun mainScoreboard(): Scoreboard {
-            return Bukkit.getServer().scoreboardManager!!.mainScoreboard
-        }
-
-        @Awake(LifeCycle.ENABLE)
-        fun initColor() {
-            ChatColor.values().forEachIndexed { index, chatColor ->
-                mainScoreboard().getTeam("planners-$index")?.unregister()
-                colorTeams[chatColor] = mainScoreboard().registerNewTeam("planners-$index").also {
-                    it.color = chatColor
-                    it.prefix = chatColor.toString()
+        fun setColor(entity: Entity, color: String) {
+            if (enabled) {
+                val var1 = GlowAPI.Color.valueOf(color.uppercase(Locale.getDefault()))
+                Bukkit.getOnlinePlayers().forEach {
+                    GlowAPI.setGlowing(entity, var1, it)
                 }
+            } else {
+                entity.isGlowing = true
             }
         }
 
-        fun setColor(entity: Entity, color: ChatColor) {
-            colorTeams[color]?.addEntry(entity.uniqueId.toString())
-            entity.isGlowing = true
-        }
-
         fun unsetColor(entity: Entity) {
-            entity.isGlowing = false
+            if (enabled) {
+                Bukkit.getOnlinePlayers().forEach {
+                    GlowAPI.setGlowing(entity, false, it)
+                }
+            } else {
+                entity.isGlowing = false
+            }
         }
 
         /**
@@ -89,12 +82,12 @@ class ActionGlowing : ScriptAction<Void>() {
          */
         @KetherParser(["glowing"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            ActionGlowing().apply {
-                this.tick = it.nextArgumentAction(arrayOf("tick", "time", "timeout"), -1)!!
-                this.value = it.nextArgumentAction(arrayOf("value"), true)!!
-                this.color = it.nextArgumentAction(arrayOf("color"), ChatColor.WHITE)!!
-                this.selector = it.nextSelectorOrNull()
-            }
+            ActionGlowing(
+                it.nextArgumentAction(arrayOf("tick", "time", "timeout"), "-1")!!,
+                it.nextArgumentAction(arrayOf("value"), "true")!!,
+                it.nextArgumentAction(arrayOf("color"), "WHITE")!!,
+                it.nextSelectorOrNull()
+            )
         }
 
     }
