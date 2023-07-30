@@ -8,7 +8,9 @@ import com.bh.planners.core.pojo.level.Level
 class PlayerJob(val id: Long, var jobKey: String, level: Int, experience: Int) {
 
     val skills = mutableListOf<Skill>()
+
     val counter: Level = instance.router.counter.toLevel(level, experience)
+
     var point: Int = 0
 
     val instance: Job

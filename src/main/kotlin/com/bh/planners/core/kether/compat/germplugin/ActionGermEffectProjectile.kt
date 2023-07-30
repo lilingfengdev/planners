@@ -3,8 +3,15 @@ package com.bh.planners.core.kether.compat.germplugin
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.effect.Target.Companion.getLocation
+import com.bh.planners.core.effect.getNearbyEntities
+import com.bh.planners.core.effect.inline.Incident.Companion.handleIncident
+import com.bh.planners.core.effect.inline.IncidentGermProjectileHitEntity
+import com.bh.planners.core.effect.inline.IncidentHitEntity
 import com.bh.planners.core.kether.ACTION_NULL
 import com.bh.planners.core.kether.containerOrSender
+import com.bh.planners.core.kether.getContext
+import com.bh.planners.core.pojo.Context
+import com.bh.planners.core.pojo.Session
 import com.germ.germplugin.api.GermSrcManager
 import com.germ.germplugin.api.RootType
 import com.germ.germplugin.api.dynamic.animation.GermAnimationMove
@@ -14,6 +21,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import taboolib.common.platform.function.info
 import taboolib.common5.cdouble
 import taboolib.library.kether.ParsedAction
@@ -38,6 +46,7 @@ class ActionGermEffectProjectile : ScriptAction<Void>() {
     lateinit var to: ParsedAction<*>
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+        val context = frame.getContext()
         frame.run(id).str { id ->
             frame.run(duration).str { duration ->
                 frame.run(delay).long { delay ->
@@ -50,7 +59,7 @@ class ActionGermEffectProjectile : ScriptAction<Void>() {
                                             frame.containerOrSender(selector).thenAccept { source ->
                                                 frame.containerOrSender(to).thenAccept { to ->
                                                     try {
-                                                        execute(id, source, to, duration, delay, transition, yaw, pitch, onhit, collisionCount, collisionRemove)
+                                                        execute(context, id, source, to, duration, delay, transition, yaw, pitch, onhit, collisionCount, collisionRemove)
                                                     } catch (t: Throwable) {
                                                         t.printStackTrace()
                                                     }
@@ -69,7 +78,7 @@ class ActionGermEffectProjectile : ScriptAction<Void>() {
         return CompletableFuture.completedFuture(null)
     }
 
-    fun execute(id: String, source: Target.Container, to: Target.Container, duration: String, delay: Long, transition: String, yaw: String, pitch: String, onhit: String, count: Int, remove: Boolean) {
+    fun execute(context: Context, id: String, source: Target.Container, to: Target.Container, duration: String, delay: Long, transition: String, yaw: String, pitch: String, onhit: String, count: Int, remove: Boolean) {
         val effect = GermEffectPart.getGermEffectPart(newIndexName(), getEffectSrc(id)) ?: error("No effect $id found.")
         effect.duration = duration
         to.forEach { target ->
@@ -80,7 +89,7 @@ class ActionGermEffectProjectile : ScriptAction<Void>() {
 
                 // 绑定目标目的地
 
-                var move : GermAnimationMove? = null
+                var move: GermAnimationMove? = null
 
                 if (target is Target.Location) {
                     move = buildMoveToTarget(origin, target.getLocation()!!, transition).setDelay(delay)
@@ -90,26 +99,26 @@ class ActionGermEffectProjectile : ScriptAction<Void>() {
                 origin.world!!.players.forEach { onlinePlayer ->
                     // 命中实体
                     effect.isCollisionEntity = true
-                    effect.isCollisionBlock = true
                     effect.collisionCount = count
                     effect.isCollisionRemove = remove
 
-                    // 适配Java
-//                    effect.setOnEntity(Consumer {
-//                        info("on entity $it")
-//                    })
                     effect.setOnEntity {
-                        info("on entity $it")
+                        (context as? Session)?.handleIncident(onhit, IncidentGermProjectileHitEntity(source, it))
                     }
                     effect.setOnBlock {
                         info("on block $it")
                     }
 
+                    if (source is Target.Entity) {
+                        effect.shooterName = source.getEntity()!!.name
+                    }
+                    // 混淆shooter name
+                    else {
+                        effect.shooterName = origin.getNearbyEntities(64.0).firstOrNull { it is Player }?.name
+                    }
+
                     // 播放到实体
                     if (target is Target.Entity) {
-                        effect.shooterName = source.getEntity()!!.name
-                        setOnCollision(effect.shooterName,effect,10.0)
-
 
                         if (yaw == ACTION_NULL && pitch == ACTION_NULL) {
                             effect.spawnToEntity(onlinePlayer, source.getEntity())
@@ -135,19 +144,6 @@ class ActionGermEffectProjectile : ScriptAction<Void>() {
 
             }
         }
-    }
-
-
-    private fun setOnCollision(shooterName: String, effectPart: GermEffectPart<*>, damage: Double) {
-        if (damage <= 0) return
-        effectPart.shooterName = shooterName
-        effectPart.isCollisionEntity = true
-        effectPart.isCollisionBlock = true
-        effectPart.setCollisionCount(10)
-        effectPart.setCollisionRemove(false)
-        effectPart.setOnEntity(Consumer { entity ->
-            info(entity)
-        })
     }
 
     fun execute(effect: GermEffectPart<*>, move: String, source: Target.Container, target: Target.Entity) {

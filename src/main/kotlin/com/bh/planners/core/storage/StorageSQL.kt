@@ -132,6 +132,20 @@ open class StorageSQL : Storage {
         }
     }
 
+    override fun getJob(player: Player, id: String): PlayerJob {
+        return jobTable.select(dataSource) {
+            where {
+                JOB eq id
+            }
+            rows(ID, LEVEL, EXPERIENCE, POINT)
+        }.first {
+            PlayerJob(getLong(ID), id, getInt(LEVEL), getInt(EXPERIENCE)).also {
+                it.skills += getSkills(player, it.jobKey)
+                it.point = getInt(POINT)
+            }
+        }
+    }
+
     override fun createPlayerSkill(player: Player, job: PlayerJob, skill: Skill): CompletableFuture<PlayerJob.Skill> {
         val future = CompletableFuture<PlayerJob.Skill>()
         skillTable.insert(dataSource, USER, JOB, SKILL, LEVEL) {

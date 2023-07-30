@@ -22,6 +22,9 @@ open class Skill(val key: String, val config: ConfigurationSection) {
 
         open val flags = root.getStringList("flags")
 
+        // 第三方数据
+        val data = mutableMapOf<Any, Any>()
+
         open val upgradeConditions = root.getMapList("upgrade-condition").map {
             UpgradeCondition(Configuration.fromMap(it))
         }

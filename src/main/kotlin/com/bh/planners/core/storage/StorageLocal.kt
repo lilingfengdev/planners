@@ -11,6 +11,8 @@ import org.bukkit.entity.Player
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common5.Coerce
+import taboolib.common5.cint
+import taboolib.common5.clong
 import taboolib.module.configuration.Configuration
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -45,6 +47,18 @@ class StorageLocal : Storage {
             it.skills += getSkills(player, jobId)
             it.point = points
         }
+    }
+
+    override fun getJob(player: Player, id: String): PlayerJob {
+        val config = getProfileFile(player)
+        var findId: String? = null
+        config.getConfigurationSection("job")?.getKeys(false)?.forEach {
+            if (config.getString("job.$it.key") == id) {
+                findId = it
+                return@forEach
+            }
+        }
+        return this.getJob(player, findId?.clong ?: error("Player job $id not found"))
     }
 
     fun getSkills(player: Player, jobId: Long): List<PlayerJob.Skill> {
@@ -83,7 +97,6 @@ class StorageLocal : Storage {
 
     override fun updateJob(player: Player, job: PlayerJob) {
         at(player) {
-            this["job.${job.id}.job"] = job.jobKey
             this["job.${job.id}.level"] = job.level
             this["job.${job.id}.experience"] = job.experience
             this["job.${job.id}.point"] = job.point

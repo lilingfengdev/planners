@@ -62,6 +62,7 @@ interface Storage {
 
     fun updateJob(player: Player, job: PlayerJob)
 
+
     fun updateSkillJob(player: Player, job: PlayerJob, skill: PlayerJob.Skill)
 
     fun createPlayerSkill(player: Player, job: PlayerJob, skill: Skill): CompletableFuture<PlayerJob.Skill>
@@ -73,6 +74,8 @@ interface Storage {
     fun getDataContainer(player: Player): DataContainer
 
     fun getJob(player: Player, jobId: Long): PlayerJob
+
+    fun getJob(player: Player, id: String): PlayerJob
 
     fun getCurrentJobId(player: Player): Long?
 }
