@@ -7,12 +7,17 @@ import com.bh.planners.core.kether.game.ActionDamage
 import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
 import com.bh.planners.util.files
 import com.bh.planners.util.timing
+import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.warning
+import taboolib.platform.util.removeMeta
+import taboolib.platform.util.setMeta
 import java.util.concurrent.CompletableFuture
 
 object DamageableDispatcher {
@@ -70,7 +75,17 @@ object DamageableDispatcher {
             info("  |- Cancel meta: ${context.metaCancel != null}")
             info("  |---- Timing: ${timing(context.timing)}/s")
             if (EntityDamageableEvent(context).call()) {
-                ActionDamage.doDamage(context.attacker, context.victim, context.countDamage)
+
+                // fix minecraft
+                context.attacker.setMeta("@PlanenrsDamageable", true)
+                val minecraftDamageEvent = EntityDamageByEntityEvent(context.attacker, context.victim, EntityDamageEvent.DamageCause.ENTITY_ATTACK, context.countDamage)
+                Bukkit.getPluginManager().callEvent(minecraftDamageEvent)
+                if (minecraftDamageEvent.isCancelled) {
+                    return@thenAccept
+                }
+                context.attacker.removeMeta("@PlannersDamageable")
+
+                ActionDamage.doDamage(context.attacker, context.victim, minecraftDamageEvent.finalDamage)
             }
         }.exceptionally {
             it.printStackTrace()

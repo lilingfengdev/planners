@@ -21,6 +21,7 @@ import taboolib.module.kether.KetherShell.eval
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 @Suppress("UnstableApiUsage")
 object ScriptLoader {
@@ -76,7 +77,7 @@ object ScriptLoader {
         return inputs.map { createFunctionScript(context, it, block) }
     }
 
-    fun createFunctionScript(context: Context, input: String, block: ScriptContext.() -> Unit = {}): String {
+    fun createFunctionScript(context: Context, input: String, block: Consumer<ScriptContext> = Consumer {  }): String {
         return parse(input, ScriptOptions.builder().namespace(namespace = namespaces).sender(sender = context.proxySender).context {
             context.ketherScriptContext = this
             rootFrame().rootVariables()["@Context"] = context
@@ -85,11 +86,11 @@ object ScriptLoader {
                     rootFrame().variables()[it.key] = it.value
                 }
             }
-            block(this)
+            block.accept(this)
         }.build())
     }
 
-    fun createScript(context: Context, script: String, block: ScriptContext.() -> Unit = {}): CompletableFuture<Any?> {
+    fun createScript(context: Context, script: String, block: Consumer<ScriptContext> = Consumer {  }): CompletableFuture<Any?> {
         return eval(script, ScriptOptions.builder().namespace(namespace = namespaces).sender(sender = context.proxySender).context {
             context.ketherScriptContext = this
             id = UUID.randomUUID().toString()
@@ -99,7 +100,7 @@ object ScriptLoader {
                     rootFrame().variables()[it.key] = it.value
                 }
             }
-            block(this)
+            block.accept(this)
         }.build())
     }
 

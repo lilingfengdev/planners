@@ -53,13 +53,13 @@ val Skill.needPointsVariable: Skill.Variable
 fun PlayerJob.Skill.getNeedPoints(player: Player): CompletableFuture<Int> {
     return ScriptLoader
         .createScript(ContextAPI.create(player, this), needPointsVariable.expression) {
-            this["@level"] = level
+            it["@level"] = level
         }.thenApply { Coerce.toInteger(it) }
 }
 
 fun Skill.getNeedPoints(player: Player, level: Int): CompletableFuture<Int>? {
     return ScriptLoader.createScript(ContextAPI.create(player, this, level)!!, needPointsVariable.expression) {
-        this["@level"] = level
+        it["@level"] = level
     }.thenApply { Coerce.toInteger(it) }
 }
 

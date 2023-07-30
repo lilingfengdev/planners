@@ -1,8 +1,8 @@
 package com.bh.planners.core.kether.compat.germplugin
 
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.effect.Target.Companion.getLocation
-import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.kether.ACTION_NULL
 import com.bh.planners.core.kether.containerOrSender
 import com.germ.germplugin.api.GermSrcManager
@@ -10,11 +10,12 @@ import com.germ.germplugin.api.RootType
 import com.germ.germplugin.api.dynamic.animation.GermAnimationMove
 import com.germ.germplugin.api.dynamic.animation.IAnimatable
 import com.germ.germplugin.api.dynamic.effect.GermEffectPart
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.info
 import taboolib.common5.cdouble
-import taboolib.common5.cfloat
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.*
@@ -78,38 +79,50 @@ class ActionGermEffectProjectile : ScriptAction<Void>() {
                 val animatable = effect as IAnimatable<*>
 
                 // 绑定目标目的地
+
+                var move : GermAnimationMove? = null
+
                 if (target is Target.Location) {
-                    animatable.addAnimation(buildMoveToTarget(origin, target.getLocation()!!, transition).setDelay(delay))
+                    move = buildMoveToTarget(origin, target.getLocation()!!, transition).setDelay(delay)
+                    animatable.addAnimation(move)
                 }
 
                 origin.world!!.players.forEach { onlinePlayer ->
                     // 命中实体
                     effect.isCollisionEntity = true
+                    effect.isCollisionBlock = true
+                    effect.collisionCount = count
+                    effect.isCollisionRemove = remove
 
                     // 适配Java
-                    effect.setOnEntity(Consumer {
+//                    effect.setOnEntity(Consumer {
+//                        info("on entity $it")
+//                    })
+                    effect.setOnEntity {
                         info("on entity $it")
-                    })
+                    }
+                    effect.setOnBlock {
+                        info("on block $it")
+                    }
 
                     // 播放到实体
-                    if (target is Target.Entity && onlinePlayer == source.getPlayer()) {
-                        effect.shooterName = onlinePlayer.name
-                        effect.collisionCount = count
-                        effect.isCollisionRemove = remove
+                    if (target is Target.Entity) {
+                        effect.shooterName = source.getEntity()!!.name
+                        setOnCollision(effect.shooterName,effect,10.0)
 
 
-                        if (yaw != ACTION_NULL && pitch != ACTION_NULL) {
-                            effect.spawnToEntity(onlinePlayer, source.getPlayer())
+                        if (yaw == ACTION_NULL && pitch == ACTION_NULL) {
+                            effect.spawnToEntity(onlinePlayer, source.getEntity())
                         }
                         // 绑定yaw和pitch
                         else {
-                            effect.spawnToEntity(onlinePlayer, source.getPlayer(), pitch.cdouble, yaw.cdouble, 0.0)
+                            effect.spawnToEntity(onlinePlayer, source.getEntity(), pitch.cdouble, yaw.cdouble, 0.0)
                         }
 
                     }
 
                     if (target is Target.Location) {
-                        if (yaw != ACTION_NULL && pitch != ACTION_NULL) {
+                        if (yaw == ACTION_NULL && pitch == ACTION_NULL) {
                             effect.spawnToLocation(onlinePlayer, origin)
                         }
                         // 绑定yaw和pitch
@@ -124,6 +137,18 @@ class ActionGermEffectProjectile : ScriptAction<Void>() {
         }
     }
 
+
+    private fun setOnCollision(shooterName: String, effectPart: GermEffectPart<*>, damage: Double) {
+        if (damage <= 0) return
+        effectPart.shooterName = shooterName
+        effectPart.isCollisionEntity = true
+        effectPart.isCollisionBlock = true
+        effectPart.setCollisionCount(10)
+        effectPart.setCollisionRemove(false)
+        effectPart.setOnEntity(Consumer { entity ->
+            info(entity)
+        })
+    }
 
     fun execute(effect: GermEffectPart<*>, move: String, source: Target.Container, target: Target.Entity) {
 

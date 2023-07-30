@@ -80,8 +80,8 @@ object TimerRegistry {
         if (template.script.mode == Skill.ActionMode.SIMPLE) {
             runKetherThrow(context) {
                 ScriptLoader.createScript(context, template.script.action) {
-                    rootFrame().variables()["@Event"] = event
-                    timer.onStart(this, template, event)
+                    it.rootFrame().variables()["@Event"] = event
+                    timer.onStart(it, template, event)
                 }
             }
         } else {

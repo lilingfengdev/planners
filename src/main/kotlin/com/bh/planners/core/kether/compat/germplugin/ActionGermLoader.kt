@@ -88,8 +88,8 @@ object ActionGermLoader {
                         "projectile" -> ActionGermEffectProjectile().also {
                             it.id = nextParsedAction()
                             it.duration = nextArgumentAction("duration", "5000")!!
-                            it.delay = nextArgumentAction("delay", "0")!!
-                            it.transition = nextArgumentAction("transition", "0")!!
+                            it.delay = nextArgumentAction("delay", "-1")!!
+                            it.transition = nextArgumentAction("transition", "1000")!!
                             it.yaw = nextArgumentAction(arrayOf("yaw"), ACTION_NULL)!!
                             it.pitch = nextArgumentAction(arrayOf("pitch"), ACTION_NULL)!!
                             it.onhit = nextArgumentAction(arrayOf("onhit"), ACTION_NULL)!!

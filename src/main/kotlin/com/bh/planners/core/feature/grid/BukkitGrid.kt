@@ -66,7 +66,7 @@ object BukkitGrid {
         val skill = get(player, grid) ?: return ""
         val context = Context.Impl(player.toTarget(), skill.instance)
         return runKether {
-            ScriptLoader.createFunctionScript(context, gridActionbarValue)
+            ScriptLoader.createFunctionScript(context, gridActionbarValue) {  }
         } ?: "&cError $gridActionbarValue"
     }
 

@@ -101,7 +101,7 @@ object Assembly {
             val expression = profile.job!!.optUpgradePoints ?: return 0
             return runKether {
                 Coerce.toInteger(ScriptLoader.createScript(Context.Impl0(profile.player.toTarget()), expression) {
-                    this.rootFrame().variables()["value"] = value
+                    it.rootFrame().variables()["value"] = value
                 }.get())
             } ?: 0
         }

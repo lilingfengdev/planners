@@ -13,7 +13,7 @@ import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.OptionalEvent
 import taboolib.common.platform.event.SubscribeEvent
 
-open class ProxyDamageEvent(damager: Entity, entity: Entity, cause: DamageCause?, damage: Double,type: DamageType) : AbstractProxyDamageEvent(damager, entity, cause, damage, type) {
+open class ProxyDamageEvent(damager: Entity, entity: Entity, cause: DamageCause?, damage: Double, type: DamageType) : AbstractProxyDamageEvent(damager, entity, cause, damage, type) {
 
     companion object {
 
@@ -22,42 +22,50 @@ open class ProxyDamageEvent(damager: Entity, entity: Entity, cause: DamageCause?
         @SubscribeEvent(ignoreCancelled = true, priority = EventPriority.LOWEST)
         fun e(e: EntityDamageByEntityEvent) {
             if (isOriginAttribute) return
-            val damageEvent = ProxyDamageEvent(e.damager, e.entity, e.cause, e.damage, when(e.cause) {
-                CUSTOM -> DamageType.MAGIC
-                FALL -> DamageType.FALL
-                ENTITY_ATTACK -> DamageType.PHYSICS
-                DRAGON_BREATH -> DamageType.MAGIC
-                MAGIC -> DamageType.MAGIC
-                ENTITY_EXPLOSION -> DamageType.MAGIC
-                BLOCK_EXPLOSION -> DamageType.MAGIC
-                PROJECTILE -> DamageType.PHYSICS
-                FIRE -> DamageType.MAGIC
-                DRYOUT -> DamageType.CHEMISTRY
-                DROWNING -> DamageType.CHEMISTRY
-                SUICIDE -> DamageType.CONSOLE
-                LAVA -> DamageType.CHEMISTRY
-                POISON -> DamageType.CHEMISTRY
-                VOID -> DamageType.CONSOLE
-                LIGHTNING -> DamageType.MAGIC
-                HOT_FLOOR -> DamageType.CHEMISTRY
-                FREEZE -> DamageType.CHEMISTRY
-                CRAMMING -> DamageType.CRAMMING
-                THORNS -> DamageType.BLOCK
-                CONTACT -> DamageType.BLOCK
-                ENTITY_SWEEP_ATTACK -> DamageType.PHYSICS
-                SUFFOCATION -> DamageType.CHEMISTRY
-                FIRE_TICK -> DamageType.MAGIC
-                MELTING -> DamageType.BUKKIT
-                STARVATION -> DamageType.CHEMISTRY
-                WITHER -> DamageType.MAGIC
-                FALLING_BLOCK -> DamageType.PHYSICS
-                FLY_INTO_WALL -> DamageType.PHYSICS
-            })
+            val damageEvent = ProxyDamageEvent(e.damager, e.entity, e.cause, e.damage, invokeCause(e.cause))
             damageEvent.event = e
             damageEvent.call()
             e.damage = damageEvent.damage
             if (damageEvent.isCancelled) {
                 e.isCancelled = true
+            }
+        }
+
+        fun invokeCause(cause: DamageCause): DamageType {
+            return try {
+                when (cause) {
+                    CUSTOM -> DamageType.MAGIC
+                    FALL -> DamageType.FALL
+                    ENTITY_ATTACK -> DamageType.PHYSICS
+                    DRAGON_BREATH -> DamageType.MAGIC
+                    MAGIC -> DamageType.MAGIC
+                    ENTITY_EXPLOSION -> DamageType.MAGIC
+                    BLOCK_EXPLOSION -> DamageType.MAGIC
+                    PROJECTILE -> DamageType.PHYSICS
+                    FIRE -> DamageType.MAGIC
+                    DRYOUT -> DamageType.CHEMISTRY
+                    DROWNING -> DamageType.CHEMISTRY
+                    SUICIDE -> DamageType.CONSOLE
+                    LAVA -> DamageType.CHEMISTRY
+                    POISON -> DamageType.CHEMISTRY
+                    VOID -> DamageType.CONSOLE
+                    LIGHTNING -> DamageType.MAGIC
+                    HOT_FLOOR -> DamageType.CHEMISTRY
+                    FREEZE -> DamageType.CHEMISTRY
+                    CRAMMING -> DamageType.CRAMMING
+                    THORNS -> DamageType.BLOCK
+                    CONTACT -> DamageType.BLOCK
+                    ENTITY_SWEEP_ATTACK -> DamageType.PHYSICS
+                    SUFFOCATION -> DamageType.CHEMISTRY
+                    FIRE_TICK -> DamageType.MAGIC
+                    MELTING -> DamageType.BUKKIT
+                    STARVATION -> DamageType.CHEMISTRY
+                    WITHER -> DamageType.MAGIC
+                    FALLING_BLOCK -> DamageType.PHYSICS
+                    FLY_INTO_WALL -> DamageType.PHYSICS
+                }
+            } catch (e: NoClassDefFoundError) {
+                DamageType.PHYSICS
             }
         }
 
