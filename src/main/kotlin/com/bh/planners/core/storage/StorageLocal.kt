@@ -39,7 +39,7 @@ class StorageLocal : Storage {
 
     override fun getJob(player: Player, jobId: Long): PlayerJob {
         val config = getProfileFile(player)
-        val jobKey = config.getString("job.${jobId}.job")!!
+        val jobKey = config.getString("job.${jobId}.key")!!
         val level = config.getInt("job.${jobId}.level")
         val experience = config.getInt("job.${jobId}.experience")
         val points = config.getInt("job.${jobId}.points")
