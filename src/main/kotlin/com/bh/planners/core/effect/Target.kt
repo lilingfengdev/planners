@@ -165,6 +165,14 @@ interface Target {
             }
         }
 
+        fun <T> mapOfPlayer(func: Player.(Int) -> T): List<T> {
+            val listOf = mutableListOf<T>()
+            forEachPlayer {
+                listOf += func(this, it)
+            }
+            return listOf
+        }
+
         fun forEachLocation(func: org.bukkit.Location.(Int) -> Unit) {
             forEach<Location> { index -> func(value, index) }
         }

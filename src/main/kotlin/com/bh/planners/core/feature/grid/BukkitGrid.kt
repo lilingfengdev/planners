@@ -15,16 +15,19 @@ import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.ui.SkillIcon.Companion.toIcon
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.kether.runKether
 
@@ -56,27 +59,24 @@ object BukkitGrid {
     val Player.handSkill: PlayerJob.Skill?
         get() = get(this, handGrid)
 
-    fun toActionbarValue(player: Player): String {
+    fun getActionbarValue(player: Player): String {
         val heldItemSlot = player.inventory.heldItemSlot
         val grid = grids.firstOrNull { it.slot == heldItemSlot } ?: return ""
-        return toActionbarValue(player, grid)
+        return getActionbarValue(player, grid)
     }
 
-    fun toActionbarValue(player: Player, grid: Grid): String {
+    fun getActionbarValue(player: Player, grid: Grid): String {
         val skill = get(player, grid) ?: return ""
         val context = Context.Impl(player.toTarget(), skill.instance)
         return runKether {
-            ScriptLoader.createFunctionScript(context, gridActionbarValue) {  }
+            ScriptLoader.createFunctionScript(context, gridActionbarValue) { }
         } ?: "&cError $gridActionbarValue"
     }
 
     fun updateAll(player: Player) {
-        grids.forEach {
-            update(player, it)
-        }
+        grids.forEach { update(player, it) }
     }
 
-    //
     fun update(player: Player, grid: Grid) {
         val skillByGrid = get(player, grid)
         if (skillByGrid == null) {
@@ -107,7 +107,6 @@ object BukkitGrid {
         if (grids.firstOrNull { it.slot == heldItemSlot } != null) {
             e.isCancelled = true
         }
-
     }
 
     @SubscribeEvent
@@ -128,8 +127,7 @@ object BukkitGrid {
 
     @SubscribeEvent
     fun e(e: InventoryClickEvent) {
-        if (!isMinecraftGrid) return
-        if (e.inventory is PlayerInventory && grids.firstOrNull { it.slot == e.slot } != null) {
+        if (isMinecraftGrid && e.whoClicked == e.inventory.holder && grids.firstOrNull { it.slot == e.slot } != null) {
             e.isCancelled = true
         }
     }
@@ -142,25 +140,36 @@ object BukkitGrid {
 
     @SubscribeEvent
     fun e(e: PlayerSkillUpgradeEvent) {
-        if (!isMinecraftGrid) return
-        if (e.skill.shortcutKey != null) {
+        if (isMinecraftGrid && e.skill.shortcutKey != null) {
             val grid = Grid.get(e.skill.keySlot!!) ?: return
             update(e.player, grid)
         }
     }
 
-    @SubscribeEvent
-    fun e(e: PlayerInteractEvent) {
-        if (!isMinecraftGrid) return
-        if (e.hasItem() && e.action.name in gridInteractActions && e.hand == EquipmentSlot.HAND) {
-            val player = e.player
-            val heldItemSlot = player.inventory.heldItemSlot
-            val grid = grids.firstOrNull { it.slot == heldItemSlot } ?: return
+    fun getGridBySlot(slot: Int): Grid? {
+        return grids.firstOrNull { it.slot == slot }
+    }
+
+    @SubscribeEvent(ignoreCancelled = true)
+    fun e(e: PlayerItemHeldEvent) {
+        if (isMinecraftGrid) {
+            val minecraftGrid = getGridBySlot(e.newSlot) ?: return
+            val skill = get(e.player, minecraftGrid) ?: return
+            PlannersAPI.cast(e.player, skill).handler(e.player, skill.instance)
             e.isCancelled = true
-            val skill = get(player, grid) ?: return
-            PlannersAPI.cast(player, skill).handler(e.player, skill.instance)
         }
     }
+
+//    @SubscribeEvent
+//    fun e(e: PlayerInteractEvent) {
+//        if (isMinecraftGrid && e.hasItem() && e.action.name in gridInteractActions && e.hand == EquipmentSlot.HAND) {
+//            val player = e.player
+//            val minecraftGrid = getGridBySlot(player.inventory.heldItemSlot) ?: return
+//            e.isCancelled = true
+//            val skill = get(player, minecraftGrid) ?: return
+//            PlannersAPI.cast(player, skill).handler(e.player, skill.instance)
+//        }
+//    }
 
 
     @SubscribeEvent

@@ -74,12 +74,12 @@ class Backpack(viewer: Player) : IUI(viewer) {
 
                     ShortcutSelector(viewer) {
                         // 取消绑定
-                        if (element.shortcutKey == this.key) {
+                        if (element.shortcutKey == it.key) {
                             viewer.sendLang("skill-un-bind-shortcut", element.instance.option.name)
                         } else {
-                            viewer.sendLang("skill-bind-shortcut", element.instance.option.name, name)
+                            viewer.sendLang("skill-bind-shortcut", element.instance.option.name, it.name)
                         }
-                        profile.bind(element, this)
+                        profile.bind(element, it)
                         open()
                     }.open()
 
