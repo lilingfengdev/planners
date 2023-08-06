@@ -2,7 +2,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("io.izzel.taboolib") version "1.50"
-    id("org.jetbrains.kotlin.jvm") version "1.5.31"
+    id("org.jetbrains.kotlin.jvm") version "1.7.20"
 }
 
 taboolib {
@@ -53,6 +53,9 @@ tasks.withType<Jar> {
 }
 repositories {
     mavenCentral()
+    maven(uri("https://maven.aliyun.com/repository/google"))
+    maven(uri("https://maven.aliyun.com/repository/jcenter"))
+    maven(uri("https://maven.aliyun.com/nexus/content/groups/public"))
 }
 
 dependencies {

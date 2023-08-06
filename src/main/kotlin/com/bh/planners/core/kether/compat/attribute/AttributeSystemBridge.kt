@@ -1,10 +1,10 @@
 package com.bh.planners.core.kether.compat.attribute
 
 import com.bh.planners.api.common.SimpleUniqueTask
-import com.skillw.attsystem.AttributeSystem
-import com.skillw.attsystem.api.AttrAPI.addAttribute
+import com.skillw.attsystem.api.AttrAPI.addCompiledData
 import com.skillw.attsystem.api.AttrAPI.read
-import com.skillw.attsystem.api.AttrAPI.removeAttribute
+import com.skillw.attsystem.api.AttrAPI.removeCompiledData
+import com.skillw.attsystem.api.AttrAPI.update
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import java.util.*
@@ -18,8 +18,8 @@ class AttributeSystemBridge : AttributeBridge {
 
     override fun addAttributes(source: String, uuid: UUID, timeout: Long, reads: List<String>) {
         val entity = Bukkit.getEntity(uuid) as? LivingEntity ?: error("null")
-        val attributeData = reads.read(entity).unRelease()
-        uuid.addAttribute(source, attributeData)
+        val compiledData = reads.read(entity) ?: return
+        uuid.addCompiledData(source, compiledData)
         if (timeout != -1L) {
             SimpleUniqueTask.submit("$uuid:$source", timeout / 50) {
                 removeAttributes(uuid, source)
@@ -29,15 +29,15 @@ class AttributeSystemBridge : AttributeBridge {
 
     override fun removeAttributes(uuid: UUID, source: String) {
         SimpleUniqueTask.remove("$uuid:$source")
-        uuid.removeAttribute(source)
+        uuid.removeCompiledData(source)
     }
 
     override fun update(entity: LivingEntity) {
-        AttributeSystem.attributeSystemAPI.update(entity)
+        entity.update()
     }
 
     override fun update(uuid: UUID) {
-        AttributeSystem.attributeSystemAPI.update(uuid)
+        uuid.update()
     }
 
     override fun get(uuid: UUID, keyword: String): Any {
