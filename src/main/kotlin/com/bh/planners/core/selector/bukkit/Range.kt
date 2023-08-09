@@ -30,7 +30,7 @@ object Range : Selector {
         val future = CompletableFuture<Void>()
         submit(async = false) {
             if (x == y && y == z) {
-                location.world?.getNearbyEntities(location, x+5, x, x+5)?.forEach {
+                location.world?.getNearbyEntities(location, x+10, x, x+10)?.forEach {
                     if (isPointInEntitySector(it.location, location, x + sqrt(it.width.pow(2.0) * 2), 360.0)) {
                         if (it is LivingEntity) {
                             data.container += it.toTarget()
