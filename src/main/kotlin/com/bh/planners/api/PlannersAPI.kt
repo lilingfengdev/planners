@@ -18,8 +18,10 @@ import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
 import com.bh.planners.util.runKetherThrow
 import com.google.gson.Gson
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common5.Coerce
 import taboolib.common5.cbool
@@ -52,7 +54,11 @@ object PlannersAPI {
         get() = profiles.containsKey(uniqueId)
 
     fun directCast(player: Player, skillName: String, level: Int) {
-        ContextAPI.create(player, skillName, level)?.cast()
+        if (Bukkit.isPrimaryThread()) {
+            ContextAPI.create(player, skillName, level)?.cast()
+        } else {
+            submit(async = false) { ContextAPI.create(player, skillName, level)?.cast() }
+        }
     }
 
     fun cast(player: Player, skillName: String, mark: Boolean = true): ExecuteResult {
