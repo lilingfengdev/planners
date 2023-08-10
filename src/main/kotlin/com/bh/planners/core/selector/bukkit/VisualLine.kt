@@ -3,8 +3,8 @@ package com.bh.planners.core.selector.bukkit
 import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.createAwaitVoidFuture
 import com.bh.planners.core.selector.Selector
-import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 import kotlin.math.ceil
 
@@ -23,8 +23,7 @@ object VisualLine : Selector {
         val length = data.read<Double>(0, "5")
         val radius = data.read<Double>(1, "1")
         val amount = ceil(length / radius)
-        val future = CompletableFuture<Void>()
-        submit {
+        return createAwaitVoidFuture {
             repeat(amount.toInt()) {
                 location.world?.getNearbyEntities(location.add(direction.multiply(radius)), radius, radius, radius)
                     ?.forEach {
@@ -35,8 +34,6 @@ object VisualLine : Selector {
                         }
                     }
             }
-            future.complete(null)
         }
-        return future
     }
 }

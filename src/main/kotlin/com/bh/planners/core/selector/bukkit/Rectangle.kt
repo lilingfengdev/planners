@@ -2,9 +2,9 @@ package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.createAwaitVoidFuture
 import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.LivingEntity
-import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 import kotlin.math.cos
 import kotlin.math.sin
@@ -41,8 +41,7 @@ object Rectangle : Selector {
         var n = wide/2.0
         var m = wide/2.0
 
-        val future = CompletableFuture<Void>()
-        submit(async = false) {
+        return createAwaitVoidFuture {
             while (m < (long - (wide / 2.0))) {
                 location.x -= n * sin(yaw)
                 location.z += n * cos(yaw)
@@ -54,8 +53,6 @@ object Rectangle : Selector {
                 n = 1.0.coerceAtMost(wide / 2.0)
                 m += 1.0.coerceAtMost(wide / 2.0)
             }
-            future.complete(null)
         }
-        return future
     }
 }

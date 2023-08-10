@@ -1,10 +1,9 @@
 package com.bh.planners.core.kether.compat.virtualentityskillmodule
 
 import com.bh.planners.core.kether.execPlayer
+import com.bh.planners.util.safeSync
 import com.ipedg.minecraft.virtualentityskillmodule.VesmApi
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import taboolib.common.util.sync
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptAction
@@ -19,12 +18,8 @@ class ActionModuleBind(
 ) : ScriptAction<Void>() {
 
     fun execute(key: String, player: Player, time: Long, model: String) {
-        if (Bukkit.isPrimaryThread()) {
+        safeSync {
             VesmApi.HasKeyRenderModel(key, player, time, model)
-        } else {
-            sync {
-                VesmApi.HasKeyRenderModel(key, player, time, model)
-            }
         }
     }
 

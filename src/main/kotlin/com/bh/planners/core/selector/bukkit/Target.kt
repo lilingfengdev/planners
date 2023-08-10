@@ -2,11 +2,11 @@ package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.getLivingEntity
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.createAwaitVoidFuture
 import com.bh.planners.core.selector.Selector
 import org.bukkit.Material
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
-import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 
 object Target : Selector {
@@ -27,17 +27,15 @@ object Target : Selector {
         val blocked = data.read<Boolean>(1, "false")
         val point = data.read<Boolean>(2, "false")
 
-        val future = CompletableFuture<Void>()
-
-        submit(async = false) {
+        return createAwaitVoidFuture {
             val blocks = if (point) {
                 listOf(
                     data.origin.getLivingEntity()
-                        ?.getTargetBlock(if (blocked) setOf(Material.AIR) else Material.values().map { it }.toSet(), range) ?: return@submit
+                        ?.getTargetBlock(if (blocked) setOf(Material.AIR) else Material.values().map { it }.toSet(), range) ?: return@createAwaitVoidFuture
                 )
             } else {
                 data.origin.getLivingEntity()?.getLineOfSight(if (blocked) setOf(Material.AIR) else Material.values().map { it }.toSet(), range)
-                    ?: return@submit
+                    ?: return@createAwaitVoidFuture
             }
             val entitys = mutableSetOf<Entity>()
             blocks.forEach {
@@ -51,8 +49,6 @@ object Target : Selector {
                 }
             }
         }
-        future.complete(null)
-        return future
     }
 
 }

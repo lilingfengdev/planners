@@ -2,9 +2,9 @@ package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.createAwaitVoidFuture
 import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.LivingEntity
-import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -26,8 +26,7 @@ object Range : Selector {
         val y = data.read<Double>(1, x.toString())
         val z = data.read<Double>(2, x.toString())
 
-        val future = CompletableFuture<Void>()
-        submit(async = false) {
+        return createAwaitVoidFuture {
             if (x == y && y == z) {
                 location.world?.getNearbyEntities(location, x+10, x, x+10)?.forEach {
                     val entityL = it.location
@@ -45,8 +44,6 @@ object Range : Selector {
                     }
                 }
             }
-            future.complete(null)
         }
-        return future
     }
 }

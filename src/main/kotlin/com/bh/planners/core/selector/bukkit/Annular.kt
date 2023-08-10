@@ -2,10 +2,10 @@ package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.createAwaitVoidFuture
 import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
-import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -27,7 +27,7 @@ object Annular : Selector {
         val high = data.read<Double>(2, "0.0")
 
         val future = CompletableFuture<Void>()
-        submit(async = false) {
+        return createAwaitVoidFuture {
             val maxEntitys = location.world?.getNearbyEntities(location, max, high, max)
             val minEntitys = location.world?.getNearbyEntities(location, min, 256.0, min)
             val entitys = mutableSetOf<Entity>()
@@ -38,9 +38,7 @@ object Annular : Selector {
                     data.container += it.toTarget()
                 }
             }
-            future.complete(null)
         }
-        return future
     }
 
 }
