@@ -60,7 +60,7 @@ object PlannersJobCommand {
         player {
             dynamic("skill") {
                 suggestion<ProxyCommandSender> { _, context ->
-                    Bukkit.getPlayerExact(context.argument(-1))!!.plannersProfile.getSkills().map { it.key }
+                    context.player("player").bukkitPlayer()!!.plannersProfile.getSkills().map { it.key }
                 }
 
                 execute<ProxyCommandSender> { _, context, argument ->

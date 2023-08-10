@@ -24,14 +24,14 @@ object PlannersSkillUpgradeCommand {
 
         player {
             dynamic("skill") {
-                suggestion<ProxyCommandSender> { sender, context ->
+                suggestion<ProxyCommandSender> { _, context ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         player.plannersProfile.getSkills().map { it.key }
                     } else emptyList()
                 }
 
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         Faceplate(player, PlannersAPI.getSkill(argument) ?: return@execute).open()
