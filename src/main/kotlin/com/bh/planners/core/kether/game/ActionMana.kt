@@ -1,9 +1,5 @@
 package com.bh.planners.core.kether.game
 
-import com.bh.planners.api.ManaCounter.addMana
-import com.bh.planners.api.ManaCounter.setMana
-import com.bh.planners.api.ManaCounter.takeMana
-import com.bh.planners.api.ManaCounter.toMaxMana
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.common.Operator
@@ -12,8 +8,10 @@ import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.nextSelectorOrNull
+import com.bh.planners.core.module.mana.ManaManager
 import org.bukkit.entity.Player
 import taboolib.common5.Coerce
+import taboolib.common5.cdouble
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
@@ -37,10 +35,10 @@ class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: 
         if (!player.plannersProfileIsLoaded) return
         val profile = player.plannersProfile
         when (mode) {
-            ADD -> profile.addMana(amount)
-            TAKE -> profile.takeMana(amount)
-            SET -> profile.setMana(amount)
-            RESET -> profile.setMana(profile.toMaxMana())
+            ADD -> ManaManager.INSTANCE.addMana(profile, amount)
+            TAKE -> ManaManager.INSTANCE.takeMana(profile, amount)
+            SET -> ManaManager.INSTANCE.setMana(profile, amount)
+            RESET -> ManaManager.INSTANCE.setMana(profile, ManaManager.INSTANCE.getMaxMana(profile))
         }
     }
 

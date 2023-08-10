@@ -1,16 +1,13 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.api.EntityAPI.getFlag
-import com.bh.planners.api.ManaCounter.addMana
-import com.bh.planners.api.ManaCounter.setMana
-import com.bh.planners.api.ManaCounter.takeMana
-import com.bh.planners.api.ManaCounter.toCurrentMana
-import com.bh.planners.api.ManaCounter.toMaxMana
 import com.bh.planners.api.addPoint
 import com.bh.planners.api.setFlag
 import com.bh.planners.api.setPoint
+import com.bh.planners.core.module.mana.ManaManager
 import com.bh.planners.core.pojo.data.Data
 import taboolib.common5.Coerce
+import taboolib.common5.cdouble
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
@@ -97,22 +94,22 @@ class ActionProfile {
                         mark()
                         when (expects("take", "-=", "add", "+=", "set", "=")) {
                             "take", "-=" -> actionProfileTake(it.nextParsedAction()) { value, profile ->
-                                profile.takeMana(Coerce.toDouble(value))
+                                ManaManager.INSTANCE.takeMana(profile,value.cdouble)
                             }
 
                             "add", "+=" -> actionProfileTake(it.nextParsedAction()) { value, profile ->
-                                profile.addMana(Coerce.toDouble(value))
+                                ManaManager.INSTANCE.addMana(profile,value.cdouble)
                             }
 
                             "set", "=" -> actionProfileTake(it.nextParsedAction()) { value, profile ->
-                                profile.setMana(Coerce.toDouble(value))
+                                ManaManager.INSTANCE.setMana(profile,value.cdouble)
                             }
 
                             else -> error("out of case")
                         }
                     } catch (e: Throwable) {
                         reset()
-                        actionProfileNow { it.toCurrentMana() }
+                        actionProfileNow { ManaManager.INSTANCE.getMana(it) }
                     }
 
                 }
@@ -122,7 +119,7 @@ class ActionProfile {
                 case("mana-percent") {
                     actionProfileNow {
                         try {
-                            it.toCurrentMana() / it.toMaxMana()
+                            ManaManager.INSTANCE.getMana(it) / ManaManager.INSTANCE.getMaxMana(it)
                         } catch (_: Exception) {
                             0.0
                         }
@@ -131,7 +128,7 @@ class ActionProfile {
                 case("max-mana") {
                     actionProfileNow {
                         try {
-                            it.toMaxMana()
+                            ManaManager.INSTANCE.getMaxMana(it)
                         } catch (_: Exception) {
                             0.0
                         }

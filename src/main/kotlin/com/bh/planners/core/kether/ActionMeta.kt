@@ -1,12 +1,11 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.api.Counting
-import com.bh.planners.api.ManaCounter.toCurrentMana
-import com.bh.planners.api.ManaCounter.toMaxMana
 import com.bh.planners.api.maxLevel
 import com.bh.planners.api.optAsync
 import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.kether.meta.ActionMetaOrigin
+import com.bh.planners.core.module.mana.ManaManager
 import taboolib.module.kether.*
 
 class ActionMeta {
@@ -56,8 +55,8 @@ class ActionMeta {
                         "name" -> actionNow { executor().name }
                         "uuid" -> actionNow { bukkitTarget().getEntity()?.uniqueId }
                         "loc", "location" -> actionNow { bukkitTarget().getEntity()?.location?.clone() }
-                        "mana" -> actionProfileNow { it.toCurrentMana() }
-                        "max-mana", "maxmana" -> actionProfileNow { it.toMaxMana() }
+                        "mana" -> actionProfileNow { ManaManager.INSTANCE.getMana(it) }
+                        "max-mana", "maxmana" -> actionProfileNow { ManaManager.INSTANCE.getMaxMana(it) }
                         else -> actionNow { "error" }
                     }
                 }

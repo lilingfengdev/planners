@@ -1,3 +1,6 @@
 plugin-adaptor:
   # DungeonPlus PxTeamPro
   team: DungeonPlus
+# 魔法值驱动默认采用default 具体实现采用实现类全限定类名
+mana:
+  drive: default

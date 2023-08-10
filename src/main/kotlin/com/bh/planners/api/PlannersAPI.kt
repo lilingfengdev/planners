@@ -1,7 +1,5 @@
 package com.bh.planners.api
 
-import com.bh.planners.api.ManaCounter.takeMana
-import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.PlannersLoader.toYamlName
 import com.bh.planners.api.common.ExecuteResult
 import com.bh.planners.api.compat.WorldGuardHook
@@ -11,6 +9,7 @@ import com.bh.planners.api.event.PlayerKeydownEvent
 import com.bh.planners.api.event.PlayerSkillResetEvent
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.module.mana.ManaManager
 import com.bh.planners.core.pojo.*
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
@@ -110,7 +109,7 @@ object PlannersAPI {
             return ExecuteResult.SUCCESS
         }
 
-        val preEvent = PlayerCastSkillEvents.Pre(player,session).apply { call() }
+        val preEvent = PlayerCastSkillEvents.Pre(player, session).apply { call() }
         if (preEvent.isCancelled) {
             PlayerCastSkillEvents.Failure(player, skill, ExecuteResult.CANCELED).call()
             return ExecuteResult.CANCELED
@@ -122,7 +121,7 @@ object PlannersAPI {
         }
 
         val mana = Coerce.toDouble(session.mpCost.get())
-        if (toCurrentMana() < mana) {
+        if (ManaManager.INSTANCE.getMana(this) < mana) {
             PlayerCastSkillEvents.Failure(player, skill, ExecuteResult.MANA_NOT_ENOUGH).call()
             return ExecuteResult.MANA_NOT_ENOUGH
         }
@@ -133,7 +132,7 @@ object PlannersAPI {
         }
 
         Counting.reset(player, session)
-        takeMana(mana)
+        ManaManager.INSTANCE.takeMana(this,mana)
         PlayerCastSkillEvents.Record(player, skill).call()
 
         session.cast()
@@ -262,7 +261,7 @@ object PlannersAPI {
         }
 
         val mana = Coerce.toDouble(session.mpCost.get())
-        if (toCurrentMana() < mana) {
+        if (ManaManager.INSTANCE.getMana(this) < mana) {
             return ExecuteResult.MANA_NOT_ENOUGH
         }
 
