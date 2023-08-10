@@ -10,9 +10,9 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
+import taboolib.common.util.sync
 import taboolib.common5.Coerce
 import taboolib.module.kether.printKetherErrorMessage
 import java.util.*
@@ -105,6 +105,6 @@ fun safeSync(job: () -> Unit) {
     if (Bukkit.isPrimaryThread()) {
         job()
     } else {
-        submit { job() }
+        sync { job() }
     }
 }

@@ -31,7 +31,7 @@ object Range : Selector {
                 location.world?.getNearbyEntities(location, x+10, x, x+10)?.forEach {
                     val entityL = it.location
                     val r = x + sqrt(it.width.pow(2.0) * 2)
-                    if (entityL.x in location.x-r..location.x+r && entityL.z in location.z-r..location.z+r) {
+                    if (entityL.distance(location) <= r) {
                         if (it is LivingEntity) {
                             data.container += it.toTarget()
                         }
