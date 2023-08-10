@@ -31,7 +31,6 @@ class ActionDragonSound(
                                     PacketSender.sendPlaySound(this, key, name, type, volume, pitch, loop, 0f, 0f, 0f)
                                 }
                             }
-
                         }
                     }
                 }

@@ -2,7 +2,6 @@ package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
-import com.bh.planners.core.effect.isPointInEntitySector
 import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.submit
@@ -31,7 +30,9 @@ object Range : Selector {
         submit(async = false) {
             if (x == y && y == z) {
                 location.world?.getNearbyEntities(location, x+10, x, x+10)?.forEach {
-                    if (isPointInEntitySector(it.location, location, x + sqrt(it.width.pow(2.0) * 2), 360.0)) {
+                    val entityL = it.location
+                    val r = x + sqrt(it.width.pow(2.0) * 2)
+                    if (entityL.x in location.x-r..location.x+r && entityL.z in location.z-r..location.z+r) {
                         if (it is LivingEntity) {
                             data.container += it.toTarget()
                         }
