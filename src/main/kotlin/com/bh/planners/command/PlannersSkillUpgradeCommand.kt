@@ -7,7 +7,6 @@ import com.bh.planners.api.hasJob
 import com.bh.planners.api.set
 import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.ui.Faceplate
-import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
 import taboolib.expansion.createHelper
@@ -23,9 +22,7 @@ object PlannersSkillUpgradeCommand {
     @CommandBody
     val ui = subCommand {
 
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("skill") {
                 suggestion<ProxyCommandSender> { sender, context ->
                     val player = context.player("player").bukkitPlayer()!!
@@ -47,11 +44,9 @@ object PlannersSkillUpgradeCommand {
     @CommandBody
     val set = subCommand {
 
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("skill") {
-                suggestion<ProxyCommandSender> { sender, context ->
+                suggestion<ProxyCommandSender> { _, context ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         player.plannersProfile.getSkills().map { it.key }
@@ -59,7 +54,7 @@ object PlannersSkillUpgradeCommand {
                 }
 
                 dynamic("number") {
-                    execute<ProxyCommandSender> { sender, context, argument ->
+                    execute<ProxyCommandSender> { _, context, argument ->
                         val player = context.player("player").bukkitPlayer()!!
                         if (player.hasJob) {
                             val profile = player.plannersProfile
@@ -75,11 +70,9 @@ object PlannersSkillUpgradeCommand {
     @CommandBody
     val add = subCommand {
 
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("skill") {
-                suggestion<ProxyCommandSender> { sender, context ->
+                suggestion<ProxyCommandSender> { _, context ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         player.plannersProfile.getSkills().map { it.key }
@@ -87,7 +80,7 @@ object PlannersSkillUpgradeCommand {
                 }
 
                 dynamic("number") {
-                    execute<ProxyCommandSender> { sender, context, argument ->
+                    execute<ProxyCommandSender> { _, context, argument ->
                         val player = context.player("player").bukkitPlayer()!!
                         if (player.hasJob) {
                             val profile = player.plannersProfile

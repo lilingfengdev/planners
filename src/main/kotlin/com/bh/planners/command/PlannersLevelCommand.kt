@@ -4,7 +4,6 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.addLevel
 import com.bh.planners.api.hasJob
 import com.bh.planners.core.kether.bukkitPlayer
-import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
 import taboolib.common5.Coerce
@@ -22,9 +21,7 @@ object PlannersLevelCommand {
 
     @CommandBody
     val give = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("value") {
                 execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
@@ -39,9 +36,7 @@ object PlannersLevelCommand {
 
     @CommandBody
     val take = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("value") {
                 execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!

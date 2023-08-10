@@ -9,17 +9,15 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.player
 import taboolib.common.platform.command.subCommand
-import taboolib.common.platform.command.suggestPlayers
 
 object PlannersShortcutCommand {
 
     @CommandBody
     val clear = subCommand {
-        dynamic("player") {
-            suggestPlayers()
+        player {
             dynamic("id") {
                 subCommand { PlannersAPI.keySlots.map { it.key } }
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").castSafely<Player>() ?: return@execute
                     if (player.plannersProfileIsLoaded) {
                         if (argument == "*") {
@@ -29,7 +27,6 @@ object PlannersShortcutCommand {
                         }
                     }
                 }
-
             }
         }
     }

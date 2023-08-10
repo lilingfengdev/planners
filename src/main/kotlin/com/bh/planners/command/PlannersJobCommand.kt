@@ -26,9 +26,7 @@ object PlannersJobCommand {
 
     @CommandBody
     val select = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             execute<ProxyCommandSender> { _, _, argument ->
                 val player = Bukkit.getPlayerExact(argument)!!
 
@@ -46,9 +44,7 @@ object PlannersJobCommand {
 
     @CommandBody
     val call = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("key slot") {
                 execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
@@ -61,9 +57,7 @@ object PlannersJobCommand {
 
     @CommandBody
     val cast = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("skill") {
                 suggestion<ProxyCommandSender> { _, context ->
                     Bukkit.getPlayerExact(context.argument(-1))!!.plannersProfile.getSkills().map { it.key }
@@ -82,9 +76,7 @@ object PlannersJobCommand {
 
     @CommandBody
     val backpack = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             execute<ProxyCommandSender> { _, _, argument ->
                 val playerExact = Bukkit.getPlayerExact(argument) ?: return@execute
 
@@ -99,9 +91,7 @@ object PlannersJobCommand {
 
     @CommandBody
     val set = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("job") {
                 suggestion<ProxyCommandSender> { _, _ ->
                     PlannersAPI.routers.map { it.key }
@@ -127,9 +117,7 @@ object PlannersJobCommand {
 
     @CommandBody
     val clear = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             execute<ProxyCommandSender> { sender, _, argument ->
                 val playerExact = Bukkit.getPlayerExact(argument)!!
                 if (!playerExact.hasJob) {

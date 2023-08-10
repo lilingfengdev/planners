@@ -23,11 +23,9 @@ object PlannersPointCommand {
 
     @CommandBody
     val give = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("value") {
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         player.sendLang("player-get-point", argument)
@@ -35,7 +33,7 @@ object PlannersPointCommand {
                     }
                 }
             }
-            execute<ProxyCommandSender> { sender, context, argument ->
+            execute<ProxyCommandSender> { _, _, argument ->
                 val player = Bukkit.getPlayerExact(argument)!!
                 if (player.hasJob) {
                     player.sendLang("player-get-point", 1)
@@ -47,11 +45,9 @@ object PlannersPointCommand {
 
     @CommandBody
     val take = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("value") {
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         player.sendLang("player-take-point", argument)
@@ -59,7 +55,7 @@ object PlannersPointCommand {
                     }
                 }
             }
-            execute<ProxyCommandSender> { sender, context, argument ->
+            execute<ProxyCommandSender> { _, _, argument ->
                 val player = Bukkit.getPlayerExact(argument)!!
                 if (player.hasJob) {
                     player.sendLang("player-take-point", 1)
@@ -71,11 +67,9 @@ object PlannersPointCommand {
 
     @CommandBody
     val set = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("value") {
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
                         player.sendLang("player-set-point", argument)
@@ -83,7 +77,7 @@ object PlannersPointCommand {
                     }
                 }
             }
-            execute<ProxyCommandSender> { sender, context, argument ->
+            execute<ProxyCommandSender> { _, _, argument ->
                 val player = Bukkit.getPlayerExact(argument)!!
                 if (player.hasJob) {
                     player.sendLang("player-clear-point", 0)
@@ -95,10 +89,8 @@ object PlannersPointCommand {
 
     @CommandBody
     val clear = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
-            execute<ProxyCommandSender> { sender, context, argument ->
+        player {
+            execute<ProxyCommandSender> { _, _, argument ->
                 val player = Bukkit.getPlayerExact(argument)!!
                 if (player.hasJob) {
                     player.sendLang("player-clear-point", 0)

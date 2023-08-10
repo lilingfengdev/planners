@@ -22,10 +22,8 @@ object PlannersTransferCommand {
 
     @CommandBody
     val open = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
-            execute<ProxyCommandSender> { sender, context, argument ->
+        player {
+            execute<ProxyCommandSender> { _, _, argument ->
                 val player = Bukkit.getPlayerExact(argument)!!
                 if (player.hasJob) {
                     TransferJobUI(player).open()
@@ -37,9 +35,7 @@ object PlannersTransferCommand {
     @CommandBody
     val to = subCommand {
 
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("value") {
                 execute<ProxyCommandSender> { sender, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
