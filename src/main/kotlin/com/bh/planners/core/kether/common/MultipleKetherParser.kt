@@ -3,12 +3,17 @@ package com.bh.planners.core.kether.common
 import taboolib.library.kether.Parser
 import taboolib.library.kether.QuestContext
 import taboolib.library.kether.QuestReader
+import taboolib.library.reflex.ReflexClass
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id) {
 
     private val method = mutableMapOf<String, CombinationKetherParser>()
+
+    init {
+        this.init()
+    }
 
     fun case(vararg str: String, func: () -> ScriptActionParser<Any?>) {
 
@@ -47,6 +52,18 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
 
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private fun init() {
+        ReflexClass.of(this::class.java).structure.fields.forEach { field ->
+            if (field.fieldType == CombinationKetherParser::class.java) {
+                val parser = field.get(this) as CombinationKetherParser
+                // 去重
+                setOf(*parser.id,field.name).forEach {
+                    this.method[it] = parser
                 }
             }
         }

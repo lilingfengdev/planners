@@ -16,50 +16,47 @@ object ActionBalance : MultipleKetherParser("balance") {
     private val hooked by unsafeLazy {
         VaultService.economy!!
     }
-
-    init {
-        case("has") {
-            combinationParser {
-                it.group(double(), containerOrSender()).apply(it) { value, container ->
-                    now {
-                        container.forEachPlayer {
-                            hooked.has(this, value)
-                        }
+    val has = case {
+        combinationParser {
+            it.group(double(), containerOrSender()).apply(it) { value, container ->
+                now {
+                    container.forEachPlayer {
+                        hooked.has(this, value)
                     }
                 }
             }
         }
+    }
 
-        case("get") {
-            combinationParser {
-                it.group(double(), containerOrSender()).apply(it) { value, container ->
-                    now {
-                        val player = container.firstBukkitPlayer() ?: this.bukkitPlayer()!!
-                        hooked.getBalance(player)
+    val get = case {
+        combinationParser {
+            it.group(double(), containerOrSender()).apply(it) { value, container ->
+                now {
+                    val player = container.firstBukkitPlayer() ?: this.bukkitPlayer()!!
+                    hooked.getBalance(player)
+                }
+            }
+        }
+    }
+
+    val deposit = case("add") {
+        combinationParser {
+            it.group(double(), containerOrSender()).apply(it) { value, container ->
+                now {
+                    container.forEachPlayer {
+                        hooked.depositPlayer(this, value)
                     }
                 }
             }
         }
+    }
 
-        case("deposit", "add") {
-            combinationParser {
-                it.group(double(), containerOrSender()).apply(it) { value, container ->
-                    now {
-                        container.forEachPlayer {
-                            hooked.depositPlayer(this, value)
-                        }
-                    }
-                }
-            }
-        }
-
-        case("withdraw", "take") {
-            combinationParser {
-                it.group(double(), containerOrSender()).apply(it) { value, container ->
-                    now {
-                        container.forEachPlayer {
-                            hooked.withdrawPlayer(this, value)
-                        }
+    val withdraw = case("take") {
+        combinationParser {
+            it.group(double(), containerOrSender()).apply(it) { value, container ->
+                now {
+                    container.forEachPlayer {
+                        hooked.withdrawPlayer(this, value)
                     }
                 }
             }
