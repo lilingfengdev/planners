@@ -1,75 +1,66 @@
 package com.bh.planners.core.kether
 
+import com.bh.planners.core.kether.common.CombinationKetherParser
+import com.bh.planners.core.kether.common.MultipleKetherParser
 import org.bukkit.entity.Player
+import taboolib.common.util.unsafeLazy
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import taboolib.platform.compat.VaultService
 import java.util.concurrent.CompletableFuture
 
-class ActionBalance {
+@CombinationKetherParser.Use
+object ActionBalance : MultipleKetherParser("balance") {
 
+    private val hooked by unsafeLazy {
+        VaultService.economy!!
+    }
 
-    class BalanceHas(val action: ParsedAction<*>) : ScriptAction<Boolean>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Boolean> {
-            return frame.newFrame(action).run<Any>().thenApply {
-                bridge.has(frame.script().sender!!.cast<Player>(), Coerce.toDouble(it))
+    init {
+        case("has") {
+            combinationParser {
+                it.group(double(), containerOrSender()).apply(it) { value, container ->
+                    now {
+                        container.forEachPlayer {
+                            hooked.has(this, value)
+                        }
+                    }
+                }
             }
         }
-    }
 
-    class BalanceGet : ScriptAction<Double>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Double> {
-            return CompletableFuture.completedFuture(bridge.getBalance(frame.script().sender!!.cast<Player>()))
-        }
-    }
-
-    class BalanceDeposit(val action: ParsedAction<*>) : ScriptAction<Void>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(action).run<Any>().thenAccept {
-                bridge.depositPlayer(frame.script().sender!!.cast<Player>(), Coerce.toDouble(it))
+        case("get") {
+            combinationParser {
+                it.group(double(), containerOrSender()).apply(it) { value, container ->
+                    now {
+                        val player = container.firstBukkitPlayer() ?: this.bukkitPlayer()!!
+                        hooked.getBalance(player)
+                    }
+                }
             }
         }
-    }
 
-    class BalanceWithdraw(val action: ParsedAction<*>) : ScriptAction<Void>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(action).run<Any>().thenAccept {
-                bridge.withdrawPlayer(frame.script().sender!!.cast<Player>(), Coerce.toDouble(it))
+        case("deposit", "add") {
+            combinationParser {
+                it.group(double(), containerOrSender()).apply(it) { value, container ->
+                    now {
+                        container.forEachPlayer {
+                            hooked.depositPlayer(this, value)
+                        }
+                    }
+                }
             }
         }
-    }
 
-    companion object {
-
-
-        private val bridge by lazy { VaultService.economy ?: error("Not 'Vault economy' bridge found") }
-
-
-        /**
-         * balance has [value: action]
-         * balance take/withdraw [value: action]
-         * balance add/deposit [value: action]
-         * balance get/look
-         * balance
-         */
-        @KetherParser(["balance"], shared = true)
-        fun parser() = scriptParser {
-            it.switch {
-                case("has") {
-                    BalanceHas(it.nextParsedAction())
-                }
-                case("take", "withdraw") {
-                    BalanceWithdraw(it.nextParsedAction())
-                }
-                case("add", "deposit") {
-                    BalanceDeposit(it.nextParsedAction())
-                }
-                case("get", "look") {
-                    BalanceGet()
-                }
-                other {
-                    BalanceGet()
+        case("withdraw", "take") {
+            combinationParser {
+                it.group(double(), containerOrSender()).apply(it) { value, container ->
+                    now {
+                        container.forEachPlayer {
+                            hooked.withdrawPlayer(this, value)
+                        }
+                    }
                 }
             }
         }

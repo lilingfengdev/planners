@@ -181,6 +181,8 @@ interface Target {
 
         fun firstTarget() = firstOrNull()
 
+        fun firstBukkitPlayer() = filterIsInstance<Entity>().firstOrNull { it.bukkitEntity is Player }?.player
+
         fun firstLivingEntityTarget() = filterIsInstance<Entity>().firstOrNull { it.isLiving }?.bukkitLivingEntity
 
         fun firstProxyEntity(bukkit: Boolean = true): ProxyEntity? {
