@@ -11,6 +11,7 @@ import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Context
+import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.ui.SkillIcon.Companion.toIcon
@@ -74,16 +75,21 @@ object BukkitGrid {
     }
 
     fun updateAll(player: Player) {
-        grids.forEach { update(player, it) }
+        PlannersAPI.keySlots.forEach { key -> update(player,key) }
     }
 
-    fun update(player: Player, grid: Grid) {
-        val skillByGrid = get(player, grid)
-        if (skillByGrid == null) {
-            player.inventory.setItem(grid.slot, PlannersOption.gridAirIcon)
-        } else {
-            player.inventory.setItem(grid.slot, skillByGrid.toIcon(player, false).build())
+    fun update(player: Player,slot: IKeySlot) {
+        val group = slot.getGroup(player)
+        if (group.startsWith("minecraft ")) {
+            val minecraftGrid = Grid.get(slot)!!
+            update(player, minecraftGrid)
         }
+    }
+
+    fun update(player: Player, minecraftGrid: Grid) {
+        val skill = get(player, minecraftGrid)
+        val itemStack = skill?.toIcon(player)?.build() ?: PlannersOption.gridAirIcon
+        player.inventory.setItem(minecraftGrid.slot,itemStack)
     }
 
     fun getSkillByGrid(profile: PlayerProfile, grid: Grid): PlayerJob.Skill? {
@@ -159,18 +165,6 @@ object BukkitGrid {
             e.isCancelled = true
         }
     }
-
-//    @SubscribeEvent
-//    fun e(e: PlayerInteractEvent) {
-//        if (isMinecraftGrid && e.hasItem() && e.action.name in gridInteractActions && e.hand == EquipmentSlot.HAND) {
-//            val player = e.player
-//            val minecraftGrid = getGridBySlot(player.inventory.heldItemSlot) ?: return
-//            e.isCancelled = true
-//            val skill = get(player, minecraftGrid) ?: return
-//            PlannersAPI.cast(player, skill).handler(e.player, skill.instance)
-//        }
-//    }
-
 
     @SubscribeEvent
     fun e(e: PluginReloadEvent) {
