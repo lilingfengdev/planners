@@ -13,14 +13,15 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
     protected val method = mutableMapOf<String, CombinationKetherParser>()
 
     private val other: CombinationKetherParser?
-        get() = method["other"]
+        get() = method["main"] ?: method["other"]
 
     override fun run(): ScriptActionParser<Any?> {
         return ScriptActionParser {
             try {
                 mark()
-                val expects = expects(*this@MultipleKetherParser.method.keys.filter { it != "other" }.toTypedArray())
-                method[expects]!!.run().resolve<Any>(this)
+                val expects = expects(*this@MultipleKetherParser.method.keys.filter { it != "other" && it != "main" }.toTypedArray())
+                val action = method[expects]!!.run().resolve<Any>(this)
+                action
             } catch (ex: Exception) {
                 reset()
                 if (other == null) {
@@ -39,11 +40,20 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
             // parameter parser
             if (ParameterKetherParser::class.java.isAssignableFrom(field.fieldType)) {
                 val parser = field.get(this) as ParameterKetherParser
+                // 子集初始化
+                parser.onInit()
+
                 this.method[field.name] = parser
             }
             // combination parser
             else if (CombinationKetherParser::class.java.isAssignableFrom(field.fieldType)) {
                 val parser = field.get(this) as CombinationKetherParser
+
+                // 子集初始化
+                if (parser is Stateable) {
+                    parser.onInit()
+                }
+
                 // 去重
                 setOf(*parser.id, field.name).forEach {
                     this.method[it] = parser
@@ -52,12 +62,8 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
             // scriptParser combinationParser
             else if (ScriptActionParser::class.java.isAssignableFrom(field.fieldType)) {
                 val parser = field.get(this) as ScriptActionParser<Any>
-                this.method[field.name] = object : SimpleKetherParser(field.name) {
-
-                    override fun run(): ScriptActionParser<Any?> {
-                        return ScriptActionParser { parser.resolve<Any>(this) }
-                    }
-
+                this.method[field.name] = simpleKetherParser(field.name) {
+                    scriptParser { parser.resolve<Any>(it) }
                 }
             }
         }

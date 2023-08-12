@@ -1,14 +1,6 @@
 package com.bh.planners.core.kether.common
 
-import taboolib.common.LifeCycle
-import taboolib.common.inject.ClassVisitor
-import taboolib.common.platform.Awake
-import taboolib.library.reflex.ClassMethod
-import taboolib.module.kether.KetherLoader
-import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptActionParser
-import java.util.function.Supplier
-import javax.jws.soap.SOAPBinding.Use
 
 interface CombinationKetherParser {
 
@@ -16,45 +8,9 @@ interface CombinationKetherParser {
 
     val namespace: String
 
-    fun run(): ScriptActionParser<Any?>
+    fun run(): ScriptActionParser<out Any?>
 
     annotation class Used
 
-    companion object {
-
-        @Awake
-        class Visitor : ClassVisitor(0) {
-
-            override fun getLifeCycle(): LifeCycle {
-                return LifeCycle.LOAD
-            }
-
-            override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {
-                if (method.isAnnotationPresent(Used::class.java) && method.returnType == ScriptActionParser::class.java) {
-                    val combinationKetherParser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as CombinationKetherParser
-                    val parser = combinationKetherParser.run()
-                    val id = combinationKetherParser.id
-                    val namespace = combinationKetherParser.namespace
-                    KetherLoader.registerParser(parser, id, namespace, true)
-                }
-            }
-
-            override fun visitEnd(clazz: Class<*>, instance: Supplier<*>?) {
-                if (clazz.isAnnotationPresent(Used::class.java) && CombinationKetherParser::class.java.isAssignableFrom(clazz)) {
-                    val combinationKetherParser = instance?.get() as? CombinationKetherParser ?: return
-                    val parser = combinationKetherParser.run()
-                    val id = combinationKetherParser.id
-                    val namespace = combinationKetherParser.namespace
-                    // 如果渲染的周期是具有状态特性的 则执行on init
-                    if (combinationKetherParser is Stateable) {
-                        combinationKetherParser.onInit()
-                    }
-                    KetherLoader.registerParser(parser, id, namespace, true)
-                }
-            }
-
-        }
-
-    }
 
 }

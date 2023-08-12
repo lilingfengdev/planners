@@ -6,13 +6,11 @@ import com.bh.planners.core.kether.containerOrOrigin
 import com.bh.planners.core.kether.containerOrSender
 import com.bh.planners.core.kether.nextSelectorOrNull
 import com.mojang.datafixers.kinds.App
+import ink.ptms.adyeshach.impl.script.expects
 import taboolib.library.kether.Parser
 import taboolib.library.kether.QuestContext
 import taboolib.library.kether.QuestReader
-import taboolib.module.kether.ParserHolder
-import taboolib.module.kether.ScriptActionParser
-import taboolib.module.kether.combinationParser
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 
 
 /**
@@ -42,7 +40,7 @@ fun ParserHolder.containerOrOrigin(): Parser<Target.Container> {
 /**
  * 返回有可能为空的目标容器
  */
-fun ParserHolder.containerOrEmpty(): Parser<Target.Container?> {
+fun ParserHolder.containerOrEmpty(): Parser<Target.Container> {
     return Parser.frame {
         val nextSelectorOrNull = it.nextSelectorOrNull()
         Parser.Action { frame ->
@@ -51,11 +49,17 @@ fun ParserHolder.containerOrEmpty(): Parser<Target.Container?> {
     }
 }
 
-fun simpleKetherParser(vararg id: String, func: () -> ScriptActionParser<Any?>): SimpleKetherParser {
+fun simpleKetherParser(vararg id: String, func: () -> ScriptActionParser<out Any?>): SimpleKetherParser {
     return object : SimpleKetherParser(*id) {
-        override fun run(): ScriptActionParser<Any?> {
+        override fun run(): ScriptActionParser<out Any?> {
             return func()
         }
+    }
+}
+
+fun simpleKetherNow(vararg id: String,func : ScriptFrame.() -> Any?) : SimpleKetherParser {
+    return simpleKetherParser(*id) {
+        scriptParser { actionNow { func(this) } }
     }
 }
 
