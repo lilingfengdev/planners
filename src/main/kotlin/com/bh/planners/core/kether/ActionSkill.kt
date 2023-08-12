@@ -5,7 +5,7 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.common.Operator
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target.Companion.toTarget
-import com.bh.planners.core.kether.ActionLazyVariable.Companion.runVariable
+import com.bh.planners.core.kether.ActionLazyVariable.runVariable
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.player.PlayerJob

@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.event
 
-import com.bh.planners.core.kether.ActionEvent.Companion.event
+import com.bh.planners.core.kether.ActionEvent.event
 import com.bh.planners.core.kether.eventParser
 import com.bh.planners.core.kether.nextArgumentAction
 import com.bh.planners.core.kether.read

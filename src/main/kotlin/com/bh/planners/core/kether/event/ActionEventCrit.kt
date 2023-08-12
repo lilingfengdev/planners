@@ -2,9 +2,8 @@ package com.bh.planners.core.kether.event
 
 import com.bh.planners.api.event.proxy.AbstractProxyDamageEvent.Companion.damageMemory
 import com.bh.planners.api.event.proxy.ProxyDamageEvent
-import com.bh.planners.core.kether.ActionEvent.Companion.event
+import com.bh.planners.core.kether.ActionEvent.event
 import com.bh.planners.core.kether.eventParser
-import taboolib.common.platform.function.info
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame

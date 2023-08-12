@@ -6,12 +6,15 @@ import taboolib.common.platform.event.SubscribeEvent
 
 object PlayerState {
 
-    val stopSkill = PlannersOption.root.getBoolean("skill-stop", true)
+    val stopSkill: Boolean
+        get() = PlannersOption.root.getBoolean("skill-stop", true)
 
     @SubscribeEvent
     fun e(e: PlayerDeathEvent) {
         if (stopSkill) {
-            e.entity.plannersProfile.runningScripts.map { it.value.let { script -> script.service.terminateQuest(script) } }
+            e.entity.plannersProfile.runningScripts.values.toList().forEach { script ->
+                script.service.terminateQuest(script)
+            }
         }
     }
 

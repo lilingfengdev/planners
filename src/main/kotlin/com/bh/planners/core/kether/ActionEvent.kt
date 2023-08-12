@@ -12,7 +12,7 @@ object ActionEvent : MultipleKetherParser("event") {
         return rootVariables().get<Event>("@Event").orElse(null) ?: error("Error running environment !")
     }
 
-    val cancel = case {
+    val cancel =
         combinationParser {
             it.group(command("to", then = bool()).option().defaultsTo(true)).apply(it) { value ->
                 now {
@@ -20,7 +20,6 @@ object ActionEvent : MultipleKetherParser("event") {
                 }
             }
         }
-    }
 
     val damage = scriptParser {
         it.switch {
