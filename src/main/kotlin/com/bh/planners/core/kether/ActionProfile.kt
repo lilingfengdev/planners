@@ -15,7 +15,7 @@ import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 @CombinationKetherParser.Used
-object ActionProfile {
+object ActionProfile : MultipleKetherParser("profile"){
 
     // profile data <id>
     val data = object : ParameterKetherParser("flag") {
