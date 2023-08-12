@@ -31,7 +31,7 @@ object ActionBalance : MultipleKetherParser("balance") {
         }
     }
 
-    val deposit = simpleKetherParser<Unit> {
+    val deposit = simpleKetherParser<Unit>("add") {
         it.group(double(), containerOrSender()).apply(it) { value, container ->
             now {
                 container.forEachPlayer {
@@ -41,7 +41,7 @@ object ActionBalance : MultipleKetherParser("balance") {
         }
     }
 
-    val withdraw = simpleKetherParser<Unit> {
+    val withdraw = simpleKetherParser<Unit>("take") {
         it.group(double(), containerOrSender()).apply(it) { value, container ->
             now {
                 container.forEachPlayer {
