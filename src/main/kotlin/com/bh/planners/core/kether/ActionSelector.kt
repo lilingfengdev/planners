@@ -1,15 +1,24 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.kether.common.*
+import com.bh.planners.core.kether.common.CombinationKetherParser
+import com.bh.planners.core.kether.common.ParameterKetherParser
+import com.bh.planners.core.kether.common.containerOrEmpty
+import com.bh.planners.core.kether.common.simpleKetherParser
 import taboolib.common.OpenResult
-import taboolib.common.platform.function.warning
-import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.*
-import java.util.concurrent.CompletableFuture
+import taboolib.module.kether.KetherProperty
+import taboolib.module.kether.ScriptProperty
 
+
+/**
+ * selector
+ *
+ *
+ */
 @CombinationKetherParser.Used
 object ActionSelector : ParameterKetherParser("selector") {
+
+    private val EMPTY_CONTAINER = Target.Container()
 
     // selector <id> set <selector(不需要they at 关键字)>
     // 错误的写法 selector a0 set they @self
@@ -22,8 +31,13 @@ object ActionSelector : ParameterKetherParser("selector") {
         }
     }
 
+    // selector <id> list
+    val list = argumentKetherNow("list") { id ->
+        variables().get<Target.Container>(id.toString()).orElseGet { EMPTY_CONTAINER }
+    }
+
     // selector <id> remove
-    val remove = argumentKetherNow { id ->
+    val remove = argumentKetherNow("remove") { id ->
         variables().remove(id!!.toString())
     }
 
@@ -31,7 +45,7 @@ object ActionSelector : ParameterKetherParser("selector") {
     val unmerge = simpleKetherParser<Unit>("unmerge") {
         it.group(containerOrEmpty()).apply(it) { value ->
             argumentNow { id ->
-                variables().get<Target.Container>(id!!.toString()).ifPresent {
+                variables().get<Target.Container>(id.toString()).ifPresent {
                     it.unmerge(value)
                 }
             }
@@ -42,7 +56,7 @@ object ActionSelector : ParameterKetherParser("selector") {
     val merge = simpleKetherParser<Unit>("merge") {
         it.group(containerOrEmpty()).apply(it) { value ->
             argumentNow { id ->
-                variables().get<Target.Container>(id!!.toString()).ifPresent {
+                variables().get<Target.Container>(id.toString()).ifPresent {
                     it.merge(value)
                 }
             }

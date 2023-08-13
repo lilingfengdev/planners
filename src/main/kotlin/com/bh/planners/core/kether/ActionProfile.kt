@@ -1,18 +1,9 @@
 package com.bh.planners.core.kether
 
-import com.bh.planners.api.EntityAPI.getFlag
 import com.bh.planners.api.EntityAPI.getDataContainer
-import com.bh.planners.api.addPoint
-import com.bh.planners.api.setFlag
-import com.bh.planners.api.setPoint
 import com.bh.planners.core.kether.common.*
 import com.bh.planners.core.module.mana.ManaManager
 import com.bh.planners.core.pojo.data.Data
-import taboolib.common5.Coerce
-import taboolib.common5.cdouble
-import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.*
-import java.util.concurrent.CompletableFuture
 
 @CombinationKetherParser.Used
 object ActionProfile : MultipleKetherParser("profile"){
@@ -27,8 +18,8 @@ object ActionProfile : MultipleKetherParser("profile"){
             }
         }
 
-        // profile data <id> set <value>
-        val set = simpleKetherParser<Unit> {
+        // profile data <id> to <value>
+        val to = simpleKetherParser<Unit> {
             it.group(any(), command("timeout", "time", then = long()).option().defaultsTo(0L)).apply(it) { value, timeout ->
                 argumentNow { id ->
                     bukkitPlayer()?.getDataContainer()?.set(id.toString(), Data(value!!, timeout)) ?: Unit
@@ -63,7 +54,7 @@ object ActionProfile : MultipleKetherParser("profile"){
     val mana = object : MultipleKetherParser() {
 
         // profile mana
-        val main = simpleKetherNow { ManaManager.INSTANCE.getMana(senderPlannerProfile()!!) }
+        val main = simpleKetherNow<Any> { ManaManager.INSTANCE.getMana(senderPlannerProfile()!!) }
 
         // profile mana take <value>
         val take = simpleKetherParser<Unit> {
@@ -85,7 +76,7 @@ object ActionProfile : MultipleKetherParser("profile"){
     }
 
 
-    val healthpercent = simpleKetherNow("health-percent") {
+    val healthpercent = simpleKetherNow<Any>("health-percent") {
         try {
             bukkitPlayer()!!.health / bukkitPlayer()!!.maxHealth
         } catch (_: java.lang.Exception) {
@@ -97,7 +88,7 @@ object ActionProfile : MultipleKetherParser("profile"){
      * profile manapercent
      * profile mana-percent
      */
-    val manapercent = simpleKetherNow("health-percent") {
+    val manapercent = simpleKetherNow<Any>("health-percent") {
         val profile = senderPlannerProfile()!!
         try {
             ManaManager.INSTANCE.getMana(profile) / ManaManager.INSTANCE.getMaxMana(profile)
@@ -110,32 +101,32 @@ object ActionProfile : MultipleKetherParser("profile"){
      * profile maxmana
      * profile max-mana
      */
-    val maxmana = simpleKetherNow("max-mana") {
+    val maxmana = simpleKetherNow<Any>("max-mana") {
         ManaManager.INSTANCE.getMana(senderPlannerProfile()!!)
     }
 
     // profile point
-    val point = simpleKetherNow {
+    val point = simpleKetherNow<Any> {
         senderPlannerProfile()!!.point
     }
 
     // profile job
-    val job = simpleKetherNow {
+    val job = simpleKetherNow<Any> {
         senderPlannerProfile()!!.job?.jobKey
     }
 
     // profile level
-    val level = simpleKetherNow {
+    val level = simpleKetherNow<Any> {
         senderPlannerProfile()!!.job?.level ?: -1
     }
 
     // profile exp
-    val exp = simpleKetherNow {
+    val exp = simpleKetherNow<Any> {
         senderPlannerProfile()!!.experience
     }
 
     // profile maxexp
-    val maxexp = simpleKetherNow {
+    val maxexp = simpleKetherNow<Any> {
         senderPlannerProfile()!!.maxExperience
     }
 
@@ -143,7 +134,7 @@ object ActionProfile : MultipleKetherParser("profile"){
      * profile exppercent
      * profile exp-percent
      */
-    val exppercent = simpleKetherNow("exp-percent") {
+    val exppercent = simpleKetherNow<Any>("exp-percent") {
         try {
             senderPlannerProfile()!!.experience / senderPlannerProfile()!!.maxExperience
         } catch (_: Exception) {

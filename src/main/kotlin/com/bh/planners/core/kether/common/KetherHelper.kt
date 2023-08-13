@@ -6,10 +6,7 @@ import com.bh.planners.core.kether.containerOrOrigin
 import com.bh.planners.core.kether.containerOrSender
 import com.bh.planners.core.kether.nextSelectorOrNull
 import com.mojang.datafixers.kinds.App
-import ink.ptms.adyeshach.impl.script.expects
 import taboolib.library.kether.Parser
-import taboolib.library.kether.QuestContext
-import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
 
 
@@ -57,7 +54,7 @@ fun simpleKetherParser(vararg id: String, func: () -> ScriptActionParser<out Any
     }
 }
 
-fun simpleKetherNow(vararg id: String,func : ScriptFrame.() -> Any?) : SimpleKetherParser {
+fun <T> simpleKetherNow(vararg id: String, func : ScriptFrame.() -> Any?) : SimpleKetherParser {
     return simpleKetherParser(*id) {
         scriptParser { actionNow { func(this) } }
     }
