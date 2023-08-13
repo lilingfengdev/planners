@@ -3,8 +3,9 @@ package com.bh.planners.core.kether
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.ParameterKetherParser
-import com.bh.planners.core.kether.common.containerOrEmpty
-import com.bh.planners.core.kether.common.simpleKetherParser
+import com.bh.planners.core.kether.common.KetherHelper.containerOrEmpty
+import com.bh.planners.core.kether.common.KetherHelper.simpleKetherParser
+import com.bh.planners.core.kether.common.SimpleKetherParser
 import taboolib.common.OpenResult
 import taboolib.module.kether.KetherProperty
 import taboolib.module.kether.ScriptProperty

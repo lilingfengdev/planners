@@ -6,26 +6,26 @@ import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.MultipleKetherParser
-import com.bh.planners.core.kether.common.simpleKetherNow
+import com.bh.planners.core.kether.common.KetherHelper.simpleKetherNow
 import com.bh.planners.core.module.mana.ManaManager
 import taboolib.module.kether.actionNow
 import taboolib.module.kether.scriptParser
 import taboolib.module.kether.switch
 
 @CombinationKetherParser.Used
-object ActionMeta : MultipleKetherParser("meta"){
+object ActionMeta : MultipleKetherParser("meta") {
 
     val executor = object : MultipleKetherParser() {
 
-        val name = simpleKetherNow<Any>("name") { executor().name }
+        val name = simpleKetherNow("name") { executor().name }
 
-        val uuid = simpleKetherNow<Any>("uuid") { bukkitTarget().getEntity()?.uniqueId }
+        val uuid = simpleKetherNow("uuid") { bukkitTarget().getEntity()?.uniqueId }
 
-        val location = simpleKetherNow<Any>("location","loc") {bukkitTarget().getLocation()  }
+        val location = simpleKetherNow("location", "loc") { bukkitTarget().getLocation() }
 
-        val mana = simpleKetherNow<Any>("mana") { ManaManager.INSTANCE.getMana(bukkitPlayer()!!.plannersProfile) }
+        val mana = simpleKetherNow("mana") { ManaManager.INSTANCE.getMana(bukkitPlayer()!!.plannersProfile) }
 
-        val maxmana = simpleKetherNow<Any>("maxmana") {
+        val maxmana = simpleKetherNow("maxmana") {
             ManaManager.INSTANCE.getMaxMana(bukkitPlayer()!!.plannersProfile)
         }
 
@@ -33,13 +33,15 @@ object ActionMeta : MultipleKetherParser("meta"){
 
     val skill = object : MultipleKetherParser() {
 
-        val name = simpleKetherNow<Any> { skill().name }
+        val name = simpleKetherNow { skill().name }
 
-        val async = simpleKetherNow<Any> { skill().instance.option.async }
+        val async = simpleKetherNow { skill().instance.option.async }
 
-        val level = simpleKetherNow<Any> { skill().level }
+        val level = simpleKetherNow { skill().level }
 
-        val maxlevel = simpleKetherNow<Any> { skill().maxLevel }
+        val maxlevel = simpleKetherNow("max-level", "level-max","level-cap","cap-level") {
+            skill().maxLevel
+        }
 
     }
 

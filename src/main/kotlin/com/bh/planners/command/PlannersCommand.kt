@@ -11,6 +11,7 @@ import taboolib.common.platform.command.*
 import taboolib.common5.Mirror
 import taboolib.expansion.createHelper
 import taboolib.module.chat.colored
+import taboolib.module.kether.runKether
 
 @CommandHeader("planners", aliases = ["ps", "pl"], permission = "planners.command")
 object PlannersCommand {
@@ -60,8 +61,10 @@ object PlannersCommand {
         player {
             execute<ProxyCommandSender> { sender, _, argument ->
                 val playerExact = Bukkit.getPlayerExact(argument) ?: return@execute
-                ScriptLoader.createFunctionScript(ContextAPI.create(playerExact), PlannersOption.infos).forEach {
-                    sender.sendMessage(it.colored())
+                runKether {
+                    ScriptLoader.createFunctionScript(ContextAPI.create(playerExact), PlannersOption.infos).forEach {
+                        sender.sendMessage(it.colored())
+                    }
                 }
             }
         }

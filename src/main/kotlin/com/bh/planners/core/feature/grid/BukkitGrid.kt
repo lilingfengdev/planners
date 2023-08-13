@@ -4,10 +4,7 @@ import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.PlannersOption
-import com.bh.planners.api.event.PlayerInitializeEvent
-import com.bh.planners.api.event.PlayerSkillBindEvent
-import com.bh.planners.api.event.PlayerSkillUpgradeEvent
-import com.bh.planners.api.event.PluginReloadEvent
+import com.bh.planners.api.event.*
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.pojo.Context
@@ -31,6 +28,7 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.info
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.kether.runKether
+import taboolib.module.nms.getName
 
 object BukkitGrid {
 
@@ -75,10 +73,10 @@ object BukkitGrid {
     }
 
     fun updateAll(player: Player) {
-        PlannersAPI.keySlots.forEach { key -> update(player,key) }
+        PlannersAPI.keySlots.forEach { key -> update(player, key) }
     }
 
-    fun update(player: Player,slot: IKeySlot) {
+    fun update(player: Player, slot: IKeySlot) {
         val group = slot.getGroup(player)
         if (group.startsWith("minecraft ")) {
             val minecraftGrid = Grid.get(slot)!!
@@ -89,7 +87,8 @@ object BukkitGrid {
     fun update(player: Player, minecraftGrid: Grid) {
         val skill = get(player, minecraftGrid)
         val itemStack = skill?.toIcon(player)?.build() ?: PlannersOption.gridAirIcon
-        player.inventory.setItem(minecraftGrid.slot,itemStack)
+        player.inventory.setItem(minecraftGrid.slot, itemStack)
+        player.updateInventory()
     }
 
     fun getSkillByGrid(profile: PlayerProfile, grid: Grid): PlayerJob.Skill? {
@@ -140,8 +139,17 @@ object BukkitGrid {
 
     @SubscribeEvent
     fun e(e: PlayerSkillBindEvent) {
-        if (!isMinecraftGrid) return
-        updateAll(e.player)
+        if (isMinecraftGrid) {
+            update(e.player, e.to)
+            update(e.player, e.form ?: return)
+        }
+    }
+
+    @SubscribeEvent
+    fun e(e: PlayerSkillUnbindEvent) {
+        if (isMinecraftGrid) {
+            update(e.player, e.form)
+        }
     }
 
     @SubscribeEvent
@@ -156,13 +164,22 @@ object BukkitGrid {
         return grids.firstOrNull { it.slot == slot }
     }
 
+    fun getRegisteredGridBySlot(slot: Int): Grid? {
+        val minecraftGrid = getGridBySlot(slot)
+        if (minecraftGrid == null || PlannersAPI.keySlots.all { Grid.get(it) != minecraftGrid }) {
+            return null
+        }
+        return minecraftGrid
+    }
+
     @SubscribeEvent(ignoreCancelled = true)
     fun e(e: PlayerItemHeldEvent) {
         if (isMinecraftGrid) {
-            val minecraftGrid = getGridBySlot(e.newSlot) ?: return
+            val minecraftGrid = getRegisteredGridBySlot(e.newSlot) ?: return
+            e.isCancelled = true
             val skill = get(e.player, minecraftGrid) ?: return
             PlannersAPI.cast(e.player, skill).handler(e.player, skill.instance)
-            e.isCancelled = true
+
         }
     }
 

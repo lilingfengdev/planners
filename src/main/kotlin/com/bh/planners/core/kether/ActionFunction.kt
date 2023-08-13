@@ -1,8 +1,7 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.core.kether.common.CombinationKetherParser
-import com.bh.planners.core.kether.common.SimpleKetherParser
-import com.bh.planners.core.kether.common.simpleKetherParser
+import com.bh.planners.core.kether.common.KetherHelper.simpleKetherParser
 import taboolib.common.platform.function.info
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
