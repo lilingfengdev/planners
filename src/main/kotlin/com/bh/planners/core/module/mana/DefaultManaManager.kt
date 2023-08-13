@@ -74,7 +74,7 @@ class DefaultManaManager : ManaManager {
     }
 
     override fun setMana(profile: PlayerProfile, value: Double) {
-        profile.updateFlag("@mana", value)
+        profile.updateFlag("@mana", value.coerceAtMost(getMaxMana(profile)))
     }
 
 
