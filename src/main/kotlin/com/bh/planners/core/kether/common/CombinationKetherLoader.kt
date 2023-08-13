@@ -17,7 +17,7 @@ class Visitor : ClassVisitor(0) {
     }
 
     override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {
-        if (method.isAnnotationPresent(CombinationKetherParser.Used::class.java) && method.returnType == ScriptActionParser::class.java) {
+        if (method.isAnnotationPresent(CombinationKetherParser.Used::class.java) && CombinationKetherParser::class.java.isAssignableFrom(method.returnType)) {
             val combinationKetherParser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as CombinationKetherParser
             val parser = combinationKetherParser.run()
             val id = combinationKetherParser.id

@@ -9,63 +9,69 @@ import com.mojang.datafixers.kinds.App
 import taboolib.library.kether.Parser
 import taboolib.module.kether.*
 
-
 /**
- * 返回至少是释放者的目标容器
+ * object的原因是供给外部使用
  */
-fun ParserHolder.containerOrSender(): Parser<Target.Container> {
-    return Parser.frame {
-        val nextSelectorOrNull = it.nextSelectorOrNull()
-        Parser.Action { frame ->
-            frame.containerOrSender(nextSelectorOrNull)
-        }
-    }
-}
+object KetherHelper {
 
-/**
- * 返回至少是原点的目标容器
- */
-fun ParserHolder.containerOrOrigin(): Parser<Target.Container> {
-    return Parser.frame {
-        val nextSelectorOrNull = it.nextSelectorOrNull()
-        Parser.Action { frame ->
-            frame.containerOrOrigin(nextSelectorOrNull)
-        }
-    }
-}
-
-/**
- * 返回有可能为空的目标容器
- */
-fun ParserHolder.containerOrEmpty(): Parser<Target.Container> {
-    return Parser.frame {
-        val nextSelectorOrNull = it.nextSelectorOrNull()
-        Parser.Action { frame ->
-            frame.container(nextSelectorOrNull)
-        }
-    }
-}
-
-fun simpleKetherParser(vararg id: String, func: () -> ScriptActionParser<out Any?>): SimpleKetherParser {
-    return object : SimpleKetherParser(*id) {
-        override fun run(): ScriptActionParser<out Any?> {
-            return func()
-        }
-    }
-}
-
-fun <T> simpleKetherNow(vararg id: String, func : ScriptFrame.() -> Any?) : SimpleKetherParser {
-    return simpleKetherParser(*id) {
-        scriptParser { actionNow { func(this) } }
-    }
-}
-
-fun <T> simpleKetherParser(vararg id: String, builder: ParserHolder.(Parser.Instance) -> App<Parser.Mu, Parser.Action<T>>): SimpleKetherParser {
-    return object : SimpleKetherParser(*id) {
-        override fun run(): ScriptActionParser<Any?> {
-            return ScriptActionParser {
-                Parser.build(builder(ParserHolder,Parser.instance())).resolve<Any?>(this)
+    /**
+     * 返回至少是释放者的目标容器
+     */
+    fun ParserHolder.containerOrSender(): Parser<Target.Container> {
+        return Parser.frame {
+            val nextSelectorOrNull = it.nextSelectorOrNull()
+            Parser.Action { frame ->
+                frame.containerOrSender(nextSelectorOrNull)
             }
         }
     }
+
+    /**
+     * 返回至少是原点的目标容器
+     */
+    fun ParserHolder.containerOrOrigin(): Parser<Target.Container> {
+        return Parser.frame {
+            val nextSelectorOrNull = it.nextSelectorOrNull()
+            Parser.Action { frame ->
+                frame.containerOrOrigin(nextSelectorOrNull)
+            }
+        }
+    }
+
+    /**
+     * 返回有可能为空的目标容器
+     */
+    fun ParserHolder.containerOrEmpty(): Parser<Target.Container> {
+        return Parser.frame {
+            val nextSelectorOrNull = it.nextSelectorOrNull()
+            Parser.Action { frame ->
+                frame.container(nextSelectorOrNull)
+            }
+        }
+    }
+
+    fun simpleKetherParser(vararg id: String, func: () -> ScriptActionParser<out Any?>): SimpleKetherParser {
+        return object : SimpleKetherParser(*id) {
+            override fun run(): ScriptActionParser<out Any?> {
+                return func()
+            }
+        }
+    }
+
+    fun simpleKetherNow(vararg id: String, func : ScriptFrame.() -> Any?) : SimpleKetherParser {
+        return simpleKetherParser(*id) {
+            scriptParser { actionNow { func(this) } }
+        }
+    }
+
+    fun <T> simpleKetherParser(vararg id: String, builder: ParserHolder.(Parser.Instance) -> App<Parser.Mu, Parser.Action<T>>): SimpleKetherParser {
+        return object : SimpleKetherParser(*id) {
+            override fun run(): ScriptActionParser<Any?> {
+                return ScriptActionParser {
+                    Parser.build(builder(ParserHolder,Parser.instance())).resolve<Any?>(this)
+                }
+            }
+        }
+    }
+
 }
