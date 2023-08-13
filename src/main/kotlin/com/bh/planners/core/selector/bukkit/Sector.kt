@@ -41,7 +41,7 @@ object Sector : Selector {
                     }
                     // 如果忽略原点并且他不是原点 则添加
                     // 如果是原点 则跳过
-                    else if (ignoreOrigin && entity != data.origin) {
+                    else if (ignoreOrigin && (entity != data.origin)) {
                         data.container += entity.toTarget()
                     }
                 }
