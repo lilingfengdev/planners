@@ -28,10 +28,10 @@ object Range : Selector {
 
         return createAwaitVoidFuture {
             if (x == y && y == z) {
-                location.world?.getNearbyEntities(location, x+10, x, x+10)?.forEach {
-                    val entityL = it.location
+                location.world?.getNearbyEntities(location, x+10, x+10, x+10)?.forEach {
+                    val entityL = it.location.direction
                     val r = x + sqrt(it.width.pow(2.0) * 2)
-                    if (entityL.distance(location) <= r) {
+                    if (entityL.isInSphere(location.direction, r)) {
                         if (it is LivingEntity) {
                             data.container += it.toTarget()
                         }
