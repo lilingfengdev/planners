@@ -4,7 +4,6 @@ import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.effect.createAwaitVoidFuture
 import com.bh.planners.core.selector.Selector
-import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
 
@@ -43,11 +42,9 @@ object Rectangle : Selector {
         val vector2 = location.direction.clone().add(vectorX2).add(vectorY2).add(vectorZ2)
 
         return createAwaitVoidFuture {
-            location.world?.getNearbyEntities(location, long.coerceAtLeast(wide), high*2, long.coerceAtLeast(wide))?.forEach {
+            location.world?.livingEntities?.forEach {
                 if (it.location.direction.isInAABB(vector1, vector2)) {
-                    if (it is LivingEntity) {
-                        data.container += it.toTarget()
-                    }
+                    data.container += it.toTarget()
                 }
             }
         }

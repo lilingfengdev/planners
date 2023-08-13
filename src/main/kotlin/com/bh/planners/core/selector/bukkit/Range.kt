@@ -28,13 +28,11 @@ object Range : Selector {
 
         return createAwaitVoidFuture {
             if (x == y && y == z) {
-                location.world?.getNearbyEntities(location, x+10, x+10, x+10)?.forEach {
+                location.world?.livingEntities?.forEach {
                     val entityL = it.location.direction
                     val r = x + sqrt(it.width.pow(2.0) * 2)
                     if (entityL.isInSphere(location.direction, r)) {
-                        if (it is LivingEntity) {
-                            data.container += it.toTarget()
-                        }
+                        data.container += it.toTarget()
                     }
                 }
             } else {
