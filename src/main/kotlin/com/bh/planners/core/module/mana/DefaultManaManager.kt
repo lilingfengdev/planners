@@ -10,10 +10,6 @@ import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.util.runKetherThrow
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import taboolib.common.LifeCycle
-import taboolib.common.platform.Awake
-import taboolib.common.platform.Schedule
-import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.common5.cdouble
@@ -27,7 +23,7 @@ class DefaultManaManager : ManaManager {
 
     override fun onEnable() {
         maxmanaTask = submitAsync(period = 100) {
-            PlannersAPI.profiles.forEach { uuid, profile ->
+            PlannersAPI.profiles.forEach { (uuid, profile) ->
                 if (profile.player.isOnline) {
                     profile.updateFlag("@max-mana", calculate(profile))
                 }
