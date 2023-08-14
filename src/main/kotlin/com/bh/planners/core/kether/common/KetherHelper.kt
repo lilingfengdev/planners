@@ -81,4 +81,10 @@ object KetherHelper {
         }
     }
 
+    fun registerCombinationKetherParser(combinationKetherParser: CombinationKetherParser) {
+        val id = combinationKetherParser.id
+        val namespace = combinationKetherParser.namespace
+        KetherLoader.registerParser(combinationKetherParser.run(), id, namespace, true)
+    }
+
 }
