@@ -77,7 +77,7 @@ object EffectTieLine : Effect(), EffectParser {
                         if (context !is Context.SourceImpl) return@thenAccept
 
                         val response = ActionEffect.Response(context, events)
-                        val spawner = Spawner(pos1.firstLocationTarget()!!, pos2.firstBukkitLocationTarget()!!)
+                        val spawner = Spawner(pos1.firstLocationTarget()!!, pos2.firstLocationTarget()!!)
                         submit(async = true) {
                             spawner.sendTo(frame.origin(), EffectOption.get(action), context, response)
                         }

@@ -6,7 +6,6 @@ import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
-import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
@@ -291,10 +290,6 @@ fun catchRunning(action: () -> Unit) {
     } catch (e: Throwable) {
         e.printKetherErrorMessage()
     }
-}
-
-fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParser {
-    return ActionEventParser(resolve)
 }
 
 fun QuestReader.get(array: Array<String>): ParsedAction<*> {
