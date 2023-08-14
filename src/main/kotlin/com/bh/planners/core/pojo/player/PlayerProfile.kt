@@ -1,6 +1,7 @@
 package com.bh.planners.core.pojo.player
 
 import com.bh.planners.api.PlannersAPI
+import com.bh.planners.core.pojo.Skill
 import com.bh.planners.core.pojo.data.DataContainer
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.storage.Storage
@@ -35,6 +36,10 @@ class PlayerProfile(val player: Player, val id: Long) {
     fun getSkills(): List<PlayerJob.Skill> {
         val skillKeys = job?.instance?.skills ?: emptyList()
         return skillKeys.mapNotNull { getSkill(it) }
+    }
+
+    fun getSkillOrNull(instance: Skill): PlayerJob.Skill? {
+        return getSkill(instance.key)
     }
 
     fun getSkill(id: Long): PlayerJob.Skill? {
