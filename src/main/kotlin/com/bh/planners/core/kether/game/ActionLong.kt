@@ -15,8 +15,8 @@ class ActionLong(
         val future = CompletableFuture<Double>()
             frame.createContainer(pos1).thenAccept { pos1 ->
                 frame.containerOrSender(pos2).thenAccept { pos2 ->
-                    val loc1 = pos1.firstLocation() ?: pos1.firstProxyEntity()?.location ?: return@thenAccept
-                    val loc2 = pos2.firstLocation() ?: pos2.firstProxyEntity()?.location ?: return@thenAccept
+                    val loc1 = pos1.firstBukkitLocation() ?: pos1.firstProxyEntity()?.location ?: return@thenAccept
+                    val loc2 = pos2.firstBukkitLocation() ?: pos2.firstProxyEntity()?.location ?: return@thenAccept
                     future.complete(loc1.safeDistance(loc2))
                 }
             }

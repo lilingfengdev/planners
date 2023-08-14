@@ -6,7 +6,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Team
 
-object GlowUtil {
+object Glows {
 
     private val teams by lazy {
         ChatColor.values().map { it }.associateWith { it.scoreboard }

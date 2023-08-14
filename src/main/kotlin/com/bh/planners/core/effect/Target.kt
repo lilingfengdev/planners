@@ -177,7 +177,7 @@ interface Target {
             forEach<Location> { index -> func(value, index) }
         }
 
-//        fun firstLocation() = filterIsInstance<Location>()
+//        fun firstBukkitLocation() = filterIsInstance<Location>()
 
         fun firstTarget() = firstOrNull()
 
@@ -196,7 +196,7 @@ interface Target {
 
         fun getLocationTarget(index: Int) = filterIsInstance<Location>().getOrNull(index)
 
-        fun firstLocation() = getLocationTarget(0)?.value
+        fun firstBukkitLocation() = getLocationTarget(0)?.value
 
         fun firstLocationTarget() = getLocationTarget(0)
 

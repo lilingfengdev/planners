@@ -2,28 +2,39 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
+import com.bh.planners.core.kether.common.KetherHelper.materialOrStone
+import com.bh.planners.core.kether.common.SimpleKetherParser
 import com.google.gson.JsonObject
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 import taboolib.platform.BukkitPlugin
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class ActionToast(
-    val material: ParsedAction<*>,
-    val message: ParsedAction<*>,
-    val data: ParsedAction<*>,
-    val frame: ParsedAction<*>,
-    val selector: ParsedAction<*>?,
-) : ScriptAction<Void>() {
+object ActionToast : SimpleKetherParser() {
 
+    override fun run(): ScriptActionParser<out Any?> {
+        return combinationParser {
+            it.group(
+                    materialOrStone(),
+                    text(),
+                    command("data", "nbt", then = text()).option().defaultsTo("{}"),
+                    command("frame", then = text()).option().defaultsTo("challenge"),
+                    containerOrSender()
+            ).apply(it) { material, text, data, frame, container ->
+                now {
+                    container.forEachPlayer {
+                        execute(this, material.name, text, data, frame)
+                    }
+                }
+            }
+        }
+    }
 
     class Builder {
 
@@ -66,45 +77,6 @@ class ActionToast(
         }
     }
 
-
-    companion object {
-
-        /**
-         * toast material title <data: action> <frame: action(challenge)>
-         */
-        @KetherParser(["toast"], namespace = NAMESPACE, shared = true)
-        fun parser() = scriptParser {
-            val material = it.nextParsedAction()
-            val message = it.nextParsedAction()
-            val data = it.nextArgumentAction(arrayOf("data", "nbt"), "{}")!!
-            val frame = it.nextArgumentAction(arrayOf("frame"), "challenge")!!
-            ActionToast(material, message, data, frame, it.nextSelectorOrNull())
-        }
-
-    }
-
-    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.readAccept<String>(material) { material ->
-            frame.readAccept<String>(message) { message ->
-                frame.readAccept<String>(data) { data ->
-                    frame.readAccept<String>(this.frame) { f ->
-                        if (selector != null) {
-                            frame.createContainer(selector).thenAccept {
-                                submit {
-                                    it.forEachPlayer { execute(this, material, message, data, f) }
-                                }
-                            }
-                        } else {
-                            submit { execute(frame.bukkitPlayer() ?: return@submit, material, message, data, f) }
-                        }
-                    }
-                }
-            }
-        }
-
-        return CompletableFuture.completedFuture(null)
-    }
-
     fun create(material: String, message: String, data: String, frame: String): Builder {
         val builder = Builder()
         builder.material = "minecraft:$material"
@@ -130,6 +102,5 @@ class ActionToast(
             Bukkit.getUnsafe().removeAdvancement(id)
         }
     }
-
 
 }

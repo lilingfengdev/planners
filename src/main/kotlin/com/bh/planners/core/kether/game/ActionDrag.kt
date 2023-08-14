@@ -41,7 +41,7 @@ class ActionDrag(
             frame.createContainer(selector).thenAccept { container ->
                 if (pos != null) {
                     frame.createContainer(pos).thenAccept {
-                        val pos = it.firstLocation() ?: error("ActionDrag 'pos' empty")
+                        val pos = it.firstBukkitLocation() ?: error("ActionDrag 'pos' empty")
                         container.forEachProxyEntity {
                             this.velocity = next(this.location, pos, step)
                         }

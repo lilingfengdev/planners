@@ -12,14 +12,13 @@ object ActionEvent : MultipleKetherParser("event") {
         return rootVariables().get<Event>("@Event").orElse(null) ?: error("Error running environment !")
     }
 
-    val cancel =
-        combinationParser {
-            it.group(command("to", then = bool()).option().defaultsTo(true)).apply(it) { value ->
-                now {
-                    (event() as? Cancellable)?.isCancelled = value
-                }
+    val cancel = combinationParser {
+        it.group(command("to", then = bool()).option().defaultsTo(true)).apply(it) { value ->
+            now {
+                (event() as? Cancellable)?.isCancelled = value
             }
         }
+    }
 
     val damage = scriptParser {
         it.switch {

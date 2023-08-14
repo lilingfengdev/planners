@@ -193,7 +193,7 @@ fun ScriptFrame.getEntity(selector: ParsedAction<*>): CompletableFuture<Entity?>
 }
 
 fun ScriptFrame.getLocation(selector: ParsedAction<*>): CompletableFuture<Location> {
-    return createContainer(selector).thenApply { it.firstLocation() }
+    return createContainer(selector).thenApply { it.firstBukkitLocation() }
 }
 
 fun ScriptFrame.senderPlannerProfile(): PlayerProfile? {
