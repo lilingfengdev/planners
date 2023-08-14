@@ -22,14 +22,14 @@ class DefaultManaManager : ManaManager {
     var regainTask: PlatformExecutor.PlatformTask? = null
 
     override fun onEnable() {
-        maxmanaTask = submitAsync(period = 100) {
-            PlannersAPI.profiles.forEach { (uuid, profile) ->
+        maxmanaTask = submitAsync(period = 100, comment = "MaxMana Update") {
+            PlannersAPI.profiles.forEach { (_, profile) ->
                 if (profile.player.isOnline) {
                     profile.updateFlag("@max-mana", calculate(profile))
                 }
             }
         }
-        regainTask = submitAsync(period = PlannersOption.regainManaPeriod) {
+        regainTask = submitAsync(period = PlannersOption.regainManaPeriod, comment = "Mana Regain") {
             Bukkit.getOnlinePlayers().forEach { player ->
                 val profile = player.plannersProfile
                 if (ManaManager.INSTANCE.getMaxMana(profile) == ManaManager.INSTANCE.getMana(profile)) return@forEach
@@ -40,6 +40,7 @@ class DefaultManaManager : ManaManager {
 
     override fun onDisable() {
         maxmanaTask?.cancel()
+        regainTask?.cancel()
     }
 
     private fun calculate(profile: PlayerProfile): Double {

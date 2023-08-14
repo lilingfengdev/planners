@@ -2,6 +2,7 @@ package com.bh.planners.api
 
 import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.api.script.ScriptLoader
+import com.bh.planners.core.module.mana.ManaManager
 import com.bh.planners.core.pojo.Job
 import com.bh.planners.core.pojo.Router
 import com.bh.planners.core.pojo.Skill
@@ -46,6 +47,16 @@ object PlannersLoader {
         routerConfig.getKeys(false).forEach {
             PlannersAPI.routers += Router(routerConfig.getConfigurationSection(it)!!)
         }
+    }
+
+    @Awake(LifeCycle.ENABLE)
+    fun loadMana() {
+        ManaManager.INSTANCE.onEnable()
+    }
+
+    @Awake(LifeCycle.DISABLE)
+    fun unloadMana() {
+        ManaManager.INSTANCE.onDisable()
     }
 
 
