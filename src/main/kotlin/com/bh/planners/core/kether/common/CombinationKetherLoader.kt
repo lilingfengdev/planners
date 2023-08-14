@@ -24,10 +24,8 @@ class Visitor : ClassVisitor(0) {
             }
 
             val combinationKetherParser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as CombinationKetherParser
-            val parser = combinationKetherParser.run()
-            val id = combinationKetherParser.id
-            val namespace = combinationKetherParser.namespace
-            KetherLoader.registerParser(parser, id, namespace, true)
+
+            KetherHelper.registerCombinationKetherParser(combinationKetherParser)
         }
     }
 
@@ -38,14 +36,7 @@ class Visitor : ClassVisitor(0) {
             }
             
             val combinationKetherParser = instance?.get() as? CombinationKetherParser ?: return
-            val parser = combinationKetherParser.run()
-            val id = combinationKetherParser.id
-            val namespace = combinationKetherParser.namespace
-            // 如果渲染的周期是具有状态特性的 则执行on init
-            if (combinationKetherParser is Stateable) {
-                combinationKetherParser.onInit()
-            }
-            KetherLoader.registerParser(parser, id, namespace, true)
+            KetherHelper.registerCombinationKetherParser(combinationKetherParser)
         }
     }
 
