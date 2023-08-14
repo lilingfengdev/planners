@@ -33,7 +33,11 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
     @Suppress("UNCHECKED_CAST")
     override fun onInit() {
         ReflexClass.of(this::class.java).structure.fields.forEach { field ->
-            if (field.name == "INSTANCE") return@forEach
+
+            // ignored ...
+            if (field.name == "INSTANCE" || field.isAnnotationPresent(CombinationKetherParser.Ignore::class.java)) {
+                return@forEach
+            }
 
             // parameter parser
             if (ParameterKetherParser::class.java.isAssignableFrom(field.fieldType)) {

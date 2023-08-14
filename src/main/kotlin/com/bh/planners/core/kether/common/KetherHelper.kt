@@ -6,6 +6,7 @@ import com.bh.planners.core.kether.containerOrOrigin
 import com.bh.planners.core.kether.containerOrSender
 import com.bh.planners.core.kether.nextSelectorOrNull
 import com.mojang.datafixers.kinds.App
+import org.bukkit.Material
 import taboolib.library.kether.Parser
 import taboolib.module.kether.*
 
@@ -49,6 +50,12 @@ object KetherHelper {
             }
         }
     }
+
+    fun ParserHolder.materialOrStone() = material(Material.STONE)
+
+    fun ParserHolder.materialOrBarrier() = material(Material.BARRIER)
+
+    fun ParserHolder.material(default: Material) = any().map { Material.valueOf(it?.toString() ?: return@map null) }.defaultsTo(default)
 
     fun simpleKetherParser(vararg id: String, func: () -> ScriptActionParser<out Any?>): SimpleKetherParser {
         return object : SimpleKetherParser(*id) {

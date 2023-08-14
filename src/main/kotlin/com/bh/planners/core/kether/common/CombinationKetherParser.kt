@@ -11,6 +11,6 @@ interface CombinationKetherParser {
     fun run(): ScriptActionParser<out Any?>
 
     annotation class Used
-
-
+    
+    annotation class Ignore
 }

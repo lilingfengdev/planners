@@ -41,7 +41,7 @@ class ActionIsforward(
         frame.createContainer(selector).thenAccept { container ->
             if (pos != null) {
                 frame.createContainer(pos).thenAccept {
-                    val pos = it.firstLocation() ?: error("ActionDrag 'pos' empty")
+                    val pos = it.firstBukkitLocation() ?: error("ActionDrag 'pos' empty")
                     container.forEachProxyEntity {
                         future.complete(isforward(pos, this.location))
                     }

@@ -4,6 +4,9 @@ import com.bh.planners.api.ContextAPI
 import com.bh.planners.api.PlannersAPI
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.bukkitPlayer
+import com.bh.planners.core.kether.common.CombinationKetherParser
+import com.bh.planners.core.kether.common.KetherHelper
+import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.nextSelectorOrNull
 import taboolib.common5.Coerce
@@ -14,68 +17,16 @@ import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
-class ActionSkillCast {
-
-    class TryCast(val skill: ParsedAction<*>, val selector: ParsedAction<*>?) : ScriptAction<Void>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(skill).run<Any>().thenAccept { skill ->
-                if (selector != null) {
-                    frame.execPlayer(selector) {
-                        PlannersAPI.cast(this, skill.toString(), true)
-                    }
-                } else {
-                    PlannersAPI.cast(frame.bukkitPlayer() ?: return@thenAccept, skill.toString(), true)
-                }
-            }
-        }
+@CombinationKetherParser.Used
+fun trycast() = KetherHelper.simpleKetherParser<Unit>("cast","try-cast","cast-try`") {
+    it.group(text(),containerOrSender()).apply(it) { skill,container ->
+        now { container.forEachPlayer { PlannersAPI.cast(this,skill) } }
     }
+}
 
-    class DirectCast(val skill: ParsedAction<*>, val level: ParsedAction<*>, val selector: ParsedAction<*>?) :
-        ScriptAction<Void>() {
-        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(skill).run<Any>().thenAccept {
-                val skill = PlannersAPI.getSkill(it.toString()) ?: return@thenAccept
-                frame.newFrame(level).run<Any>().thenAccept last@{
-                    val level = Coerce.toInteger(it)
-                    if (selector != null) {
-                        frame.execPlayer(selector) {
-                            ContextAPI.create(this, skill, level)?.cast()
-                        }
-                    } else {
-                        val player = frame.bukkitPlayer() ?: return@last
-                        ContextAPI.create(player, skill, level)?.cast()
-                    }
-                }
-            }
-        }
+@CombinationKetherParser.Used
+fun directcast() = KetherHelper.simpleKetherParser<Unit>("cast") {
+    it.group(text(), command("level", then = int()).option().defaultsTo(1),containerOrSender()).apply(it) { skill,level, container ->
+        now { container.forEachPlayer { PlannersAPI.directCast(this,skill,level) } }
     }
-
-    companion object {
-
-        /**
-         * 为目标玩家尝试释放技能
-         *
-         * 满足蓝量条件
-         * 满足冷却条件
-         * 满足拥有该技能条件
-         *
-         * try-cast "def0" they "@self"
-         */
-        @KetherParser(["try-cast"], namespace = NAMESPACE, shared = true)
-        fun parser1() = scriptParser {
-            TryCast(it.nextParsedAction(), it.nextSelectorOrNull())
-        }
-
-        /**
-         * 为目标玩家释放技能
-         * 不参与任何条件限制 直接指定等级释放
-         *
-         * direct-cast "def0" 1 they "@self"
-         */
-        @KetherParser(["direct-cast"], namespace = NAMESPACE, shared = true)
-        fun parser2() = scriptParser {
-            DirectCast(it.nextParsedAction(), it.nextParsedAction(), it.nextSelectorOrNull())
-        }
-    }
-
 }
