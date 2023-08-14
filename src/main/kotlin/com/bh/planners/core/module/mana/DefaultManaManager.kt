@@ -62,7 +62,14 @@ class DefaultManaManager : ManaManager {
 
 
     override fun getMana(profile: PlayerProfile): Double {
-        return profile.getFlag("@mana")?.toDouble() ?: 0.0
+        val max = getMaxMana(profile)
+        val mana = profile.getFlag("@mana")?.toDouble() ?: 0.0
+        return if (mana > max) {
+            setMana(profile, max)
+            profile.getFlag("@mana")?.toDouble() ?: 0.0
+        } else {
+            mana
+        }
     }
 
     override fun addMana(profile: PlayerProfile, value: Double) {
@@ -74,7 +81,7 @@ class DefaultManaManager : ManaManager {
     }
 
     override fun setMana(profile: PlayerProfile, value: Double) {
-        profile.updateFlag("@mana", value.coerceAtMost(getMaxMana(profile)))
+        profile.updateFlag("@mana", value.coerceAtMost(getMaxMana(profile)).coerceAtLeast(0.0))
     }
 
 
