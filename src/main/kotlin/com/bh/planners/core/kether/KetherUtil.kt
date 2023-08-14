@@ -6,14 +6,12 @@ import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
-import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.selector.Selector
 import com.bh.planners.util.StringNumber
-import com.mojang.datafixers.kinds.App
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -22,7 +20,9 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common5.Coerce
-import taboolib.library.kether.*
+import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestContext
+import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
 import taboolib.platform.type.BukkitPlayer
 import java.util.*
@@ -291,10 +291,6 @@ fun catchRunning(action: () -> Unit) {
     } catch (e: Throwable) {
         e.printKetherErrorMessage()
     }
-}
-
-fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParser {
-    return ActionEventParser(resolve)
 }
 
 fun QuestReader.get(array: Array<String>): ParsedAction<*> {

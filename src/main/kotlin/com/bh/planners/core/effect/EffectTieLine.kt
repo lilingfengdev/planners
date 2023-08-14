@@ -71,13 +71,13 @@ object EffectTieLine : Effect(), EffectParser {
 
             frame.run(action).str { action ->
                 frame.containerOrOrigin(pos1).thenAccept { pos1 ->
-                    frame.containerOrOrigin(pos2).thenAccept { pos2 ->
+                    frame.containerOrOrigin(pos2).thenAccept last@{ pos2 ->
                         val context = frame.getContext()
 
-                        if (context !is Context.SourceImpl) return@thenAccept
+                        if (context !is Context.SourceImpl) return@last
 
                         val response = ActionEffect.Response(context, events)
-                        val spawner = Spawner(pos1.firstLocationTarget()!!, pos2.firstBukkitLocationTarget()!!)
+                        val spawner = Spawner(pos1.firstLocationTarget()!!, pos2.firstLocationTarget()!!)
                         submit(async = true) {
                             spawner.sendTo(frame.origin(), EffectOption.get(action), context, response)
                         }
