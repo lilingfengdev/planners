@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.compat.dragoncore
 
-import com.bh.planners.core.kether.execPlayer
+import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.readAccept
 import eos.moe.dragoncore.network.PacketSender
 import org.bukkit.entity.Player
@@ -36,7 +36,6 @@ class ActionDragonBind(
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
-        frame.execPlayer(selector) {
             frame.readAccept<String>(entity) { entity ->
                 frame.readAccept<String>(bindEntity) { bindEntity ->
                     frame.readAccept<Boolean>(bindYaw) { bindYaw ->
@@ -44,16 +43,20 @@ class ActionDragonBind(
                             frame.readAccept<Float>(forward) { forward ->
                                 frame.readAccept<Float>(offsetY) { offsetY ->
                                     frame.readAccept<Float>(sideways) { sideways ->
-                                        execute(
-                                            this,
-                                            UUID.fromString(entity),
-                                            UUID.fromString(bindEntity),
-                                            bindYaw,
-                                            bindPitch,
-                                            forward,
-                                            offsetY,
-                                            sideways
-                                        )
+                                        frame.createContainer(selector).thenAccept {
+                                            it.forEachPlayer {
+                                                execute(
+                                                    this,
+                                                    UUID.fromString(entity),
+                                                    UUID.fromString(bindEntity),
+                                                    bindYaw,
+                                                    bindPitch,
+                                                    forward,
+                                                    offsetY,
+                                                    sideways
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -61,7 +64,6 @@ class ActionDragonBind(
                     }
                 }
             }
-        }
 
         return CompletableFuture.completedFuture(null)
 

@@ -27,7 +27,7 @@ object ActionDragonLoader {
      * t: selector jw to ady spawn ARMOR_STAND 剑舞 20 they "@offset 0 -1.5 0"
      * t: set a to entity uuid they "@self"
      * t: set b to entity uuid they "@fetch jw"
-     * t: dragon bind entity &b bindEntity &a forward 0 offsetY 0 sideways 0 bindYaw true bindPitch true they "@self"
+     * t: dragon bind entity &b bindEntity &a forward 0 offsetY 0 sideways 0 bindYaw true bindPitch true they "@server"
      *
      * 世界图片
      * dragon worldtexture send [key: String] [rotateX: Float] [rotateY: Float] [rotateZ: Float] [path: String] [width: Float] [height: Float] [alpha: Float] [followPlayer: Boolean] [glow: Boolean] [followEntity: Boolean] [x: Float] [y: Float] [z: Float] [player: selector]
