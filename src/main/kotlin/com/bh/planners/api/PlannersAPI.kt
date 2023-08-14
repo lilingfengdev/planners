@@ -30,6 +30,7 @@ import taboolib.platform.util.sendLang
 import java.io.File
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 object PlannersAPI {
 
@@ -41,7 +42,7 @@ object PlannersAPI {
 
     val jobs = mutableListOf<Job>()
 
-    val profiles = mutableMapOf<UUID, PlayerProfile>()
+    val profiles = ConcurrentHashMap<UUID, PlayerProfile>()
 
     val keySlots = mutableListOf<IKeySlot>()
 
