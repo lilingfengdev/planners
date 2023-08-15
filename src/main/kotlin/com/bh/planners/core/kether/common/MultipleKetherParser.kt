@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.common
 
 import com.bh.planners.core.kether.common.KetherHelper.simpleKetherParser
+import taboolib.library.kether.QuestActionParser
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.kether.ScriptActionParser
 import taboolib.module.kether.expects
@@ -10,11 +11,11 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
 
     protected val method = mutableMapOf<String, CombinationKetherParser>()
 
-    private val other: CombinationKetherParser?
+    protected val other: CombinationKetherParser?
         get() = method["main"] ?: method["other"]
 
-    override fun run(): ScriptActionParser<Any?> {
-        return ScriptActionParser {
+    override fun run(): QuestActionParser {
+        return ScriptActionParser<Any?> {
             try {
                 mark()
                 val expects = expects(*this@MultipleKetherParser.method.keys.filter { it != "other" && it != "main" }.toTypedArray())
