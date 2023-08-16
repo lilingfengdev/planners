@@ -5,6 +5,7 @@ import com.skillw.attsystem.api.AttrAPI.addCompiledData
 import com.skillw.attsystem.api.AttrAPI.read
 import com.skillw.attsystem.api.AttrAPI.removeCompiledData
 import com.skillw.attsystem.api.AttrAPI.update
+import com.skillw.pouvoir.util.livingEntity
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import java.util.*
@@ -37,7 +38,7 @@ class AttributeSystemBridge : AttributeBridge {
     }
 
     override fun update(uuid: UUID) {
-        uuid.update()
+        uuid.livingEntity()?.let { update(it) }
     }
 
     override fun get(uuid: UUID, keyword: String): Any {
