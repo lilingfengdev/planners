@@ -4,7 +4,6 @@ import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.selector.Selector
 import org.bukkit.Bukkit
-import org.bukkit.entity.LivingEntity
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -29,7 +28,7 @@ object InWorld : Selector {
 
         val world = Bukkit.getWorld(worldName)!!
         val targets =
-            world.entities.filterIsInstance<LivingEntity>().filter { it.type.name in types }.map { it.toTarget() }
+            world.livingEntities.filter { it.type.name in types }.map { it.toTarget() }
         data.container += targets
         return CompletableFuture.completedFuture(null)
     }

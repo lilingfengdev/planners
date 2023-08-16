@@ -66,7 +66,7 @@ object Combat {
                 if (!it.hasJob) return@forEach
                 // 如果手持技能icon
                 if (it.handSkill != null) {
-                    it.sendActionBar(BukkitGrid.toActionbarValue(it))
+                    it.sendActionBar(BukkitGrid.getActionbarValue(it))
                 } else {
                     it.sendActionBar(PlaceholderAPI.setPlaceholders(it, it.actionbarMessage ?: actionbarMessage))
                 }

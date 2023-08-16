@@ -43,7 +43,7 @@ class ActionLeap(
             frame.createContainer(selector).thenAccept { container ->
                 if (pos != null) {
                     frame.createContainer(pos).thenAccept {
-                        val pos = it.firstLocation() ?: error("ActionLeap 'pos' empty")
+                        val pos = it.firstBukkitLocation() ?: error("ActionLeap 'pos' empty")
                         container.forEachProxyEntity {
                             this.velocity = next(this.location, pos, step).add(this.velocity)
                         }

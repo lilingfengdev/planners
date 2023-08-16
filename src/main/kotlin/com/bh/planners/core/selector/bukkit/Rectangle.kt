@@ -2,20 +2,19 @@ package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.createAwaitVoidFuture
 import com.bh.planners.core.selector.Selector
-import org.bukkit.entity.LivingEntity
-import taboolib.common.platform.function.submit
+import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
-import kotlin.math.cos
-import kotlin.math.sin
 
 /**
  * 视角前长方形
  * Long 长
  * wide 宽
  * high 高
+ * forward 向前偏移
  *
- * @rectangle Long wide high
+ * @rectangle Long wide high forward
  */
 object Rectangle : Selector {
 
@@ -28,34 +27,27 @@ object Rectangle : Selector {
         val long = data.read<Double>(0, "0.0")
         val wide = data.read<Double>(1, "0.0")
         val high = data.read<Double>(2, "0.0")
+        val forward = data.read<Double>(3, "0.0")
 
-        val yaw1 = data.origin.getLocation()?.yaw?.toDouble() ?: 0.0
-        val yaw: Double = if (yaw1 > 180.0) {
-            Math.toRadians(yaw1 - 360.0)
-        } else if (yaw1 < -180.0) {
-            Math.toRadians(yaw1 + 360.0)
-        } else {
-            Math.toRadians(yaw1)
-        }
+        val vectorX1 = location.direction.clone().setY(0).normalize().multiply(forward)
+        val vectorY1 = Vector(0.0,-high/2,0.0)
+        val vectorZ1 = location.direction.clone().setY(0).crossProduct(Vector(0,1,0)).multiply(wide/2)
 
-        var n = wide/2.0
-        var m = wide/2.0
+        val vector1 = location.direction.clone().add(vectorX1).add(vectorY1).add(vectorZ1)
 
-        val future = CompletableFuture<Void>()
-        submit(async = false) {
-            while (m < (long - (wide / 2.0))) {
-                location.x -= n * sin(yaw)
-                location.z += n * cos(yaw)
-                location.world?.getNearbyEntities(location, wide / 2.0, high, wide / 2.0)?.forEach {
-                    if (it is LivingEntity) {
-                        data.container += it.toTarget()
-                    }
+        val vectorX2 = location.direction.clone().setY(0).normalize().multiply(forward+long)
+        val vectorY2 = Vector(0.0,high/2,0.0)
+        val vectorZ2 = location.direction.clone().setY(0).crossProduct(Vector(0,1,0)).multiply(-wide/2)
+
+        val vector2 = location.direction.clone().add(vectorX2).add(vectorY2).add(vectorZ2)
+
+        return createAwaitVoidFuture {
+            location.world?.livingEntities?.forEach {
+                if (it.location.direction.isInAABB(vector1, vector2)) {
+                    data.container += it.toTarget()
                 }
-                n = 1.0.coerceAtMost(wide / 2.0)
-                m += 1.0.coerceAtMost(wide / 2.0)
             }
-            future.complete(null)
         }
-        return future
     }
+
 }

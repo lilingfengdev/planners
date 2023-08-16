@@ -6,7 +6,6 @@ import com.bh.planners.api.common.Demand.Companion.toDemand
 import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.toTarget
-import com.bh.planners.core.kether.event.ActionEventParser
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.player.PlayerJob
@@ -194,7 +193,7 @@ fun ScriptFrame.getEntity(selector: ParsedAction<*>): CompletableFuture<Entity?>
 }
 
 fun ScriptFrame.getLocation(selector: ParsedAction<*>): CompletableFuture<Location> {
-    return createContainer(selector).thenApply { it.firstLocation() }
+    return createContainer(selector).thenApply { it.firstBukkitLocation() }
 }
 
 fun ScriptFrame.senderPlannerProfile(): PlayerProfile? {
@@ -238,7 +237,7 @@ fun ScriptFrame.container(action: ParsedAction<*>?, default: Target? = null): Co
     }
 }
 
-fun parseTargetContainer(value: Any,context: Context): Target.Container {
+fun parseTargetContainer(value: Any, context: Context): Target.Container {
 
     val container = Target.Container()
 
@@ -248,7 +247,7 @@ fun parseTargetContainer(value: Any,context: Context): Target.Container {
 
         is List<*> -> {
             value.filterNotNull().forEach {
-                container += parseTargetContainer(it,context)
+                container += parseTargetContainer(it, context)
             }
         }
 
@@ -279,7 +278,7 @@ fun parseTargetContainer(value: Any,context: Context): Target.Container {
 fun ScriptFrame.createContainer(selector: ParsedAction<*>): CompletableFuture<Target.Container> {
     val future = CompletableFuture<Target.Container>()
     this.newFrame(selector).run<Any>().thenAccept {
-        future.complete(parseTargetContainer(it,getContext()))
+        future.complete(parseTargetContainer(it, getContext()))
     }
     return future
 }
@@ -292,10 +291,6 @@ fun catchRunning(action: () -> Unit) {
     } catch (e: Throwable) {
         e.printKetherErrorMessage()
     }
-}
-
-fun <T> eventParser(resolve: (QuestReader) -> ScriptAction<T>): ActionEventParser {
-    return ActionEventParser(resolve)
 }
 
 fun QuestReader.get(array: Array<String>): ParsedAction<*> {
@@ -383,4 +378,3 @@ fun CompletableFuture<Target.Container>.forEachProxyEntity(block: ProxyEntity.(i
 fun CompletableFuture<Target.Container>.forEachEntity(block: Entity.(index: Int) -> Unit) {
     thenAccept { it.forEachEntity(block) }
 }
-

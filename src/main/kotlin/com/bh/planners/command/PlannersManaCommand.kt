@@ -1,13 +1,12 @@
 package com.bh.planners.command
 
-import com.bh.planners.api.ManaCounter.addMana
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.hasJob
 import com.bh.planners.core.kether.bukkitPlayer
-import org.bukkit.Bukkit
+import com.bh.planners.core.module.mana.ManaManager
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
-import taboolib.common5.Coerce
+import taboolib.common5.cdouble
 import taboolib.expansion.createHelper
 import taboolib.platform.util.sendLang
 
@@ -22,14 +21,12 @@ object PlannersManaCommand {
 
     @CommandBody
     val give = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("value") {
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
-                        player.plannersProfile.addMana(Coerce.toDouble(argument))
+                        ManaManager.INSTANCE.addMana(player.plannersProfile,argument.cdouble)
                         player.sendLang("player-get-mana", argument)
                     }
                 }
@@ -39,14 +36,12 @@ object PlannersManaCommand {
 
     @CommandBody
     val take = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { sender, context -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("value") {
-                execute<ProxyCommandSender> { sender, context, argument ->
+                execute<ProxyCommandSender> { _, context, argument ->
                     val player = context.player("player").bukkitPlayer()!!
                     if (player.hasJob) {
-                        player.plannersProfile.addMana(-Coerce.toDouble(argument))
+                        ManaManager.INSTANCE.takeMana(player.plannersProfile,argument.cdouble)
                         player.sendLang("player-take-mana", argument)
                     }
                 }

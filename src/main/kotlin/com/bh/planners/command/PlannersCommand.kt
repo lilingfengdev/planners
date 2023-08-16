@@ -7,13 +7,11 @@ import com.bh.planners.api.event.PluginReloadEvent
 import com.bh.planners.api.script.ScriptLoader
 import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.command.CommandBody
-import taboolib.common.platform.command.CommandHeader
-import taboolib.common.platform.command.mainCommand
-import taboolib.common.platform.command.subCommand
+import taboolib.common.platform.command.*
 import taboolib.common5.Mirror
 import taboolib.expansion.createHelper
 import taboolib.module.chat.colored
+import taboolib.module.kether.runKether
 
 @CommandHeader("planners", aliases = ["ps", "pl"], permission = "planners.command")
 object PlannersCommand {
@@ -60,13 +58,13 @@ object PlannersCommand {
 
     @CommandBody
     val info = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             execute<ProxyCommandSender> { sender, _, argument ->
                 val playerExact = Bukkit.getPlayerExact(argument) ?: return@execute
-                ScriptLoader.createFunctionScript(ContextAPI.create(playerExact), PlannersOption.infos).forEach {
-                    sender.sendMessage(it.colored())
+                runKether {
+                    ScriptLoader.createFunctionScript(ContextAPI.create(playerExact), PlannersOption.infos).forEach {
+                        sender.sendMessage(it.colored())
+                    }
                 }
             }
         }

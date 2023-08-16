@@ -1,8 +1,8 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("io.izzel.taboolib") version "1.50"
-    id("org.jetbrains.kotlin.jvm") version "1.7.20"
+    id("io.izzel.taboolib") version "1.56"
+    id("org.jetbrains.kotlin.jvm") version "1.5.31"
 }
 
 taboolib {
@@ -46,16 +46,10 @@ taboolib {
             name("GlowAPI").optional(true)
         }
     }
-}
-tasks.withType<Jar> {
-    destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
-////    destinationDir = file("F:/Server/purpur 1.18.2/plugins")
+    options("skip-kotlin-relocate", "keep-kotlin-module")
 }
 repositories {
     mavenCentral()
-    maven(uri("https://maven.aliyun.com/repository/google"))
-    maven(uri("https://maven.aliyun.com/repository/jcenter"))
-    maven(uri("https://maven.aliyun.com/nexus/content/groups/public"))
 }
 
 dependencies {

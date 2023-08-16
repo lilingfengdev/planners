@@ -27,7 +27,7 @@ fun PlayerProfile.setPoint(point: Int) {
 }
 
 fun PlayerProfile.add(skill: PlayerJob.Skill, value: Int) {
-    if (value + skill.level <= skill.maxLevel && PlayerSkillUpgradeEvent(player, skill).call()) {
+    if (((value + skill.level) <= skill.maxLevel) && PlayerSkillUpgradeEvent(player, skill).call()) {
         skill.level += value
         submitAsync {
             Storage.INSTANCE.updateSkill(this@add, skill)
@@ -36,7 +36,7 @@ fun PlayerProfile.add(skill: PlayerJob.Skill, value: Int) {
 }
 
 fun PlayerProfile.set(skill: PlayerJob.Skill, value: Int) {
-    if (value <= skill.maxLevel && PlayerSkillUpgradeEvent(player, skill).call()) {
+    if ((value <= skill.maxLevel) && PlayerSkillUpgradeEvent(player, skill).call()) {
         skill.level = value
         submitAsync {
             Storage.INSTANCE.updateSkill(this@set, skill)
@@ -168,18 +168,18 @@ fun PlayerProfile.bind(skill: PlayerJob.Skill, iKeySlot: IKeySlot) {
 
     // 取消绑定
     if (skill.keySlot == iKeySlot) {
-        val oldKeySlot = skill.keySlot
+        val old = skill.keySlot
         skill.shortcutKey = null
-        PlayerSkillBindEvent(player, skill, oldKeySlot).call()
+        PlayerSkillUnbindEvent(player, skill, old!!).call()
     } else {
         // 解绑同快捷键技能
         val orNull = this.getSkills().firstOrNull { it.key != skill.key && it.keySlot == iKeySlot }
         if (orNull != null) {
             bind(orNull, iKeySlot)
         }
-        val oldKeySlot = skill.keySlot
+        val form = skill.keySlot
         skill.shortcutKey = iKeySlot.key
-        PlayerSkillBindEvent(player, skill, oldKeySlot).call()
+        PlayerSkillBindEvent(player, skill, form, iKeySlot).call()
     }
     submitAsync {
         Storage.INSTANCE.updateSkill(this@bind, skill)

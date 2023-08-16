@@ -2,10 +2,9 @@ package com.bh.planners.core.selector.bukkit
 
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.createAwaitVoidFuture
 import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.Entity
-import org.bukkit.entity.LivingEntity
-import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -26,21 +25,18 @@ object Annular : Selector {
         val max = data.read<Double>(1, "0.0")
         val high = data.read<Double>(2, "0.0")
 
-        val future = CompletableFuture<Void>()
-        submit(async = false) {
-            val maxEntitys = location.world?.getNearbyEntities(location, max, high, max)
-            val minEntitys = location.world?.getNearbyEntities(location, min, 256.0, min)
+        return createAwaitVoidFuture {
+            val livingEntitys = location.world?.livingEntities ?: return@createAwaitVoidFuture
             val entitys = mutableSetOf<Entity>()
-            maxEntitys?.let { entitys.addAll(it) }
-            minEntitys?.let { entitys.removeAll(minEntitys) }
-            entitys.forEach {
-                if (it is LivingEntity) {
-                    data.container += it.toTarget()
+            livingEntitys.forEach {
+                if (it.location.direction.isInSphere(location.direction, max) && !it.location.direction.isInSphere(location.direction, min) && it.location.y <= location.y + high) {
+                    entitys.add(it)
                 }
             }
-            future.complete(null)
+            entitys.forEach {
+                data.container += it.toTarget()
+            }
         }
-        return future
     }
 
 }

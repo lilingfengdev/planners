@@ -10,7 +10,7 @@ object ActionBossbar {
 
     /**
      * 创建一个bossbar 并且在timeout/tick后删除 -1为不删除 将返回一个bossbar的id用于后续操作
-     * bossbar create <timeout: action>
+     * bossbar create [id: string] <timeout: action>
      *
      * 删除bossbar
      * bossbar delete [id: string]
@@ -39,7 +39,7 @@ object ActionBossbar {
         it.switch {
 
             case("create") {
-                ActionBossBarCreate(it.nextArgumentAction(arrayOf("tick", "timeout"), -1)!!)
+                ActionBossBarCreate(it.nextParsedAction(),it.nextArgumentAction(arrayOf("tick", "timeout"), -1)!!)
             }
 
             case("delete") {
@@ -51,11 +51,11 @@ object ActionBossbar {
             }
 
             case("style") {
-                ActionBossBarTitle(it.nextParsedAction(), it.nextParsedAction())
+                ActionBossBarStyle(it.nextParsedAction(), it.nextParsedAction())
             }
 
             case("color") {
-                ActionBossBarTitle(it.nextParsedAction(), it.nextParsedAction())
+                ActionBossBarColor(it.nextParsedAction(), it.nextParsedAction())
             }
 
 //            case("viewer") {

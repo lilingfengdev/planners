@@ -88,33 +88,35 @@ class ActionGermEffectProjectile : ScriptAction<Void>() {
                 val animatable = effect as IAnimatable<*>
 
                 // 绑定目标目的地
-
                 var move: GermAnimationMove? = null
 
                 if (target is Target.Location) {
                     move = buildMoveToTarget(origin, target.getLocation()!!, transition).setDelay(delay)
-                    animatable.addAnimation(move)
                 }
 
+                if (target is Target.Entity) {
+                    move?.offsetY = "-${target.getEntity()!!.height / 2.0}"
+                }
+
+                animatable.addAnimation(move)
                 origin.world!!.players.forEach { onlinePlayer ->
                     // 命中实体
                     effect.isCollisionEntity = true
                     effect.collisionCount = count
                     effect.isCollisionRemove = remove
 
-                    effect.setOnEntity {
-                        (context as? Session)?.handleIncident(onhit, IncidentGermProjectileHitEntity(source, it))
-                    }
-                    effect.setOnBlock {
-                        info("on block $it")
-                    }
-
+                    info(source)
                     if (source is Target.Entity) {
                         effect.shooterName = source.getEntity()!!.name
                     }
                     // 混淆shooter name
                     else {
                         effect.shooterName = origin.getNearbyEntities(64.0).firstOrNull { it is Player }?.name
+                    }
+
+                    effect.setOnEntity {
+                        info("on hit $it")
+                        (context as? Session)?.handleIncident(onhit, IncidentGermProjectileHitEntity(source, it))
                     }
 
                     // 播放到实体
@@ -145,16 +147,6 @@ class ActionGermEffectProjectile : ScriptAction<Void>() {
             }
         }
     }
-
-    fun execute(effect: GermEffectPart<*>, move: String, source: Target.Container, target: Target.Entity) {
-
-        source.forEachLocation {
-            val effect = mixtureCreateEffect(effect)
-            val animatable = effect as IAnimatable<*>
-            animatable.addAnimation(buildMoveToTarget(this, target.getLocation()!!, move))
-        }
-    }
-
 
     fun buildMoveToTarget(casterLoc: Location, targetLoc: Location, duration: String): GermAnimationMove {
         val moveX: Double = targetLoc.getX() - casterLoc.getX()

@@ -2,6 +2,7 @@ __option__:
   name: '狂战士'
   router: warrior
   mana-eval: 'math player level * 2 + 50'
+  regain-mana-eval: 'math player level + 2'
 
 
 skills:

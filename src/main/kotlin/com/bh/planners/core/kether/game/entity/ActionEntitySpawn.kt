@@ -6,14 +6,13 @@ import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.createContainer
 import com.bh.planners.core.kether.origin
 import com.bh.planners.core.kether.runAny
+import com.bh.planners.util.safeSync
 import io.lumine.xikage.mythicmobs.MythicMobs
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
-import taboolib.common.util.sync
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptAction
@@ -56,24 +55,16 @@ class ActionEntitySpawn(
 
     fun spawn(mob: String, locations: List<Location>): CompletableFuture<List<Entity>> {
         val future = CompletableFuture<List<Entity>>()
-        if (Bukkit.isPrimaryThread()) {
+        safeSync {
             future.complete(locations.map { MythicMobs.inst().mobManager.spawnMob(mob, it, 1.0).entity.bukkitEntity })
-        } else {
-            sync {
-                future.complete(locations.map { MythicMobs.inst().mobManager.spawnMob(mob, it, 1.0).entity.bukkitEntity })
-            }
         }
         return future
     }
 
     fun spawn(entityType: EntityType, locations: List<Location>, vector: Vector): CompletableFuture<List<Entity>> {
         val future = CompletableFuture<List<Entity>>()
-        if (Bukkit.isPrimaryThread()) {
+        safeSync {
             future.complete(locations.map { location -> spawn(entityType, location, vector) })
-        } else {
-            sync {
-                future.complete(locations.map { location -> spawn(entityType, location, vector) })
-            }
         }
         return future
     }

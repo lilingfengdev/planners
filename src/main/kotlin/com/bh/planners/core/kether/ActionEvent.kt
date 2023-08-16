@@ -1,33 +1,60 @@
 package com.bh.planners.core.kether
 
-import com.bh.planners.core.kether.event.ActionEventLoader
+import com.bh.planners.api.event.proxy.ProxyDamageEvent
+import com.bh.planners.core.kether.common.MultipleKetherParser
+import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.expects
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 
-class ActionEvent {
+object ActionEvent : MultipleKetherParser("event") {
 
-    companion object {
-
-        fun ScriptFrame.event(): Event {
-            return rootVariables().get<Event>("@Event").orElse(null) ?: error("Error running environment !")
-        }
-
-        /**
-         * 事件取消
-         * event cancel [to [false/true]]
-         *
-         */
-        @KetherParser(["event"], namespace = NAMESPACE, shared = true)
-        fun <T> parser() = scriptParser {
-            val strings = ActionEventLoader.actions.keys.flatMap { it.toList() }
-            val expects = it.expects(*strings.toTypedArray())
-            val actionParser = ActionEventLoader.getAction(expects)
-            actionParser.resolve<T>(it)
-        }
-
+    fun ScriptFrame.event(): Event {
+        return rootVariables().get<Event>("@Event").orElse(null) ?: error("Error running environment !")
     }
+
+    val cancel = combinationParser {
+        it.group(command("to", then = bool()).option().defaultsTo(true)).apply(it) { value ->
+            now {
+                (event() as? Cancellable)?.isCancelled = value
+            }
+        }
+    }
+
+    val damage = scriptParser {
+        it.switch {
+            case("set", "to") {
+                val action = it.nextParsedAction()
+                actionNow {
+                    run(action).double { value ->
+                        (event() as? ProxyDamageEvent)?.damage = value
+                    }
+
+                }
+            }
+
+            case("add") {
+                val action = it.nextParsedAction()
+                actionNow {
+                    run(action).double { value ->
+                        (event() as? ProxyDamageEvent)?.addDamage(value)
+                    }
+
+                }
+            }
+
+            case("take") {
+                val action = it.nextParsedAction()
+                actionNow {
+                    run(action).double { value ->
+                        (event() as? ProxyDamageEvent)?.addDamage(-value)
+                    }
+
+                }
+            }
+
+            other { actionNow { (event() as? ProxyDamageEvent)?.damage } }
+        }
+    }
+
 
 }

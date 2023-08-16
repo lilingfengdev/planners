@@ -33,7 +33,7 @@ object Sector : Selector {
         location.yaw += yaw
 
         return createAwaitVoidFuture {
-            val nearbyEntities = location.getNearbyEntities(radius+5)
+            val nearbyEntities = location.getNearbyEntities(radius+10)
             nearbyEntities.forEach { entity ->
                 if (isPointInEntitySector(entity.location, location, radius + sqrt( entity.width.pow( 2.0 ) * 2 ), angle)) {
                     if (data.isNon) {
@@ -41,7 +41,7 @@ object Sector : Selector {
                     }
                     // 如果忽略原点并且他不是原点 则添加
                     // 如果是原点 则跳过
-                    else if (ignoreOrigin && entity != data.origin) {
+                    else if (ignoreOrigin && (entity != data.origin)) {
                         data.container += entity.toTarget()
                     }
                 }

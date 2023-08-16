@@ -3,12 +3,12 @@ package com.bh.planners.core.selector.bukkit
 import com.bh.planners.core.effect.Target.Companion.ifEntity
 import com.bh.planners.core.effect.Target.Companion.ifLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.effect.createAwaitVoidFuture
 import com.bh.planners.core.selector.Selector
 import com.bh.planners.util.entityAt
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
-import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 import kotlin.math.floor
 
@@ -24,17 +24,14 @@ object Visual : Selector {
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {
         val range = data.read<Double>(0, "1")
-        val future = CompletableFuture<Void>()
-        submit {
+        return createAwaitVoidFuture {
             data.origin.ifLocation {
                 data.container += getTargetLocation(this.value, this.value.direction, range).map { it.toTarget() }.reversed()
             }
             data.origin.ifEntity {
                 data.container += getTargetLocation(value, value.direction, range).map { it.toTarget() }.reversed()
             }
-            future.complete(null)
         }
-        return future
     }
 
 

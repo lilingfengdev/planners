@@ -5,8 +5,9 @@ import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.kether.LazyGetter
+import com.bh.planners.util.safeAsync
+import com.bh.planners.util.safeSync
 import org.bukkit.GameMode
-import taboolib.common.platform.function.submit
 import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.runKether
 
@@ -25,9 +26,13 @@ open class Session(sender: Target, skill: Skill) : Context.Impl(sender, skill) {
         }
 
         if (skill.option.async) {
-            submit(async = true) { run() }
+            safeAsync {
+                run()
+            }
         } else {
-            run()
+            safeSync {
+                run()
+            }
         }
     }
 

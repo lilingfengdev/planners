@@ -17,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
@@ -26,6 +27,7 @@ import taboolib.platform.util.hasMeta
 import taboolib.platform.util.setMeta
 import java.util.*
 import java.util.concurrent.CompletableFuture
+
 
 class ActionEntityProjectile {
 
@@ -158,6 +160,7 @@ class ActionEntityProjectile {
 
         @SubscribeEvent
         fun e(e: ProjectileHitEvent) {
+            info((e.hitEntity as? ArmorStand)?.isMarker)
             if (e.hitEntity?.hasMeta("ignoreHit") == true) return
             val owner = e.entity.getMeta("owner").getOrNull(0)?.value() as? LivingEntity ?: return
             val context = e.entity.getMeta("context").getOrNull(0)?.value() as? Session ?: return
@@ -187,10 +190,37 @@ class ActionEntityProjectile {
             rotateZ: Double,
             tick: Long,
         ): List<Projectile> {
+
             val listOf = mutableListOf<Projectile>()
+
             owners.forEach {
+
                 val entity = it.bukkitLivingEntity ?: return@forEach
-                val projectile = entity.launchProjectile(type.clazz)
+
+                val projectile = entity.launchProjectile(type.clazz).apply {
+                    setBounce(bounce)
+                    setGravity(gravity)
+                    customName = name
+                    setMeta("@Planners:Projectile", true)
+                    isCustomNameVisible = false
+
+                    if (event != "none") {
+                        setMeta("owner", entity)
+                        setMeta("event", event)
+                        setMeta("context", context)
+                        setMeta("vars", vars)
+                    }
+
+                    val velocity = velocity
+
+                    // 处理向量旋转
+                    rotateAroundX(velocity, rotateX)
+                    rotateAroundY(velocity, rotateY)
+                    rotateAroundZ(velocity, rotateZ)
+
+                    setVelocity(velocity.multiply(step))
+                }
+
                 // 注册销毁任务
                 SimpleTimeoutTask.createSimpleTask(tick, false) {
                     if (projectile.isValid) {
@@ -198,26 +228,6 @@ class ActionEntityProjectile {
                     }
                 }
 
-                if (event != "none") {
-                    projectile.setMeta("owner", entity)
-                    projectile.setMeta("event", event)
-                    projectile.setMeta("context", context)
-                    projectile.setMeta("vars", vars)
-                }
-
-                projectile.setMeta("@Planners:Projectile", true)
-                projectile.setGravity(gravity)
-                projectile.setBounce(bounce)
-                projectile.customName = name
-                projectile.isCustomNameVisible = false
-                val velocity = projectile.velocity
-
-                // 处理向量旋转
-                rotateAroundX(velocity, rotateX)
-                rotateAroundY(velocity, rotateY)
-                rotateAroundZ(velocity, rotateZ)
-
-                projectile.velocity = velocity.multiply(step)
                 listOf += projectile
             }
             return listOf

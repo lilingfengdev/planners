@@ -1,6 +1,6 @@
 package com.bh.planners.core.ui
 
-import com.bh.planners.api.bind
+import com.bh.planners.api.ProfileAPI
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.ui.SkillIcon.Companion.toIcon
 import org.bukkit.entity.Player
@@ -31,7 +31,6 @@ class Backpack(viewer: Player) : IUI(viewer) {
 
         val addonInfo: List<String>
             get() = config.getStringList("addon-info")
-
     }
 
     override fun open() {
@@ -72,16 +71,9 @@ class Backpack(viewer: Player) : IUI(viewer) {
                         return@onClick
                     }
 
-                    ShortcutSelector(viewer) {
-                        // 取消绑定
-                        if (element.shortcutKey == this.key) {
-                            viewer.sendLang("skill-un-bind-shortcut", element.instance.option.name)
-                        } else {
-                            viewer.sendLang("skill-bind-shortcut", element.instance.option.name, name)
-                        }
-                        profile.bind(element, this)
-                        open()
-                    }.open()
+                    ProfileAPI.openSkillShortcutBinder(viewer,element) {
+                        this@Backpack.open()
+                    }
 
                 }
             }

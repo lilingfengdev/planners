@@ -1,12 +1,11 @@
 package com.bh.planners.core.effect
 
 import com.bh.planners.api.PlannersOption
-import org.bukkit.Bukkit
+import com.bh.planners.util.safeSync
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
-import taboolib.common.util.sync
 import taboolib.common5.Coerce
 import taboolib.module.effect.math.Matrix
 import java.util.concurrent.CompletableFuture
@@ -129,11 +128,8 @@ fun createAwaitVoidFuture(block: () -> Unit): CompletableFuture<Void> {
 
 fun <T> createAwaitFuture(block: () -> T): CompletableFuture<T> {
     val future = CompletableFuture<T>()
-
-    if (Bukkit.isPrimaryThread()) {
+    safeSync {
         future.complete(block())
-    } else {
-        sync { future.complete(block()) }
     }
     return future
 }

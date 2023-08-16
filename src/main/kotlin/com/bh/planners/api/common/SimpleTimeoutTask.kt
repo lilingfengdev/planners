@@ -23,7 +23,7 @@ open class SimpleTimeoutTask(val tick: Long, open val closed: () -> Unit = EMPTY
             val millis = System.currentTimeMillis()
             cache.forEach {
                 // 未执行任务
-                if (millis < it.end) it.closed()
+                if (!it.isClosed) it.closed()
             }
         }
 
@@ -32,7 +32,7 @@ open class SimpleTimeoutTask(val tick: Long, open val closed: () -> Unit = EMPTY
             // 如果已经结束了
             if (simpleTask.isClosed) return
             simpleTask.closed()
-            simpleTask.isClosed = false
+            simpleTask.isClosed = true
         }
 
         fun register(simpleTask: SimpleTimeoutTask, async: Boolean = !Bukkit.isPrimaryThread()) {

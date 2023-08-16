@@ -165,13 +165,23 @@ interface Target {
             }
         }
 
+        fun <T> mapOfPlayer(func: Player.(Int) -> T): List<T> {
+            val listOf = mutableListOf<T>()
+            forEachPlayer {
+                listOf += func(this, it)
+            }
+            return listOf
+        }
+
         fun forEachLocation(func: org.bukkit.Location.(Int) -> Unit) {
             forEach<Location> { index -> func(value, index) }
         }
 
-//        fun firstLocation() = filterIsInstance<Location>()
+//        fun firstBukkitLocation() = filterIsInstance<Location>()
 
         fun firstTarget() = firstOrNull()
+
+        fun firstBukkitPlayer() = filterIsInstance<Entity>().firstOrNull { it.bukkitEntity is Player }?.player
 
         fun firstLivingEntityTarget() = filterIsInstance<Entity>().firstOrNull { it.isLiving }?.bukkitLivingEntity
 
@@ -186,7 +196,7 @@ interface Target {
 
         fun getLocationTarget(index: Int) = filterIsInstance<Location>().getOrNull(index)
 
-        fun firstLocation() = getLocationTarget(0)?.value
+        fun firstBukkitLocation() = getLocationTarget(0)?.value
 
         fun firstLocationTarget() = getLocationTarget(0)
 

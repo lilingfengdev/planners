@@ -7,10 +7,7 @@ import com.bh.planners.api.bind
 import com.bh.planners.api.hasJob
 import org.bukkit.Bukkit
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.command.CommandBody
-import taboolib.common.platform.command.CommandHeader
-import taboolib.common.platform.command.mainCommand
-import taboolib.common.platform.command.subCommand
+import taboolib.common.platform.command.*
 import taboolib.common5.Coerce
 import taboolib.expansion.createHelper
 import taboolib.module.chat.ComponentText
@@ -26,9 +23,7 @@ object PlannersSkillCommand {
 
     @CommandBody
     val tryCast = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
-
+        player {
             dynamic("value") {
 
                 suggestion<ProxyCommandSender> { _, context ->
@@ -50,8 +45,7 @@ object PlannersSkillCommand {
 
     @CommandBody
     val directCast = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
+        player {
             dynamic("skill") {
                 suggestion<ProxyCommandSender> { _, _ ->
                     PlannersAPI.skills.map { it.key }
@@ -68,8 +62,7 @@ object PlannersSkillCommand {
 
     @CommandBody
     val bind = subCommand {
-        dynamic("player") {
-            suggestion<ProxyCommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
+        player {
             dynamic("skill") {
                 suggestion<ProxyCommandSender> { _, _ ->
                     PlannersAPI.skills.map { it.key }
@@ -90,11 +83,7 @@ object PlannersSkillCommand {
 
     @CommandBody
     val clear = subCommand {
-        dynamic("player") {
-
-            suggestion<ProxyCommandSender> { _, _ ->
-                listOf("*", *Bukkit.getOnlinePlayers().map { it.name }.toTypedArray())
-            }
+        player {
 
             dynamic("skill") {
 
@@ -112,7 +101,6 @@ object PlannersSkillCommand {
                         PlannersAPI.resetSkillPoint(profile,skill)
                     }
                 }
-
             }
         }
     }
@@ -121,8 +109,11 @@ object PlannersSkillCommand {
     val list = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
             PlannersAPI.skills.forEachIndexed { index, skill ->
-                val chatText = ComponentText.of("&d${index+1}&7.&b${skill.option.name}".colored()).hoverText("&e左键释放此技能&c(1级)".colored()).clickRunCommand("/pl skill directCast ${sender.name} ${skill.key} 1")
-                chatText.sendTo(sender)
+                ComponentText.empty()
+                    .append("&d${index+1}&7.&b${skill.option.name}".colored())
+                    .hoverText("&e左键释放此技能&c(1级)".colored())
+                    .clickRunCommand("/pl skill directCast ${sender.name} ${skill.key} 1")
+                    .sendTo(sender)
             }
         }
     }

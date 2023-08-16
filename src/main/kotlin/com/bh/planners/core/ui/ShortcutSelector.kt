@@ -10,8 +10,9 @@ import taboolib.library.xseries.getItemStack
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Linked
 import taboolib.platform.util.buildItem
+import java.util.function.Consumer
 
-class ShortcutSelector(viewer: Player, val callback: IKeySlot.() -> Unit) : IUI(viewer) {
+class ShortcutSelector(viewer: Player, val callback: Consumer<IKeySlot> = Consumer { }) : IUI(viewer) {
 
 
     companion object {
@@ -72,7 +73,7 @@ class ShortcutSelector(viewer: Player, val callback: IKeySlot.() -> Unit) : IUI(
                 }
             }
             onClick { _, element ->
-                callback(element)
+                callback.accept(element)
             }
 
         }

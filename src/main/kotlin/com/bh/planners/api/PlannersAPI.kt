@@ -1,7 +1,5 @@
 package com.bh.planners.api
 
-import com.bh.planners.api.ManaCounter.takeMana
-import com.bh.planners.api.ManaCounter.toCurrentMana
 import com.bh.planners.api.PlannersLoader.toYamlName
 import com.bh.planners.api.common.ExecuteResult
 import com.bh.planners.api.compat.WorldGuardHook
@@ -11,12 +9,14 @@ import com.bh.planners.api.event.PlayerKeydownEvent
 import com.bh.planners.api.event.PlayerSkillResetEvent
 import com.bh.planners.api.script.ScriptLoader
 import com.bh.planners.core.effect.Target.Companion.toTarget
+import com.bh.planners.core.module.mana.ManaManager
 import com.bh.planners.core.pojo.*
 import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
 import com.bh.planners.util.runKetherThrow
+import com.bh.planners.util.safeSync
 import com.google.gson.Gson
 import org.bukkit.entity.Player
 import taboolib.common.platform.event.SubscribeEvent
@@ -30,6 +30,7 @@ import taboolib.platform.util.sendLang
 import java.io.File
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 object PlannersAPI {
 
@@ -41,7 +42,7 @@ object PlannersAPI {
 
     val jobs = mutableListOf<Job>()
 
-    val profiles = mutableMapOf<UUID, PlayerProfile>()
+    val profiles = ConcurrentHashMap<UUID, PlayerProfile>()
 
     val keySlots = mutableListOf<IKeySlot>()
 
@@ -52,7 +53,7 @@ object PlannersAPI {
         get() = profiles.containsKey(uniqueId)
 
     fun directCast(player: Player, skillName: String, level: Int) {
-        ContextAPI.create(player, skillName, level)?.cast()
+        safeSync { ContextAPI.create(player, skillName, level)?.cast() }
     }
 
     fun cast(player: Player, skillName: String, mark: Boolean = true): ExecuteResult {
@@ -109,7 +110,7 @@ object PlannersAPI {
             return ExecuteResult.SUCCESS
         }
 
-        val preEvent = PlayerCastSkillEvents.Pre(player, skill).apply { call() }
+        val preEvent = PlayerCastSkillEvents.Pre(player, session).apply { call() }
         if (preEvent.isCancelled) {
             PlayerCastSkillEvents.Failure(player, skill, ExecuteResult.CANCELED).call()
             return ExecuteResult.CANCELED
@@ -121,7 +122,7 @@ object PlannersAPI {
         }
 
         val mana = Coerce.toDouble(session.mpCost.get())
-        if (toCurrentMana() < mana) {
+        if (ManaManager.INSTANCE.getMana(this) < mana) {
             PlayerCastSkillEvents.Failure(player, skill, ExecuteResult.MANA_NOT_ENOUGH).call()
             return ExecuteResult.MANA_NOT_ENOUGH
         }
@@ -132,7 +133,7 @@ object PlannersAPI {
         }
 
         Counting.reset(player, session)
-        takeMana(mana)
+        ManaManager.INSTANCE.takeMana(this,mana)
         PlayerCastSkillEvents.Record(player, skill).call()
 
         session.cast()
@@ -261,7 +262,7 @@ object PlannersAPI {
         }
 
         val mana = Coerce.toDouble(session.mpCost.get())
-        if (toCurrentMana() < mana) {
+        if (ManaManager.INSTANCE.getMana(this) < mana) {
             return ExecuteResult.MANA_NOT_ENOUGH
         }
 
