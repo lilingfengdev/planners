@@ -82,31 +82,31 @@ object ActionDragonLoader {
             case("sound") {
                 ActionDragonSound(
                     it.nextParsedAction(),
-                    it.nextArgumentAction(arrayOf("key"), UUID.randomUUID().toString())!!,
-                    it.nextArgumentAction(arrayOf("type"), "VOICE")!!,
-                    it.nextArgumentAction(arrayOf("volume"), 1.0f)!!,
-                    it.nextArgumentAction(arrayOf("pitch"), 1.0f)!!,
-                    it.nextArgumentAction(arrayOf("loop"), false)!!,
+                    it.nextOptionalAction(arrayOf("key"), UUID.randomUUID().toString())!!,
+                    it.nextOptionalAction(arrayOf("type"), "VOICE")!!,
+                    it.nextOptionalAction(arrayOf("volume"), 1.0f)!!,
+                    it.nextOptionalAction(arrayOf("pitch"), 1.0f)!!,
+                    it.nextOptionalAction(arrayOf("loop"), false)!!,
                     it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
                 )
             }
             case("particle", "effect") {
                 ActionDragonEffect(
                     it.nextParsedAction(),
-                    it.nextArgumentAction(arrayOf("rotation"), "0,0,0")!!,
-                    it.nextArgumentAction(arrayOf("time"), 100)!!,
+                    it.nextOptionalAction(arrayOf("rotation"), "0,0,0")!!,
+                    it.nextOptionalAction(arrayOf("time"), 100)!!,
                     it.nextSelectorOrNull()
                 )
             }
             case("bind") {
                 ActionDragonBind(
-                    it.nextArgumentAction(arrayOf("entity")) ?: error("缺少entity"),
-                    it.nextArgumentAction(arrayOf("bindEntity")) ?: error("缺少BindEntity"),
-                    it.nextArgumentAction(arrayOf("forward"), "0")!!,
-                    it.nextArgumentAction(arrayOf("offsetY"), "0")!!,
-                    it.nextArgumentAction(arrayOf("sideways"), "0")!!,
-                    it.nextArgumentAction(arrayOf("bindYaw"), "true")!!,
-                    it.nextArgumentAction(arrayOf("bindPitch"), "true")!!,
+                    it.nextOptionalAction(arrayOf("entity")) ?: error("缺少entity"),
+                    it.nextOptionalAction(arrayOf("bindEntity")) ?: error("缺少BindEntity"),
+                    it.nextOptionalAction(arrayOf("forward"), "0")!!,
+                    it.nextOptionalAction(arrayOf("offsetY"), "0")!!,
+                    it.nextOptionalAction(arrayOf("sideways"), "0")!!,
+                    it.nextOptionalAction(arrayOf("bindYaw"), "true")!!,
+                    it.nextOptionalAction(arrayOf("bindPitch"), "true")!!,
                     it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
                 )
             }

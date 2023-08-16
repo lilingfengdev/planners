@@ -1,6 +1,5 @@
 package com.bh.planners.core.kether.game
 
-import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.KetherHelper
 import com.bh.planners.core.kether.common.KetherHelper.containerOrSender

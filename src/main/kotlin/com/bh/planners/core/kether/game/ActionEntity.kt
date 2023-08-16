@@ -2,7 +2,7 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.game.entity.*
-import com.bh.planners.core.kether.nextArgumentAction
+import com.bh.planners.core.kether.nextOptionalAction
 import com.bh.planners.core.kether.nextSelector
 import com.bh.planners.core.kether.nextSelectorOrNull
 import taboolib.module.kether.KetherParser
@@ -37,8 +37,8 @@ object ActionEntity {
                     it.nextParsedAction(),
                     it.nextParsedAction(),
                     it.nextParsedAction(),
-                    it.nextArgumentAction(arrayOf("health","h"), "0")!!,
-                    it.nextArgumentAction(arrayOf("vector","v"), "false")!!,
+                    it.nextOptionalAction(arrayOf("health","h"), "0")!!,
+                    it.nextOptionalAction(arrayOf("vector","v"), "false")!!,
                     it.nextSelectorOrNull()
                 )
             }

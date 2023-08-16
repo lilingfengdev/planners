@@ -37,11 +37,11 @@ val namespaces = listOf(NAMESPACE, "kether")
 
 
 fun ScriptFrame.getContext(): Context {
-    return rootVariables().get<Context>("@Context").orElse(null) ?: error("Error running environment !")
+    return rootVariables().get<Context>("@context").orElse(null) ?: error("Error running environment !")
 }
 
 fun ScriptFrame.session(): Session {
-    return rootVariables().get<Session>("@Context").orElse(null) ?: error("Error running environment !")
+    return rootVariables().get<Session>("@context").orElse(null) ?: error("Error running environment !")
 }
 
 fun ScriptFrame.executor(): ProxyCommandSender {
@@ -199,7 +199,7 @@ fun ScriptFrame.getLocation(selector: ParsedAction<*>): CompletableFuture<Locati
 fun ScriptFrame.senderPlannerProfile(): PlayerProfile? {
     val player = script().sender!!.castSafely<Player>()!!
 
-    if (!player.plannersProfileIsLoaded) {
+    if (!player.isOnline || !player.plannersProfileIsLoaded) {
         ScriptService.terminateQuest(script())
         return null
     }
@@ -209,6 +209,14 @@ fun ScriptFrame.senderPlannerProfile(): PlayerProfile? {
 
 fun ScriptFrame.containerOrOrigin(action: ParsedAction<*>?): CompletableFuture<Target.Container> {
     return container(action, origin())
+}
+
+fun ScriptFrame.containerOrEmpty(action: ParsedAction<*>?) : CompletableFuture<Target.Container> {
+    return if (action != null) {
+        createContainer(action)
+    } else {
+        CompletableFuture.completedFuture(Target.Container())
+    }
 }
 
 fun ScriptFrame.containerOrSender(action: ParsedAction<*>?): CompletableFuture<Target.Container> {
@@ -294,10 +302,10 @@ fun catchRunning(action: () -> Unit) {
 }
 
 fun QuestReader.get(array: Array<String>): ParsedAction<*> {
-    return nextArgumentAction(array, null) ?: error("the lack of '${array.map { it }}' cite target")
+    return nextOptionalAction(array, null) ?: error("the lack of '${array.map { it }}' cite target")
 }
 
-fun QuestReader.nextArgumentActionOrNull(array: Array<out String>): ParsedAction<*>? {
+fun QuestReader.nextOptionalActionOrNull(array: Array<out String>): ParsedAction<*>? {
     return try {
         mark()
         expects(*array)
@@ -309,21 +317,21 @@ fun QuestReader.nextArgumentActionOrNull(array: Array<out String>): ParsedAction
 }
 
 fun QuestReader.argumentActionOrNull(array: Array<out String>): ParsedAction<*>? {
-    return nextArgumentActionOrNull(array)
+    return nextOptionalActionOrNull(array)
 }
 
 fun QuestReader.argumentAction(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
-    return nextArgumentAction(array, def)
+    return nextOptionalAction(array, def)
 }
 
-// nextArgumentAction
-fun QuestReader.nextArgumentAction(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
-    return nextArgumentActionOrNull(array) ?: if (def == null) null else literalAction(def)
+// nextOptionalAction
+fun QuestReader.nextOptionalAction(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
+    return nextOptionalActionOrNull(array) ?: if (def == null) null else literalAction(def)
 }
 
-// nextArgumentAction
-fun QuestReader.nextArgumentAction(id: String, def: Any? = null): ParsedAction<*>? {
-    return nextArgumentActionOrNull(arrayOf(id)) ?: if (def == null) null else literalAction(def)
+// nextOptionalAction
+fun QuestReader.nextOptionalAction(id: String, def: Any? = null): ParsedAction<*>? {
+    return nextOptionalActionOrNull(arrayOf(id)) ?: if (def == null) null else literalAction(def)
 }
 
 fun QuestReader.nextSelector(): ParsedAction<*> {
@@ -331,7 +339,7 @@ fun QuestReader.nextSelector(): ParsedAction<*> {
 }
 
 fun QuestReader.nextSelectorOrNull(): ParsedAction<*>? {
-    return this.nextArgumentActionOrNull(arrayOf("they", "the", "at"))
+    return this.nextOptionalActionOrNull(arrayOf("they", "the", "at"))
 }
 
 fun <T> CompletableFuture<Any?>.material(then: (Material) -> T): CompletableFuture<T> {

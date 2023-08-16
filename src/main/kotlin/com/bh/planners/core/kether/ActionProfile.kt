@@ -8,48 +8,63 @@ import com.bh.planners.core.kether.common.MultipleKetherParser
 import com.bh.planners.core.kether.common.ParameterKetherParser
 import com.bh.planners.core.module.mana.ManaManager
 import com.bh.planners.core.pojo.data.Data
+import taboolib.module.kether.*
 
 @CombinationKetherParser.Used
 object ActionProfile : MultipleKetherParser("profile"){
 
-    // profile data <id>
     val data = object : ParameterKetherParser("flag") {
 
-        // profile data <id>
-        val main = simpleKetherParser<Any?> {
-            it.group(command("default", "def", then = any()).option()).apply(it) { value ->
-                argumentNow { bukkitPlayer()?.getDataContainer()?.get(it.toString()) ?: value }
-            }
-        }
-
-        // profile data <id> to <value>
-        val to = simpleKetherParser<Unit> {
-            it.group(any(), command("timeout", "time", then = long()).option().defaultsTo(0L)).apply(it) { value, timeout ->
-                argumentNow { id ->
-                    bukkitPlayer()?.getDataContainer()?.set(id.toString(), Data(value!!, timeout)) ?: Unit
-                }
-            }
-        }
-
-        // profile data <id> add <value>
-        val add = simpleKetherParser<Any?> {
-            it.group(any()).apply(it) { value ->
-                argumentNow { id ->
-                    val dataContainer = bukkitPlayer()?.getDataContainer()
-                    if (dataContainer == null) {
-                        return@argumentNow null
+        val add = argumentKetherParser { argument ->
+            val action = this.nextParsedAction()
+            actionNow {
+                run(argument).str { argument ->
+                    run(action).thenAccept { value ->
+                        val dataContainer = bukkitPlayer()?.getDataContainer() ?: return@thenAccept
+                        val data = dataContainer[id.toString()] ?: Data(0)
+                        data.increaseAny(value ?: 0)
+                        dataContainer.update(id.toString(), data)
                     }
-                    val data = dataContainer[id.toString()] ?: Data(0)
-                    data.increaseAny(value ?: 0)
-                    dataContainer.update(id.toString(), data)
-                    data
                 }
             }
         }
 
-        // profile data <id> has
-        val has = argumentKetherNow {
-            bukkitPlayer()?.getDataContainer()?.containsKey(it!!.toString())
+        val to = argumentKetherParser("set") { argument ->
+            val action = this.nextParsedAction()
+            val timeout = this.nextOptionalAction(arrayOf("timeout","time"),0L)!!
+            actionNow {
+                run(argument).str { argument ->
+                    run(action).thenApply { value ->
+                        run(timeout).long { timeout ->
+                            bukkitPlayer()?.getDataContainer()?.set(id.toString(), Data(value!!, timeout)) ?: Unit
+                        }
+                    }
+                }
+            }
+        }
+
+        val get = argumentKetherParser { argument ->
+            val action = this.nextParsedAction()
+            val default = this.nextOptionalAction(arrayOf("default","default"),"null")!!
+            actionNow {
+                run(argument).str { argument ->
+                    run(action).thenApply { value ->
+                        run(default).thenApply { default ->
+                            bukkitPlayer()?.getDataContainer()?.get(argument) ?: value
+                        }
+                    }
+                }
+            }
+        }
+
+        val main = get
+
+        val has = argumentKetherParser { argument ->
+            actionNow {
+                run(argument).str { argument ->
+                    bukkitPlayer()?.getDataContainer()?.containsKey(argument)
+                }
+            }
         }
 
     }

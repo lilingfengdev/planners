@@ -5,8 +5,10 @@ import com.bh.planners.api.maxLevel
 import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.kether.common.CombinationKetherParser
+import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
 import com.bh.planners.core.kether.common.MultipleKetherParser
 import com.bh.planners.core.kether.common.KetherHelper.simpleKetherNow
+import com.bh.planners.core.kether.common.KetherHelper.simpleKetherParser
 import com.bh.planners.core.module.mana.ManaManager
 import taboolib.module.kether.actionNow
 import taboolib.module.kether.scriptParser
@@ -39,26 +41,22 @@ object ActionMeta : MultipleKetherParser("meta") {
 
         val level = simpleKetherNow { skill().level }
 
-        val maxlevel = simpleKetherNow("max-level", "level-max","level-cap","cap-level") {
+        val maxlevel = simpleKetherNow("max-level", "level-max", "level-cap", "cap-level") {
             skill().maxLevel
         }
 
     }
 
-    val origin = scriptParser {
-        it.switch {
-            case("to") {
-                val action = it.nextSelectorOrNull()
-                actionNow {
-                    containerOrSender(action).thenAccept {
-                        getContext().origin = it.firstLocationTarget()!!
-                    }
-                }
-            }
-            other {
-                actionNow { origin() }
+    val origin = object : MultipleKetherParser() {
+
+        val to = simpleKetherParser<Unit>("set") {
+            it.group(containerOrSender()).apply(it) { container ->
+                now { getContext().origin = container.firstTarget()!! }
             }
         }
+
+        val main = simpleKetherNow { getContext().origin }
+
     }
 
 }

@@ -22,10 +22,9 @@ class Visitor : ClassVisitor(0) {
             if (method.isAnnotationPresent(CombinationKetherParser.Ignore::class.java)) {
                 return
             }
-
             val combinationKetherParser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as CombinationKetherParser
+            KetherHelper.registerCombinationKetherParser(method.name, combinationKetherParser)
 
-            KetherHelper.registerCombinationKetherParser(combinationKetherParser)
         }
     }
 
@@ -34,7 +33,7 @@ class Visitor : ClassVisitor(0) {
             if (clazz.isAnnotationPresent(CombinationKetherParser.Ignore::class.java)) {
                 return
             }
-            
+
             val combinationKetherParser = instance?.get() as? CombinationKetherParser ?: return
             KetherHelper.registerCombinationKetherParser(combinationKetherParser)
         }

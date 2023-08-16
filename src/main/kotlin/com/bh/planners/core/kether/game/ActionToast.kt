@@ -16,7 +16,7 @@ import taboolib.platform.BukkitPlugin
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-object ActionToast : SimpleKetherParser() {
+object ActionToast : SimpleKetherParser("toast") {
 
     override fun run(): ScriptActionParser<out Any?> {
         return combinationParser {

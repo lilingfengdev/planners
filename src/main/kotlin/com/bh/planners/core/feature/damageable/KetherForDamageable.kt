@@ -28,7 +28,7 @@ fun ScriptFrame.setSender(entity: Entity) {
     if (entity is Player) {
         this.script().sender = adaptPlayer(entity)
     }
-    this.variables()["@Context"] = object : Context(entity.toTarget()) {}
+    this.variables()["@context"] = object : Context(entity.toTarget()) {}
 }
 
 fun ScriptFrame.getDamageableMeta(): DamageableMeta {

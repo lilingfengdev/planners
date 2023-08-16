@@ -1,30 +1,24 @@
 package com.bh.planners.core.kether.game
 
-import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.catchRunning
 import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.KetherHelper
 import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
-import com.bh.planners.core.kether.execPlayer
-import com.bh.planners.core.kether.nextSelectorOrNull
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.QuestContext
 import taboolib.module.kether.*
 import java.util.*
-import java.util.concurrent.CompletableFuture
 
 
 @CombinationKetherParser.Used
 fun sound() = KetherHelper.simpleKetherParser<Unit> {
     it.group(
-            text(),
-            command("by", "with", then = float().and(float())).option().defaultsTo(1f to 1f),
-            containerOrSender()
+        text(),
+        command("by", "with", then = float().and(float())).option().defaultsTo(1f to 1f),
+        containerOrSender()
     ).apply(it) { sound, with, container ->
         now {
-            container.forEachPlayer {     execute(this, sound, with.first, with.second) }
+            container.forEachPlayer { execute(this, sound, with.first, with.second) }
         }
     }
 }

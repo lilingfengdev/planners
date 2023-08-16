@@ -12,22 +12,20 @@ import java.util.concurrent.CompletableFuture
  * function "your name is {{player name}}"
  * @author IzzelAliz
  */
-@CombinationKetherParser.Used
-internal fun inlineText() = simpleKetherParser("inline", "text") {
-    combinationParser {
-        it.group(text()).apply(it) { text ->
-            now {
-                val vars = deepVars()
-                try {
-                    parse(it.toString().trimIndent(), ScriptOptions.builder().namespace(namespace = namespaces).context {
-                        vars.forEach { (k, v) -> rootFrame().variables().set(k, v) }
-                    }.build())
-                } catch (e: Exception) {
-                    e.printKetherErrorMessage()
-                    info("Error kether script = $it")
-                    it.toString()
-                }
-            }
-        }
-    }
-}
+//@CombinationKetherParser.Used
+//fun inlineText() = simpleKetherParser<String>("function", "inline", "text") {
+//    it.group(text()).apply(it) { text ->
+//        now {
+//            val vars = deepVars()
+//            try {
+//                parse(it.toString().trimIndent(), ScriptOptions.builder().namespace(namespace = listOf(NAMESPACE)).context {
+//                    vars.forEach { (k, v) -> rootFrame().variables().set(k, v) }
+//                }.build())
+//            } catch (e: Exception) {
+//                e.printKetherErrorMessage()
+//                info("Error kether script = $it")
+//                it.toString()
+//            }
+//        }
+//    }
+//}

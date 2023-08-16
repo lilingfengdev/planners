@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.game
 
-import com.bh.planners.core.kether.nextArgumentAction
+import com.bh.planners.core.kether.nextOptionalAction
 import com.bh.planners.core.pojo.chant.Mutable
 import taboolib.common.util.random
 import taboolib.module.kether.KetherParser

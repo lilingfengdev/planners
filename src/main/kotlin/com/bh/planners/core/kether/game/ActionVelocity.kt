@@ -1,24 +1,17 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.KetherHelper
 import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
 import com.bh.planners.core.kether.common.MultipleKetherParser
 import com.bh.planners.core.kether.containerOrSender
-import com.bh.planners.core.kether.nextSelectorOrNull
-import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
-import taboolib.common5.Coerce
-import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
-import taboolib.module.navigation.set
-import java.util.concurrent.CompletableFuture
 
 @CombinationKetherParser.Used
-object ActionVelocity : MultipleKetherParser() {
+object ActionVelocity : MultipleKetherParser("velocity") {
 
     @CombinationKetherParser.Ignore
     fun actionParser(block: ScriptFrame.(Vector,Target.Container) -> Unit) = KetherHelper.simpleKetherParser<Unit>() {

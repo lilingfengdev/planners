@@ -23,7 +23,7 @@ object PlaceholderKetherSimple : PlaceholderExpansion {
     override fun onPlaceholderRequest(player: Player?, args: String): String {
         return try {
             eval(args, ScriptOptions.builder().namespace(namespace = namespaces).sender(sender = adaptPlayer(player!!)).context {
-                rootFrame().variables()["@Context"] = getContext(player)
+                rootFrame().variables()["@context"] = getContext(player)
             }.build()).get().toString()
         } catch (e: Throwable) {
             e.printKetherErrorMessage()

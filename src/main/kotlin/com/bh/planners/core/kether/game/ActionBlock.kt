@@ -86,7 +86,7 @@ class ActionBlock : ScriptAction<List<Target>>() {
             val actionBlock = ActionBlock()
             actionBlock.material = it.nextParsedAction()
             actionBlock.timeout = it.nextParsedAction()
-            actionBlock.data = it.nextArgumentAction(arrayOf("data"), "0")!!
+            actionBlock.data = it.nextOptionalAction(arrayOf("data"), "0")!!
             actionBlock.selector = it.nextSelectorOrNull()
             actionBlock
         }

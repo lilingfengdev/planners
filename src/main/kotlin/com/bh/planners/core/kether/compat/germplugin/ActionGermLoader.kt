@@ -49,8 +49,8 @@ object ActionGermLoader {
                     "send" -> {
                         ActionGermAnimation.Send(
                             it.nextParsedAction(),
-                            it.nextArgumentAction(arrayOf("speed"), "1.0")!!,
-                            it.nextArgumentAction(arrayOf("reverse"), "false")!!,
+                            it.nextOptionalAction(arrayOf("speed"), "1.0")!!,
+                            it.nextOptionalAction(arrayOf("reverse"), "false")!!,
                             it.nextSelectorOrNull()
                         )
                     }
@@ -68,9 +68,9 @@ object ActionGermLoader {
             case("sound") {
                 ActionGermSound(
                     it.nextParsedAction(),
-                    it.nextArgumentAction(arrayOf("soundtype", "type"), "MASTER")!!,
-                    it.nextArgumentAction(arrayOf("volume"), 1)!!,
-                    it.nextArgumentAction(arrayOf("pitch"), 1)!!,
+                    it.nextOptionalAction(arrayOf("soundtype", "type"), "MASTER")!!,
+                    it.nextOptionalAction(arrayOf("volume"), 1)!!,
+                    it.nextOptionalAction(arrayOf("pitch"), 1)!!,
                     it.nextSelector()
                 )
             }
@@ -82,21 +82,21 @@ object ActionGermLoader {
                         "move" -> ActionGermEffectMove(
                             it.nextParsedAction(),
                             it.nextParsedAction(),
-                            it.nextArgumentAction(arrayOf("to")) ?: error("lack 'to'")
+                            it.nextOptionalAction(arrayOf("to")) ?: error("lack 'to'")
                         )
 
                         "projectile" -> ActionGermEffectProjectile().also {
                             it.id = nextParsedAction()
-                            it.duration = nextArgumentAction("duration", "5000")!!
-                            it.delay = nextArgumentAction("delay", "-1")!!
-                            it.transition = nextArgumentAction("transition", "1000")!!
-                            it.yaw = nextArgumentAction(arrayOf("yaw"), ACTION_NULL)!!
-                            it.pitch = nextArgumentAction(arrayOf("pitch"), ACTION_NULL)!!
-                            it.onhit = nextArgumentAction(arrayOf("onhit"), ACTION_NULL)!!
-                            it.collisionCount = nextArgumentAction(arrayOf("count"), "1")!!
-                            it.collisionRemove = nextArgumentAction(arrayOf("remove"), "false")!!
+                            it.duration = nextOptionalAction("duration", "5000")!!
+                            it.delay = nextOptionalAction("delay", "-1")!!
+                            it.transition = nextOptionalAction("transition", "1000")!!
+                            it.yaw = nextOptionalAction(arrayOf("yaw"), ACTION_NULL)!!
+                            it.pitch = nextOptionalAction(arrayOf("pitch"), ACTION_NULL)!!
+                            it.onhit = nextOptionalAction(arrayOf("onhit"), ACTION_NULL)!!
+                            it.collisionCount = nextOptionalAction(arrayOf("count"), "1")!!
+                            it.collisionRemove = nextOptionalAction(arrayOf("remove"), "false")!!
                             it.selector = nextSelectorOrNull()
-                            it.to = nextArgumentAction("to")!!
+                            it.to = nextOptionalAction("to")!!
                         }
 
                         else -> error("")
@@ -105,7 +105,7 @@ object ActionGermLoader {
                     it.reset()
                     ActionGermParticle(
                         it.nextParsedAction(),
-                        it.nextArgumentAction(arrayOf("animation"), "__none__")!!,
+                        it.nextOptionalAction(arrayOf("animation"), "__none__")!!,
                         it.nextSelectorOrNull()
                     )
                 }
@@ -137,7 +137,7 @@ object ActionGermLoader {
                     }
 
                     "at" -> {
-                        ActionGermLook(it.nextParsedAction(), it.nextArgumentAction(arrayOf("at"))!!, it.nextParsedAction())
+                        ActionGermLook(it.nextParsedAction(), it.nextOptionalAction(arrayOf("at"))!!, it.nextParsedAction())
                     }
 
                     else -> error("out of case")

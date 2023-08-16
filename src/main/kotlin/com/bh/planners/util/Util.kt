@@ -39,6 +39,7 @@ fun <T> runKetherThrow(stack: String?, el: T? = null, function: () -> T): T? {
             warning("Track the error by the '$stack' source")
         }
         ex.printKetherErrorMessage()
+        ex.printStackTrace()
     }
     return el
 }

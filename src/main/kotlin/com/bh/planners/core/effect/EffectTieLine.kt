@@ -7,7 +7,7 @@ import com.bh.planners.core.kether.containerOrOrigin
 import com.bh.planners.core.kether.game.ActionEffect
 import com.bh.planners.core.kether.game.ActionEffect.maps
 import com.bh.planners.core.kether.getContext
-import com.bh.planners.core.kether.nextArgumentAction
+import com.bh.planners.core.kether.nextOptionalAction
 import com.bh.planners.core.kether.origin
 import com.bh.planners.core.pojo.Context
 import taboolib.common.platform.function.submit
@@ -52,8 +52,8 @@ object EffectTieLine : Effect(), EffectParser {
 
     override fun parser(reader: QuestReader): ScriptAction<*> {
         val option = reader.nextParsedAction()
-        val pos1 = reader.nextArgumentAction(arrayOf("pos1"), "@self")!!
-        val pos2 = reader.nextArgumentAction(arrayOf("pos2"), "@self")!!
+        val pos1 = reader.nextOptionalAction(arrayOf("pos1"), "@self")!!
+        val pos2 = reader.nextOptionalAction(arrayOf("pos2"), "@self")!!
         val events = reader.maps()
         return Action(EffectTieLine, option).also {
             it.events += events

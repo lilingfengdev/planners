@@ -1,6 +1,7 @@
 package com.bh.planners.core.kether.common
 
 import com.bh.planners.core.kether.common.KetherHelper.simpleKetherParser
+import taboolib.common.platform.function.info
 import taboolib.library.kether.QuestActionParser
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.kether.ScriptActionParser
@@ -43,9 +44,6 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
             // parameter parser
             if (ParameterKetherParser::class.java.isAssignableFrom(field.fieldType)) {
                 val parser = field.get(this) as ParameterKetherParser
-                // 子集初始化
-                parser.onInit()
-
                 this.method[field.name] = parser
             }
             // combination parser
@@ -66,8 +64,9 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
             else if (ScriptActionParser::class.java.isAssignableFrom(field.fieldType)) {
                 val parser = field.get(this) as ScriptActionParser<Any>
                 this.method[field.name] = simpleKetherParser(field.name) {
-                    scriptParser { parser.resolve<Any>(it) }
+                    parser
                 }
+                info("script action parser ${field.name}")
             }
         }
     }

@@ -34,7 +34,7 @@ object ActionAdyeshach {
                 ActionAdyeshachFollow(
                     it.nextParsedAction(),
                     it.nextParsedAction(),
-                    it.nextArgumentAction(arrayOf("option", "params"), "EMPTY")!!
+                    it.nextOptionalAction(arrayOf("option", "params"), "EMPTY")!!
                 )
             }
             case("script") {

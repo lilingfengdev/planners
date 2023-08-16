@@ -80,7 +80,7 @@ object ScriptLoader {
     fun createFunctionScript(context: Context, input: String, block: Consumer<ScriptContext> = Consumer {  }): String {
         return parse(input, ScriptOptions.builder().namespace(namespace = namespaces).sender(sender = context.proxySender).context {
             context.ketherScriptContext = this
-            rootFrame().rootVariables()["@Context"] = context
+            rootFrame().rootVariables()["@context"] = context
             if (context is Context.Impl) {
                 context.variables.forEach {
                     rootFrame().variables()[it.key] = it.value
@@ -94,7 +94,7 @@ object ScriptLoader {
         return eval(script, ScriptOptions.builder().namespace(namespace = namespaces).sender(sender = context.proxySender).context {
             context.ketherScriptContext = this
             id = UUID.randomUUID().toString()
-            rootFrame().rootVariables()["@Context"] = context
+            rootFrame().rootVariables()["@context"] = context
             if (context is Context.Impl) {
                 context.variables.forEach {
                     rootFrame().variables()[it.key] = it.value
@@ -119,7 +119,7 @@ object ScriptLoader {
 
         val script = scripts[sourceId] ?: return
         val scriptContext = ScriptContext.create(script) {
-            this.rootFrame().variables()["@Context"] = context
+            this.rootFrame().variables()["@context"] = context
             (context as? Session)?.open(this)
             func(this)
         }

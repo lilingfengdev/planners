@@ -40,7 +40,7 @@ object DamageableScript {
             this.rootFrame().setDamageable(context)
             this.rootFrame().setDamageableMeta(meta)
             this.rootFrame().variables()["data"] = meta.data
-            this.rootFrame().variables()["@Context"] = object : Context(meta.sender.toTarget()) {}
+            this.rootFrame().variables()["@context"] = object : Context(meta.sender.toTarget()) {}
             block(this)
         }.thenApply {
             // 结束流

@@ -58,7 +58,7 @@ open class Session(sender: Target, skill: Skill) : Context.Impl(sender, skill) {
 
     fun open(context: ScriptContext) {
         context.sender = proxySender
-        context.rootFrame().variables()["@Context"] = this@Session
+        context.rootFrame().variables()["@context"] = this@Session
         variables.forEach {
             context.rootFrame().variables()[it.key] = it.value
         }

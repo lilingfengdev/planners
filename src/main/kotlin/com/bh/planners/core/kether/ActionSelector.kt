@@ -2,12 +2,10 @@ package com.bh.planners.core.kether
 
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.common.CombinationKetherParser
-import com.bh.planners.core.kether.common.KetherHelper.containerOrEmpty
 import com.bh.planners.core.kether.common.KetherHelper.simpleKetherParser
 import com.bh.planners.core.kether.common.ParameterKetherParser
 import taboolib.common.OpenResult
-import taboolib.module.kether.KetherProperty
-import taboolib.module.kether.ScriptProperty
+import taboolib.module.kether.*
 
 
 /**
@@ -18,22 +16,27 @@ import taboolib.module.kether.ScriptProperty
 @CombinationKetherParser.Used
 object ActionSelector : ParameterKetherParser("selector") {
 
-    private val EMPTY_CONTAINER = Target.Container()
-
     // selector <id> set <selector(不需要they at 关键字)>
-    // 错误的写法 selector a0 set they @self
-    // 正确的写法 selector a0 set @self
-    val set = simpleKetherParser<Unit>("to", "they", "at", "the") {
-        it.group(any()).apply(it) { value ->
-            argumentNow { id ->
-                variables()[id.toString()] = parseTargetContainer(value!!, getContext())
+    // 错误的写法 selector a0 to they @self
+    // 正确的写法 selector a0 to @self
+    val set = argumentKetherParser("to", "they", "at", "the") { argument ->
+        val action = nextParsedAction()
+        actionNow {
+            run(argument).str { id ->
+                run(action).thenAccept { value ->
+                    variables()[id] = parseTargetContainer(value!!, getContext())
+                }
             }
         }
     }
 
     // selector <id> list
-    val list = argumentKetherNow { id ->
-        variables().get<Target.Container>(id.toString()).orElseGet { EMPTY_CONTAINER }
+    val list = argumentKetherParser { argument ->
+        actionNow {
+            run(argument).str {
+                variables().get<Target.Container>(id.toString()).orElseGet { Target.Container() }
+            }
+        }
     }
 
     val other = list
@@ -43,23 +46,29 @@ object ActionSelector : ParameterKetherParser("selector") {
         variables().remove(id!!.toString())
     }
 
-    // selector <id> unmerge <selector>
-    val unmerge = simpleKetherParser<Unit>("unmerge") {
-        it.group(containerOrEmpty()).apply(it) { value ->
-            argumentNow { id ->
-                variables().get<Target.Container>(id.toString()).ifPresent {
-                    it.unmerge(value)
+    // selector <id> unmerge they <selector>
+    val unmerge = argumentKetherParser { argument ->
+        val selector = nextSelectorOrNull()
+        actionNow {
+            run(argument).str { id ->
+                containerOrEmpty(selector).thenAccept { selector ->
+                    variables().get<Target.Container>(ActionSelector.id.toString()).ifPresent {
+                        it.unmerge(selector)
+                    }
                 }
             }
         }
     }
 
-    // selector <id> merge <selector>
-    val merge = simpleKetherParser<Unit>("merge") {
-        it.group(containerOrEmpty()).apply(it) { value ->
-            argumentNow { id ->
-                variables().get<Target.Container>(id.toString()).ifPresent {
-                    it.merge(value)
+    // selector <id> merge they <selector>
+    val merge = argumentKetherParser { argument ->
+        val selector = nextSelectorOrNull()
+        actionNow {
+            run(argument).str { id ->
+                containerOrEmpty(selector).thenAccept { selector ->
+                    variables().get<Target.Container>(ActionSelector.id.toString()).ifPresent {
+                        it.merge(selector)
+                    }
                 }
             }
         }
@@ -84,6 +93,6 @@ object ActionSelector : ParameterKetherParser("selector") {
 @CombinationKetherParser.Used
 fun select() = simpleKetherParser<Target.Container>("select") {
     it.group(any()).apply(it) { v ->
-        now { parseTargetContainer(v!!,getContext()) }
+        now { parseTargetContainer(v!!, getContext()) }
     }
 }

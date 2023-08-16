@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.game.event
 import com.bh.planners.core.feature.presskey.Emitter
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.get
-import com.bh.planners.core.kether.nextArgumentAction
+import com.bh.planners.core.kether.nextOptionalAction
 import com.bh.planners.core.kether.nextSelectorOrNull
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.scriptParser
@@ -20,7 +20,7 @@ class ActionEventSubscribers {
                 case("keypress") {
                     ActionKeyPress(
                         it.nextParsedAction(),
-                        it.nextArgumentAction(arrayOf("timeout"), Emitter.timeout / 50)!!,
+                        it.nextOptionalAction(arrayOf("timeout"), Emitter.timeout / 50)!!,
                         it.nextSelectorOrNull(),
                         it.get(arrayOf("then"))
                     )

@@ -177,8 +177,6 @@ interface Target {
             forEach<Location> { index -> func(value, index) }
         }
 
-//        fun firstBukkitLocation() = filterIsInstance<Location>()
-
         fun firstTarget() = firstOrNull()
 
         fun firstBukkitPlayer() = filterIsInstance<Entity>().firstOrNull { it.bukkitEntity is Player }?.player

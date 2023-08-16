@@ -1,36 +1,61 @@
 package com.bh.planners.core.kether.common
 
-import com.bh.planners.core.kether.common.KetherHelper.simpleKetherParser
-import taboolib.common.platform.function.info
-import taboolib.library.kether.*
+import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestActionParser
+import taboolib.library.kether.QuestReader
+import taboolib.library.reflex.ReflexClass
 import taboolib.module.kether.*
 
+abstract class ParameterKetherParser(vararg id: String) : SimpleKetherParser(*id), Stateable {
 
-abstract class ParameterKetherParser(vararg id: String) : MultipleKetherParser(*id) {
+    protected val method = mutableMapOf<String, ArgumentKetherParser>()
 
-    protected lateinit var argument: ParsedAction<*>
+    protected val mainParser: ArgumentKetherParser?
+        get() = method["main"] ?: method["other"]
 
     override fun run(): QuestActionParser {
-        return ScriptActionParser<Any?> {
-            val argument = nextParsedAction()
-            try {
-                mark()
-                val expects = expects(*this@ParameterKetherParser.method.keys.filter { it != "other" && it != "main" }.toTypedArray())
-                val action = method[expects]!!.run().resolve<Any>(this)
-                action
-            } catch (ex: Exception) {
-                reset()
-                if (other == null) {
-                    throw ex
+        return scriptParser {
+            val argument = it.nextParsedAction()
+            it.switch {
+                this@ParameterKetherParser.method.forEach { id, parser ->
+                    case(id) { parser.parser.invoke(it, argument) }
                 }
-                other!!.run().resolve<Any>(this)
+                other { mainParser?.parser?.invoke(it, argument) }
             }
         }
     }
 
-    override fun toString(): String {
-        return "ParameterKetherParser(argument=$argument)"
+    override fun onInit() {
+        ReflexClass.of(this::class.java).structure.fields.forEach { field ->
+
+            // ignored ...
+            if (field.name == "INSTANCE" || field.isAnnotationPresent(CombinationKetherParser.Ignore::class.java)) {
+                return@forEach
+            }
+
+            // parameter parser
+            if (ArgumentKetherParser::class.java.isAssignableFrom(field.fieldType)) {
+                val parser = field.get(this) as ArgumentKetherParser
+                setOf(field.name,*parser.id).forEach {
+                    this.method[it] = parser
+                }
+            }
+        }
     }
+
+    protected fun argumentKetherParser(vararg id: String, func: QuestReader.(argument: ParsedAction<*>) -> ScriptAction<*>): ArgumentKetherParser {
+        return ArgumentKetherParser(arrayOf(*id), func)
+    }
+
+    protected fun argumentKetherNow(vararg id: String, func: ScriptFrame.(argument: Any?) -> Any?): ArgumentKetherParser {
+        return argumentKetherParser(*id) { argument ->
+            actionNow {
+                run(argument).thenApply { func(this,it) }
+            }
+        }
+    }
+
+    data class ArgumentKetherParser(val id: Array<String>, val parser: QuestReader.(argument: ParsedAction<*>) -> ScriptAction<*>)
 
 
 }
