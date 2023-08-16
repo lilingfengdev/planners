@@ -104,9 +104,19 @@ object ActionProfile : MultipleKetherParser("profile"){
     /**
      * profile maxmana
      * profile max-mana
+     * profile mana-max
      */
     val maxmana = simpleKetherNow("max-mana","mana-max") {
         ManaManager.INSTANCE.getMana(senderPlannerProfile()!!)
+    }
+
+    /**
+     * profile regainmana
+     * profile regain-mana
+     * profile mana-regain
+     */
+    val regainmana = simpleKetherNow("regain-mana","mana-regain") {
+        ManaManager.INSTANCE.getRegainMana(senderPlannerProfile()!!)
     }
 
     // profile point

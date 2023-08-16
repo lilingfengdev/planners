@@ -32,5 +32,9 @@ class ErrorManaManager : ManaManager {
         TODO("Not yet implemented")
     }
 
+    override fun getRegainMana(profile: PlayerProfile): Double {
+        TODO("Not yet implemented")
+    }
+
 
 }
