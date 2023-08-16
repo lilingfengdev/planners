@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether.common
 
+import taboolib.library.kether.QuestActionParser
 import taboolib.module.kether.ScriptActionParser
 
 interface CombinationKetherParser {
@@ -8,7 +9,7 @@ interface CombinationKetherParser {
 
     val namespace: String
 
-    fun run(): ScriptActionParser<out Any?>
+    fun run(): QuestActionParser
 
     annotation class Used
     
