@@ -103,8 +103,8 @@ fun Any.toLocation(): Location {
     }
 }
 
-fun Location.toLocal(): String {
-    return "${world!!.name} $x $y $z"
+fun Location.local(separator: String = ""): String {
+    return arrayOf(world!!.name,"$x","$y","$z").joinToString(separator)
 }
 
 fun ScriptFrame.exec(selector: ParsedAction<*>, call: Target.() -> Unit) {

@@ -3,7 +3,7 @@ package com.bh.planners.core.effect
 import com.bh.planners.api.common.Demand
 import com.bh.planners.api.entity.ProxyBukkitEntity
 import com.bh.planners.api.entity.ProxyEntity
-import com.bh.planners.core.kether.toLocal
+import com.bh.planners.core.kether.local
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.LivingEntity
@@ -210,7 +210,7 @@ interface Target {
         }
 
         override fun toLocal(): String {
-            return value.toLocal()
+            return value.local()
         }
 
         override fun equals(other: Any?): Boolean {

@@ -4,7 +4,7 @@ import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.exec
 import com.bh.planners.core.kether.origin
 import com.bh.planners.core.kether.readAccept
-import com.bh.planners.core.kether.toLocal
+import com.bh.planners.core.kether.local
 import eos.moe.dragoncore.network.PacketSender
 import org.bukkit.Bukkit
 import taboolib.library.kether.ParsedAction
@@ -48,7 +48,7 @@ class ActionDragonEffect(
             }
 
             is Target.Location -> {
-                target.value.toLocal()
+                target.value.local()
             }
 
             else -> return
