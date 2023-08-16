@@ -85,6 +85,10 @@ class DefaultManaManager : ManaManager {
         profile.updateFlag("@mana", value.coerceAtMost(getMaxMana(profile)).coerceAtLeast(0.0))
     }
 
+    override fun getRegainMana(profile: PlayerProfile): Double {
+        return regainManaValue(profile.player)
+    }
+
 
     fun regainManaValue(player: Player): Double {
         val expression = getManaExpression(player) ?: return 0.0

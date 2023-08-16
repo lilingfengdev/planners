@@ -30,6 +30,8 @@ interface ManaManager {
 
     fun onDisable()
 
+    fun getRegainMana(profile: PlayerProfile): Double
+
     fun getMaxMana(profile: PlayerProfile): Double
 
     fun getMana(profile: PlayerProfile): Double
@@ -39,5 +41,6 @@ interface ManaManager {
     fun takeMana(profile: PlayerProfile, value: Double)
 
     fun setMana(profile: PlayerProfile, value: Double)
+
 
 }
