@@ -48,3 +48,23 @@ fun teleport() = KetherHelper.simpleKetherParser<Unit>("tp") {
         }
     }
 }
+
+@CombinationKetherParser.Used
+fun sound() = KetherHelper.simpleKetherParser<Unit> {
+    it.group(
+        text(),
+        command("by", "with", then = float().and(float())).option().defaultsTo(1f to 1f),
+        containerOrSender()
+    ).apply(it) { sound, with, container ->
+        now {
+            val (volume, pitch) = with
+            container.forEachPlayer {
+                if (sound.startsWith("resource:")) {
+                    playSound(location, sound.substring("resource:".length), volume, pitch)
+                } else {
+                    playSound(location, Sound.valueOf(sound.replace('.', '_').uppercase(Locale.getDefault())), volume, pitch)
+                }
+            }
+        }
+    }
+}
