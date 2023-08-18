@@ -52,7 +52,11 @@ taboolib {
 repositories {
     mavenCentral()
 }
-
+tasks.withType<Jar> {
+    destinationDir = file("F:/Server/paper 1.19.4/plugins")
+//    destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
+//    destinationDir = file("F:/Server/purpur 1.18.2/plugins")
+}
 dependencies {
 
     compileOnly("ink.ptms.core:v11900:11900:mapped")

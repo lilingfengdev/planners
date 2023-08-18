@@ -21,47 +21,41 @@ object ActionVelocity : MultipleKetherParser("velocity") {
         }
     }
 
-    val add =
-        actionParser { vector, container ->
-            container.forEachLivingEntity {
-                generateVelocity { add(vector) }
+    val add = actionParser { vector, container ->
+        container.forEachLivingEntity {
+            generatedVelocity { add(vector) }
+        }
+    }
+
+    val sub = actionParser { vector, container ->
+        container.forEachLivingEntity {
+            generatedVelocity { subtract(vector) }
+        }
+    }
+
+    val mul = actionParser { vector, container ->
+        container.forEachLivingEntity {
+            generatedVelocity { multiply(vector) }
+        }
+    }
+
+    val div = actionParser { vector, container ->
+        container.forEachLivingEntity {
+            generatedVelocity { divide(vector) }
+        }
+    }
+
+    val set = actionParser { vector, container ->
+        container.forEachLivingEntity {
+            generatedVelocity {
+                this.x = vector.x
+                this.y = vector.y
+                this.z = vector.z
             }
         }
+    }
 
-    val sub =
-        actionParser { vector, container ->
-            container.forEachLivingEntity {
-                generateVelocity { subtract(vector) }
-            }
-        }
-
-    val mul =
-        actionParser { vector, container ->
-            container.forEachLivingEntity {
-                generateVelocity { multiply(vector) }
-            }
-        }
-
-    val div =
-        actionParser { vector, container ->
-            container.forEachLivingEntity {
-                generateVelocity { divide(vector) }
-            }
-        }
-
-    val set =
-        actionParser { vector, container ->
-            container.forEachLivingEntity {
-                generateVelocity {
-                    this.x = vector.x
-                    this.y = vector.y
-                    this.z = vector.z
-                }
-            }
-        }
-
-    @CombinationKetherParser.Ignore
-    fun LivingEntity.generateVelocity(block: Vector.() -> Unit) {
+    fun LivingEntity.generatedVelocity(block: Vector.() -> Unit) {
         this.velocity = velocity.apply(block)
     }
 
