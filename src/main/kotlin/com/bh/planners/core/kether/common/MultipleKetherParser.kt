@@ -40,34 +40,29 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
             if (field.name == "INSTANCE" || field.isAnnotationPresent(CombinationKetherParser.Ignore::class.java)) {
                 return@forEach
             }
-
-            // parameter parser
-            if (ParameterKetherParser::class.java.isAssignableFrom(field.fieldType)) {
-                val parser = field.get(this) as ParameterKetherParser
-                this.method[field.name] = parser
-            }
             // combination parser
             else if (CombinationKetherParser::class.java.isAssignableFrom(field.fieldType)) {
                 val parser = field.get(this) as CombinationKetherParser
-
-                // 子集初始化
-                if (parser is Stateable) {
-                    parser.onInit()
-                }
-
-                // 去重
-                setOf(*parser.id, field.name).forEach {
-                    this.method[it] = parser
-                }
+                registerInternalCombinationParser(arrayOf(field.name),parser)
             }
             // scriptParser combinationParser
             else if (ScriptActionParser::class.java.isAssignableFrom(field.fieldType)) {
-                val parser = field.get(this) as ScriptActionParser<Any>
-                this.method[field.name] = simpleKetherParser(field.name) {
-                    parser
+                val parser = simpleKetherParser(field.name) {
+                    field.get(this) as ScriptActionParser<Any>
                 }
-                info("script action parser ${field.name}")
+                registerInternalCombinationParser(arrayOf(field.name),parser)
             }
+        }
+    }
+
+    protected fun registerInternalCombinationParser(id: Array<String>, combinationKetherParser: CombinationKetherParser) {
+        // 子集初始化
+        if (combinationKetherParser is Stateable) {
+            combinationKetherParser.onInit()
+        }
+        // 去重
+        setOf(*id,*combinationKetherParser.id).forEach {
+            this.method[it] = combinationKetherParser
         }
     }
 
