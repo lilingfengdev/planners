@@ -3,6 +3,7 @@ package com.bh.planners.core.kether.compat.fightsystem
 import com.bh.planners.core.kether.*
 import com.skillw.fightsystem.api.FightAPI
 import com.skillw.fightsystem.api.fight.FightData
+import org.bukkit.Bukkit
 import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
@@ -44,8 +45,10 @@ class ActionAttDamage {
     companion object {
         @Awake(LifeCycle.ENABLE)
         fun ignore() {
-            FightAPI.addIgnoreAttack { _, defender ->
-                defender.getMetaFirstOrNull("Planners:Attack")?.asBoolean() == true
+            if (Bukkit.getPluginManager().isPluginEnabled("FightSystem")) {
+                FightAPI.addIgnoreAttack { _, defender ->
+                    defender.getMetaFirstOrNull("Planners:Attack")?.asBoolean() == true
+                }
             }
         }
 
