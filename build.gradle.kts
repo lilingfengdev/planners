@@ -2,10 +2,11 @@ plugins {
     `java-library`
     `maven-publish`
     id("io.izzel.taboolib") version "1.56"
-    id("org.jetbrains.kotlin.jvm") version "1.5.31"
+    id("org.jetbrains.kotlin.jvm") version "1.7.20"
 }
 
 taboolib {
+
     install("common")
     install("common-5")
     install("module-ai")
@@ -51,11 +52,7 @@ taboolib {
 repositories {
     mavenCentral()
 }
-tasks.withType<Jar> {
-    destinationDir = file("F:/Server/paper 1.19.4/plugins")
-//    destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
-//    destinationDir = file("F:/Server/purpur 1.18.2/plugins")
-}
+
 dependencies {
 
     compileOnly("ink.ptms.core:v11900:11900:mapped")

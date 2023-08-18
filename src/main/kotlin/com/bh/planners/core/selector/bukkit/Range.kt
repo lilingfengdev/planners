@@ -30,7 +30,7 @@ object Range : Selector {
             if (x == y && y == z) {
                 location.world?.livingEntities?.forEach {
                     val entityL = it.location.direction
-                    val r = x + sqrt(it.width.pow(2.0) * 2)
+                    val r = x + (sqrt(it.width.pow(2.0) * 2) / 2)
                     if (entityL.isInSphere(location.direction, r)) {
                         data.container += it.toTarget()
                     }

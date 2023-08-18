@@ -15,6 +15,7 @@ import com.bh.planners.core.pojo.key.IKeySlot
 import com.bh.planners.core.pojo.player.PlayerJob
 import com.bh.planners.core.pojo.player.PlayerProfile
 import com.bh.planners.core.storage.Storage
+import com.bh.planners.util.files
 import com.bh.planners.util.runKetherThrow
 import com.bh.planners.util.safeSync
 import com.google.gson.Gson
@@ -147,11 +148,16 @@ object PlannersAPI {
         return skills.firstOrNull { it.key == skillName }
     }
 
-    fun regSkill(file: File): Skill {
-        val skill = Skill(file.toYamlName(), Configuration.loadFromFile(file))
-        skills += skill
+    fun regSkills(list: List<File>) {
+        skills.clear()
+        files("skill", listOf("skill_def0.yml", "skill_def1.yml", "禁止释放.yml")) {
+            skills += Skill(it.toYamlName(), Configuration.loadFromFile(it))
+        }
+        list.forEach { file ->
+            val skill = Skill(file.toYamlName(), Configuration.loadFromFile(file))
+            skills += skill
+        }
         ScriptLoader.autoLoad()
-        return skill
     }
 
     fun checkUpgrade(player: Player, playerSkill: PlayerJob.Skill): Boolean {
