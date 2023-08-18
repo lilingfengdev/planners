@@ -74,6 +74,15 @@ object ActionSelector : ParameterKetherParser("selector") {
         }
     }
 
+    // selector <id> size
+    val size = argumentKetherParser { argument ->
+        actionNow {
+            run(argument).str { id ->
+                variables().get<Target.Container>(id)?.get()?.size ?: 0
+            }
+        }
+    }
+
     @KetherProperty(bind = Target.Container::class)
     fun propertyArray() = object : ScriptProperty<Target.Container>("target.container.operator") {
 
