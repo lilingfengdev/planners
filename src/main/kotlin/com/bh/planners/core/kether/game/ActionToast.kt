@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.PlannersAPI
-import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
 import com.bh.planners.core.kether.common.KetherHelper.materialOrStone
 import com.bh.planners.core.kether.common.SimpleKetherParser
@@ -10,12 +10,12 @@ import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.submit
-import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.*
+import taboolib.module.kether.ScriptActionParser
+import taboolib.module.kether.combinationParser
 import taboolib.platform.BukkitPlugin
 import java.util.*
-import java.util.concurrent.CompletableFuture
 
+@CombinationKetherParser.Used
 object ActionToast : SimpleKetherParser("toast") {
 
     override fun run(): ScriptActionParser<out Any?> {
