@@ -148,7 +148,7 @@ object PlannersAPI {
         return skills.firstOrNull { it.key == skillName }
     }
 
-    fun regSkills(list: List<File>) {
+    fun registerSkills(list: List<File>) {
         skills.clear()
         files("skill", listOf("skill_def0.yml", "skill_def1.yml", "禁止释放.yml")) {
             skills += Skill(it.toYamlName(), Configuration.loadFromFile(it))
