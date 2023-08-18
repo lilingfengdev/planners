@@ -20,21 +20,23 @@ object ActionSilence : SimpleKetherParser("silence") {
             it.group(command("event", "callevent", "call", then = bool()), long(), containerOrSender()).apply(it) { event, tick, container ->
                 now {
                     container.forEachPlayer {
-                        silenceMap[this.uniqueId] = tick
-                        if (event) { PlayerSilenceEvent(this,tick).call()}
+                        table[this.uniqueId] = tick
+                        if (event) {
+                            PlayerSilenceEvent(this,tick).call()
+                        }
                     }
                 }
             }
         }
     }
 
-    private val silenceMap = mutableMapOf<UUID, Long>()
+    private val table = mutableMapOf<UUID, Long>()
 
     @SubscribeEvent(EventPriority.LOWEST)
     fun e(e: PlayerCastSkillEvents.Pre) {
-        val time = silenceMap[e.player.uniqueId] ?: return
+        val time = table[e.player.uniqueId] ?: return
         if (System.currentTimeMillis() >= time) {
-            silenceMap.remove(e.player.uniqueId)
+            table.remove(e.player.uniqueId)
         } else {
             e.isCancelled = true
         }
