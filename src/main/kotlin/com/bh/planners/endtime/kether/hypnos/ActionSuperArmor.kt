@@ -1,4 +1,4 @@
-package com.bh.planners.core.kether.compat.hypnos
+package com.bh.planners.endtime.kether.hypnos
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.containerOrSender

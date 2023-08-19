@@ -35,7 +35,7 @@ object Sector : Selector {
         return createAwaitVoidFuture {
             val nearbyEntities = location.getNearbyEntities(radius+10)
             nearbyEntities.forEach { entity ->
-                if (isPointInEntitySector(entity.location, location, radius + sqrt( entity.width.pow( 2.0 ) * 2 ), angle)) {
+                if (isPointInEntitySector(entity.eyeLocation, location, radius + sqrt( entity.width.pow( 2.0 ) * 2 ), angle)) {
                     if (data.isNon) {
                         data.container.removeIf { t -> t == entity }
                     }

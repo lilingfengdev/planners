@@ -8,7 +8,11 @@ import com.bh.planners.core.kether.common.MultipleKetherParser
 import com.bh.planners.core.kether.common.ParameterKetherParser
 import com.bh.planners.core.module.mana.ManaManager
 import com.bh.planners.core.pojo.data.Data
-import taboolib.module.kether.*
+import org.bukkit.attribute.Attribute
+import taboolib.module.kether.actionNow
+import taboolib.module.kether.long
+import taboolib.module.kether.run
+import taboolib.module.kether.str
 
 @CombinationKetherParser.Used
 object ActionProfile : MultipleKetherParser("profile"){
@@ -21,9 +25,9 @@ object ActionProfile : MultipleKetherParser("profile"){
                 run(argument).str { argument ->
                     run(action).thenAccept { value ->
                         val dataContainer = bukkitPlayer()?.getDataContainer() ?: return@thenAccept
-                        val data = dataContainer[id.toString()] ?: Data(0)
+                        val data = dataContainer[argument] ?: Data(0)
                         data.increaseAny(value ?: 0)
-                        dataContainer.update(id.toString(), data)
+                        dataContainer.update(argument, data)
                     }
                 }
             }
@@ -36,7 +40,7 @@ object ActionProfile : MultipleKetherParser("profile"){
                 run(argument).str { argument ->
                     run(action).thenApply { value ->
                         run(timeout).long { timeout ->
-                            bukkitPlayer()?.getDataContainer()?.set(id.toString(), Data(value!!, timeout)) ?: Unit
+                            bukkitPlayer()?.getDataContainer()?.set(argument, Data(value!!, timeout)) ?: Unit
                         }
                     }
                 }
@@ -44,14 +48,11 @@ object ActionProfile : MultipleKetherParser("profile"){
         }
 
         val get = argumentKetherParser { argument ->
-            val action = this.nextParsedAction()
-            val default = this.nextOptionalAction(arrayOf("default","default"),"null")!!
+            val default = this.nextOptionalAction(arrayOf("default"),"null")!!
             actionNow {
                 run(argument).str { argument ->
-                    run(action).thenApply { value ->
-                        run(default).thenApply { default ->
-                            bukkitPlayer()?.getDataContainer()?.get(argument) ?: value
-                        }
+                    run(default).thenApply { default ->
+                        bukkitPlayer()?.getDataContainer()?.get(argument) ?: default
                     }
                 }
             }
@@ -59,7 +60,7 @@ object ActionProfile : MultipleKetherParser("profile"){
 
         val main = get
 
-        val has = argumentKetherParser { argument ->
+            val has = argumentKetherParser { argument ->
             actionNow {
                 run(argument).str { argument ->
                     bukkitPlayer()?.getDataContainer()?.containsKey(argument)
@@ -97,7 +98,7 @@ object ActionProfile : MultipleKetherParser("profile"){
 
     val healthpercent = simpleKetherNow("health-percent") {
         try {
-            bukkitPlayer()!!.health / bukkitPlayer()!!.maxHealth
+            bukkitPlayer()!!.health / (bukkitPlayer()!!.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: bukkitPlayer()!!.health)
         } catch (_: java.lang.Exception) {
             0
         }

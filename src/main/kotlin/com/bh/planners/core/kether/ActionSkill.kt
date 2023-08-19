@@ -1,8 +1,10 @@
 package com.bh.planners.core.kether
 
-import com.bh.planners.api.*
+import com.bh.planners.api.Counting
+import com.bh.planners.api.PlannersAPI
 import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.common.Operator
+import com.bh.planners.api.runVariable
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.kether.ActionLazyVariable.runVariable
 import com.bh.planners.core.kether.common.CombinationKetherParser
@@ -12,7 +14,6 @@ import com.bh.planners.core.kether.common.MultipleKetherParser
 import com.bh.planners.core.pojo.Session
 import com.bh.planners.core.pojo.Skill
 import org.bukkit.entity.Player
-import taboolib.module.kether.*
 
 @CombinationKetherParser.Used
 object ActionSkill : MultipleKetherParser("skill") {
@@ -20,14 +21,14 @@ object ActionSkill : MultipleKetherParser("skill") {
     val cooldown = KetherHelper.simpleKetherParser<Unit> {
         it.group(text(), long(), command("of","at", then = text()).option(),containerOrSender()).apply(it) { operator,tick, skill, container ->
             now {
-                val operator = Operator.valueOf(operator)
+                val operator1 = Operator.valueOf(operator)
                 val instance = if (skill != null) {
                     PlannersAPI.getSkill(skill) ?: error("Skill $skill not found.")
                 } else {
                     skill().instance
                 }
                 container.forEachPlayer {
-                    executeCooldown(this,instance,operator,tick)
+                    executeCooldown(this,instance,operator1,tick)
                 }
             }
         }

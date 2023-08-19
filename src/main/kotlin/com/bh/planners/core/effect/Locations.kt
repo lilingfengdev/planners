@@ -62,6 +62,23 @@ fun isPointInEntitySector(target: Location, location: Location, radius: Double, 
     } else false
 }
 
+fun Location.isInSphere(origin: Location, radius: Double): Boolean {
+    return distance(origin) <= radius
+}
+fun Location.isInAABB(aa: Location, bb: Location): Boolean {
+    val aaX = aa.x
+    val aaY = aa.y
+    val aaZ = aa.z
+    val bbX = bb.x
+    val bbY = bb.y
+    val bbZ = bb.z
+    return if ( x !in (if (aaX < bbX) aaX..bbX else bbX..aaX)) {
+        false
+    } else if (y !in (if (aaY < bbY) aaY..bbY else bbY..aaY)) {
+        false
+    } else z in (if (aaZ < bbZ) aaZ..bbZ else bbZ..aaZ)
+}
+
 fun isInsideSector(target: Location, origin: Location, radius: Double, angle: Double): Boolean {
     val sectorStart: Vector = rotateAroundAxisY(origin.direction.clone(), -angle / 2)
     val sectorEnd: Vector = rotateAroundAxisY(origin.direction.clone(), angle / 2)

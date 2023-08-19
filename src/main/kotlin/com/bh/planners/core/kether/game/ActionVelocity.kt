@@ -12,7 +12,7 @@ import taboolib.module.kether.ScriptFrame
 @CombinationKetherParser.Used
 object ActionVelocity : MultipleKetherParser("velocity") {
 
-    @CombinationKetherParser.Ignore
+
     fun actionParser(block: ScriptFrame.(Vector, Target.Container) -> Unit) = KetherHelper.simpleKetherParser<Unit>() {
         it.group(double(), double(), double(), containerOrSender()).apply(it) { x, y, z, container ->
             now {

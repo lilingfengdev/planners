@@ -3,6 +3,7 @@ package com.bh.planners.core.selector.bukkit
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.effect.createAwaitVoidFuture
+import com.bh.planners.core.effect.isInAABB
 import com.bh.planners.core.selector.Selector
 import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
@@ -31,19 +32,19 @@ object Rectangle : Selector {
 
         val vectorX1 = location.direction.clone().setY(0).normalize().multiply(forward)
         val vectorY1 = Vector(0.0,-high/2,0.0)
-        val vectorZ1 = location.direction.clone().setY(0).crossProduct(Vector(0,1,0)).multiply(wide/2)
+        val vectorZ1 = location.direction.clone().setY(0).crossProduct(Vector(0,1,0)).normalize().multiply(wide/2)
 
-        val vector1 = location.direction.clone().add(vectorX1).add(vectorY1).add(vectorZ1)
+        val vector1 = location.clone().add(vectorX1).add(vectorY1).add(vectorZ1)
 
         val vectorX2 = location.direction.clone().setY(0).normalize().multiply(forward+long)
         val vectorY2 = Vector(0.0,high/2,0.0)
-        val vectorZ2 = location.direction.clone().setY(0).crossProduct(Vector(0,1,0)).multiply(-wide/2)
+        val vectorZ2 = location.direction.clone().setY(0).crossProduct(Vector(0,1,0)).normalize().multiply(-wide/2)
 
-        val vector2 = location.direction.clone().add(vectorX2).add(vectorY2).add(vectorZ2)
+        val vector2 = location.clone().add(vectorX2).add(vectorY2).add(vectorZ2)
 
         return createAwaitVoidFuture {
             location.world?.livingEntities?.forEach {
-                if (it.location.direction.isInAABB(vector1, vector2)) {
+                if (it.eyeLocation.isInAABB(vector1, vector2)) {
                     data.container += it.toTarget()
                 }
             }

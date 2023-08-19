@@ -1,4 +1,4 @@
-package com.bh.planners.core.kether.compat.gddtitle
+package com.bh.planners.endtime.kether.gddtitle
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.containerOrSender
@@ -11,8 +11,9 @@ import taboolib.library.kether.QuestContext
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionGDDaction(
-    val action: ParsedAction<*>,
+
+class ActionGDDtitle(
+    val title: ParsedAction<*>,
     val fadeIn: ParsedAction<*>,
     val stay: ParsedAction<*>,
     val fadeOut: ParsedAction<*>,
@@ -20,17 +21,17 @@ class ActionGDDaction(
 ) : ScriptAction<Void>() {
 
 
-    fun execute(player: Player, action: String, fadeIn: Int, stay: Int, fadeOut: Int) {
-        GDDTitleAPI.sendAction(player, action, fadeIn, stay, fadeOut)
+    fun execute(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        GDDTitleAPI.sendTitle(player, title, fadeIn, stay, fadeOut)
     }
 
     override fun run(frame: QuestContext.Frame): CompletableFuture<Void> {
-        return frame.newFrame(action).run<Any>().thenAccept { action ->
+        return frame.newFrame(title).run<Any>().thenAccept { title ->
             frame.newFrame(fadeIn).run<Any>().thenAccept { fadeIn ->
                 frame.newFrame(stay).run<Any>().thenAccept { stay ->
                     frame.newFrame(fadeOut).run<Any>().thenAccept { fadeOut ->
                         frame.containerOrSender(selector).thenAccept {
-                            it.forEachPlayer { execute(this, action.toString(), Coerce.toInteger(fadeIn)*50, Coerce.toInteger(stay)*50, Coerce.toInteger(fadeOut)*50) }
+                            it.forEachPlayer { execute(this, title.toString(), Coerce.toInteger(fadeIn)*50, Coerce.toInteger(stay)*50, Coerce.toInteger(fadeOut)*50) }
                         }
                     }
                 }
@@ -42,9 +43,9 @@ class ActionGDDaction(
 
     companion object {
 
-        @KetherParser(["gddaction"], namespace = NAMESPACE, shared = true)
+        @KetherParser(["gddtitle"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
-            val action = it.nextParsedAction()
+            val title = it.nextParsedAction()
             it.mark()
             var fadeIn: ParsedAction<*> = literalAction(20)
             var stay: ParsedAction<*> = literalAction(20)
@@ -58,10 +59,11 @@ class ActionGDDaction(
             } catch (ignored: Exception) {
                 it.reset()
             }
-            ActionGDDaction(action, fadeIn, stay, fadeOut, it.nextSelectorOrNull())
+            ActionGDDtitle(title, fadeIn, stay, fadeOut, it.nextSelectorOrNull())
         }
 
     }
 
 }
+
 

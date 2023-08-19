@@ -1,4 +1,4 @@
-package com.bh.planners.core.timer.dragoncore
+package com.bh.planners.endtime.timer
 
 import com.bh.planners.api.common.Plugin
 import com.bh.planners.core.effect.Target

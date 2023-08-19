@@ -1,4 +1,4 @@
-package com.bh.planners.core.kether.compat.virtualentityskillmodule
+package com.bh.planners.endtime.kether.virtualentityskillmodule
 
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.nextSelectorOrNull

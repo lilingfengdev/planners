@@ -3,6 +3,7 @@ package com.bh.planners.core.selector.bukkit
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.effect.createAwaitVoidFuture
+import com.bh.planners.core.effect.isInSphere
 import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.LivingEntity
 import java.util.concurrent.CompletableFuture
@@ -29,9 +30,8 @@ object Range : Selector {
         return createAwaitVoidFuture {
             if (x == y && y == z) {
                 location.world?.livingEntities?.forEach {
-                    val entityL = it.location.direction
                     val r = x + (sqrt(it.width.pow(2.0) * 2) / 2)
-                    if (entityL.isInSphere(location.direction, r)) {
+                    if (it.location.isInSphere(location, r)) {
                         data.container += it.toTarget()
                     }
                 }
