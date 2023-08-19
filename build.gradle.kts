@@ -45,6 +45,7 @@ taboolib {
             name("Antikey").optional(true)
             name("DragonCollect").optional(true)
             name("GlowAPI").optional(true)
+            name("MonsterItem").optional(true)
         }
     }
     options("skip-kotlin-relocate", "keep-kotlin-module")

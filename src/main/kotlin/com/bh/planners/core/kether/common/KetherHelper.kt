@@ -118,9 +118,7 @@ object KetherHelper {
     }
 
     fun registerCombinationKetherParser(id: Array<String>, namespace: String, parser: ScriptActionParser<Any?>) {
-
         KetherLoader.registerParser(parser, id, namespace, true)
-
     }
 
     fun registerCombinationKetherParser(combinationKetherParser: CombinationKetherParser) {

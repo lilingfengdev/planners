@@ -65,6 +65,7 @@ fun isPointInEntitySector(target: Location, location: Location, radius: Double, 
 fun Location.isInSphere(origin: Location, radius: Double): Boolean {
     return distance(origin) <= radius
 }
+
 fun Location.isInAABB(aa: Location, bb: Location): Boolean {
     val aaX = aa.x
     val aaY = aa.y

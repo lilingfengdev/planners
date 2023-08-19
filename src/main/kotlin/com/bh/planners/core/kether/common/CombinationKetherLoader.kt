@@ -1,5 +1,7 @@
 package com.bh.planners.core.kether.common
 
+import com.bh.planners.api.common.Plugin
+import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
@@ -24,13 +26,17 @@ class Visitor : ClassVisitor(0) {
             }
             val combinationKetherParser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as CombinationKetherParser
             KetherHelper.registerCombinationKetherParser(method.name, combinationKetherParser)
-
         }
     }
 
     override fun visitEnd(clazz: Class<*>, instance: Supplier<*>?) {
         if (clazz.isAnnotationPresent(CombinationKetherParser.Used::class.java) && CombinationKetherParser::class.java.isAssignableFrom(clazz)) {
             if (clazz.isAnnotationPresent(CombinationKetherParser.Ignore::class.java)) {
+                return
+            }
+
+            // 检查前置
+            if (clazz.isAnnotationPresent(Plugin::class.java) && Bukkit.getPluginManager().getPlugin(clazz.getAnnotation(Plugin::class.java).name) == null) {
                 return
             }
 
