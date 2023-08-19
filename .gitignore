@@ -3,5 +3,5 @@
 .gitignore
 build
 bin
-libs
-endtime
+libs/
+endtime/
