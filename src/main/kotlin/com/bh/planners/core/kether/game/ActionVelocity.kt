@@ -1,5 +1,6 @@
 package com.bh.planners.core.kether.game
 
+import com.bh.planners.api.entity.ProxyEntity
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.KetherHelper
@@ -56,7 +57,11 @@ object ActionVelocity : MultipleKetherParser("velocity") {
     }
 
     fun LivingEntity.generatedVelocity(block: Vector.() -> Unit) {
-        this.velocity = velocity.apply(block)
+        this.velocity = velocity.clone().apply(block)
+    }
+
+    fun ProxyEntity.generatedVelocity(block: Vector.() -> Unit) {
+        this.velocity = velocity.clone().apply(block)
     }
 
 }

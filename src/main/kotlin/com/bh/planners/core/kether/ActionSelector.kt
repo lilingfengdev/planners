@@ -32,9 +32,9 @@ object ActionSelector : ParameterKetherParser("selector") {
 
     // selector <id> list
     val list = argumentKetherParser { argument ->
-        actionNow {
-            run(argument).str {
-                variables().get<Target.Container>(id.toString()).orElseGet { Target.Container() }
+        actionFuture {
+            run(argument).str { id ->
+                it.complete(variables().get<Target.Container>(id).orElseGet { Target.Container() })
             }
         }
     }
@@ -43,7 +43,7 @@ object ActionSelector : ParameterKetherParser("selector") {
 
     // selector <id> remove
     val remove = argumentKetherNow { id ->
-        variables().remove(id!!.toString())
+        variables().remove(id.toString())
     }
 
     // selector <id> unmerge they <selector>
@@ -52,7 +52,7 @@ object ActionSelector : ParameterKetherParser("selector") {
         actionNow {
             run(argument).str { id ->
                 containerOrEmpty(selector).thenAccept { selector ->
-                    variables().get<Target.Container>(ActionSelector.id.toString()).ifPresent {
+                    variables().get<Target.Container>(id).ifPresent {
                         it.unmerge(selector)
                     }
                 }
@@ -66,7 +66,7 @@ object ActionSelector : ParameterKetherParser("selector") {
         actionNow {
             run(argument).str { id ->
                 containerOrEmpty(selector).thenAccept { selector ->
-                    variables().get<Target.Container>(ActionSelector.id.toString()).ifPresent {
+                    variables().get<Target.Container>(id).ifPresent {
                         it.merge(selector)
                     }
                 }
@@ -76,9 +76,9 @@ object ActionSelector : ParameterKetherParser("selector") {
 
     // selector <id> size
     val size = argumentKetherParser { argument ->
-        actionNow {
+        actionFuture {
             run(argument).str { id ->
-                variables().get<Target.Container>(id)?.get()?.size ?: 0
+                it.complete(variables().get<Target.Container>(id).orElseGet { Target.Container() }.size)
             }
         }
     }

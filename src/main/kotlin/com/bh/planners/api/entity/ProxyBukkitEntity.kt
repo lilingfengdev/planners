@@ -94,5 +94,9 @@ class ProxyBukkitEntity(val instance: Entity) : ProxyEntity {
         return instance.name
     }
 
+    override fun delete() {
+        instance.remove()
+    }
+
 
 }

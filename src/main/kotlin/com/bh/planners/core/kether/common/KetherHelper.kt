@@ -4,14 +4,11 @@ import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.*
 import com.mojang.datafixers.kinds.App
 import org.bukkit.Material
-import taboolib.common.platform.function.info
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.Parser
 import taboolib.library.kether.QuestActionParser
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
-import taboolib.module.kether.ParserHolder.option
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -63,12 +60,53 @@ object KetherHelper {
         return containerOrElse { Target.Container() }
     }
 
+    /**
+     * 不会读取前缀的转换器
+     */
+    fun ParserHolder.actionContainer(): Parser<Target.Container> {
+        return Parser.frame { reader ->
+            val action = reader.nextParsedAction()
+            future { this.container(action) }
+        }
+    }
+
+    /**
+     * 不会读取前缀的转换器
+     */
+    fun ParserHolder.actionContainerOrSender(): Parser<Target.Container> {
+        return Parser.frame { reader ->
+            val action = reader.nextParsedAction()
+            future { this.containerOrSender(action) }
+        }
+    }
+
+    /**
+     * 不会读取前缀的转换器
+     */
+    fun ParserHolder.actionContainerOrOrigin(): Parser<Target.Container> {
+        return Parser.frame { reader ->
+            val action = reader.nextParsedAction()
+            future { this.containerOrOrigin(action) }
+        }
+    }
+
+    /**
+     * 不会读取前缀的转换器
+     */
+    fun ParserHolder.actionContainerOrEmpty(): Parser<Target.Container> {
+        return Parser.frame { reader ->
+            val action = reader.nextParsedAction()
+            future { this.containerOrEmpty(action) }
+        }
+    }
 
     fun ParserHolder.materialOrStone() = material(Material.STONE)
 
     fun ParserHolder.materialOrBarrier() = material(Material.BARRIER)
 
-    fun ParserHolder.material(default: Material) = any().map { Material.valueOf(it?.toString() ?: return@map null) }.defaultsTo(default)
+    fun ParserHolder.material(default: Material) = any().map {
+        Material.valueOf(it?.toString() ?: return@map null)
+    }.defaultsTo(default)
 
     fun simpleKetherParser(vararg id: String, func: () -> ScriptActionParser<out Any?>): SimpleKetherParser {
         return object : SimpleKetherParser(*id) {
@@ -105,12 +143,12 @@ object KetherHelper {
 
     @Suppress("UNCHECKED_CAST")
     fun registerCombinationKetherParser(id: String, combinationKetherParser: CombinationKetherParser) {
-        val id = arrayOf(id, *combinationKetherParser.id)
+        val ids = arrayOf(id, *combinationKetherParser.id)
         val namespace = combinationKetherParser.namespace
         if (combinationKetherParser is Stateable) {
             combinationKetherParser.onInit()
         }
-        registerCombinationKetherParser(id, namespace, combinationKetherParser.run() as ScriptActionParser<Any?>)
+        registerCombinationKetherParser(ids, namespace, combinationKetherParser.run() as ScriptActionParser<Any?>)
     }
 
     fun registerCombinationKetherParser(id: String, namespace: String, parser: ScriptActionParser<Any?>) {

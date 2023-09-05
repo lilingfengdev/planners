@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.game.bossbar
 
 import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.nextOptionalAction
+import com.bh.planners.core.kether.nextOptionalParsedAction
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.scriptParser
 import taboolib.module.kether.switch
@@ -39,7 +39,7 @@ object ActionBossbar {
         it.switch {
 
             case("create") {
-                ActionBossBarCreate(it.nextParsedAction(),it.nextOptionalAction(arrayOf("tick", "timeout"), -1)!!)
+                ActionBossBarCreate(it.nextParsedAction(),it.nextOptionalParsedAction(arrayOf("tick", "timeout"), -1)!!)
             }
 
             case("delete") {

@@ -4,7 +4,6 @@ import com.bh.planners.api.EntityAPI.deleteFlag
 import com.bh.planners.api.EntityAPI.getDataContainer
 import com.bh.planners.api.EntityAPI.setFlag
 import com.bh.planners.core.kether.common.CombinationKetherParser
-import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
 import com.bh.planners.core.kether.common.ParameterKetherParser
 import com.bh.planners.core.pojo.data.Data
 import taboolib.module.kether.*
@@ -13,14 +12,14 @@ import taboolib.module.kether.*
 object ActionFlag : ParameterKetherParser("flag", "data") {
 
     val main = argumentKetherParser("get") { argument ->
-        val default = nextOptionalAction(arrayOf("default", "def"), "null")!!
+        val default = nextOptionalParsedAction(arrayOf("default", "def"), "null")!!
         val selector = nextSelectorOrNull()
-        actionNow {
+        actionFuture { f ->
             run(argument).str { id ->
                 run(default).thenApply { default ->
                     containerOrSender(selector).thenApply { container ->
                         val entity = container.firstEntityTarget() ?: bukkitPlayer()!!
-                        entity.getDataContainer().get(id)?.data ?: default
+                        f.complete(entity.getDataContainer().get(id)?.data ?: default)
                     }
                 }
             }
@@ -29,7 +28,7 @@ object ActionFlag : ParameterKetherParser("flag", "data") {
 
     val to = argumentKetherParser("set") { argument ->
         val action = nextParsedAction()
-        val timeout = nextOptionalAction(arrayOf("timeout","time"),-1L)!!
+        val timeout = nextOptionalParsedAction(arrayOf("timeout","time"),-1L)!!
         val selector = nextSelectorOrNull()
         actionNow {
             run(argument).str { id ->
@@ -54,14 +53,14 @@ object ActionFlag : ParameterKetherParser("flag", "data") {
         val action = this.nextParsedAction()
         val selector = nextSelectorOrNull()
         actionNow {
-            run(argument).str { argument ->
+            run(argument).str { id ->
                 run(action).thenAccept { value ->
                     containerOrSender(selector).thenAccept { container ->
                         container.forEachEntity {
-                            val dataContainer = this.getDataContainer() ?: return@forEachEntity
-                            val data = dataContainer[id.toString()] ?: Data(0)
+                            val dataContainer = this.getDataContainer()
+                            val data = dataContainer[id] ?: Data(0)
                             data.increaseAny(value ?: 0)
-                            dataContainer.update(id.toString(), data)
+                            dataContainer.update(id, data)
                         }
                     }
                 }

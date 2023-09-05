@@ -6,13 +6,10 @@ import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
-import com.bh.planners.core.kether.common.MultipleKetherParser
 import com.bh.planners.core.kether.common.KetherHelper.simpleKetherNow
 import com.bh.planners.core.kether.common.KetherHelper.simpleKetherParser
+import com.bh.planners.core.kether.common.MultipleKetherParser
 import com.bh.planners.core.module.mana.ManaManager
-import taboolib.module.kether.actionNow
-import taboolib.module.kether.scriptParser
-import taboolib.module.kether.switch
 
 @CombinationKetherParser.Used
 object ActionMeta : MultipleKetherParser("meta") {
@@ -44,6 +41,14 @@ object ActionMeta : MultipleKetherParser("meta") {
         val maxlevel = simpleKetherNow("max-level", "level-max", "level-cap", "cap-level") {
             skill().maxLevel
         }
+
+        val shortcut = simpleKetherNow { skill().shortcutKey }
+
+        val natural = simpleKetherNow { skill().instance.option.isNatural }
+
+        val bind = simpleKetherNow { skill().instance.option.isBind }
+
+        val naturallevel = simpleKetherNow("natural-level", "level-natural") { skill().instance.option.naturalLevel }
 
     }
 

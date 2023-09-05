@@ -51,8 +51,8 @@ class ActionLeashHolder {
     companion object {
 
         /**
-         * 拴住      实体   被   实体
-         * leash set selector1 [selector]
+         * 拴住 实selector1体   被   实体
+         * leash set  [selector]
          *
          * 获取被谁拴住
          * leash get [selector]

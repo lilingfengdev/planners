@@ -1,105 +1,120 @@
 package com.bh.planners.core.kether.game
 
-import com.bh.planners.core.kether.NAMESPACE
+import com.bh.planners.api.common.SimpleTimeoutTask
+import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.target
+import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.common.KetherHelper
+import com.bh.planners.core.kether.common.KetherHelper.actionContainerOrOrigin
+import com.bh.planners.core.kether.common.KetherHelper.containerOrElse
+import com.bh.planners.core.kether.common.KetherHelper.containerOrOrigin
+import com.bh.planners.core.kether.common.MultipleKetherParser
 import com.bh.planners.core.kether.game.entity.*
-import com.bh.planners.core.kether.nextOptionalAction
-import com.bh.planners.core.kether.nextSelector
-import com.bh.planners.core.kether.nextSelectorOrNull
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.expects
-import taboolib.module.kether.scriptParser
-import taboolib.module.kether.switch
+import org.bukkit.Location
+import org.bukkit.entity.EntityType
+import org.bukkit.util.Vector
+import taboolib.module.kether.*
 import java.util.*
 
-object ActionEntity {
+object ActionEntity : MultipleKetherParser("entity") {
 
-    /**
-     * entity of [uuid: action]
-     * entity loc [entity : action]
-     * entity health [entity : action]
-     * entity spawn type name tick <health: health> <vector: bool;def: false>
-     * entity set view [yaw : action] [pitch : action] [selector]
-     * entity set viewto [selector] [selector]
-     * entity set arrowsInBody add/set/dec [arrows : Int] [selector]
-     * entity remove [selector]
-     * entity gravity [gravity: bool] [selector]
-     */
-    @KetherParser(["entity"], namespace = NAMESPACE, shared = true)
-    fun parser() = scriptParser {
-        it.switch {
-
-            case("of") {
-                ActionEntityTransfer(it.nextParsedAction())
-            }
-
-            case("spawn") {
-                ActionEntitySpawn(
-                    it.nextParsedAction(),
-                    it.nextParsedAction(),
-                    it.nextParsedAction(),
-                    it.nextOptionalAction(arrayOf("health","h"), "0")!!,
-                    it.nextOptionalAction(arrayOf("vector","v"), "false")!!,
-                    it.nextSelectorOrNull()
-                )
-            }
-
-            case("set") {
-                when (it.expects("view", "arrowsInBody", "viewto")) {
-                    "view" -> {
-                        ActionEntitySet(
-                            it.nextParsedAction(),
-                            it.nextParsedAction(),
-                            it.nextSelector()
-                        )
-                    }
-
-                    "viewto" -> {
-                        ActionEntitySetto(
-                            it.nextParsedAction(),
-                            it.nextSelectorOrNull()
-                        )
-                    }
-
-                    "arrowsInBody" -> {
-                        ActionEntitySetArrows(
-                            it.nextParsedAction(),
-                            it.nextParsedAction(),
-                            it.nextSelector()
-                        )
-                    }
-
-                    else -> error("out of case")
+    val spawn = KetherHelper.simpleKetherParser<Target.Container> {
+        it.group(
+                text(),
+                text(),
+                long(),
+                command("health", then = double()).option().defaultsTo(1.0),
+                command("vector", then = bool()).option().defaultsTo(false),
+                containerOrOrigin()
+        ).apply(it) { type, name, tick, health, isVector, origin ->
+            val entityType = EntityType.valueOf(type.uppercase().replace("-", "_"))
+            now {
+                val vector = if (isVector) {
+                    bukkitPlayer()?.velocity ?: Vector(0, 0, 0)
+                } else {
+                    Vector(0, 0, 0)
                 }
+                val container = Target.Container()
+                origin.forEachLocation {
+                    val entity = createEntity(this, entityType)
+                    // 设置实体名称
+                    entity.bukkitLivingEntity?.customName = name
+                    // 设置实体血量
+                    if (health >= 1.0) {
+                        entity.bukkitLivingEntity?.maxHealth = health
+                        entity.bukkitLivingEntity?.health = health
+                    }
+                    entity.bukkitLivingEntity?.velocity = vector
+                    // 注册到容器
+                    container += entity
+                }
+                this.variables()["@select-entities"] = container
+                this.variables()["@select-entities-cache"] = container.hashCode()
+                // 注册延迟销毁
+                SimpleTimeoutTask.createSimpleTask(tick, false) {
+                    container.forEachLivingEntity { remove() }
+                    this.variables().get<Int>("@selecte-entities-cache").ifPresent {
+                        if (it == container.hashCode()) {
+                            this.variables().remove("@select-entities")
+                            this.variables().remove("@select-entities-cache")
+                        }
+                    }
+                }
+                container
             }
+        }
+    }
 
-            case("remove") {
-                ActionEntityRemove(
-                    it.nextSelector()
-                )
-            }
-
-            case("gravity") {
-                ActionEntityGravity(
-                    it.nextParsedAction(),
-                    it.nextSelector()
-                )
-            }
-
-            other {
-                try {
-                    it.mark()
-                    val expect = it.expects(*EntityField.fields().toTypedArray())
-                    ActionEntityFieldGet(
-                        EntityField.valueOf(expect.uppercase(Locale.getDefault())),
-                        it.nextSelectorOrNull() ?: error("the lack of 'they' cite target")
-                    )
-                } catch (_: Throwable) {
-                    it.reset()
-                    error("error of case!")
+    val view = KetherHelper.simpleKetherParser<Unit> {
+        it.group(float(), float(), containerOrElse { getSelectEntities() }).apply(it) { yaw, pitch, container ->
+            now {
+                container.forEachProxyEntity {
+                    location.yaw = yaw
+                    location.pitch = pitch
                 }
             }
         }
+    }
 
+    val viewto = KetherHelper.simpleKetherParser<Unit> {
+        it.group(actionContainerOrOrigin(), containerOrElse { getSelectEntities() }).apply(it) { target, container ->
+            now {
+                val t = target.firstBukkitLocation()!!
+                container.forEachProxyEntity {
+                    location.yaw = t.yaw
+                    location.pitch = t.pitch
+                }
+            }
+        }
+    }
+
+    val remove = KetherHelper.simpleKetherParser<Unit> {
+        it.group(containerOrElse { getSelectEntities() }).apply(it) { container ->
+            now { container.forEachProxyEntity {
+                delete()
+            } }
+        }
+    }
+
+    val gravity = KetherHelper.simpleKetherParser<Unit> {
+        it.group(bool(), containerOrElse { getSelectEntities() }).apply(it) { isGravity, container ->
+            now { container.forEachLivingEntity { setGravity(isGravity) } }
+        }
+    }
+
+    val main = KetherHelper.simpleKetherParser<Any?> {
+        it.group(text(), containerOrElse { getSelectEntities() }).apply(it) { id, container ->
+            val field = EntityField.valueOf(id.uppercase().replace("-", "_"))
+            now { field.get(container.firstProxyEntity() ?: return@now null) }
+        }
+    }
+
+    private fun createEntity(location: Location, type: EntityType): Target.Entity {
+        return location.world!!.spawnEntity(location, type).target()
+    }
+
+    private fun ScriptFrame.getSelectEntities(): Target.Container {
+        return rootVariables().get<Target.Container>("@selecte-entities").orElse(Target.Container())
     }
 
 }

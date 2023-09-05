@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture
  * on keypress
  */
 class ActionKeyPress(
-    val key: ParsedAction<*>, val timeout: ParsedAction<*>, val selector: ParsedAction<*>?, val then: ParsedAction<*>,
+        val key: ParsedAction<*>, val timeout: ParsedAction<*>, val selector: ParsedAction<*>?, val then: ParsedAction<*>,
 ) : ScriptAction<Void>() {
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
 
@@ -31,11 +31,11 @@ class ActionKeyPress(
                     }
                 } else {
                     Emitter.registerSubscribers(frame.bukkitPlayer() ?: return@readAccept, key, timeout * 50)
-                        .thenAccept {
-                            if (!frame.isDone) {
-                                process(frame.bukkitPlayer()!!, frame)
+                            .thenAccept {
+                                if (!frame.isDone) {
+                                    process(frame.bukkitPlayer()!!, frame)
+                                }
                             }
-                        }
                 }
             }
         }

@@ -4,8 +4,13 @@ import com.bh.planners.api.PlannersAPI.plannersProfile
 import com.bh.planners.api.PlannersAPI.plannersProfileIsLoaded
 import com.bh.planners.api.common.Operator
 import com.bh.planners.api.common.Operator.*
+import com.bh.planners.core.effect.Target
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.bukkitPlayer
+import com.bh.planners.core.kether.common.CombinationKetherParser
+import com.bh.planners.core.kether.common.KetherHelper
+import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
+import com.bh.planners.core.kether.common.MultipleKetherParser
 import com.bh.planners.core.kether.execPlayer
 import com.bh.planners.core.kether.nextSelectorOrNull
 import com.bh.planners.core.module.mana.ManaManager
@@ -16,60 +21,45 @@ import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionMana(val mode: Operator, val amount: ParsedAction<*>, val selector: ParsedAction<*>?) :
-    ScriptAction<Void>() {
+/**
+ * 魔法值操作
+ */
+@CombinationKetherParser.Used
+object ActionMana : MultipleKetherParser("mana") {
 
-    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        frame.newFrame(amount).run<Any>().thenApply {
-            val amount = Coerce.toDouble(it)
-            if (selector != null) {
-                frame.execPlayer(selector) { execute(this, mode, amount) }
-            } else {
-                execute(frame.bukkitPlayer() ?: return@thenApply, mode, amount)
-            }
-        }
-        return CompletableFuture.completedFuture(null)
-    }
-
-    fun execute(player: Player, mode: Operator, amount: Double) {
-        if (!player.plannersProfileIsLoaded) return
-        val profile = player.plannersProfile
-        when (mode) {
-            ADD -> ManaManager.INSTANCE.addMana(profile, amount)
-            TAKE -> ManaManager.INSTANCE.takeMana(profile, amount)
-            SET -> ManaManager.INSTANCE.setMana(profile, amount)
-            RESET -> ManaManager.INSTANCE.setMana(profile, ManaManager.INSTANCE.getMaxMana(profile))
+    // mana add 100 they "@self"
+    val add = parser { container, value ->
+        container.forEachPlayer {
+            ManaManager.INSTANCE.addMana(plannersProfile, value)
         }
     }
 
-    internal object Parser {
-
-        /**
-         * 操作目标法力值
-         * mana [mode] [amount] [selector]
-         * mana add 100 they "@self"
-         * mana take 20 they "@self"
-         * mana set 114514 they "@self"
-         */
-        @KetherParser(["mana"], namespace = NAMESPACE, shared = true)
-        fun parser() = scriptParser {
-
-            it.switch {
-                case("add", "give") {
-                    ActionMana(ADD, it.nextParsedAction(), it.nextSelectorOrNull())
-                }
-
-                case("take", "subtract") {
-                    ActionMana(TAKE, it.nextParsedAction(), it.nextSelectorOrNull())
-                }
-
-                case("set") {
-                    ActionMana(SET, it.nextParsedAction(), it.nextSelectorOrNull())
-                }
-                other {
-                    error("error of case!")
-                }
-            }
+    // mana take 100 they "@self"
+    val take = parser { container, value ->
+        container.forEachPlayer {
+            ManaManager.INSTANCE.takeMana(plannersProfile, value)
         }
     }
+
+    // mana set 100 they "@self"
+    val set = parser { container, value ->
+        container.forEachPlayer {
+            ManaManager.INSTANCE.setMana(plannersProfile, value)
+        }
+    }
+
+    // mana reset 100 they "@self"
+    val reset = parser { container, value ->
+        container.forEachPlayer {
+            ManaManager.INSTANCE.setMana(plannersProfile, ManaManager.INSTANCE.getMaxMana(plannersProfile))
+        }
+    }
+
+    @CombinationKetherParser.Ignore
+    fun parser(block: (container: Target.Container, value: Double) -> Unit) = KetherHelper.simpleKetherParser<Unit> {
+        it.group(double(), containerOrSender()).apply(it) { value, container ->
+            now { block(container, value) }
+        }
+    }
+
 }

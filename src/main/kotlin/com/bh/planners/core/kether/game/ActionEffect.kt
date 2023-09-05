@@ -75,6 +75,7 @@ object ActionEffect {
             else {
                 val option = it.nextParsedAction()
                 val events = it.maps()
+
                 Parser(effectLoader, option).also {
                     it.events += events
                 }

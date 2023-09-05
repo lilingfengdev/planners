@@ -95,18 +95,18 @@ fun Matrix.applyInBukkit3DVector(vector: Vector): Vector {
 private fun createBoundingBox(location: Location): BoundingBox {
     return BoundingBox.of(
         location,
-        PlannersOption.scopeThreshold[0],
-        PlannersOption.scopeThreshold[1],
-        PlannersOption.scopeThreshold[2]
+        PlannersOption.scopeThreshold.get()[0],
+        PlannersOption.scopeThreshold.get()[1],
+        PlannersOption.scopeThreshold.get()[2]
     )
 }
 
 private fun Location.getNearbyEntities(): List<LivingEntity> {
     return world!!.getNearbyEntities(
         this,
-        PlannersOption.scopeThreshold[0],
-        PlannersOption.scopeThreshold[1],
-        PlannersOption.scopeThreshold[2]
+        PlannersOption.scopeThreshold.get()[0],
+        PlannersOption.scopeThreshold.get()[1],
+        PlannersOption.scopeThreshold.get()[2]
     ).filterIsInstance<LivingEntity>()
 }
 

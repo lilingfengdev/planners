@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.game.item
 
 import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.nextOptionalAction
+import com.bh.planners.core.kether.nextOptionalParsedAction
 import com.bh.planners.core.kether.nextSelectorOrNull
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.expects
@@ -28,7 +28,7 @@ object ItemOperator {
                         it.nextParsedAction(),
                         it.nextParsedAction(),
                         it.nextParsedAction(),
-                        it.nextOptionalAction(arrayOf("max", "maximum"), Int.MAX_VALUE)!!,
+                        it.nextOptionalParsedAction(arrayOf("max", "maximum"), Int.MAX_VALUE)!!,
                         it.nextSelectorOrNull()
                     )
 

@@ -2,7 +2,7 @@ package com.bh.planners.core.kether.damageable
 
 import com.bh.planners.core.feature.damageable.*
 import com.bh.planners.core.kether.compat.attribute.AttributeBridge
-import com.bh.planners.core.kether.nextOptionalAction
+import com.bh.planners.core.kether.nextOptionalParsedAction
 import com.bh.planners.core.pojo.data.DataContainer.Companion.unsafeData
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.entity.Player
@@ -28,7 +28,7 @@ class ActionDamageable {
         @KetherParser(["papi", "placeholder"], namespace = DamageableScript.NAMESPACE)
         fun actionPlaceholder() = scriptParser {
             val str = it.nextParsedAction()
-            val defaultValue = it.nextOptionalAction(arrayOf("def", "default"), "null")!!
+            val defaultValue = it.nextOptionalParsedAction(arrayOf("def", "default"), "null")!!
             actionTake {
                 run(str).str { s ->
                     run(defaultValue).thenApply {

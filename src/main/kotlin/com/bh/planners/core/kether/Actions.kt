@@ -5,7 +5,6 @@ import com.bh.planners.core.kether.common.KetherHelper
 import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
 import taboolib.module.kether.ScriptService
-import taboolib.module.kether.actionNow
 import taboolib.module.kether.script
 import java.util.UUID
 import java.util.concurrent.CompletableFuture

@@ -5,7 +5,7 @@ import ac.github.oa.api.event.entity.ProxyDamageEvent
 import ac.github.oa.internal.base.enums.PriorityEnum
 import ac.github.oa.internal.core.attribute.impl.Damage
 import com.bh.planners.api.common.Demand
-import com.bh.planners.core.kether.game.ActionDamage
+import com.bh.planners.core.kether.game.doDamage
 import io.lumine.xikage.mythicmobs.MythicMobs
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter
 import io.lumine.xikage.mythicmobs.skills.SkillTrigger
@@ -22,7 +22,7 @@ class OriginP : AttackProvider {
 
     val isMythicMobs by lazy { Bukkit.getPluginManager().isPluginEnabled("MythicMobs") }
 
-    override fun doDamage(entity: LivingEntity, damage: Double, source: LivingEntity, demand: Demand) {
+    override fun process(entity: LivingEntity, damage: Double, source: LivingEntity, demand: Demand) {
 
         val event = ProxyDamageEvent(EntityDamageByEntityEvent(source, entity, defaultCause, 0.0))
         if (demand.dataMap.containsKey("cause")) {
@@ -55,7 +55,7 @@ class OriginP : AttackProvider {
         if (ac.github.oa.api.event.entity.EntityDamageEvent(context, PriorityEnum.PRE).call()) {
             OriginAttributeAPI.callDamage(context)
             if (ac.github.oa.api.event.entity.EntityDamageEvent(context, PriorityEnum.POST).call()) {
-                ActionDamage.doDamage(source, entity, context.totalDamage.coerceAtLeast(0.0))
+                doDamage(source, entity, context.totalDamage.coerceAtLeast(0.0))
                 // 兼容onDamage
                 if (isMythicMobs) {
                     val mob = MythicMobs.inst().mobManager.getMythicMobInstance(entity) ?: return

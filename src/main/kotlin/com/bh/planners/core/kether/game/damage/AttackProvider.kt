@@ -5,10 +5,11 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 
 interface AttackProvider {
 
-    fun doDamage(entity: LivingEntity, damage: Double, source: LivingEntity, demand: Demand)
+    fun process(entity: LivingEntity, damage: Double, source: LivingEntity, demand: Demand)
 
     companion object {
 
@@ -21,9 +22,9 @@ interface AttackProvider {
         val INSTANCE: AttackProvider? by lazy { createBridge() }
 
         @Awake(LifeCycle.ENABLE)
-        fun createBridge(): AttackProvider? {
+        fun createBridge(): AttackProvider {
             val inspect = inspects.firstOrNull { it.check(it) } ?: MINECRAFT
-            return inspect.clazz.newInstance()
+            return inspect.clazz.invokeConstructor()
         }
 
 

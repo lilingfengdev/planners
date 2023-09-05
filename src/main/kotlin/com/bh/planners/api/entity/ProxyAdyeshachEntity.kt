@@ -63,7 +63,7 @@ class ProxyAdyeshachEntity(val instance: EntityInstance) : ProxyEntity {
     override val eyeLocation: Location
         get() = location
 
-    fun delete() {
+    override fun delete() {
         instance.delete()
     }
 

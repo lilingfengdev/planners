@@ -7,9 +7,9 @@ import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 class ActionEntitySetArrows(
-    val stats: ParsedAction<*>,
-    val number: ParsedAction<*>,
-    val selector: ParsedAction<*>,
+        val stats: ParsedAction<*>,
+        val number: ParsedAction<*>,
+        val selector: ParsedAction<*>,
 ) : ScriptAction<List<Entity>>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<Entity>> {
@@ -18,9 +18,17 @@ class ActionEntitySetArrows(
                 frame.createContainer(selector).thenAccept { container ->
                     container.forEachLivingEntity {
                         when (stats) {
-                            "add" -> {this.arrowsInBody += arrows}
-                            "set" -> {this.arrowsInBody = arrows}
-                            "dec" -> {if (this.arrowsInBody >= 1) this.arrowsInBody -= arrows}
+                            "add" -> {
+                                this.arrowsInBody += arrows
+                            }
+
+                            "set" -> {
+                                this.arrowsInBody = arrows
+                            }
+
+                            "dec" -> {
+                                if (this.arrowsInBody >= 1) this.arrowsInBody -= arrows
+                            }
                         }
                     }
                 }

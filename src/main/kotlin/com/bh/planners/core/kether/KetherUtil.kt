@@ -302,10 +302,10 @@ fun catchRunning(action: () -> Unit) {
 }
 
 fun QuestReader.get(array: Array<String>): ParsedAction<*> {
-    return nextOptionalAction(array, null) ?: error("the lack of '${array.map { it }}' cite target")
+    return nextOptionalParsedAction(array, null) ?: error("the lack of '${array.map { it }}' cite target")
 }
 
-fun QuestReader.nextOptionalActionOrNull(array: Array<out String>): ParsedAction<*>? {
+fun QuestReader.nextOptionalParsedActionOrNull(array: Array<out String>): ParsedAction<*>? {
     return try {
         mark()
         expects(*array)
@@ -317,21 +317,21 @@ fun QuestReader.nextOptionalActionOrNull(array: Array<out String>): ParsedAction
 }
 
 fun QuestReader.argumentActionOrNull(array: Array<out String>): ParsedAction<*>? {
-    return nextOptionalActionOrNull(array)
+    return nextOptionalParsedActionOrNull(array)
 }
 
 fun QuestReader.argumentAction(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
-    return nextOptionalAction(array, def)
+    return nextOptionalParsedAction(array, def)
 }
 
-// nextOptionalAction
-fun QuestReader.nextOptionalAction(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
-    return nextOptionalActionOrNull(array) ?: if (def == null) null else literalAction(def)
+// nextOptionalParsedAction
+fun QuestReader.nextOptionalParsedAction(array: Array<out String>, def: Any? = null): ParsedAction<*>? {
+    return nextOptionalParsedActionOrNull(array) ?: if (def == null) null else literalAction(def)
 }
 
-// nextOptionalAction
-fun QuestReader.nextOptionalAction(id: String, def: Any? = null): ParsedAction<*>? {
-    return nextOptionalActionOrNull(arrayOf(id)) ?: if (def == null) null else literalAction(def)
+// nextOptionalParsedAction
+fun QuestReader.nextOptionalParsedAction(id: String, def: Any? = null): ParsedAction<*>? {
+    return nextOptionalParsedActionOrNull(arrayOf(id)) ?: if (def == null) null else literalAction(def)
 }
 
 fun QuestReader.nextSelector(): ParsedAction<*> {
@@ -339,7 +339,7 @@ fun QuestReader.nextSelector(): ParsedAction<*> {
 }
 
 fun QuestReader.nextSelectorOrNull(): ParsedAction<*>? {
-    return this.nextOptionalActionOrNull(arrayOf("they", "the", "at"))
+    return this.nextOptionalParsedActionOrNull(arrayOf("they", "the", "at"))
 }
 
 fun <T> CompletableFuture<Any?>.material(then: (Material) -> T): CompletableFuture<T> {
@@ -385,4 +385,11 @@ fun CompletableFuture<Target.Container>.forEachProxyEntity(block: ProxyEntity.(i
 
 fun CompletableFuture<Target.Container>.forEachEntity(block: Entity.(index: Int) -> Unit) {
     thenAccept { it.forEachEntity(block) }
+}
+
+/**
+ * 创建空容器 dsl
+ */
+fun createTargetContainerDSL(block: (result: Target.Container) -> Unit): Target.Container {
+    return Target.Container().apply(block)
 }

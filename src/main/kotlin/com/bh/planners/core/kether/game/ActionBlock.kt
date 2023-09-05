@@ -2,96 +2,71 @@ package com.bh.planners.core.kether.game
 
 import com.bh.planners.api.common.SimpleTimeoutTask
 import com.bh.planners.core.effect.Target
+import com.bh.planners.core.effect.Target.Companion.target
 import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.common.CombinationKetherParser
+import com.bh.planners.core.kether.common.KetherHelper
+import com.bh.planners.core.kether.common.KetherHelper.containerOrOrigin
+import com.bh.planners.core.kether.common.KetherHelper.materialOrStone
 import org.bukkit.Location
 import org.bukkit.Material
+import taboolib.common5.cbyte
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-class ActionBlock : ScriptAction<List<Target>>() {
+private val blocks = mutableMapOf<Location, BlockSimpleTask>()
 
-    lateinit var material: ParsedAction<*>
-    lateinit var timeout: ParsedAction<*>
-    lateinit var data: ParsedAction<*>
-    var selector: ParsedAction<*>? = null
-
-    fun execute(location: Location, material: Material, data: Byte, ticks: Long) {
-
-        // 如果上一次的任务还未结束 则提前结束
-        if (cache.containsKey(location)) {
-            SimpleTimeoutTask.cancel(cache[location]!!)
-        }
-
-        val simpleTask = BlockSimpleTask(location, material, data, ticks)
-        SimpleTimeoutTask.register(simpleTask)
-        // 注入新的
-        cache[location] = simpleTask
-
-    }
-
-    override fun run(frame: ScriptFrame): CompletableFuture<List<Target>> {
-        frame.run(material).material { material ->
-            frame.run(timeout).long { timeout ->
-                frame.run(data).byte { data ->
-                    frame.containerOrOrigin(selector).thenAccept {
-                        it.forEachLocation { execute(this, material, data, timeout) }
+/**
+ * 添加方块蒙板
+ * block material tick <data: action(0)> <selector: action(origin)>
+ */
+@CombinationKetherParser.Used
+fun actionBlock() = KetherHelper.simpleKetherParser<Target.Container>("block") {
+    it.group(
+            materialOrStone(), long(), command("data", then = int()).option().defaultsTo(0), containerOrOrigin()
+    ).apply(it) { material, tick, data, container ->
+        now {
+            createTargetContainerDSL { result ->
+                container.forEachLocation {
+                    // 注销上次的任务
+                    if (blocks.containsKey(this)) {
+                        SimpleTimeoutTask.cancel(blocks[this]!!)
                     }
+                    // 添加新的任务
+                    val task = BlockSimpleTask(this, material, data.cbyte, tick)
+                    result += Target.Location(this)
+                    SimpleTimeoutTask.register(task)
+                    blocks[this] = task
                 }
             }
         }
-
-        return CompletableFuture.completedFuture(null)
     }
+}
 
-    class BlockSimpleTask(val location: Location, var to: Material, val data: Byte, tick: Long) :
-        SimpleTimeoutTask(tick) {
+private class BlockSimpleTask(val location: Location, var to: Material, val data: Byte, tick: Long) : SimpleTimeoutTask(tick) {
 
-        val world = location.world!!
-        var block = location.block
-        var mark = location.block.type
+    val world = location.world!!
+    var block = location.block
 
-        override val closed: () -> Unit
-            get() = {
-                update()
-                isClosed = true
-            }
-
-        fun update() {
-
-            world.players.forEach {
-                it.sendBlockChange(location, block.type, block.data)
-            }
-
+    override val closed: () -> Unit
+        get() = {
+            update()
+            isClosed = true
         }
 
-        init {
-            world.players.forEach {
-                it.sendBlockChange(location, to, data)
-            }
+    fun update() {
+
+        world.players.forEach {
+            it.sendBlockChange(location, block.type, block.data)
         }
 
     }
 
-    companion object {
-
-        val cache = mutableMapOf<Location, BlockSimpleTask>()
-
-        /**
-         * block material timeout(tick) <data: action(0)> <selector>
-         * block STONE 60 they "@self"
-         */
-        @KetherParser(["block"], namespace = NAMESPACE, shared = true)
-        fun parser() = scriptParser {
-            val actionBlock = ActionBlock()
-            actionBlock.material = it.nextParsedAction()
-            actionBlock.timeout = it.nextParsedAction()
-            actionBlock.data = it.nextOptionalAction(arrayOf("data"), "0")!!
-            actionBlock.selector = it.nextSelectorOrNull()
-            actionBlock
+    init {
+        world.players.forEach {
+            it.sendBlockChange(location, to, data)
         }
-
     }
-
 
 }

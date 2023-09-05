@@ -37,4 +37,5 @@ interface ProxyEntity {
 
     fun teleport(location: Location)
 
+    fun delete()
 }

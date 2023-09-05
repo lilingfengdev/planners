@@ -67,8 +67,8 @@ class ActionChant : ScriptAction<Void>() {
             val builder = it.nextParsedAction()
             val duration = it.nextParsedAction()
             val period = it.nextParsedAction()
-            val delay = it.nextOptionalAction("delay", 0)!!
-            val async = it.nextOptionalAction("async", true)!!
+            val delay = it.nextOptionalParsedAction("delay", 0)!!
+            val async = it.nextOptionalParsedAction("async", true)!!
             val tags = mutableListOf<Interrupt>()
             while (true) {
                 try {
@@ -80,7 +80,7 @@ class ActionChant : ScriptAction<Void>() {
                 }
             }
             val selector = it.nextSelectorOrNull()
-            val then = it.nextOptionalAction("then")
+            val then = it.nextOptionalParsedAction("then")
             ActionChant().also {
                 it.builder = builder
                 it.duration = duration

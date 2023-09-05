@@ -86,7 +86,7 @@ object BukkitGrid {
 
     fun update(player: Player, minecraftGrid: Grid) {
         val skill = get(player, minecraftGrid)
-        val itemStack = skill?.toIcon(player)?.build() ?: PlannersOption.gridAirIcon
+        val itemStack = skill?.toIcon(player)?.build() ?: PlannersOption.gridAirIcon.get()
         player.inventory.setItem(minecraftGrid.slot, itemStack)
         player.updateInventory()
     }

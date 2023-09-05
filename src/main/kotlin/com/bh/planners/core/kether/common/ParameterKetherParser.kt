@@ -1,9 +1,9 @@
 package com.bh.planners.core.kether.common
 
+import com.bh.planners.util.Reflexs
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestActionParser
 import taboolib.library.kether.QuestReader
-import taboolib.library.reflex.ReflexClass
 import taboolib.module.kether.*
 
 abstract class ParameterKetherParser(vararg id: String) : SimpleKetherParser(*id), Stateable {
@@ -17,7 +17,7 @@ abstract class ParameterKetherParser(vararg id: String) : SimpleKetherParser(*id
         return scriptParser {
             val argument = it.nextParsedAction()
             it.switch {
-                this@ParameterKetherParser.method.forEach { id, parser ->
+                this@ParameterKetherParser.method.forEach { (id, parser) ->
                     case(id) { parser.parser.invoke(it, argument) }
                 }
                 other { mainParser?.parser?.invoke(it, argument) }
@@ -26,7 +26,7 @@ abstract class ParameterKetherParser(vararg id: String) : SimpleKetherParser(*id
     }
 
     override fun onInit() {
-        ReflexClass.of(this::class.java).structure.fields.forEach { field ->
+        Reflexs.getFields(this::class.java).forEach { field ->
 
             // ignored ...
             if (field.name == "INSTANCE" || field.isAnnotationPresent(CombinationKetherParser.Ignore::class.java)) {
@@ -36,7 +36,7 @@ abstract class ParameterKetherParser(vararg id: String) : SimpleKetherParser(*id
             // parameter parser
             if (ArgumentKetherParser::class.java.isAssignableFrom(field.fieldType)) {
                 val parser = field.get(this) as ArgumentKetherParser
-                setOf(field.name,*parser.id).forEach {
+                setOf(field.name, *parser.id).forEach {
                     this.method[it] = parser
                 }
             }
@@ -50,7 +50,7 @@ abstract class ParameterKetherParser(vararg id: String) : SimpleKetherParser(*id
     protected fun argumentKetherNow(vararg id: String, func: ScriptFrame.(argument: Any?) -> Any?): ArgumentKetherParser {
         return argumentKetherParser(*id) { argument ->
             actionNow {
-                run(argument).thenApply { func(this,it) }
+                run(argument).thenApply { func(this, it) }
             }
         }
     }

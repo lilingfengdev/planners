@@ -2,33 +2,44 @@ package com.bh.planners.api
 
 import com.bh.planners.Planners
 import org.bukkit.inventory.ItemStack
+import taboolib.common.util.asList
+import taboolib.common5.cdouble
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.library.xseries.XItemStack
 import taboolib.library.xseries.XMaterial
 import taboolib.library.xseries.getItemStack
+import taboolib.module.configuration.ConfigNode
+import taboolib.module.configuration.ConfigNodeTransfer
 
 object PlannersOption {
 
     val root: ConfigurationSection
         get() = Planners.config.getConfigurationSection("options")!!
 
-    val scopeThreshold: List<Double>
-        get() = root.getDoubleList("scope-threshold")
+    @ConfigNode("options.scope-threshold")
+    val scopeThreshold = ConfigNodeTransfer<Any, List<Double>> {
+        asList().map { it.cdouble }
+    }
 
-    val autoSaveFlagPeriod: Long
-        get() = root.getLong("autoSaveFlagPeriod", 6000)
+    @ConfigNode("options.auto-save-flag-period")
+    val autoSaveFlagPeriod = 6000L
 
-    val infos: List<String>
-        get() = root.getStringList("infos")
+    @ConfigNode("options.infos")
+    val infos = ConfigNodeTransfer<Any, List<String>> {
+        asList()
+    }
 
-    val gridAirIcon: ItemStack
-        get() = root.getItemStack("grid-air") ?: XMaterial.STONE.parseItem()!!
+    @ConfigNode("options.grid-air")
+    val gridAirIcon = ConfigNodeTransfer<ConfigurationSection, ItemStack> {
+        XItemStack.deserialize(this)
+    }
 
-    val regainManaPeriod: Long
-        get() = root.getLong("regain-mana-period", 20L)
+    @ConfigNode("options.regain-mana-period")
+    val regainManaPeriod = 20L
 
-    val regainManaExperience: String
-        get() = root.getString("regain-mana-eval")!!
+    @ConfigNode("options.regain-mana-eval")
+    val regainManaExperience = "100"
 
-    val upgradePoints: String?
-        get() = root.getString("upgrade-points")
+    @ConfigNode("options.upgrade-points")
+    val upgradePoints: String? = null
 }

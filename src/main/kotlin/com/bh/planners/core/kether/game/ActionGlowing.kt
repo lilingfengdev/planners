@@ -3,7 +3,7 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.api.common.SimpleUniqueTask
 import com.bh.planners.core.kether.NAMESPACE
 import com.bh.planners.core.kether.containerOrSender
-import com.bh.planners.core.kether.nextOptionalAction
+import com.bh.planners.core.kether.nextOptionalParsedAction
 import com.bh.planners.core.kether.nextSelectorOrNull
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
@@ -83,9 +83,9 @@ class ActionGlowing(
         @KetherParser(["glowing"], namespace = NAMESPACE, shared = true)
         fun parser() = scriptParser {
             ActionGlowing(
-                it.nextOptionalAction(arrayOf("tick", "time", "timeout"), "-1")!!,
-                it.nextOptionalAction(arrayOf("value"), "true")!!,
-                it.nextOptionalAction(arrayOf("color"), "WHITE")!!,
+                it.nextOptionalParsedAction(arrayOf("tick", "time", "timeout"), "-1")!!,
+                it.nextOptionalParsedAction(arrayOf("value"), "true")!!,
+                it.nextOptionalParsedAction(arrayOf("color"), "WHITE")!!,
                 it.nextSelectorOrNull()
             )
         }

@@ -62,7 +62,7 @@ object PlannersCommand {
             execute<ProxyCommandSender> { sender, _, argument ->
                 val playerExact = Bukkit.getPlayerExact(argument) ?: return@execute
                 runKether {
-                    ScriptLoader.createFunctionScript(ContextAPI.create(playerExact), PlannersOption.infos).forEach {
+                    ScriptLoader.createFunctionScript(ContextAPI.create(playerExact), PlannersOption.infos.get()).forEach {
                         sender.sendMessage(it.colored())
                     }
                 }

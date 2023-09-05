@@ -1,11 +1,13 @@
 package com.bh.planners.core.kether
 
 import com.bh.planners.api.event.proxy.ProxyDamageEvent
+import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.MultipleKetherParser
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import taboolib.module.kether.*
 
+@CombinationKetherParser.Used
 object ActionEvent : MultipleKetherParser("event") {
 
     fun ScriptFrame.event(): Event {

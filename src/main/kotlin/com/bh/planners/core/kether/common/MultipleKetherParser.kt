@@ -1,12 +1,11 @@
 package com.bh.planners.core.kether.common
 
 import com.bh.planners.core.kether.common.KetherHelper.simpleKetherParser
-import taboolib.common.platform.function.info
+import com.bh.planners.util.Reflexs
+import com.google.common.reflect.TypeToken
 import taboolib.library.kether.QuestActionParser
-import taboolib.library.reflex.ReflexClass
 import taboolib.module.kether.ScriptActionParser
 import taboolib.module.kether.expects
-import taboolib.module.kether.scriptParser
 
 abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id), Stateable {
 
@@ -34,8 +33,7 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
 
     @Suppress("UNCHECKED_CAST")
     override fun onInit() {
-        ReflexClass.of(this::class.java).structure.fields.forEach { field ->
-
+        Reflexs.getFields(this::class.java).forEach { field ->
             // ignored ...
             if (field.name == "INSTANCE" || field.isAnnotationPresent(CombinationKetherParser.Ignore::class.java)) {
                 return@forEach
@@ -43,16 +41,17 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
             // combination parser
             else if (CombinationKetherParser::class.java.isAssignableFrom(field.fieldType)) {
                 val parser = field.get(this) as CombinationKetherParser
-                registerInternalCombinationParser(arrayOf(field.name),parser)
+                registerInternalCombinationParser(arrayOf(field.name), parser)
             }
             // scriptParser combinationParser
             else if (ScriptActionParser::class.java.isAssignableFrom(field.fieldType)) {
                 val parser = simpleKetherParser(field.name) {
                     field.get(this) as ScriptActionParser<Any>
                 }
-                registerInternalCombinationParser(arrayOf(field.name),parser)
+                registerInternalCombinationParser(arrayOf(field.name), parser)
             }
         }
+
     }
 
     protected fun registerInternalCombinationParser(id: Array<String>, combinationKetherParser: CombinationKetherParser) {
@@ -61,7 +60,7 @@ abstract class MultipleKetherParser(vararg id: String) : SimpleKetherParser(*id)
             combinationKetherParser.onInit()
         }
         // 去重
-        setOf(*id,*combinationKetherParser.id).forEach {
+        setOf(*id, *combinationKetherParser.id).forEach {
             this.method[it] = combinationKetherParser
         }
     }
