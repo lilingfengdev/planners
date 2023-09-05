@@ -10,7 +10,7 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 @CombinationKetherParser.Used
-object ActionLazyVariable : MultipleKetherParser("lazy"){
+object ActionLazyVariable : MultipleKetherParser("lazy") {
 
     val get = simpleKetherParser<Any?> {
         it.group(text()).apply(it) { id ->
@@ -32,13 +32,14 @@ object ActionLazyVariable : MultipleKetherParser("lazy"){
 
     fun ScriptFrame.runVariable(id: String): CompletableFuture<Any?> {
         // 如果变量已经被加载
-        return if (rootVariables().keys().contains("__${id}_VARIABLE")) {
+        return if (deepVars().containsKey("__${id}_VARIABLE")) {
             CompletableFuture.completedFuture(rootVariables().get<Any>("__${id}_VARIABLE").get())
         }
-        // 未加载的情况 
+        // 未加载的情况 做缓存处理 reload会重载变量
         else {
             skill().instance.runVariable(getContext(), id).thenApply {
                 this.rootVariables()["__${id}_VARIABLE"] = it
+                it
             }
         }
     }

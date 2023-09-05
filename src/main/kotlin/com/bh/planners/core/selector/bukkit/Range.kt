@@ -3,6 +3,7 @@ package com.bh.planners.core.selector.bukkit
 import com.bh.planners.core.effect.Target.Companion.getLocation
 import com.bh.planners.core.effect.Target.Companion.toTarget
 import com.bh.planners.core.effect.createAwaitVoidFuture
+import com.bh.planners.core.effect.getNearbyEntities
 import com.bh.planners.core.effect.isInSphere
 import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.LivingEntity
@@ -28,19 +29,8 @@ object Range : Selector {
         val z = data.read<Double>(2, x.toString())
 
         return createAwaitVoidFuture {
-            if (x == y && y == z) {
-                location.world?.livingEntities?.forEach {
-                    val r = x + (sqrt(it.width.pow(2.0) * 2) / 2)
-                    if (it.location.isInSphere(location, r)) {
-                        data.container += it.toTarget()
-                    }
-                }
-            } else {
-                location.world?.getNearbyEntities(location, x, y, z)?.forEach {
-                    if (it is LivingEntity) {
-                        data.container += it.toTarget()
-                    }
-                }
+            location.world!!.getNearbyEntities(location,x,y,z).filterIsInstance<LivingEntity>().forEach {
+                data.container += it.toTarget()
             }
         }
     }

@@ -29,10 +29,10 @@ fun actionbar() = KetherHelper.simpleKetherParser<Unit> {
 @CombinationKetherParser.Used
 fun title() = KetherHelper.simpleKetherParser<Unit> {
     it.group(
-        text(),
-        command("subtitle", then = text()).option(),
-        command("by", "with", then = int().and(int(), int())).option().defaultsTo(Triple(0, 20, 0)),
-        containerOrSender()
+            text(),
+            command("subtitle", then = text()).option(),
+            command("by", "with", then = int().and(int(), int())).option().defaultsTo(Triple(0, 20, 0)),
+            containerOrSender()
     ).apply(it) { title, subtitle, with, container ->
         now {
             container.forEachPlayer {
@@ -65,9 +65,9 @@ fun teleport() = KetherHelper.simpleKetherParser<Unit>("tp") {
 @CombinationKetherParser.Used
 fun sound() = KetherHelper.simpleKetherParser<Unit> {
     it.group(
-        text(),
-        command("by", "with", then = float().and(float())).option().defaultsTo(1f to 1f),
-        containerOrSender()
+            text(),
+            command("by", "with", then = float().and(float())).option().defaultsTo(1f to 1f),
+            containerOrSender()
     ).apply(it) { sound, with, container ->
         now {
             val (volume, pitch) = with
@@ -135,13 +135,14 @@ fun lightning() = KetherHelper.simpleKetherParser<Unit> {
         }
     }
 }
+
 /**
  * 拖拽目标
  * drag power <pos> <selector: action(origin)>
  */
 @CombinationKetherParser.Used
 fun drag() = KetherHelper.simpleKetherParser<Unit>("drag") {
-    it.group(double(), actionContainer(), command("pos", then = actionContainerOrOrigin()).option()).apply(it) { step, container, target ->
+    it.group(double(), actionContainer(), containerOrOrigin()).apply(it) { step, container, target ->
         now {
             val location = target?.firstBukkitLocation() ?: origin().value
             container.forEachProxyEntity {
@@ -181,7 +182,7 @@ fun launch() = KetherHelper.simpleKetherParser<Unit> {
  * 计算两点安全距离
  */
 @CombinationKetherParser.Used
-fun safeDistance() = KetherHelper.simpleKetherParser<Unit>("long","safe-distance") {
+fun safeDistance() = KetherHelper.simpleKetherParser<Unit>("long", "safe-distance") {
     it.group(actionContainerOrOrigin(), containerOrOrigin()).apply(it) { p1, p2 ->
         now {
             val loc1 = p1.firstBukkitLocation() ?: p1.firstProxyEntity()?.location ?: return@now

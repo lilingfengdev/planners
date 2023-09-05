@@ -21,6 +21,7 @@ import com.bh.planners.util.safeSync
 import com.google.gson.Gson
 import org.bukkit.entity.Player
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submitAsync
 import taboolib.common5.Coerce
 import taboolib.common5.cbool
@@ -70,7 +71,8 @@ object PlannersAPI {
     }
 
     fun PlayerProfile.cast(skillName: String, mark: Boolean = true): ExecuteResult {
-        return castInMirror(skills.firstOrNull { it.key == skillName } ?: error("Skill '${skillName}' not found."), mark)
+        return castInMirror(skills.firstOrNull { it.key == skillName }
+                ?: error("Skill '${skillName}' not found."), mark)
     }
 
     fun getRouter(routerKey: String): Router {
@@ -111,8 +113,7 @@ object PlannersAPI {
             return ExecuteResult.SUCCESS
         }
 
-        val preEvent = PlayerCastSkillEvents.Pre(player, session).apply { call() }
-        if (preEvent.isCancelled) {
+        if (!PlayerCastSkillEvents.Pre(player, session).call()) {
             PlayerCastSkillEvents.Failure(player, skill, ExecuteResult.CANCELED).call()
             return ExecuteResult.CANCELED
         }
@@ -134,7 +135,7 @@ object PlannersAPI {
         }
 
         Counting.reset(player, session)
-        ManaManager.INSTANCE.takeMana(this,mana)
+        ManaManager.INSTANCE.takeMana(this, mana)
         PlayerCastSkillEvents.Record(player, skill).call()
 
         session.cast()
