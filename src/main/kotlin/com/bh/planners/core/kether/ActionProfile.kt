@@ -32,12 +32,12 @@ object ActionProfile : MultipleKetherParser("profile") {
 
         val to = argumentKetherParser("set") { argument ->
             val action = this.nextParsedAction()
-            val timeout = this.nextOptionalParsedAction(arrayOf("timeout", "time"), 0L)!!
+            val timeout = this.nextOptionalParsedAction(arrayOf("timeout", "time"), -1)!!
             actionNow {
                 run(argument).str { argument ->
                     run(action).thenApply { value ->
                         run(timeout).long { timeout ->
-                            bukkitPlayer()?.getDataContainer()?.set(argument, Data(value!!, timeout)) ?: Unit
+                            bukkitPlayer()?.getDataContainer()?.set(argument, Data(value!!, survivalStamp = timeout)) ?: Unit
                         }
                     }
                 }
