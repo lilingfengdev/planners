@@ -146,7 +146,7 @@ fun drag() = KetherHelper.simpleKetherParser<Unit>("drag") {
         now {
             val location = target?.firstBukkitLocation() ?: origin().value
             container.forEachProxyEntity {
-                val vectorAB = this.location.clone().subtract(location).toVector()
+                val vectorAB = location.clone().subtract(this.location).toVector()
                 vectorAB.normalize()
                 vectorAB.multiply(step)
                 this.velocity = vectorAB

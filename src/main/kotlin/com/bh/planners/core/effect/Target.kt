@@ -95,6 +95,15 @@ interface Target {
 
     open class Container : LinkedHashSet<Target>() {
 
+        override fun add(element: Target): Boolean {
+            // 如果是实体 并且已经死亡 直接过滤掉
+            if (element is Entity && element.bukkitLivingEntity?.isDead == true) {
+                return false
+            }
+
+            return super.add(element)
+        }
+
         override fun forEach(action: Consumer<in Target>) {
             super.forEach {
                 if (it.isValid) action.accept(it)
