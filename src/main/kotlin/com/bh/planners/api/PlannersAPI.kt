@@ -129,14 +129,9 @@ object PlannersAPI {
             return ExecuteResult.MANA_NOT_ENOUGH
         }
 
-        val wg = !WorldGuardHook.cast(player)
-        if (wg) {
-            return ExecuteResult.WorldGuardPVP
-        }
-
         Counting.reset(player, session)
         ManaManager.INSTANCE.takeMana(this, mana)
-        PlayerCastSkillEvents.Record(player, skill).call()
+        PlayerCastSkillEvents.Record(player, session).call()
 
         session.cast()
         session.closed = true

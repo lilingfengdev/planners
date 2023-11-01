@@ -16,10 +16,13 @@ class PlayerCastSkillEvents {
 
     }
 
+    class Post(val player: Player, val skill: Skill) : BukkitProxyEvent()
+
     class Failure(val player: Player, val skill: Skill, val result: ExecuteResult) : BukkitProxyEvent()
 
-    class Record(val player: Player, val skill: Skill) : BukkitProxyEvent()
-
-    class Post(val player: Player, val skill: Skill) : BukkitProxyEvent()
+    /**
+     * 内部条件检索完毕后的处理事件
+     */
+    class Record(val player: Player, val session: Session) : BukkitProxyEvent()
 
 }
