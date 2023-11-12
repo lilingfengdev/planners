@@ -2,7 +2,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("io.izzel.taboolib") version "1.56"
-    id("org.jetbrains.kotlin.jvm") version "1.5.31"
+    id("org.jetbrains.kotlin.jvm") version "1.7.10"
 }
 
 taboolib {
@@ -46,6 +46,7 @@ taboolib {
             name("DragonCollect").optional(true)
             name("GlowAPI").optional(true)
             name("MonsterItem").optional(true)
+            name("FightSystem").optional(true)
         }
     }
     options("skip-kotlin-relocate", "keep-kotlin-module")
@@ -87,8 +88,4 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-}
-tasks.withType<Jar> {
-//    destinationDir = file("F:/Server/Spigot 1.12.2 - 赏金测试/plugins")
-    destinationDir = file("F:/Server/paper 1.19.4/plugins")
 }
