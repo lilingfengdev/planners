@@ -15,6 +15,7 @@ interface AttackProvider {
 
         val inspects = mutableListOf(
             Inspect(arrayOf("OriginAttribute"), OriginP::class.java) { isEnable },
+            Inspect(arrayOf("FightSystem"), FightSystemP::class.java) { isEnable },
         )
 
         val MINECRAFT = Inspect(arrayOf("minecraft"), MinecraftP::class.java) { true }
