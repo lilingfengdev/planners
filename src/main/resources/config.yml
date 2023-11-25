@@ -40,6 +40,7 @@ options:
   regain-mana-period: 100
   regain-mana-eval: math profile level * 0.5
   upgrade-points: math &value * 2
+  showtime: 5
   #wg兼容 禁止pvp地方无法释放技能
   WorldGuard:
     enable: true

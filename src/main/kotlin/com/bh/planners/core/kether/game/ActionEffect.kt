@@ -87,7 +87,7 @@ object ActionEffect {
     /**
      * show a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
      * */
-    @KetherParser(["show"], namespace = NAMESPACE, shared = true)
+    @KetherParser(["show"], namespace = NAMESPACE)
     fun show() = combinationParser {
         it.group(
             text(),
@@ -110,7 +110,7 @@ object ActionEffect {
     /**
      * play a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
      * */
-    @KetherParser(["play"], namespace = NAMESPACE, shared = true)
+    @KetherParser(["play"], namespace = NAMESPACE)
     fun play() = combinationParser {
         it.group(
             text(),
@@ -134,7 +134,7 @@ object ActionEffect {
     /**
      * alwaysshow a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
      * */
-    @KetherParser(["alwaysshow"], namespace = NAMESPACE, shared = true)
+    @KetherParser(["alwaysshow"], namespace = NAMESPACE)
     fun alwaysshow() = combinationParser {
         it.group(
             text(),
@@ -157,7 +157,7 @@ object ActionEffect {
     /**
      * alwaysplay a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
      * */
-    @KetherParser(["alwaysplay"], namespace = NAMESPACE, shared = true)
+    @KetherParser(["alwaysplay"], namespace = NAMESPACE)
     fun alwaysplay() = combinationParser {
         it.group(
             text(),

@@ -8,7 +8,7 @@ import taboolib.common.platform.function.adaptLocation
 import taboolib.module.effect.ParticleObj
 import taboolib.module.effect.createArc
 
-object CustomEffectArc : CustomEffect {
+object EffectArc : CustomEffect {
 
     override val name: String
         get() = "arc"
