@@ -85,7 +85,7 @@ object ActionEffect {
 
 
     /**
-     * show a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
+     * show a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 origin they "@self" they "@range 10" onHit hit onTick tick
      * */
     @KetherParser(["show"], namespace = NAMESPACE)
     fun show() = combinationParser {
@@ -108,7 +108,7 @@ object ActionEffect {
     }
 
     /**
-     * play a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
+     * play a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 origin they "@self" they "@range 10" onHit hit onTick tick
      * */
     @KetherParser(["play"], namespace = NAMESPACE)
     fun play() = combinationParser {
@@ -132,7 +132,7 @@ object ActionEffect {
 
 
     /**
-     * alwaysshow a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
+     * alwaysshow a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 origin they "@self" they "@range 10" onHit hit onTick tick
      * */
     @KetherParser(["alwaysshow"], namespace = NAMESPACE)
     fun alwaysshow() = combinationParser {
@@ -155,7 +155,7 @@ object ActionEffect {
     }
 
     /**
-     * alwaysplay a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
+     * alwaysplay a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 origin they "@self" they "@range 10" onHit hit onTick tick
      * */
     @KetherParser(["alwaysplay"], namespace = NAMESPACE)
     fun alwaysplay() = combinationParser {
