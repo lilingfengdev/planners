@@ -2,11 +2,10 @@ package com.bh.planners.core.kether
 
 import com.bh.planners.core.effect.Target.Companion.getPlayer
 import com.bh.planners.core.kether.common.CombinationKetherParser
-import com.bh.planners.core.kether.common.MultipleKetherParser
 import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
 import com.bh.planners.core.kether.common.KetherHelper.simpleKetherParser
+import com.bh.planners.core.kether.common.MultipleKetherParser
 import taboolib.common.util.unsafeLazy
-import taboolib.module.kether.*
 import taboolib.platform.compat.VaultService
 
 @CombinationKetherParser.Used
@@ -25,7 +24,7 @@ object ActionBalance : MultipleKetherParser("balance") {
     val get = simpleKetherParser<Double> {
         it.group(double(), containerOrSender()).apply(it) { value, container ->
             now {
-                val player = container.firstBukkitPlayer() ?: this.bukkitPlayer()!!
+                val player = container.firstPlayer() ?: this.bukkitPlayer()!!
                 hooked.getBalance(player)
             }
         }

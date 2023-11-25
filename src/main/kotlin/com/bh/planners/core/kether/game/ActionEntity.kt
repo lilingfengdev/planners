@@ -3,18 +3,18 @@ package com.bh.planners.core.kether.game
 import com.bh.planners.api.common.SimpleTimeoutTask
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.target
-import com.bh.planners.core.kether.*
+import com.bh.planners.core.kether.bukkitPlayer
 import com.bh.planners.core.kether.common.KetherHelper
 import com.bh.planners.core.kether.common.KetherHelper.actionContainerOrOrigin
 import com.bh.planners.core.kether.common.KetherHelper.containerOrElse
 import com.bh.planners.core.kether.common.KetherHelper.containerOrOrigin
 import com.bh.planners.core.kether.common.MultipleKetherParser
-import com.bh.planners.core.kether.game.entity.*
+import com.bh.planners.core.kether.game.entity.EntityField
+import com.bh.planners.core.kether.rootVariables
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import org.bukkit.util.Vector
-import taboolib.module.kether.*
-import java.util.*
+import taboolib.module.kether.ScriptFrame
 
 object ActionEntity : MultipleKetherParser("entity") {
 
@@ -79,7 +79,7 @@ object ActionEntity : MultipleKetherParser("entity") {
     val viewto = KetherHelper.simpleKetherParser<Unit> {
         it.group(actionContainerOrOrigin(), containerOrElse { getSelectEntities() }).apply(it) { target, container ->
             now {
-                val t = target.firstBukkitLocation()!!
+                val t = target.firstLocation()!!
                 container.forEachProxyEntity {
                     location.yaw = t.yaw
                     location.pitch = t.pitch

@@ -1,7 +1,7 @@
 package com.bh.planners.core.kether.compat.adyeshach.ai
 
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.effect.safeDistance
+import com.bh.planners.core.effect.util.safeDistance
 import ink.ptms.adyeshach.common.entity.ai.Controller
 import org.bukkit.Location
 import taboolib.common.util.random
@@ -35,7 +35,7 @@ class ControllerLookAt(val target: Target.Location) : Controller() {
     override fun onTick() {
 
         if (entity!!.getLocation().safeDistance(location) < distance) {
-            entity!!.controllerLook(location, smooth = true)
+            entity.controllerLook(location, smooth = true)
         }
 
     }

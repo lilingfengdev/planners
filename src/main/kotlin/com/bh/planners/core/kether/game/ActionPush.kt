@@ -1,15 +1,15 @@
 package com.bh.planners.core.kether.game
 
 import com.bh.planners.core.effect.Target
-import com.bh.planners.core.kether.*
 import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.KetherHelper.containerOrEmpty
 import com.bh.planners.core.kether.common.SimpleKetherParser
+import com.bh.planners.core.kether.getContext
+import com.bh.planners.core.kether.parseTargetContainer
 import org.bukkit.Location
 import org.bukkit.util.Vector
-import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.*
-import java.util.concurrent.CompletableFuture
+import taboolib.module.kether.ScriptActionParser
+import taboolib.module.kether.combinationParser
 
 @CombinationKetherParser.Used
 object ActionPush : SimpleKetherParser("push"){
@@ -19,7 +19,7 @@ object ActionPush : SimpleKetherParser("push"){
             it.group(double(), any(),containerOrEmpty()).apply(it) { step,selector,pos ->
                 now {
                     val container = parseTargetContainer(selector ?: Target.Container(), getContext())
-                    val location = pos.firstBukkitLocation()!!
+                    val location = pos.firstLocation()!!
                     container.forEachProxyEntity {
                         execute(this.location,location,step)
                     }

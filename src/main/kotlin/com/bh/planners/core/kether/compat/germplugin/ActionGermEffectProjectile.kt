@@ -3,10 +3,9 @@ package com.bh.planners.core.kether.compat.germplugin
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.effect.Target.Companion.getEntity
 import com.bh.planners.core.effect.Target.Companion.getLocation
-import com.bh.planners.core.effect.getNearbyEntities
 import com.bh.planners.core.effect.inline.Incident.Companion.handleIncident
 import com.bh.planners.core.effect.inline.IncidentGermProjectileHitEntity
-import com.bh.planners.core.effect.inline.IncidentHitEntity
+import com.bh.planners.core.effect.util.getNearbyEntities
 import com.bh.planners.core.kether.ACTION_NULL
 import com.bh.planners.core.kether.containerOrSender
 import com.bh.planners.core.kether.getContext
@@ -17,10 +16,8 @@ import com.germ.germplugin.api.RootType
 import com.germ.germplugin.api.dynamic.animation.GermAnimationMove
 import com.germ.germplugin.api.dynamic.animation.IAnimatable
 import com.germ.germplugin.api.dynamic.effect.GermEffectPart
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.info
 import taboolib.common5.cdouble
@@ -28,7 +25,6 @@ import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.function.Consumer
 
 
 class ActionGermEffectProjectile : ScriptAction<Void>() {

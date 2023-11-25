@@ -2,10 +2,9 @@ package com.bh.planners.core.selector
 
 import com.bh.planners.api.common.Demand
 import com.bh.planners.api.common.Plugin
-import com.bh.planners.core.effect.EffectOption
 import com.bh.planners.core.effect.Target
 import com.bh.planners.core.pojo.Context
-import com.bh.planners.core.selector.bukkit.Visual.isNon
+import com.bh.planners.core.selector.bukkit.EntityId.isNon
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import taboolib.common.LifeCycle
@@ -23,10 +22,6 @@ interface Selector {
 
         fun getSelector(string: String): Selector {
             return selectors.firstOrNull { string in it.names } ?: error("Selector '${string}' not found")
-        }
-
-        fun check(context: Context, option: EffectOption, container: Target.Container): CompletableFuture<Void> {
-            return check(context, option.demand, container)
         }
 
         fun check(context: Context, demand: Demand): Target.Container {

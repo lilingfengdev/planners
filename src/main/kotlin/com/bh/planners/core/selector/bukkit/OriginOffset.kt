@@ -13,7 +13,7 @@ object OriginOffset : Selector {
     override fun check(
         data: Selector.Data,
     ): CompletableFuture<Void> {
-        val location = data.origin.getLocation() ?: return CompletableFuture.completedFuture(null)
+        val location = data.origin.getLocation()?.clone() ?: return CompletableFuture.completedFuture(null)
         val x = data.read<Double>(0, "0.0")
         val y = data.read<Double>(1, "0.0")
         val z = data.read<Double>(2, "0.0")

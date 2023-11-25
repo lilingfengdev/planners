@@ -26,7 +26,7 @@ object Self : Selector {
         }
         // 选中脚下
         else if (data.read<String>(0, "__null__") == "m") {
-            val location = sender.getLocation() ?: return CompletableFuture.completedFuture(null)
+            val location = sender.getLocation()?.clone() ?: return CompletableFuture.completedFuture(null)
             if (!keepVisual) {
                 location.pitch = 0f
                 location.yaw = 0f

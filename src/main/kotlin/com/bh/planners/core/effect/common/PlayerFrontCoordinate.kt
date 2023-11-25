@@ -1,6 +1,6 @@
 package com.bh.planners.core.effect.common
 
-import com.bh.planners.core.effect.rotateLocationAboutPoint
+import com.bh.planners.core.effect.util.rotateLocationAboutPoint
 import org.bukkit.Location
 
 /**
@@ -19,4 +19,5 @@ class PlayerFrontCoordinate(val playerLocation: Location) {
         location.pitch = 0f
         return rotateLocationAboutPoint(location.add(-x, y, z), location.yaw.toDouble() - 90, originDot)
     }
+
 }

@@ -15,7 +15,7 @@ object Location : Selector {
     override val names: Array<String>
         get() = arrayOf("loc", "location", "l")
 
-    val Selector.Data.toLocation
+    private val Selector.Data.toLocation
         get() = source.toLocation()
 
     override fun check(data: Selector.Data): CompletableFuture<Void> {

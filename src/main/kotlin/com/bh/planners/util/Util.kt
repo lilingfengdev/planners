@@ -10,13 +10,13 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
 import taboolib.common.util.sync
 import taboolib.common5.Coerce
 import taboolib.module.kether.printKetherErrorMessage
 import java.util.*
 import kotlin.random.Random
+
 
 fun Target.toProxyCommandSender(): ProxyCommandSender? {
     return ContextAPI.createProxy(this.getPlayer() ?: return null)
@@ -90,16 +90,6 @@ fun timing(start: Long): Double {
 
 fun List<String>.upperCase(): List<String> {
     return map { it.uppercase(Locale.getDefault()) }
-}
-
-fun safeAsync(job: () -> Unit) {
-    if (Bukkit.isPrimaryThread()) {
-        submitAsync {
-            job()
-        }
-    } else {
-        job()
-    }
 }
 
 fun safeSync(job: () -> Unit) {

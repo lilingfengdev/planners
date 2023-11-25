@@ -113,6 +113,14 @@ fun ScriptFrame.exec(selector: ParsedAction<*>, call: Target.() -> Unit) {
     }
 }
 
+fun Location.toLocal(): String {
+    return "${world!!.name} $x $y $z"
+}
+
+fun Location.toLocalXYZ(): String {
+    return "$x,$y,$z"
+}
+
 fun ScriptFrame.runAny(action: ParsedAction<*>, call: Any.() -> Unit): CompletableFuture<Void> {
     return this.newFrame(action).run<Any>().thenAccept(call)
 }
@@ -193,7 +201,7 @@ fun ScriptFrame.getEntity(selector: ParsedAction<*>): CompletableFuture<Entity?>
 }
 
 fun ScriptFrame.getLocation(selector: ParsedAction<*>): CompletableFuture<Location> {
-    return createContainer(selector).thenApply { it.firstBukkitLocation() }
+    return createContainer(selector).thenApply { it.firstLocation() }
 }
 
 fun ScriptFrame.senderPlannerProfile(): PlayerProfile? {

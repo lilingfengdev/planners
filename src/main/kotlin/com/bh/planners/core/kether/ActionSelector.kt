@@ -10,8 +10,6 @@ import taboolib.module.kether.*
 
 /**
  * selector
- *
- *
  */
 @CombinationKetherParser.Used
 object ActionSelector : ParameterKetherParser("selector") {

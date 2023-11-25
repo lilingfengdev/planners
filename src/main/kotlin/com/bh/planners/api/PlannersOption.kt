@@ -6,8 +6,6 @@ import taboolib.common.util.asList
 import taboolib.common5.cdouble
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.xseries.XItemStack
-import taboolib.library.xseries.XMaterial
-import taboolib.library.xseries.getItemStack
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.ConfigNodeTransfer
 
@@ -42,4 +40,8 @@ object PlannersOption {
 
     @ConfigNode("options.upgrade-points")
     val upgradePoints: String? = null
+
+    @ConfigNode("options.showtime")
+    val showTime: Int = 1
+
 }

@@ -16,7 +16,7 @@ object Translator {
             is String -> return if (regexShort.matcher(obj.toString()).matches()) {
                 toNBTBase(java.lang.Short.valueOf(obj.toString().substring(0, obj.toString().length - 1)))
             } else {
-                ItemTagData(obj as String?)
+                ItemTagData(obj)
             }
             is Int -> return ItemTagData(obj)
             is Double -> return ItemTagData(obj)
@@ -27,12 +27,12 @@ object Translator {
             is List<*> -> return toNBTList(ItemTagList(), (obj as List<*>?)!!)
             is Map<*, *> -> {
                 val nbtCompound = ItemTag()
-                obj.forEach { (key, value) -> nbtCompound[key.toString()] = toNBTBase(value) }
+                obj.forEach { (key, value) -> nbtCompound[key.toString()] = toNBTBase(value)!! }
                 return nbtCompound
             }
             is ConfigurationSection -> {
                 val nbtCompound = ItemTag()
-                obj.getValues(false).forEach { (key, value) -> nbtCompound[key] = toNBTBase(value) }
+                obj.getValues(false).forEach { (key, value) -> nbtCompound[key] = toNBTBase(value)!! }
                 return nbtCompound
             }
             else -> {

@@ -52,7 +52,7 @@ object ActionSkill : MultipleKetherParser("skill") {
                 } else {
                     skill().instance
                 }
-                val bukkitPlayer = container.firstBukkitPlayer()
+                val bukkitPlayer = container.firstPlayer()
                 bukkitPlayer?.plannersProfile?.getSkillOrNull(instance)?.level ?: -1
             }
         }
@@ -69,7 +69,7 @@ object ActionSkill : MultipleKetherParser("skill") {
                 if (instance == skill().instance) {
                     this.runVariable(id)
                 } else {
-                    val bukkitPlayer = container.firstBukkitPlayer()
+                    val bukkitPlayer = container.firstPlayer()
                     instance.runVariable(bukkitPlayer ?: return@now null,level,id).getNow(null)
                 }
             }

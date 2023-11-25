@@ -1,107 +1,285 @@
 package com.bh.planners.core.kether.game
 
-import com.bh.planners.core.effect.*
-import com.bh.planners.core.kether.NAMESPACE
-import com.bh.planners.core.kether.getContext
-import com.bh.planners.core.kether.origin
-import com.bh.planners.core.pojo.Context
-import org.bukkit.Location
-import taboolib.common.platform.function.submitAsync
+import com.bh.planners.core.effect.EffectOption
+import com.bh.planners.core.effect.Effects
+import com.bh.planners.core.effect.Target.Companion.getLocation
+import com.bh.planners.core.effect.common.EffectSpawner
+import com.bh.planners.core.effect.custom.EffectWing
+import com.bh.planners.core.effect.inline.Incident.Companion.handleIncident
+import com.bh.planners.core.effect.inline.IncidentEffectHit
+import com.bh.planners.core.effect.inline.IncidentEffectTick
+import com.bh.planners.core.kether.*
+import com.bh.planners.util.entityAt
+import taboolib.common.platform.function.adaptLocation
 import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.QuestReader
+import taboolib.module.effect.EffectGroup
+import taboolib.module.effect.shape.NRankBezierCurve
+import taboolib.module.effect.shape.Ray
 import taboolib.module.kether.*
-import java.util.concurrent.CompletableFuture
 import kotlin.collections.set
 
 object ActionEffect {
 
-    // effect action ""
-    open class Parser(val effect: Effect, val action: ParsedAction<*>) : ScriptAction<Void>() {
-
-        val events = mutableMapOf<String, String>()
-
-        override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-
-            frame.run(action).str { action ->
-                val context = frame.getContext()
-
-                if (context !is Context.SourceImpl) return@str
-
-                val response = Response(context, events)
-
-                submitAsync {
-                    val effectOption = EffectOption.get(action)
-                    effect.sendTo(frame.origin(), effectOption, context, response)
-                }
-
-            }
-
-            return CompletableFuture.completedFuture(null)
-        }
-    }
-
-    class Response(val context: Context.SourceImpl, events: Map<String, String>) {
-
-        val eventTicks = mutableListOf<EffectICallback<*>>(
-            EffectICallback.Tick(events["ontick"] ?: "__null__", context),
-            EffectICallback.Hit(events["onhit"] ?: "__null__", context)
-        )
-
-        fun handleTick(location: Location) {
-            this.handleTick(listOf(location))
-        }
-
-        fun handleTick(locations: List<Location>) {
-            eventTicks.forEach { it.onTick(locations) }
-        }
-
-    }
-
     /**
-     * effect 【loader: action】 [option: string>]
-     * effect line "FLAME 0 0 0 -speed 1.0 -count 10 @self" ontick
+     *
+     * effect arc {
+     *   particle flame
+     *   offset 0 0 0
+     *   pos 0 1 2
+     *   step 5
+     *   period 5
+     * }
+     *
      */
     @KetherParser(["effect"], namespace = NAMESPACE, shared = true)
-    fun parser() = scriptParser {
-        try {
-            it.mark()
-            val expect = it.expects(*Effects.effectKeys.toTypedArray())
-            val effectLoader = Effects.get(expect)
-            // 优先解析特殊粒子解析器
-            if (effectLoader is EffectParser) {
-                effectLoader.parser(it)
-            }
-            // 粒子默认解析器
-            else {
-                val option = it.nextParsedAction()
-                val events = it.maps()
+    fun effect() = scriptParser {
+        it.switch {
+            case("create") {
+                val key = it.nextToken()
+                val type = it.nextToken()
 
-                Parser(effectLoader, option).also {
-                    it.events += events
+                actionNow {
+                    val option = EffectOption(type)
+                    rootVariables().set("effect_$key", option)
+                    option
                 }
             }
-        } catch (e: Exception) {
-            it.reset()
-            throw e
+
+            case("type") {
+                val key = it.nextToken()
+                val type = it.nextToken()
+
+                actionNow {
+                    val old = rootVariables().get<EffectOption>("effect_$key").get()
+                    val oldType = old.type
+                    rootVariables().set("effect_$key", old.also { it.type = type })
+                    oldType
+                }
+            }
+
+            case("get") {
+                val key = it.nextToken()
+                actionNow {
+                    rootVariables().get<EffectOption>("effect_$key").get()
+                }
+            }
+
         }
+
+    }
+
+    @KetherParser(["option"], namespace = NAMESPACE, shared = true)
+    fun effectOption() = combinationParser {
+        it.group(
+            text(),
+            text(),
+            text()
+        ).apply(it) { key, option, info ->
+            now {
+                val effectOption = rootVariables().get<EffectOption>("effect_$key").get()
+                effectOption.options[option] = EffectOption.Option(info)
+                rootVariables().set("effect_$key", effectOption)
+            }
+        }
+    }
+
+
+    /**
+     * show a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
+     * */
+    @KetherParser(["show"], namespace = NAMESPACE, shared = true)
+    fun show() = combinationParser {
+        it.group(
+            text(),
+            command("scale", then = double()).option(),
+            command("rotateX", then = double()).option(),
+            command("rotateY", then = double()).option(),
+            command("rotateZ", then = double()).option(),
+            command("origin", then = action()).option(),
+            command("they", then = action()).option(),
+            command("onHit", then = text()).option(),
+            command("onTick", then = text()).option()
+        ).apply(it) { keys, scale, rotateX, rotateY, rotateZ, origin, selector, onHit, onTick ->
+            now {
+                showEffect(Type.SHOW, keys, scale, rotateX, rotateY, rotateZ, origin, selector, onHit, onTick)
+            }
+        }
+
     }
 
     /**
-     * 尝试获取一个maps
-     */
-    fun QuestReader.maps(): MutableMap<String, String> {
-        val mapOf = mutableMapOf<String, String>()
-        while (true) {
-            this.mark()
-            val nextToken = this.nextToken()
-            if (nextToken.startsWith("on")) {
-                mapOf[nextToken] = this.nextToken()
-            } else {
-                this.reset()
-                break
+     * play a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
+     * */
+    @KetherParser(["play"], namespace = NAMESPACE, shared = true)
+    fun play() = combinationParser {
+        it.group(
+            text(),
+            command("scale", then = double()).option(),
+            command("rotateX", then = double()).option(),
+            command("rotateY", then = double()).option(),
+            command("rotateZ", then = double()).option(),
+            command("origin", then = action()).option(),
+            command("they", then = action()).option(),
+            command("onHit", then = text()).option(),
+            command("onTick", then = text()).option()
+        ).apply(it) { keys, scale, rotateX, rotateY, rotateZ, origin, selector, onHit, onTick ->
+            now {
+                showEffect(Type.PLAY, keys, scale, rotateX, rotateY, rotateZ, origin, selector, onHit, onTick)
             }
         }
-        return mapOf
+
     }
+
+
+    /**
+     * alwaysshow a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
+     * */
+    @KetherParser(["alwaysshow"], namespace = NAMESPACE, shared = true)
+    fun alwaysshow() = combinationParser {
+        it.group(
+            text(),
+            command("scale", then = double()).option(),
+            command("rotateX", then = double()).option(),
+            command("rotateY", then = double()).option(),
+            command("rotateZ", then = double()).option(),
+            command("origin", then = action()).option(),
+            command("they", then = action()).option(),
+            command("onHit", then = text()).option(),
+            command("onTick", then = text()).option()
+        ).apply(it) { keys, scale, rotateX, rotateY, rotateZ, origin, selector, onHit, onTick ->
+            now {
+                showEffect(Type.ALWAYS_SHOW, keys, scale, rotateX, rotateY, rotateZ, origin, selector, onHit, onTick)
+            }
+        }
+
+    }
+
+    /**
+     * alwaysplay a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 they "@self"
+     * */
+    @KetherParser(["alwaysplay"], namespace = NAMESPACE, shared = true)
+    fun alwaysplay() = combinationParser {
+        it.group(
+            text(),
+            command("scale", then = double()).option(),
+            command("rotateX", then = double()).option(),
+            command("rotateY", then = double()).option(),
+            command("rotateZ", then = double()).option(),
+            command("origin", then = action()).option(),
+            command("they", then = action()).option(),
+            command("onHit", then = text()).option(),
+            command("onTick", then = text()).option()
+        ).apply(it) { keys, scale, rotateX, rotateY, rotateZ, origin, selector, onHit, onTick ->
+            now {
+                showEffect(Type.ALWAYS_PLAY, keys, scale, rotateX, rotateY, rotateZ, origin, selector, onHit, onTick)
+            }
+        }
+
+    }
+
+    private fun ScriptFrame.showEffect(type: Type, keys: String, scale: Double?, rotateX: Double?, rotateY: Double?, rotateZ: Double?, origin: ParsedAction<*>?, selector: ParsedAction<*>?, onHit: String?, onTick: String?) {
+
+        val viewer = containerOrSender(selector).get()
+
+        val newOrigin = containerOrSender(origin).get()
+
+        val group = EffectGroup()
+
+        keys.split(",").forEach {
+
+            val effectOption = variables().get<EffectOption>("effect_$it").get()
+
+            when (effectOption.type) {
+                EffectWing.name -> {
+
+                    val spawner = EffectSpawner(effectOption, viewer) {
+                        onTick?.let { it1 -> session().handleIncident(it1, IncidentEffectTick(it)) }
+                        onHit?.let { it1 -> session().handleIncident(it1, IncidentEffectHit(it.entityAt())) }
+                    }
+
+                    newOrigin.forEachPlayer {
+                        EffectWing.render(effectOption, spawner, this)
+                    }
+
+                    return@forEach
+                }
+
+                "point" -> {
+
+                    val spawner = EffectSpawner(effectOption, viewer) {
+                        onTick?.let { it1 -> session().handleIncident(it1, IncidentEffectTick(it)) }
+                        onHit?.let { it1 -> session().handleIncident(it1, IncidentEffectHit(it.entityAt())) }
+                    }
+
+                    newOrigin.forEach {
+                        it.getLocation()?.let { it1 -> spawner.spawn(it1) }
+                    }
+
+                    return@forEach
+                }
+
+                else -> {
+                    newOrigin.forEach last@{
+
+                        val effectObj = Effects.get(effectOption.type).getEffectObj(effectOption, getContext())
+
+                        val location = it.getLocation() ?: return@last
+
+                        when (effectObj) {
+
+                            is NRankBezierCurve -> {}
+
+                            is Ray -> {
+                                effectObj.direction = adaptLocation(location).direction
+                                effectObj.origin = adaptLocation(location)
+                            }
+
+                            else -> {
+                                effectObj.origin = adaptLocation(location)
+                            }
+
+                        }
+
+                        effectObj.spawner = EffectSpawner(effectOption, viewer) {
+                            onTick?.let { it1 -> session().handleIncident(it1, IncidentEffectTick(it)) }
+                            onHit?.let { it1 -> session().handleIncident(it1, IncidentEffectHit(it.entityAt())) }
+                        }
+
+                        group.addEffect(effectObj)
+
+                    }
+                }
+
+            }
+
+        }
+
+        rotateX?.let { group.rotateAroundXAxis(it) }
+        rotateY?.let { group.rotateAroundYAxis(it) }
+        rotateZ?.let { group.rotateAroundZAxis(it) }
+
+        scale?.let { group.scale(it) }
+
+        when(type) {
+            Type.ALWAYS_PLAY -> {
+                group.alwaysPlayAsync()
+            }
+            Type.ALWAYS_SHOW -> {
+                group.alwaysShowAsync()
+            }
+            Type.PLAY -> {
+                group.play()
+            }
+            Type.SHOW -> {
+                group.show()
+            }
+        }
+
+    }
+
+    enum class Type {
+        PLAY,SHOW,ALWAYS_PLAY,ALWAYS_SHOW
+    }
+
 
 }

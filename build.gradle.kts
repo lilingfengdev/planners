@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("io.izzel.taboolib") version "1.56"
+    id("io.izzel.taboolib") version "1.50"
     id("org.jetbrains.kotlin.jvm") version "1.5.31"
 }
 
@@ -25,7 +25,7 @@ taboolib {
     install("expansion-command-helper")
     install("platform-bukkit")
     classifier = null
-    version = "6.0.11-31"
+    version = "6.0.12-35"
     description {
         contributors {
             name("洋洋")
@@ -40,11 +40,6 @@ taboolib {
             name("WorldGuard").optional(true)
             name("DragonCore").optional(true)
             name("GermPlugin").optional(true)
-            name("VirtualEntitySkillModule").optional(true)
-            name("GDDTitle").optional(true)
-            name("Antikey").optional(true)
-            name("DragonCollect").optional(true)
-            name("GlowAPI").optional(true)
             name("MonsterItem").optional(true)
             name("FightSystem").optional(true)
         }

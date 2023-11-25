@@ -13,7 +13,7 @@ import org.bukkit.util.Vector
 fun leap() = KetherHelper.simpleKetherParser<Unit>("leap") {
     it.group(double(), any(), containerOrOrigin()).apply(it) { step, target, container ->
         now {
-            val pos = container.firstBukkitLocation()!!
+            val pos = container.firstLocation()!!
             parseTargetContainer(target ?: Target.Container(),getContext()).forEachProxyEntity {
                 velocity = velocity.add(next(location, pos, step))
             }

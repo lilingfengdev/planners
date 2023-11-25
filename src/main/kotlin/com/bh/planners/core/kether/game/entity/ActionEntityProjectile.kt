@@ -6,9 +6,6 @@ import com.bh.planners.core.effect.Target.Companion.target
 import com.bh.planners.core.effect.inline.Incident.Companion.handleIncident
 import com.bh.planners.core.effect.inline.IncidentHitBlock
 import com.bh.planners.core.effect.inline.IncidentHitEntity
-import com.bh.planners.core.effect.rotateAroundX
-import com.bh.planners.core.effect.rotateAroundY
-import com.bh.planners.core.effect.rotateAroundZ
 import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.KetherHelper
 import com.bh.planners.core.kether.common.KetherHelper.containerOrSender
@@ -52,9 +49,9 @@ fun projectile() = KetherHelper.simpleKetherParser<Target.Container> {
                 onhit?.let { projectile.setMeta("@planners:projectile-event", it) }
                 projectile.setMeta("@planners:projectile-context", getContext())
                 generatedVelocity {
-                    rotateAroundX(this, rotateX)
-                    rotateAroundY(this, rotateY)
-                    rotateAroundZ(this, rotateZ)
+                    rotateAroundX(rotateX)
+                    rotateAroundY(rotateY)
+                    rotateAroundZ(rotateZ)
                     multiply(step)
                 }
 
@@ -117,9 +114,9 @@ fun e(e: ProjectileHitEvent) {
     val context = projectile.getMetaFirst("@planners:projectile-context").value() as? Session ?: return
 
     if (e.hitEntity != null) {
-        context.handleIncident(event.value()!!.toString(), IncidentHitEntity(projectile,owner, e.hitEntity!!, e))
+        context.handleIncident(event.value()!!.toString(), IncidentHitEntity(owner, e.hitEntity!!, e, projectile))
     }
     if (e.hitBlock != null) {
-        context.handleIncident(event.value()!!.toString(), IncidentHitBlock(projectile,owner, e.hitBlock!!, e))
+        context.handleIncident(event.value()!!.toString(), IncidentHitBlock(owner, e.hitBlock!!, e, projectile))
     }
 }

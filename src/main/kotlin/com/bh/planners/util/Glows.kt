@@ -1,4 +1,4 @@
-package com.bh.planners.core.kether.util
+package com.bh.planners.util
 
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor

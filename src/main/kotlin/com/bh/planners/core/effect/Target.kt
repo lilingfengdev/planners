@@ -3,7 +3,7 @@ package com.bh.planners.core.effect
 import com.bh.planners.api.common.Demand
 import com.bh.planners.api.entity.ProxyBukkitEntity
 import com.bh.planners.api.entity.ProxyEntity
-import com.bh.planners.core.kether.local
+import com.bh.planners.core.kether.toLocal
 import com.bh.planners.core.pojo.Context
 import com.bh.planners.core.selector.Selector
 import org.bukkit.entity.LivingEntity
@@ -34,9 +34,6 @@ interface Target {
             return future
         }
 
-        fun EffectOption.createContainer(context: Context): CompletableFuture<Container> {
-            return demand.createContainer(context)
-        }
 
         fun org.bukkit.entity.Entity.target(): Entity {
             return toTarget()
@@ -95,15 +92,6 @@ interface Target {
 
     open class Container : LinkedHashSet<Target>() {
 
-        override fun add(element: Target): Boolean {
-            // 如果是实体 并且已经死亡 直接过滤掉
-            if (element is Entity && element.bukkitLivingEntity?.isDead == true) {
-                return false
-            }
-
-            return super.add(element)
-        }
-
         override fun forEach(action: Consumer<in Target>) {
             super.forEach {
                 if (it.isValid) action.accept(it)
@@ -126,10 +114,14 @@ interface Target {
             return this
         }
 
-        fun remove(amount: Int = 1) {
-            (0 until amount).forEach { _ ->
-                if (this.isNotEmpty()) {
-                    this -= this.random()
+        fun remove(amount: Int = 1, first: Boolean = true) {
+            repeat(amount) {
+                if (isNotEmpty()) {
+                    if (first) {
+                        remove(first())
+                    } else {
+                        remove(last())
+                    }
                 }
             }
         }
@@ -186,9 +178,11 @@ interface Target {
             forEach<Location> { index -> func(value, index) }
         }
 
+//        fun firstLocation() = filterIsInstance<Location>()
+
         fun firstTarget() = firstOrNull()
 
-        fun firstBukkitPlayer() = filterIsInstance<Entity>().firstOrNull { it.bukkitEntity is Player }?.player
+        fun firstPlayer() = firstEntityTarget() as? Player
 
         fun firstLivingEntityTarget() = filterIsInstance<Entity>().firstOrNull { it.isLiving }?.bukkitLivingEntity
 
@@ -203,7 +197,7 @@ interface Target {
 
         fun getLocationTarget(index: Int) = filterIsInstance<Location>().getOrNull(index)
 
-        fun firstBukkitLocation() = getLocationTarget(0)?.value
+        fun firstLocation() = getLocationTarget(0)?.value
 
         fun firstLocationTarget() = getLocationTarget(0)
 
@@ -219,7 +213,7 @@ interface Target {
         }
 
         override fun toLocal(): String {
-            return value.local()
+            return value.toLocal()
         }
 
         override fun equals(other: Any?): Boolean {

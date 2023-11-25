@@ -1,6 +1,6 @@
 package com.bh.planners.core.kether.game
 
-import com.bh.planners.core.effect.safeDistance
+import com.bh.planners.core.effect.util.safeDistance
 import com.bh.planners.core.kether.common.CombinationKetherParser
 import com.bh.planners.core.kether.common.KetherHelper
 import com.bh.planners.core.kether.common.KetherHelper.actionContainer
@@ -13,7 +13,6 @@ import com.bh.planners.core.kether.parseTargetContainer
 import org.bukkit.Sound
 import org.bukkit.util.Vector
 import taboolib.common5.Coerce
-import taboolib.module.kether.ParserHolder.option
 import taboolib.platform.util.sendActionBar
 import java.util.*
 
@@ -53,7 +52,7 @@ fun tell() = KetherHelper.simpleKetherParser<Unit>("send", "message") {
 fun teleport() = KetherHelper.simpleKetherParser<Unit>("tp") {
     it.group(any(), containerOrSender()).apply(it) { loc, container ->
         now {
-            val location = parseTargetContainer(loc!!, getContext()).firstBukkitLocation()!!
+            val location = parseTargetContainer(loc!!, getContext()).firstLocation()!!
             container.forEachPlayer { teleport(location) }
         }
     }
@@ -144,7 +143,7 @@ fun lightning() = KetherHelper.simpleKetherParser<Unit> {
 fun drag() = KetherHelper.simpleKetherParser<Unit>("drag") {
     it.group(double(), actionContainer(), containerOrOrigin()).apply(it) { step, container, target ->
         now {
-            val location = target?.firstBukkitLocation() ?: origin().value
+            val location = target?.firstLocation() ?: origin().value
             container.forEachProxyEntity {
                 val vectorAB = location.clone().subtract(this.location).toVector()
                 vectorAB.normalize()
@@ -185,8 +184,8 @@ fun launch() = KetherHelper.simpleKetherParser<Unit> {
 fun safeDistance() = KetherHelper.simpleKetherParser<Unit>("long", "safe-distance") {
     it.group(actionContainerOrOrigin(), containerOrOrigin()).apply(it) { p1, p2 ->
         now {
-            val loc1 = p1.firstBukkitLocation() ?: p1.firstProxyEntity()?.location ?: return@now
-            val loc2 = p2.firstBukkitLocation() ?: p2.firstProxyEntity()?.location ?: return@now
+            val loc1 = p1.firstLocation() ?: p1.firstProxyEntity()?.location ?: return@now
+            val loc2 = p2.firstLocation() ?: p2.firstProxyEntity()?.location ?: return@now
             loc1.safeDistance(loc2)
         }
     }

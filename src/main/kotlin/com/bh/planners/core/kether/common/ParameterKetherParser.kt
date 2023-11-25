@@ -1,9 +1,9 @@
 package com.bh.planners.core.kether.common
 
-import com.bh.planners.util.Reflexs
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestActionParser
 import taboolib.library.kether.QuestReader
+import taboolib.library.reflex.ClassAnalyser
 import taboolib.module.kether.*
 
 abstract class ParameterKetherParser(vararg id: String) : SimpleKetherParser(*id), Stateable {
@@ -26,7 +26,7 @@ abstract class ParameterKetherParser(vararg id: String) : SimpleKetherParser(*id
     }
 
     override fun onInit() {
-        Reflexs.getFields(this::class.java).forEach { field ->
+        ClassAnalyser.analyseByReflection(this::class.java).fields.forEach { field ->
 
             // ignored ...
             if (field.name == "INSTANCE" || field.isAnnotationPresent(CombinationKetherParser.Ignore::class.java)) {
@@ -40,6 +40,7 @@ abstract class ParameterKetherParser(vararg id: String) : SimpleKetherParser(*id
                     this.method[it] = parser
                 }
             }
+
         }
     }
 
