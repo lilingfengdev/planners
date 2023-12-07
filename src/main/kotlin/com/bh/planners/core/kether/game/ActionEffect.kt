@@ -21,15 +21,12 @@ import kotlin.collections.set
 object ActionEffect {
 
     /**
-     *
-     * effect arc {
-     *   particle flame
-     *   offset 0 0 0
-     *   pos 0 1 2
-     *   step 5
-     *   period 5
-     * }
-     *
+     * 创建一个特定类型的key效果
+     * effect create [key: String] [type: String]
+     * 创建一个key效果的类型
+     * effect type [key: String] [type: String]
+     * 获取一个key效果
+     * effect get [key: String]
      */
     @KetherParser(["effect"], namespace = NAMESPACE, shared = true)
     fun effect() = scriptParser {
@@ -68,6 +65,10 @@ object ActionEffect {
 
     }
 
+    /**
+     * option [key: String] [option: String] [data: String]
+     * 修改key效果参数的语句
+     * */
     @KetherParser(["option"], namespace = NAMESPACE, shared = true)
     fun effectOption() = combinationParser {
         it.group(
@@ -86,6 +87,7 @@ object ActionEffect {
 
     /**
      * show a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 origin they "@self" they "@range 10" onHit hit onTick tick
+     * 一瞬间展示粒子
      * */
     @KetherParser(["show"], namespace = NAMESPACE)
     fun show() = combinationParser {
@@ -109,6 +111,7 @@ object ActionEffect {
 
     /**
      * play a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 origin they "@self" they "@range 10" onHit hit onTick tick
+     * 绘画粒子
      * */
     @KetherParser(["play"], namespace = NAMESPACE)
     fun play() = combinationParser {
@@ -133,6 +136,7 @@ object ActionEffect {
 
     /**
      * alwaysshow a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 origin they "@self" they "@range 10" onHit hit onTick tick
+     * 每tick展示一次全部粒子
      * */
     @KetherParser(["alwaysshow"], namespace = NAMESPACE)
     fun alwaysshow() = combinationParser {
@@ -156,6 +160,7 @@ object ActionEffect {
 
     /**
      * alwaysplay a,b,c scale 1.2 rotateX 10 rotateY 10 rotateZ 10 origin they "@self" they "@range 10" onHit hit onTick tick
+     * 每tick开始一次绘画
      * */
     @KetherParser(["alwaysplay"], namespace = NAMESPACE)
     fun alwaysplay() = combinationParser {
