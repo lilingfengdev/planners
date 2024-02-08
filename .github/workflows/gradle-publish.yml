@@ -8,8 +8,12 @@
 name: Gradle Package
 
 on:
-  release:
-    types: [创建]
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -40,5 +44,5 @@ jobs:
     - name: Publish to GitHub Packages
       run: ./gradlew publish
       env:
-        USERNAME: ${{ github.actor }}
-        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        USERNAME: ${{ postyizhan }}
+        TOKEN: ${{ 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 }}
