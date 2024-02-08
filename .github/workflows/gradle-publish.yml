@@ -45,4 +45,4 @@ jobs:
       run: ./gradlew publish
       env:
         USERNAME: ${{ postyizhan }}
-        TOKEN: ${{ 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 }}
+        TOKEN: ${{ postyizhan_planners_114514_actions }}
